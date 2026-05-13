@@ -1,0 +1,180 @@
+openapi: 3.0.0
+
+info:
+  title: API idCerberus
+  version: 1.0.0
+  description: |
+    # Bem-vindo à documentação da idCerberus
+
+    Essa documentação é um guia completo para integração com a API idCerberus.
+
+    Além da integração via API, também é possível integrar a solução via SDK,
+    disponível em React Native, Flutter, iOS Nativo e Android Nativo.
+
+    Em caso de dúvidas, entre em contato pelo e-mail:
+    contact@react-it.com
+
+servers:
+  - url: https://api.seudominio.com
+    description: Production server
+
+tags:
+  - name: Onboarding
+    description: |
+      Plataforma de Onboarding Digital para análise de risco,
+      prevenção à fraude e compliance.
+
+  - name: Onboarding - Autorizacao
+    description: |
+      Serviços de autenticação OAuth2.
+
+  - name: Onboarding - Integracao via SDK
+    description: |
+      Serviços utilizados na integração via SDK.
+
+  - name: Onboarding - Servicos
+    description: |
+      Serviços disponibilizados para integração externa.
+
+  - name: Onboarding - Servicos - Pessoas
+
+  - name: Onboarding - Servicos - Empresas
+
+  - name: Onboarding - Customers
+
+paths:
+
+  /oauth/token:
+    post:
+      tags:
+        - Onboarding - Autorizacao
+      summary: Gerar Token
+      description: |
+        Geração de token para acesso aos serviços da API.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client:
+                  type: string
+                secret:
+                  type: string
+            example:
+              client: client
+              secret: secret
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json: {}
+
+  /report/{tokenOnboarding}:
+    get:
+      tags:
+        - Onboarding - Integracao via SDK
+      summary: Consulta de Resultado de um Onboarding
+      description: |
+        Retorna o status e os resultados de um onboarding.
+      parameters:
+        - name: tokenOnboarding
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+
+  /history-onboarding-report/{tokenOnboarding}:
+    get:
+      tags:
+        - Onboarding - Integracao via SDK
+      summary: Download PDF do resultado do Onboarding
+      description: |
+        Realiza o download do relatório PDF do onboarding.
+      parameters:
+        - name: tokenOnboarding
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+
+  /token-history-onboarding:
+    post:
+      tags:
+        - Onboarding - Integracao via SDK
+      summary: Gerar TokenOnboarding
+      description: |
+        Gera um novo TokenOnboarding.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                document: cpf
+                cpf: cpf
+                cnpj: cnpj
+                name: name
+                documentFiles:
+                  - documentFileType: OTHER
+                    document: data:image/jpeg;base64
+                    documentUrl: url
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+
+  /customer:
+    get:
+      tags:
+        - Onboarding - Customers
+      summary: Consulta de cliente
+      description: |
+        Consulta clientes por CPF ou CNPJ.
+      parameters:
+        - name: documentKey
+          in: query
+          required: false
+          schema:
+            type: string
+          example: cpf ou cnpj
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+
+  /changeStatusOfCustomer:
+    post:
+      tags:
+        - Onboarding - Customers
+      summary: Alterar status do cliente
+      description: |
+        Altera o status ativo/inativo de um cliente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                documentKey: c65449cd-5ce5-40b8-9aa4-0726b118f73e
+                active: false
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
