@@ -54,7 +54,7 @@ jobs:
                 cp "$file" "$route/index.html"
               done
           if [ -n "$BASE_PATH" ]; then
-            find dist -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" \) -print0 \
+            find dist -type f -name "*.html" -print0 \
               | xargs -0 sed -i \
                 -e "s|href=\"/|href=\"$BASE_PATH/|g" \
                 -e "s|src=\"/|src=\"$BASE_PATH/|g" \
@@ -68,7 +68,6 @@ jobs:
                 -e "s|'\/api-reference/|'$BASE_PATH/api-reference/|g" \
                 -e "s|\"/api-reference/|\"$BASE_PATH/api-reference/|g"
           fi
-          cp dist/index.html dist/404.html
           touch dist/.nojekyll
 
       - name: Upload artifact
