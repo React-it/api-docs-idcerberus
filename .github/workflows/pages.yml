@@ -60,6 +60,11 @@ jobs:
                 -e "s|href=\"/api-reference/|href=\"$BASE_PATH/api-reference/|g" \
                 -e "s|href=\"/sitemap.xml|href=\"$BASE_PATH/sitemap.xml|g" \
                 -e "s|href=\"/\"|href=\"$BASE_PATH/\"|g"
+            PAGES_BASE_SCRIPT='<script>(function(){var b="__BASE_PATH__";function f(h){if(!h||h[0]!=="/"||h.indexOf(b+"/")===0)return h;if(h==="/"||h.indexOf("/guides/")===0||h.indexOf("/api-reference/")===0)return b+(h==="/"?"/":h);return h}function n(){document.querySelectorAll("a[href]").forEach(function(a){var h=a.getAttribute("href"),x=f(h);if(x!==h)a.setAttribute("href",x)})}document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||a.target||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;var h=a.getAttribute("href"),x=f(h);if(x!==h){e.preventDefault();window.location.assign(x)}},true);n();new MutationObserver(n).observe(document.documentElement,{childList:true,subtree:true})})();</script>'
+            PAGES_BASE_SCRIPT="${PAGES_BASE_SCRIPT/__BASE_PATH__/$BASE_PATH}"
+            export PAGES_BASE_SCRIPT
+            find dist -type f -name "*.html" -print0 \
+              | xargs -0 perl -0pi -e 's#</body>#$ENV{PAGES_BASE_SCRIPT}</body>#'
           fi
           touch dist/.nojekyll
 
