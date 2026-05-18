@@ -50,6 +50,7 @@ Para implementação endpoint a endpoint, use a [API Reference](/api-reference/b
 | Enriquecimento de dados de PJ | `service_corporate_data_enrichment` | `cnpj` |
 | Status do CNPJ na Receita Federal | `service_rfb_pj` | `cnpj` |
 | SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` |
+| Endereços estendidos de empresa | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
 | DAS MEI na Receita | `service_das_mei` | `cnpj` |
 
 ### Sócios, relacionamentos e compliance
@@ -302,6 +303,61 @@ Exemplo de resposta:
   "status": {
     "code": 200,
     "message": "Success"
+  }
+}
+```
+
+### Endereços estendidos de empresa
+
+Retorna endereços associados ao CNPJ consultado, com dados normalizados de
+logradouro, bairro, cidade, UF, país, CEP e tipo de endereço quando disponível.
+Use esta consulta quando a análise cadastral precisar ir além do endereço
+principal retornado por consultas básicas de CNPJ.
+
+```json
+{
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ consultado |
+| `result.addresses` | Lista de endereços associados à empresa |
+| `result.addresses.address` | Logradouro |
+| `result.addresses.neighborhood` | Bairro |
+| `result.addresses.city` | Cidade |
+| `result.addresses.state` | UF |
+| `result.addresses.country` | País |
+| `result.addresses.zipcode` | CEP |
+| `result.addresses.addressType` | Tipo de endereço |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000150",
+    "addresses": [
+      {
+        "address": "AVENIDA EXEMPLO",
+        "neighborhood": "CENTRO",
+        "city": "SAO PAULO",
+        "state": "SP",
+        "country": "BRASIL",
+        "zipcode": "01001000",
+        "addressType": "COMMERCIAL"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
   }
 }
 ```

@@ -88,6 +88,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Serviço | Código `service` | Campos principais |
 | --- | --- | --- |
 | Pessoa politicamente exposta | `service_pep` | `cpf` |
+| KYC e compliance de pessoa física | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` |
 | Dívida ativa PF | `service_active_debt` | `cpf` |
 | Score de risco de fraude | `service_fraud_risk_score` | `cpf`, `factor` |
 | Score de inadimplência | `service_default_risk_score` | `cpf` |
@@ -642,6 +643,49 @@ Exemplo de resposta:
   "status": {
     "code": 200,
     "message": "success"
+  }
+}
+```
+
+### KYC e compliance de pessoa física
+
+Consolida sinais de compliance de uma pessoa física, incluindo exposição PEP,
+sanções atuais e histórico de ocorrências encontradas nas bases consultadas.
+
+```json
+{
+  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF consultado |
+| `result.isPep` | Indica se a pessoa é politicamente exposta |
+| `result.isCurrentlySanctioned` | Indica se existe sanção vigente associada à pessoa |
+| `result.sanctionsHistory` | Histórico de sanções encontradas |
+| `result.pepHistories` | Histórico de exposição PEP |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "12345678901",
+    "isPep": false,
+    "isCurrentlySanctioned": false,
+    "sanctionsHistory": [],
+    "pepHistories": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
   }
 }
 ```
