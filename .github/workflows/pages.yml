@@ -48,6 +48,9 @@ jobs:
           mkdir dist
           unzip -q export.zip -d dist
           if [ -n "$BASE_PATH" ]; then
+            find dist/_next -type f -name "*.js" -print0 \
+              | xargs -0 sed -i \
+                -e "s|\\.p=\"/_next/\"|.p=\"$BASE_PATH/_next/\"|g"
             find dist -type f -name "*.html" -print0 \
               | xargs -0 sed -i \
                 -e "s|href=\"/_next/|href=\"$BASE_PATH/_next/|g" \
