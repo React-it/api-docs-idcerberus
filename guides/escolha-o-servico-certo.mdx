@@ -1,0 +1,84 @@
+---
+title: Escolha o serviço certo
+description: Encontre os serviços idCerberus mais indicados para cada caso de uso
+---
+
+# Escolha o serviço certo
+
+Use esta página para sair de uma necessidade de negócio e chegar nos códigos
+`service` que devem ser usados em `POST /api/service-api`.
+
+## Validar identidade de uma pessoa
+
+| Necessidade | Serviços indicados | Quando usar |
+| --- | --- | --- |
+| Confirmar dados cadastrais do CPF | `service_person_data_enrichment`, `service_rfb_pf` | Validar nome, nascimento, situação cadastral e origem Receita Federal |
+| Extrair dados de documento | `service_ocr` | Ler CNH, RG, RNE, CPF, passaporte, CRLV e outros documentos suportados |
+| Comparar selfie e documento | `service_face_match` | Validar se duas imagens pertencem a mesma pessoa |
+| Validar prova de vida | `service_liveness_2d` | Reduzir risco de foto, tela ou tentativa de fraude simples |
+| Consultar biometria governamental | `service_biometric_score` | Obter score de similaridade com bases governamentais |
+| Fazer análise documental completa | `service_digital_documentoscopy` | Extrair dados e combinar documento com selfie em um fluxo único |
+
+## Montar um onboarding completo
+
+| Etapa | Serviços ou endpoints |
+| --- | --- |
+| Criar jornada via SDK | `POST /api/token-history-onboarding` |
+| Capturar documento e selfie | SDK ou Cliente Web |
+| Consultar resultado | `GET /api/onboarding/report/{tokenOnboarding}` |
+| Baixar evidências | `GET /api/history-onboarding-report/{tokenOnboarding}` |
+| Complementar com consultas avulsas | `service_rfb_pf`, `service_pep`, `service_face_match`, `service_biometric_score` |
+
+## Analisar risco e compliance de pessoa física
+
+| Necessidade | Serviços indicados |
+| --- | --- |
+| Pessoa politicamente exposta | `service_pep` |
+| Score de fraude | `service_fraud_risk_score` |
+| Score de inadimplência | `service_default_risk_score` |
+| Débitos com governo | `service_active_debt`, `SERVICE_ACTIVE_DEBT_PF` |
+| Processos e certidões | `service_juridical_processes`, `service_nothing_record_lawsuits`, `service_criminal_record_federal`, `service_criminal_record_civil` |
+| Protestos | `service_protest_clearance_certificate` |
+| Mandado de prisão | `SERVICE_ARREST_WARRANT` |
+
+## Validar contato e residência
+
+| Necessidade | Serviços indicados |
+| --- | --- |
+| Validar e-mail | `service_email_validation` |
+| Confirmar CPF com telefone | `service_cpf_phone_validation` |
+| Buscar pessoa por telefone | `SERVICE_CONFIRM_PHONE` |
+| Confirmar CPF com endereço | `service_cpf_address_validation` |
+| Consultar endereços | `service_address` |
+
+## Analisar histórico político e eleitoral
+
+| Necessidade | Serviços indicados |
+| --- | --- |
+| Candidaturas e eleições | `SERVICE_ELECTION_CANDIDATE_DATA` |
+| Doações eleitorais | `SERVICE_ELECTORAL_DONORS` |
+| Envolvimento político consolidado | `SERVICE_POLITICAL_INVOLVEMENT` |
+| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` |
+| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS` |
+
+## Analisar uma empresa
+
+| Necessidade | Serviços indicados |
+| --- | --- |
+| Dados cadastrais de CNPJ | `service_corporate_data_enrichment`, `service_rfb_pj` |
+| Inscrição estadual e operação | `service_sintegra_consultation` |
+| Sócios e relacionamentos | `service_company_relationship`, `service_first_level_partner` |
+| Processos dos sócios | `service_juridical_processes_pj_owners` |
+| KYC e compliance dos sócios | `service_company_kyc_owners` |
+| Débitos, protestos e regularidade | `SERVICE_ACTIVE_DEBT_PJ`, `service_protest_clearance_certificate_pj`, `service_das_mei` |
+| Compliance de apostas | `SERVICE_COMPLIANCE_BET_PJ` |
+
+## Combinações comuns
+
+| Fluxo | Combinação recomendada |
+| --- | --- |
+| Cadastro simples de CPF | `service_rfb_pf` + `service_person_data_enrichment` |
+| Onboarding com documento | `service_ocr` + `service_face_match` + `service_liveness_2d` |
+| KYC pessoa física | `service_pep` + certidões + débitos + score de risco |
+| Cadastro de empresa | `service_rfb_pj` + `service_corporate_data_enrichment` + `service_sintegra_consultation` |
+| KYC empresarial | dados PJ + sócios + KYC dos sócios + débitos + protestos |

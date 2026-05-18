@@ -1,0 +1,91 @@
+---
+title: Dados eleitorais
+description: Consulte candidaturas, doações, vínculos políticos e exposição eleitoral de pessoas físicas
+---
+
+# Dados eleitorais
+
+Use estes serviços para avaliar exposição eleitoral e envolvimento político de
+uma pessoa física. As consultas cobrem candidaturas, doações, prestação de
+serviços eleitorais, histórico familiar político e indicadores agregados de
+participação pública.
+
+Todos os serviços desta categoria são consumidos pelo endpoint:
+
+```http
+POST /api/service-api
+```
+
+## Quando usar
+
+Use esta categoria quando precisar:
+
+- identificar se uma pessoa já concorreu ou foi eleita;
+- consultar doações eleitorais realizadas;
+- avaliar envolvimento político e exposição pública;
+- identificar histórico familiar político;
+- consultar prestação de serviços eleitorais e possíveis relações econômicas com campanhas.
+
+## Serviços disponíveis
+
+| Serviço | Código `service` | Uso principal |
+| --- | --- | --- |
+| Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA` | Retorna histórico eleitoral, candidaturas, partido, bens, prestação de contas e dados de campanha |
+| Doações eleitorais | `SERVICE_ELECTORAL_DONORS` | Consulta doações eleitorais realizadas por uma pessoa e estatísticas agregadas |
+| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | Resume eleições, cargos, PEP, valores doados, valores recebidos e score de envolvimento político |
+| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` | Consulta participação política de familiares e distribuições por cargo, partido e região |
+| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS` | Consulta prestação de serviços eleitorais, partidos atendidos e valores de provisões |
+
+## Exemplo rápido
+
+Consulta consolidada de envolvimento político:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_POLITICAL_INVOLVEMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
+  "cpf": "cpf"
+}
+```
+
+Resposta esperada:
+
+```json
+{
+  "result": {
+    "electionsCount": 5,
+    "isCurrentlyInOffice": true,
+    "wasFormerlyElected": true,
+    "isPep": true,
+    "amountDonated": 19804076,
+    "amountReceived": 20599420,
+    "politicalInvolvementScore": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Como interpretar
+
+Esses serviços não substituem uma política interna de compliance, mas ajudam a
+trazer evidências estruturadas sobre exposição pública e relações eleitorais. Use
+os retornos como insumos para classificação de risco, diligência reforçada ou
+monitoramento.
+
+Para campos, exemplos completos e responses, consulte a
+[API Reference](/api-reference/boas-vindas) ou o
+[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).

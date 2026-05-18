@@ -1,0 +1,833 @@
+---
+title: Serviços de Pessoa Jurídica
+description: Serviços externos disponíveis para consultas de CNPJ
+---
+
+# Serviços de Pessoa Jurídica
+
+Os serviços de pessoa jurídica permitem consultar, validar e enriquecer dados de
+CNPJ em fluxos de onboarding PJ, análise cadastral, KYC empresarial, avaliação de
+sócios, regularidade fiscal, débitos, protestos e compliance.
+
+Assim como nos serviços de pessoa física, todos são executados pelo endpoint
+central de serviços. O campo `service` define qual produto será processado.
+
+```http
+POST /api/service-api
+```
+
+Nos exemplos de `curl`, `{base_url}` representa a URL do ambiente escolhido:
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Exemplo de requisição:
+
+```json
+{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}
+```
+
+## Como usar este catálogo
+
+Use esta página para consultar a lista completa de serviços de CNPJ, seus
+códigos `service`, campos principais e exemplos mais extensos de request e
+response.
+
+Para navegar por famílias de produto, veja [Famílias de serviços](/guides/service-api/familias-de-servicos).
+Para implementação endpoint a endpoint, use a [API Reference](/api-reference/boas-vindas).
+
+## Serviços disponíveis
+
+### Cadastro e situação cadastral
+
+| Serviço | Código `service` | Campos principais |
+| --- | --- | --- |
+| Enriquecimento de dados de PJ | `service_corporate_data_enrichment` | `cnpj` |
+| Status do CNPJ na Receita Federal | `service_rfb_pj` | `cnpj` |
+| SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` |
+| DAS MEI na Receita | `service_das_mei` | `cnpj` |
+
+### Sócios, relacionamentos e compliance
+
+| Serviço | Código `service` | Campos principais |
+| --- | --- | --- |
+| Relacionamentos de uma empresa | `service_company_relationship` | `cnpj` |
+| Sócios de primeiro nível | `service_first_level_partner` | `cnpj` |
+| Processos jurídicos dos sócios | `service_juridical_processes_pj_owners` | `cnpj` |
+| KYC e compliance dos sócios | `service_company_kyc_owners` | `cnpj` |
+| Débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
+| Certidão negativa de protesto PJ | `service_protest_clearance_certificate_pj` | `cnpj` |
+| Compliance de casas de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
+
+## Exemplos
+
+### Enriquecimento de dados de pessoa jurídica
+
+Retorna informações de uma pessoa jurídica existente na Receita Federal, como
+razão social, nome fantasia, data de fundação, atividades, natureza jurídica e
+capital social.
+
+```json
+{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_corporate_data_enrichment",
+    "cnpj": "cnpj"
+  }'
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.status` | Status do CNPJ na Receita Federal |
+| `result.statusDate` | Data de atualização do status |
+| `result.name` | Razão social |
+| `result.country` | País de criação da empresa |
+| `result.fantasyName` | Nome fantasia |
+| `result.origin` | Origem das informações |
+| `result.regime` | Tipo de regime tributário |
+| `result.age` | Idade da empresa em anos |
+| `result.registrationStatusDate` | Data de atualização da situação cadastral |
+| `result.foundedDate` | Data de fundação |
+| `result.activities` | Atividades da empresa |
+| `result.legalNatureCode` | Código da natureza jurídica |
+| `result.legalNatureActivity` | Descrição da natureza jurídica |
+| `result.capital` | Capital inicial por extenso |
+| `result.capitalRS` | Capital inicial em reais |
+| `result.nire` | Número de Identificação do Registro de Empresas |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000150",
+    "status": "ATIVA",
+    "statusDate": "2022-07-26T00:00:00Z",
+    "name": "EMPRESA EXEMPLO LTDA",
+    "country": "Brazil",
+    "fantasyName": "EMPRESA EXEMPLO",
+    "origin": "Receita Federal",
+    "regime": "SIMPLES",
+    "age": 4,
+    "registrationStatusDate": "2018-04-04T00:00:00Z",
+    "foundedDate": "2018-04-04T00:00:00Z",
+    "activities": [
+      {
+        "IsMain": true,
+        "Code": "6209100",
+        "Activity": "SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201501",
+        "Activity": "DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201502",
+        "Activity": "WEB DESIGN"
+      },
+      {
+        "IsMain": false,
+        "Code": "6202300",
+        "Activity": "DESENVOLVIMENTO E LICENCIAMENTO DE PROGRAMAS DE COMPUTADOR CUSTOMIZAVEIS"
+      }
+    ],
+    "legalNatureCode": "2062",
+    "legalNatureActivity": "SOCIEDADE EMPRESARIA LIMITADA",
+    "capital": "DEZ MIL REAIS",
+    "capitalRS": "10000.00",
+    "nire": ""
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Status do CNPJ na Receita Federal
+
+Retorna a situação cadastral de um CNPJ existente na Receita Federal.
+
+```json
+{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.status` | Status do CNPJ na Receita Federal |
+| `result.statusDate` | Data de atualização do status |
+| `result.origin` | Origem das informações |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+### Consulta de relacionamentos de uma empresa
+
+Consulta relacionamentos da empresa, incluindo proprietários, empregados,
+empresas possuídas e vínculos societários.
+
+```json
+{
+  "service": "service_company_relationship",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.isFamilyCompany` | Indica se os proprietários pertencem à mesma família |
+| `result.isFamilyEmployees` | Indica se funcionários pertencem à família de algum proprietário |
+| `result.relationshipTotal` | Número total de relacionamentos |
+| `result.totalOwners` | Total de donos |
+| `result.totalEmployees` | Total de empregados |
+| `result.totalOwned` | Total de empresas possuídas |
+| `result.companyRelationships` | Relacionamentos da empresa |
+| `result.companyRelationships.cpf` | CPF relacionado |
+| `result.companyRelationships.name` | Nome |
+| `result.companyRelationships.relationshipName` | Nome do relacionamento |
+| `result.companyRelationships.relationshipType` | Tipo de relacionamento |
+| `result.companyRelationships.origin` | Origem da informação |
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "99244297000106",
+    "isFamilyCompany": false,
+    "isFamilyEmployees": false,
+    "relationshipTotal": 1,
+    "totalOwners": 1,
+    "totalEmployees": 1,
+    "totalOwned": 1,
+    "companyRelationships": [
+      {
+        "cpf": "77272722314",
+        "name": "NOME EXEMPLO",
+        "country": "Brazil",
+        "relationshipName": "SOCIO-ADMINISTRADOR",
+        "relationshipType": "REPRESENTANTELEGAL",
+        "origin": "RECEITA FEDERAL",
+        "relationshipStartDate": "2021-03-01",
+        "relationshipEndDate": "2021-03-01"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta do SINTEGRA
+
+A consulta do SINTEGRA busca informações no Sistema Integrado de Informações
+sobre Operações Interestaduais com Mercadorias e Serviços, no site oficial do
+governo. O SINTEGRA controla operações interestaduais realizadas por
+contribuintes de ICMS e apoia empresas na emissão de notas fiscais para
+clientes.
+
+```json
+{
+  "service": "service_sintegra_consultation",
+  "cnpj": "cnpj",
+  "uf": "uf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.status` | Status do CNPJ no SINTEGRA |
+| `result.uf` | UF do estado do CNPJ |
+| `result.cfdf` | Cadastro Fiscal do Distrito Federal, exclusivo para empresas com cadastro no DF |
+| `result.origin` | Origem das informações |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo de requisição:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_sintegra_consultation",
+    "cnpj": "cnpj",
+    "uf": "uf (opcional)"
+}'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000000",
+    "status": "NOT REGISTERED",
+    "uf": "DF",
+    "cfdf": "0785286100111",
+    "origin": "Sintegra"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de sócios de primeiro nível
+
+Busca os círculos de pessoas físicas agregadas relacionadas ao CNPJ informado.
+Essas pessoas são recuperadas a partir dos dados do quadro societário das
+empresas.
+
+Observações:
+
+- Pode existir círculo sem nenhum indivíduo participante.
+- O retorno dos círculos fica contido no objeto principal de resultado.
+
+```json
+{
+  "service": "service_first_level_partner",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.circleType` | Tipo de círculo |
+| `result.totalEntities` | Total de entidades relacionadas |
+| `result.totalDistinctAddresses` | Total de endereços distintos relacionados |
+| `result.totalDistinctPhones` | Total de telefones distintos relacionados |
+| `result.totalDistinctEmails` | Total de e-mails distintos relacionados |
+| `result.totalEmployedEntities` | Total de pessoas relacionadas que estão empregadas |
+| `result.totalCompaniesOwned` | Total de empresas possuídas |
+| `result.totalRelatedEntities` | Total de pessoas relacionadas |
+| `result.totalPEPs` | Total de pessoas politicamente expostas |
+| `result.totalPublicServants` | Total de servidores públicos relacionados |
+| `result.totalClassMember` | Total de pessoas com registro em conselhos de classe |
+| `result.totalLivingPeople` | Total de pessoas vivas nos círculos |
+| `result.totalDeceasedPeople` | Total de pessoas falecidas nos círculos |
+| `result.minAge` | Idade mínima dentre as entidades |
+| `result.maxAge` | Idade máxima dentre as entidades |
+| `result.avgAge` | Idade média entre as entidades |
+| `result.circleTotalIncomeRange` | Faixa total de renda das entidades |
+| `result.entitiesAvgIncomeRange` | Faixa de renda média das entidades |
+| `result.avgGeographicDistance` | Distância geográfica média |
+| `result.totalLawSuits` | Total de processos |
+| `result.genderDistribution` | Distribuição por gênero |
+| `result.ageRangeDistribution` | Distribuição por faixa de idade |
+| `result.incomeRangeDistribution` | Distribuição por faixa de renda |
+| `result.stateDistribution` | Distribuição por estado |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo de requisição:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "service_first_level_partner",
+    "cnpj": "cnpj"
+}'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "99244297000106",
+    "circleType": "FIRST_LEVEL_OWNERS",
+    "totalEntities": 2,
+    "totalDistinctAddresses": 11,
+    "totalDistinctPhones": 7,
+    "totalDistinctEmails": 7,
+    "totalEmployedEntities": 2,
+    "totalCompaniesOwned": 4,
+    "totalRelatedEntities": 4,
+    "totalPEPs": 0,
+    "totalPublicServants": 0,
+    "totalClassMember": 0,
+    "totalLivingPeople": 2,
+    "totalDeceasedPeople": 0,
+    "minAge": 28,
+    "maxAge": 38,
+    "avgAge": 33,
+    "circleTotalIncomeRange": "ACIMA DE 20 SM",
+    "entitiesAvgIncomeRange": "10 A 20 SM",
+    "entitiesMaxIncomeRange": "10 A 20 SM",
+    "entitiesMinIncomeRange": "4 A 10 SM",
+    "minEducationLevel": "SEM INFORMACAO",
+    "avgEducationLevel": "6 A 9 FUND",
+    "maxEducationLevel": "MEDIO COMPL",
+    "avgGeographicDistance": 11490.88926949,
+    "maxGeographicDistance": 22580.48025219,
+    "minGeographicDistance": 401.29828679,
+    "maxEShopperLevel": "A",
+    "totalEShopperLevel": "A",
+    "minEShopperLevel": "A",
+    "maxESellerLevel": "D",
+    "minESellerLevel": "H",
+    "totalESellerLevel": "F",
+    "totalLawSuits": 0,
+    "totalLawSuitsAsDefendant": 0,
+    "totalLawSuitsAsAuthor": 0,
+    "totalPassages": 50,
+    "totalBadPassages": 4,
+    "monthAveragePassages": 50,
+    "firstPassageDate": "0001-01-01T00:00:00",
+    "lastPassageDate": "0001-01-01T00:00:00",
+    "last3MonthsPassages": -3,
+    "last6MonthsPassages": -3,
+    "last12MonthsPassages": -3,
+    "last18MonthsPassages": -3,
+    "genderDistribution": {
+      "U": 0,
+      "F": 0,
+      "M": 2
+    },
+    "ageRangeDistribution": {
+      "30-40": 1,
+      "25-30": 1,
+      "SEM INFORMACAO": 0
+    },
+    "incomeRangeDistribution": {
+      "4 A 10 SM": 1,
+      "10 A 20 SM": 1,
+      "SEM INFORMACAO": 0
+    },
+    "educationLevelDistribution": {
+      "MEDIO COMPL": 1,
+      "SEM INFORMACAO": 1
+    },
+    "stateDistribution": {
+      "DF": 1,
+      "SP": 0,
+      "RJ": 0,
+      "BA": 0
+    },
+    "eShopperDistribution": {
+      "A": 2,
+      "B": 0,
+      "C": 0
+    },
+    "eSellerDistribution": {
+      "D": 1,
+      "H": 1
+    },
+    "taxIdStatusDistribution": {
+      "Regular": 2
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de DAS MEI na Receita
+
+Consulta períodos de DAS MEI na Receita, retornando períodos pagos, URL do
+boleto e código de barras.
+
+```json
+{
+  "service": "service_das_mei",
+  "cnpj": "cnpj"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result.periodos` | Lista de períodos atrelados ao MEI |
+| `result.periodos.url_das` | URL do boleto para pagamento da mensalidade do DAS |
+| `result.periodos.codigo_barras_das` | Código de barras do boleto |
+
+Exemplo de requisição:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_das_mei",
+    "cnpj": "cnpj"
+}'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "periodos": {
+      "201707": {
+        "mensagem": "Exemplo de texto",
+        "mensagem_site": "Exemplo de texto",
+        "url_das": "https://www.exemplo.com/exemplo-de-url",
+        "codigo_barras_das": "",
+        "periodo": "Julho/2017",
+        "apurado": "Sim",
+        "situacao": "",
+        "principal": "",
+        "multas": "",
+        "juros": "",
+        "total": "",
+        "data_vencimento": "",
+        "data_acolhimento": "",
+        "data_pagamento": "",
+        "icms": "",
+        "iss": "",
+        "inss": "",
+        "numero_apuracao": "",
+        "numero_das": "",
+        "normalizado_principal": 0.0,
+        "normalizado_multas": 0.0,
+        "normalizado_juros": 0.0,
+        "normalizado_total": 0.0,
+        "normalizado_icms": 0.0,
+        "normalizado_iss": 0.0,
+        "normalizado_inss": 0.0
+      },
+      "201708": {
+        "mensagem": "Exemplo de texto",
+        "mensagem_site": "Exemplo de texto",
+        "url_das": "https://www.exemplo.com/exemplo-de-url",
+        "codigo_barras_das": "",
+        "periodo": "Agosto/2017",
+        "apurado": "Sim",
+        "situacao": "",
+        "principal": "",
+        "multas": "",
+        "juros": "",
+        "total": "",
+        "data_vencimento": "",
+        "data_acolhimento": "",
+        "data_pagamento": "",
+        "icms": "",
+        "iss": "",
+        "inss": "",
+        "numero_apuracao": "",
+        "numero_das": "",
+        "normalizado_principal": 0.0,
+        "normalizado_multas": 0.0,
+        "normalizado_juros": 0.0,
+        "normalizado_total": 0.0,
+        "normalizado_icms": 0.0,
+        "normalizado_iss": 0.0,
+        "normalizado_inss": 0.0
+      }
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de processos jurídicos dos sócios
+
+Consulta processos jurídicos e administrativos relacionados aos sócios.
+
+```json
+{
+  "service": "service_juridical_processes_pj_owners",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.totalLawsuitsOwners` | Total de processos dos sócios |
+| `result.totalLawsuitsReplaceOwners` | Total de processos de sócios substitutos |
+| `result.totalLawsuitsAsAuthorOwners` | Total de processos como autor |
+| `result.totalLawsuitsAsOtherOwners` | Total de processos em outros papéis |
+| `result.avgLawsuitsOwners` | Média de processos dos sócios |
+| `result.lawSuitsOwners` | Processos agrupados por sócio |
+
+### Consulta de KYC e compliance dos sócios
+
+Consulta informações de KYC e compliance dos sócios da empresa, incluindo PEP e
+sanções.
+
+```json
+{
+  "service": "service_company_kyc_owners",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.totalCurrentPep` | Total de PEP atual |
+| `result.totalHistoricalPep` | Total histórico de PEP |
+| `result.totalCurrentSanctioned` | Total atual de sancionados |
+| `result.totalHistoricalSanctioned` | Total histórico de sancionados |
+| `result.partnersHistory` | Histórico de compliance por sócio |
+| `partnersHistory.IsCurrentlyPEP` | Indica se o sócio é PEP atualmente |
+| `partnersHistory.IsCurrentlySanctioned` | Indica se o sócio está sancionado atualmente |
+| `partnersHistory.SanctionsHistory` | Histórico de sanções |
+
+### Consulta de débitos ativos
+
+Consulta débitos da empresa com o governo.
+
+```json
+{
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.totalDebtValue` | Valor total dos débitos |
+| `result.totalDebtValuePerOrigin` | Valor total dos débitos por origem |
+| `result.totalDebts` | Quantidade total de débitos |
+| `result.totalDebtsPerOrigin` | Quantidade de débitos por origem |
+| `result.debts` | Lista de débitos |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+### Certidão negativa de protesto PJ
+
+Consulta informações de protestos em cartórios para pessoa jurídica. Quando não
+existem protestos, retorna uma certidão emitida pelo Instituto de Estudos de
+Protestos de Títulos do Brasil.
+
+```json
+{
+  "service": "service_protest_clearance_certificate_pj",
+  "cnpj": "cnpj"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_protest_clearance_certificate_pj",
+    "cnpj": "cnpj"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "77272722134",
+    "protestos": [
+      {
+        "cartorio": "CARTÓRIO LARANJEIRAS - 32º OFÍCIO DE NOTAS DO RIO DE JANEIRO",
+        "obterDetalhes": null,
+        "cidade": "RIO DE JANEIRO",
+        "quantidadeTitulos": "",
+        "endereco": "R. DAS LARANJEIRAS - LARANJEIRAS, RIO DE JANEIRO - RJ, 22221-060",
+        "telefone": "19 3396-2809",
+        "protestos": [
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2017-10-10",
+            "dataProtesto": "2017-10-10",
+            "dataVencimento": "",
+            "valor": "9.900,00"
+          },
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2018-01-01",
+            "dataProtesto": "2018-01-01",
+            "dataVencimento": "",
+            "valor": "16.000,00"
+          }
+        ]
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de compliance de casas de apostas PJ
+
+Consulta informações de compliance de casas de apostas relacionadas ao CNPJ
+informado.
+
+```json
+{
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `cnpj` | CNPJ da empresa |
+| `status` | Status atual da empresa na Receita Federal |
+| `statusDate` | Data da última atualização do status |
+| `origin` | Origem das informações |
+| `age` | Idade da empresa em anos |
+| `foundedDate` | Data de fundação |
+| `taxIdCountry` | País de emissão do CNPJ |
+| `officialName` | Razão social completa |
+| `tradeName` | Nome fantasia |
+| `isHeadquarter` | Indica se o CNPJ é matriz |
+| `isConglomerate` | Indica se faz parte de conglomerado |
+| `taxRegime` | Regime tributário |
+| `activities` | Atividades econômicas da empresa |
+| `isBet` | Indica se a empresa está relacionada a apostas |
+| `onlineBettingCompliance` | Lista de informações de conformidade de apostas online |
+| `onlineBettingCompliance.SportsExposure` | Informações de exposição em esportes |
+| `onlineBettingCompliance.ForbiddenBet` | Informações de restrições ou apostas proibidas |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_COMPLIANCE_BET_PJ",
+    "cnpj": "cnpj"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "status": "ATIVA",
+    "statusDate": "2024-06-08",
+    "origin": "Receita Federal",
+    "age": 6,
+    "foundedDate": "2018-04-04T00:00:00Z",
+    "taxIdCountry": "Brazil",
+    "officialName": "NOME OFICIAL ANONIMIZADO",
+    "tradeName": "NOME FANTASIA ANONIMIZADO",
+    "isHeadquarter": true,
+    "isConglomerate": false,
+    "taxRegime": "SIMPLES",
+    "taxIdStatusRegistrationDate": "2018-04-04T00:00:00Z",
+    "taxRegimes": "SIMPLES",
+    "activities": [
+      {
+        "IsMain": true,
+        "Code": "6209100",
+        "Activity": "SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201501",
+        "Activity": "DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201502",
+        "Activity": "WEB DESIGN"
+      }
+    ],
+    "isBet": false,
+    "onlineBettingCompliance": [
+      {
+        "SportsExposure": {
+          "Sports": [
+            {
+              "SportName": "SO**ER",
+              "Region": "BRAZIL",
+              "TotalRelatedEntities": 1,
+              "RelatedEntities": [
+                {
+                  "DocNumber": "00000000000000",
+                  "DocType": "CPF",
+                  "RelationshipLevel": "BUSINESS PARTNER",
+                  "InstitutionName": "INSTITUICAO ANONIMIZADA",
+                  "InstitutionActivity": "CLUBES SOCIAIS, ESPORTIVOS E SIMILARES",
+                  "Role": "MANAGER",
+                  "IsActive": true,
+                  "StartDate": "0001-01-01T00:00:00",
+                  "EndDate": "9999-12-31T23:59:59.9999999",
+                  "Source": "FONTE ANONIMIZADA"
+                }
+              ]
+            }
+          ]
+        },
+        "ForbiddenBet": {
+          "Name": "NOME ANONIMIZADO",
+          "Age": "30",
+          "IsFromMinisterioDaFazenda": false,
+          "IsBookmakerOwner": false,
+          "BookmakerOwnerMotives": [
+            {
+              "Source": "SIGAP",
+              "CNPJ": "00000000000000",
+              "CompanyName": "EMPRESA ANONIMIZADA",
+              "EconomicActivityCodes": "6463800;7319004;9200399",
+              "AdditionalDetails": {
+                "SIGAPApplicationNumber": "000**024",
+                "SIGAPRegistrationDate": "2024-05-26 22:35:16"
+              }
+            }
+          ],
+          "MinisterioDaFazendaMotives": {}
+        }
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  },
+  "externalId": "8e1ac243-4510-4ebf-ac7d-4b6d133dd619"
+}
+```

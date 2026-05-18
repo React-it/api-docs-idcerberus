@@ -1,0 +1,110 @@
+---
+title: Visão geral
+description: Entenda a arquitetura da integração, ambientes, endpoints e padrão de resposta da API idCerberus
+---
+
+# Visão geral
+
+A API idCerberus reúne serviços de onboarding digital, KYC, enriquecimento de
+dados, biometria, prevenção à fraude, análise de risco e compliance. A integração
+foi desenhada para permitir tanto fluxos completos de onboarding quanto consumo
+avulso de consultas por CPF ou CNPJ.
+
+## Modelos de integração
+
+| Modelo | Quando usar | Responsabilidade da sua aplicação |
+| --- | --- | --- |
+| API | Quando o back-end da sua empresa vai consumir consultas diretamente | Autenticar, montar payloads, chamar endpoints e tratar responses |
+| SDK | Quando a captura de dados e documentos acontece em aplicativo mobile | Gerar `tokenOnboarding`, entregar ao SDK e consultar resultado |
+| Cliente Web | Quando o fluxo será feito via WebView, site responsivo ou QR Code | Direcionar o usuário ao fluxo e consumir o resultado processado |
+
+## Ambientes
+
+A API possui ambientes separados para homologação e produção. Os endpoints são os
+mesmos nos dois ambientes; para trocar de ambiente, altere apenas a URL base.
+
+Método HTTP, headers e payload permanecem iguais. A escolha do ambiente é feita
+pela URL informada na chamada.
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Nos exemplos da documentação, `{base_url}` representa a URL do ambiente escolhido.
+
+| Variável | Valor |
+| --- | --- |
+| `base_url` | URL base de homologação ou produção |
+| `gerar token` | `api/token-generate` |
+| `service-external-url` | `api/service-api` |
+| `report-url` | `api/onboarding/report` |
+| `token-url` | `api/token-history-onboarding` |
+
+## Endpoints principais
+
+| Operação | Endpoint |
+| --- | --- |
+| Gerar token de API | `POST /api/token-generate` |
+| Consultar resultado de onboarding | `GET /api/onboarding/report/{tokenOnboarding}` |
+| Baixar PDF do resultado | `GET /api/history-onboarding-report/{tokenOnboarding}` |
+| Gerar `tokenOnboarding` | `POST /api/token-history-onboarding` |
+| Executar serviço externo | `POST /api/service-api` |
+| Consultar cliente | `GET /api/customer?documentKey={cpf-ou-cnpj}` |
+| Alterar status de cliente | `POST /api/changeStatusOfCustomer` |
+
+## Fluxo mínimo para testar
+
+1. Gere um token em `POST /api/token-generate`.
+2. Envie o token no header `Authorization`.
+3. Escolha um serviço em Pessoa Física ou Pessoa Jurídica.
+4. Chame `POST /api/service-api` com o campo `service`.
+5. Leia `status.code`, `status.message` e os dados dentro de `result`.
+
+## Padrão dos serviços externos
+
+Os serviços de pessoa física e pessoa jurídica são consumidos pelo mesmo
+endpoint técnico:
+
+```http
+POST /api/service-api
+```
+
+O processamento executado é definido pelo campo `service` no body da requisição.
+Por exemplo:
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+## Padrão de resposta
+
+A maioria das consultas retorna:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result` | Dados de negócio retornados pela consulta |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica do processamento |
+| `externalId` | Identificador externo da consulta, quando retornado |
+
+## Próximos passos
+
+- Para autenticação, veja [Autenticação](/guides/autenticacao).
+- Para onboarding via SDK, veja [Onboarding via SDK](/guides/onboarding-sdk).
+- Para catálogo de CPF, veja [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica).
+- Para catálogo de CNPJ, veja [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
+- Para implementação endpoint a endpoint, use a [API Reference](/api-reference/boas-vindas).

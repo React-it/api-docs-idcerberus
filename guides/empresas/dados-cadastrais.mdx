@@ -1,0 +1,93 @@
+---
+title: Dados cadastrais de empresas
+description: Consulte situação cadastral, dados oficiais, atividades econômicas e obrigações de empresas
+---
+
+# Dados cadastrais de empresas
+
+Use estes serviços para validar a existência de uma empresa, enriquecer dados de
+CNPJ e consultar informações oficiais de cadastro. Eles ajudam em fluxos de
+onboarding PJ, análise cadastral, atualização de base, prevenção a fraude e
+validação operacional antes de liberar uma relação comercial.
+
+Todos os serviços desta categoria são consumidos pelo endpoint:
+
+```http
+POST /api/service-api
+```
+
+O campo `service` define qual consulta será executada.
+
+## Quando usar
+
+Use esta categoria quando precisar:
+
+- confirmar a situação cadastral de um CNPJ na Receita Federal;
+- recuperar razão social, nome fantasia, data de abertura, atividades e natureza jurídica;
+- verificar cadastro estadual no SINTEGRA;
+- consultar períodos, boletos e códigos de barras de DAS MEI.
+
+## Serviços disponíveis
+
+| Serviço | Código `service` | Uso principal |
+| --- | --- | --- |
+| Enriquecimento de dados de PJ | `service_corporate_data_enrichment` | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, atividades econômicas, natureza jurídica, regime e capital |
+| Status do CNPJ na Receita Federal | `service_rfb_pj` | Consulta a situação cadastral do CNPJ e a data do status na Receita Federal |
+| SINTEGRA | `service_sintegra_consultation` | Consulta dados do cadastro estadual no SINTEGRA, incluindo UF, status e CFDF quando aplicável |
+| DAS MEI na Receita | `service_das_mei` | Consulta períodos de DAS MEI, situação de apuração, boleto e código de barras |
+
+## Exemplo rápido
+
+Consulta de enriquecimento cadastral de pessoa jurídica:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_corporate_data_enrichment",
+    "cnpj": "cnpj"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}
+```
+
+Resposta esperada:
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000150",
+    "status": "ATIVA",
+    "name": "REACT IT SOLUCOES EM TECNOLOGIA LTDA",
+    "fantasyName": "REACT IT SOLUTIONS",
+    "origin": "Receita Federal",
+    "regime": "SIMPLES",
+    "foundedDate": "2018-04-04T00:00:00Z"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Boas práticas
+
+- Envie CNPJ sem máscara quando possível, mantendo apenas números.
+- Use o enriquecimento de dados quando precisar montar uma visão cadastral
+  completa da empresa.
+- Use o status do CNPJ quando a necessidade for apenas validar se a empresa está
+  ativa ou regular.
+- Para empresas com operação estadual, combine Receita Federal e SINTEGRA.
+
+Para campos, exemplos completos e responses, consulte a
+[API Reference](/api-reference/boas-vindas) ou o
+[Catálogo técnico de Pessoa Jurídica](/guides/servicos-pessoa-juridica).

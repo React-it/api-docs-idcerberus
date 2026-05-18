@@ -1,0 +1,55 @@
+---
+title: Cobertura da referência
+description: Entenda o que foi consolidado da coleção original e como validar cobertura
+---
+
+# Cobertura da referência
+
+A documentação atual consolida os endpoints e exemplos recebidos da coleção
+original do Postman em uma estrutura de guias, catálogo técnico e API Reference.
+
+## O que está documentado
+
+| Área | Cobertura atual |
+| --- | --- |
+| Endpoints principais | 7 endpoints documentados |
+| `POST /api/service-api` | 47 exemplos de request |
+| Responses de `POST /api/service-api` | 47 exemplos de response |
+| Guias de uso | Quickstart, autenticação, onboarding, escolha de serviço, status e erros |
+| Domínios | Pessoas, Empresas, Customers e famílias de serviços |
+
+## Endpoints cobertos
+
+- `POST /api/token-generate`
+- `POST /api/token-history-onboarding`
+- `GET /api/onboarding/report/{tokenOnboarding}`
+- `GET /api/history-onboarding-report/{tokenOnboarding}`
+- `POST /api/service-api`
+- `GET /api/customer?documentKey={documentKey}`
+- `POST /api/changeStatusOfCustomer`
+
+## Observação sobre a coleção Postman
+
+A coleção original do Postman não está mais disponível como arquivo ativo no
+projeto. Por isso, a conferência automática item a item contra a coleção original
+não pode ser refeita sem restaurar ou receber novamente esse arquivo.
+
+O que dá para validar hoje é a consistência interna da referência:
+
+- todo exemplo de request do `POST /api/service-api` possui response correspondente;
+- o OpenAPI carrega corretamente;
+- os guias apontam para a API Reference;
+- os serviços estão organizados por domínio e família.
+
+## Como validar se chegou algo novo
+
+Se uma nova coleção Postman for enviada, compare:
+
+1. nomes das pastas e requests da coleção;
+2. códigos `service` de cada request;
+3. bodies de entrada;
+4. exemplos de response;
+5. endpoints fora de `POST /api/service-api`;
+6. headers e requisitos de autenticação.
+
+Depois disso, atualize o OpenAPI e os guias de domínio correspondentes.

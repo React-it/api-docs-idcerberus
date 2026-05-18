@@ -1,0 +1,98 @@
+---
+title: Enriquecimento cadastral
+description: Consulte, valide e complemente dados cadastrais de pessoas físicas
+---
+
+# Enriquecimento cadastral
+
+Use estes serviços para validar dados de CPF, complementar cadastros e confirmar
+associações entre uma pessoa e seus dados de contato. Eles apoiam onboarding,
+atualização cadastral, prevenção a fraude, análise operacional e qualificação de
+bases.
+
+Todos os serviços desta categoria são consumidos pelo endpoint:
+
+```http
+POST /api/service-api
+```
+
+O serviço executado é definido pelo campo `service`.
+
+## Quando usar
+
+Use esta categoria quando precisar:
+
+- validar se um CPF está regular na Receita Federal;
+- enriquecer dados cadastrais de uma pessoa física;
+- confirmar dados associados a telefone, endereço ou e-mail;
+- consultar informações complementares como MEI, PIS, E-Social, endereços e
+  relacionamentos econômicos.
+
+## Serviços disponíveis
+
+| Serviço | Código `service` | Uso principal |
+| --- | --- | --- |
+| Enriquecimento de dados de PF | `service_person_data_enrichment` | Retorna dados cadastrais, status, filiação, nascimento, região fiscal e indicadores de unicidade do nome |
+| Status do CPF na Receita Federal | `service_rfb_pf` | Consulta situação cadastral do CPF, data de nascimento, óbito e origem da informação |
+| Validação de e-mail | `service_email_validation` | Verifica validade, normalização, risco, domínio descartável, spam trap e características do endereço |
+| Validação de CPF com telefone | `service_cpf_phone_validation` | Verifica associação entre CPF e telefone e retorna taxa de correspondência |
+| Validação de CPF com endereço | `service_cpf_address_validation` | Verifica associação entre CPF, CEP e número do endereço |
+| Consulta de MEI | `service_mei` | Retorna empresas MEI associadas ao CPF |
+| Dados PIS | `service_pis_consultation` | Consulta dados do Programa de Integração Social quando disponível |
+| Validação E-Social | `service_esocial_registration_qualification` | Valida qualificação cadastral no E-Social, com CPF, nome, nascimento e PIS |
+| Consulta de endereços | `service_address` | Retorna endereços associados ao CPF |
+| Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | Retorna dados de pessoa a partir de telefone |
+| Relacionamentos econômicos | `economic_relationships` | Retorna vínculos econômicos associados ao CPF |
+| Histórico profissional | `service_professional_history` | Consulta vínculos e histórico profissional |
+
+## Exemplo rápido
+
+Consulta de enriquecimento cadastral de pessoa física:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+Resposta esperada:
+
+```json
+{
+  "result": {
+    "cpf": "06319423196",
+    "status": "REGULAR",
+    "name": "FULANINHO DA SILVA",
+    "birthdate": "1998-07-05",
+    "origin": "RECEITA FEDERAL",
+    "age": 24
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Como combinar os serviços
+
+Uma validação cadastral simples costuma começar com `service_rfb_pf`. Para uma
+visão mais completa, use `service_person_data_enrichment`. Quando o objetivo for
+validar contato ou entrega, combine as consultas de e-mail, telefone e endereço.
+
+Para campos, exemplos completos e responses, consulte a
+[API Reference](/api-reference/boas-vindas) ou o
+[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).

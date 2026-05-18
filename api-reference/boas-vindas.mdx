@@ -1,0 +1,243 @@
+---
+title: Boas-vindas
+description: Comece a implementar os endpoints da API idCerberus
+---
+
+# Boas-vindas
+
+Comece sua integração técnica com a API idCerberus. Esta referência concentra os
+endpoints, exemplos de request, exemplos de response, autenticação e estruturas
+de retorno usadas para integrar produtos de onboarding, KYC, biometria, risco,
+compliance e enriquecimento de dados.
+
+Use esta seção quando estiver implementando no código. Para contexto de produto,
+fluxos sugeridos e explicações por domínio, consulte os guias.
+
+<CardGroup cols={2}>
+  <Card title="Autenticação" href="/guides/autenticacao">
+    Gere o token JWT que será enviado no header `Authorization` das chamadas
+    protegidas.
+  </Card>
+  <Card title="Onboarding via SDK" href="/guides/onboarding-sdk">
+    Crie o `tokenOnboarding`, consulte o resultado do cadastro e baixe o
+    relatório final.
+  </Card>
+  <Card title="Serviços por CPF e CNPJ" href="/api-reference/boas-vindas#como-encontrar-o-exemplo-certo">
+    Execute consultas de dados cadastrais, documentos, biometria, risco,
+    certidões, débitos e compliance.
+  </Card>
+  <Card title="Escolha o serviço certo" href="/guides/escolha-o-servico-certo">
+    Encontre os códigos `service` indicados para identidade, risco, compliance,
+    eleitoral, CNPJ e sócios.
+  </Card>
+  <Card title="Customers" href="/guides/customers">
+    Consulte clientes cadastrados e altere o status ativo ou inativo de
+    registros.
+  </Card>
+</CardGroup>
+
+## Base URL
+
+A API possui ambientes separados para homologação e produção. A estrutura dos
+endpoints é a mesma; o que muda é a URL base.
+
+Use o mesmo método, headers e payload nos dois ambientes. Para consumir produção,
+troque somente a URL de HML pela URL de produção.
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Exemplo de URL completa em HML:
+
+```txt
+POST https://backoffice-hml.idcerberus.com/api/service-api
+```
+
+Exemplo de URL completa em produção:
+
+```txt
+POST https://backoffice.idcerberus.com/api/service-api
+```
+
+## Autenticação
+
+As chamadas protegidas exigem um token JWT no header `Authorization`.
+
+<Steps>
+  <Step title="Gere o token">
+    Envie `client` e `secret` para `POST /api/token-generate`.
+  </Step>
+  <Step title="Guarde o access_token">
+    O retorno contém `access_token` e `expires_in`.
+  </Step>
+  <Step title="Envie o token nas próximas chamadas">
+    Use o formato `Authorization: Bearer {jwt_token}`.
+  </Step>
+</Steps>
+
+HML:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Resposta:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+## Primeiro request
+
+Para executar consultas avulsas, use `POST /api/service-api`. O campo `service`
+define o produto que será processado.
+
+HML:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+Produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+## Como encontrar o exemplo certo
+
+Dentro de `POST /api/service-api`, os exemplos estão separados pelo nome do produto.
+Escolha o exemplo pelo código `service` e substitua os valores de teste pelos
+dados reais.
+
+O endpoint é único, mas os exemplos foram organizados como catálogo técnico. Na
+prática, cada exemplo representa um produto diferente executado pelo mesmo
+endpoint.
+
+| Necessidade | Código `service` |
+| --- | --- |
+| Enriquecer dados de CPF | `service_person_data_enrichment` |
+| Consultar CPF na Receita Federal | `service_rfb_pf` |
+| Ler documento por OCR | `service_ocr` |
+| Comparar duas faces | `service_face_match` |
+| Consultar status de CNPJ | `service_rfb_pj` |
+| Consultar relacionamentos de empresa | `service_company_relationship` |
+| Consultar débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` |
+| Consultar compliance de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` |
+
+Para navegar por todos os grupos, veja [Famílias de serviços](/guides/service-api/familias-de-servicos).
+
+## Como ler o POST /api/service-api
+
+| Parte | Como interpretar |
+| --- | --- |
+| `service` | Código do produto que será executado |
+| Campos adicionais | Parâmetros exigidos pelo produto escolhido |
+| Exemplo de request | Payload pronto para copiar e adaptar |
+| Exemplo de response | Estrutura esperada do retorno daquele produto |
+| Schemas | Estruturas genéricas e schemas de apoio para os retornos mais usados |
+
+## Convenções da referência
+
+| Convenção | Como aplicar |
+| --- | --- |
+| `{jwt_token}` | Substitua pelo token retornado em `POST /api/token-generate` |
+| `cpf` e `cnpj` | Envie os documentos conforme o formato esperado pelo seu contrato de integração |
+| `base64` | Envie somente o conteúdo codificado da imagem ou documento |
+| Campos opcionais | Envie apenas quando o serviço exigir apoio para aumentar a assertividade |
+| `status.code` | Use para tratar sucesso ou falha técnica do processamento |
+| `result` | Use para mapear os dados de negócio retornados pelo produto |
+
+## Padrão de resposta
+
+A maioria das consultas retorna:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result` | Dados de negócio retornados pela consulta |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica do processamento |
+| `externalId` | Identificador externo da consulta, quando retornado |
+
+<Note>
+  Nem todos os endpoints retornam JSON. O download do relatório de onboarding
+  retorna um arquivo PDF.
+</Note>
+
+## Principais endpoints
+
+| Operação | Endpoint |
+| --- | --- |
+| Gerar token | `POST /api/token-generate` |
+| Gerar TokenOnboarding | `POST /api/token-history-onboarding` |
+| Consultar onboarding | `GET /api/onboarding/report/{tokenOnboarding}` |
+| Baixar PDF do onboarding | `GET /api/history-onboarding-report/{tokenOnboarding}` |
+| Executar serviço externo | `POST /api/service-api` |
+| Consultar cliente | `GET /api/customer?documentKey={documentKey}` |
+| Alterar status de cliente | `POST /api/changeStatusOfCustomer` |
+
+## Status e erros
+
+Use `status.code` e `status.message` para interpretar o processamento técnico.
+Quando houver falha, trate a mensagem retornada antes de repetir a chamada.
+
+```json
+{
+  "status": {
+    "code": 400,
+    "message": "Failed to fetch information"
+  }
+}
+```
+
+## Caminho recomendado
+
+1. Gere um token em `POST /api/token-generate`.
+2. Abra o endpoint que deseja consumir.
+3. Se for usar `POST /api/service-api`, selecione o exemplo pelo campo `service`.
+4. Substitua os valores de teste pelos dados reais.
+5. Valide o response esperado e mapeie os campos de `result`.
+6. Use os guias quando precisar entender o contexto de negócio do produto.

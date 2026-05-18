@@ -1,0 +1,72 @@
+---
+title: Status e erros
+description: Entenda como interpretar respostas, falhas e casos sem body JSON
+---
+
+# Status e erros
+
+A API idCerberus separa o status HTTP do status técnico retornado no body. Em
+integrações, leia os dois.
+
+## Estrutura padrão
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "8e1ac243-4510-4ebf-ac7d-4b6d133dd619"
+}
+```
+
+| Campo | Uso |
+| --- | --- |
+| `result` | Dados retornados pelo produto consultado |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica do processamento |
+| `externalId` | Identificador externo da consulta, quando retornado |
+
+## Como interpretar
+
+| Caso | Significado prático | Ação recomendada |
+| --- | --- | --- |
+| HTTP 200 e `status.code` 200 | A chamada foi processada | Ler `result` e seguir a regra de negócio |
+| HTTP 200 e `status.code` 400 | A API respondeu, mas o processamento falhou | Ler `status.message`, validar parâmetros e permissão |
+| HTTP 401 ou 403 | Problema de autenticação ou permissão | Gerar novo token ou revisar credenciais/produto liberado |
+| Timeout | Fonte externa ou rede pode ter demorado | Aplicar retry controlado, sem loop agressivo |
+| Sem body JSON | O endpoint retorna outro tipo de conteúdo | Tratar conforme contrato, como PDF no relatório de onboarding |
+
+## Negativo não é erro técnico
+
+Alguns serviços retornam uma consulta negativa como sucesso técnico. Exemplos:
+
+| Resultado | Exemplo |
+| --- | --- |
+| Nada consta | Certidões criminais ou ações judiciais |
+| Cliente não encontrado | Validação de CPF com endereço |
+| Sem débitos | Débitos ativos com totais zerados |
+| Não PEP | Pessoa politicamente não exposta |
+
+Nesses casos, a chamada pode ter `status.code` 200 e ainda assim representar uma
+resposta negativa de negócio.
+
+## Boas práticas de tratamento
+
+- Registre o `externalId` quando ele vier no retorno.
+- Não use apenas HTTP status para decidir sucesso de negócio.
+- Trate token expirado gerando novo token.
+- Valide campos obrigatórios antes de chamar a API.
+- Evite retry automático em erro de payload.
+- Use retry com limite para timeout ou falha temporária de fonte externa.
+
+## Exemplo de decisão
+
+```js
+if (response.status?.code !== 200) {
+    throw new Error(response.status?.message || "Falha no processamento");
+}
+
+return response.result;
+```

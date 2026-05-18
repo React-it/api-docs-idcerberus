@@ -1,0 +1,105 @@
+---
+title: Biometria e documentos
+description: Valide documentos, selfies, biometria facial e evidências de identidade
+---
+
+# Biometria e documentos
+
+Use estes serviços para extrair dados de documentos, comparar imagens faciais,
+validar vivacidade e apoiar decisões de identidade em fluxos de onboarding e KYC.
+Eles ajudam a reduzir fraude documental, automatizar leitura de documentos e
+verificar se a pessoa apresentada corresponde à evidência enviada.
+
+Todos os serviços desta categoria são consumidos pelo endpoint:
+
+```http
+POST /api/service-api
+```
+
+## Quando usar
+
+Use estes serviços quando precisar:
+
+- extrair dados de documentos por OCR;
+- comparar imagens de rosto com FaceMatch;
+- validar vivacidade de uma selfie;
+- consultar score biométrico;
+- executar documentoscopia digital e consultar o resultado depois.
+
+## Serviços disponíveis
+
+| Serviço | Código `service` | Uso principal |
+| --- | --- | --- |
+| OCR de documentos | `service_ocr` | Extrai campos de CNH, RG, RNE, CPF, passaporte, CRLV, comprovante de luz e carteira de trabalho |
+| FaceMatch | `service_face_match` | Compara duas imagens e retorna status e percentual de similaridade facial |
+| Liveness 2D | `service_liveness_2d` | Verifica se a selfie enviada provavelmente representa uma pessoa real |
+| Score biométrico | `service_biometric_score` | Compara CPF e selfie com bases oficiais e retorna similaridade |
+| Documentoscopia digital | `service_digital_documentoscopy` | Processa documento, extrai dados e executa FaceMatch quando houver selfie |
+| Resultado da documentoscopia | `service_digital_documentoscopy_consult` | Consulta o resultado de uma documentoscopia usando a chave enviada na criação |
+
+## Documentos suportados no OCR
+
+| Documento | Valor |
+| --- | --- |
+| CNH | `CNH` |
+| RG | `RG` |
+| RG novo | `NEWRG` |
+| RNE | `RNE` |
+| Cartão CPF | `CARTAOCPF` |
+| Passaporte | `PASSPORT` |
+| CRLV | `BR_CAR_LICENCE` |
+| Comprovante de luz | `LIGHTRECEIPT` |
+| Carteira de trabalho | `CTPS` |
+
+## Exemplo rápido
+
+Comparação facial entre duas imagens:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_face_match",
+    "image1": "base64",
+    "image2": "base64"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "service_face_match",
+  "image1": "base64",
+  "image2": "base64"
+}
+```
+
+Resposta esperada:
+
+```json
+{
+  "result": {
+    "status": "Face picture match",
+    "similarity": 99.95
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Boas práticas
+
+- Envie imagens nítidas, sem cortes no documento ou no rosto.
+- Use `image1Url` e `image2Url` quando as imagens já estiverem hospedadas em URL
+  acessível pelo serviço.
+- Para documentos com frente e verso, envie as duas imagens quando disponível.
+- Combine OCR, FaceMatch e Liveness quando o fluxo exigir validação de identidade
+  com maior robustez.
+
+Para campos, exemplos completos e responses, consulte a
+[API Reference](/api-reference/boas-vindas) ou o
+[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).

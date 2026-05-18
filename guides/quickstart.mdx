@@ -1,0 +1,125 @@
+---
+title: Quickstart
+description: Faça sua primeira chamada na API idCerberus em poucos minutos
+---
+
+# Quickstart
+
+Este guia mostra o caminho mínimo para autenticar, executar um serviço e tratar
+o retorno da API idCerberus.
+
+## Antes de começar
+
+Você precisa ter:
+
+- `client` e `secret` da sua aplicação;
+- acesso ao ambiente de homologação ou produção;
+- um CPF ou CNPJ de teste;
+- permissão para consumir o produto desejado.
+
+Os endpoints base são:
+
+| Ambiente | `{base_url}` |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+A chamada é a mesma nos dois ambientes. Para usar produção, mantenha método,
+headers e body iguais e troque apenas a URL.
+
+## 1. Gere um token
+
+HML:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Resposta:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+## 2. Execute um serviço
+
+Use o token retornado no header `Authorization`.
+
+HML:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+Produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+## 3. Leia o resultado
+
+A maior parte dos serviços retorna os dados em `result` e o status técnico em
+`status`.
+
+```json
+{
+  "result": {
+    "cpf": "06319423196",
+    "status": "REGULAR",
+    "name": "FULANINHO DA SILVA"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## 4. Trate sucesso e falha
+
+Use `status.code` para decidir o comportamento da sua aplicação.
+
+| Situação | Como tratar |
+| --- | --- |
+| `status.code` 200 | Processamento concluído. Leia o objeto `result`. |
+| `status.code` 400 | Payload, parâmetro, permissão ou fonte externa pode ter falhado. Leia `status.message`. |
+| Token expirado | Gere um novo token e repita a chamada. |
+| Sem body JSON | Trate conforme o endpoint. O relatório de onboarding retorna PDF. |
+
+## 5. Escolha o próximo serviço
+
+Se você já sabe qual produto consumir, vá para a [API Reference](/api-reference/boas-vindas).
+
+Se ainda está desenhando o fluxo, use [Escolha o serviço certo](/guides/escolha-o-servico-certo).

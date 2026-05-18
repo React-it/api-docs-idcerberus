@@ -1,0 +1,88 @@
+---
+title: Compliance de empresas
+description: Consulte débitos, protestos, restrições e exposições regulatórias de empresas
+---
+
+# Compliance de empresas
+
+Os serviços de compliance de empresas apoiam a identificação de riscos
+financeiros, regulatórios e reputacionais ligados a CNPJs. Eles podem ser usados
+em onboarding PJ, monitoramento de fornecedores, avaliação de parceiros,
+processos de crédito, prevenção a fraude e rotinas de PLD/FT.
+
+Todos os serviços desta categoria são consumidos pelo endpoint:
+
+```http
+POST /api/service-api
+```
+
+## Quando usar
+
+Use esta categoria quando precisar:
+
+- verificar débitos ativos de uma empresa com órgãos públicos;
+- consultar protestos em cartórios;
+- avaliar exposição e conformidade de empresas relacionadas ao mercado de apostas;
+- complementar uma análise cadastral com sinais de risco e restrição.
+
+## Serviços disponíveis
+
+| Serviço | Código `service` | Uso principal |
+| --- | --- | --- |
+| Débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` | Consulta débitos ativos da empresa com o governo e retorna totais, origens e lista de débitos |
+| Certidão negativa de protesto PJ | `service_protest_clearance_certificate_pj` | Consulta protestos em cartórios e retorna detalhes de títulos encontrados |
+| Compliance de casas de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | Consulta exposição esportiva, relação com apostas, dados cadastrais e sinais regulatórios de empresas do setor |
+
+## Exemplo rápido
+
+Consulta de compliance de casas de apostas PJ:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_COMPLIANCE_BET_PJ",
+    "cnpj": "cnpj"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Resposta esperada:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "status": "ATIVA",
+    "origin": "Receita Federal",
+    "officialName": "NOME OFICIAL ANONIMIZADO",
+    "tradeName": "NOME FANTASIA ANONIMIZADO",
+    "isBet": false,
+    "onlineBettingCompliance": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  }
+}
+```
+
+## Leitura dos resultados
+
+O objeto `status` indica o resultado técnico da consulta. Os sinais de negócio
+ficam no objeto `result`, como valores de dívida, protestos, vínculos, exposição
+regulatória e indicadores de conformidade. Em análises críticas, combine esses
+serviços com dados cadastrais e relacionamentos societários.
+
+Para campos, exemplos completos e responses, consulte a
+[API Reference](/api-reference/boas-vindas) ou o
+[Catálogo técnico de Pessoa Jurídica](/guides/servicos-pessoa-juridica).

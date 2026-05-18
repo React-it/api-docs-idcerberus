@@ -1,0 +1,144 @@
+---
+title: Autenticação
+description: Gere tokens JWT e autentique chamadas protegidas da API idCerberus
+---
+
+# Autenticação
+
+Use este fluxo para gerar o token JWT usado nas chamadas protegidas da API
+idCerberus. A autenticação é o primeiro passo antes de consumir onboarding,
+serviços de pessoa física, serviços de pessoa jurídica ou operações de customers.
+
+As credenciais de acesso são compostas por `client` e `secret`, fornecidos
+previamente pela React IT.
+
+Caso você ainda não possua essas credenciais, entre em contato pelo e-mail
+[contact@react-it.com](mailto:contact@react-it.com). Nossa equipe poderá orientar
+o processo de criação da conta e liberação do acesso necessário para a
+integração via API.
+
+## Quando usar
+
+Use esta página quando precisar:
+
+- gerar um token de acesso para chamadas protegidas;
+- entender como enviar o header `Authorization`;
+- identificar o tempo de expiração do token;
+- preparar a autenticação antes de testar os endpoints da API Reference.
+
+## Fluxo recomendado
+
+1. Receba as credenciais `client` e `secret`.
+2. Gere um token em `POST /api/token-generate`.
+3. Guarde o valor de `access_token` no back-end da sua aplicação.
+4. Envie o token no header `Authorization`.
+5. Gere um novo token quando o anterior expirar.
+
+## Ambientes
+
+O endpoint de autenticação existe em homologação e produção. O payload é o mesmo;
+troque apenas a URL base conforme o ambiente.
+
+Na prática, o `curl` de produção é igual ao de HML; a diferença é a URL
+informada no `--location`.
+
+| Ambiente | Endpoint |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+| Produção | `https://backoffice.idcerberus.com/api/token-generate` |
+
+## Gerar token
+
+Gere um token para acessar os serviços da API enviando o `client` e o `secret`.
+
+```http
+POST /api/token-generate
+```
+
+```json
+{
+  "client": "{client}",
+  "secret": "{secret}"
+}
+```
+
+O retorno contém o token de acesso e o tempo de expiração.
+
+| Campo | Descrição |
+| --- | --- |
+| `access_token` | Token JWT |
+| `expires_in` | Tempo de expiração do token |
+
+Exemplo com `curl` em HML:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Exemplo com `curl` em produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+## Usar token
+
+Envie o token retornado no header `Authorization` das próximas requisições
+protegidas.
+
+```http
+Authorization: Bearer {access_token}
+```
+
+Exemplo em uma chamada de serviço em HML:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo em uma chamada de serviço em produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+## Boas práticas
+
+- Mantenha `client` e `secret` apenas no back-end da aplicação.
+- Não exponha credenciais em aplicativos mobile, front-end ou repositórios.
+- Renove o token quando `expires_in` indicar expiração.
+- Trate respostas de autenticação inválida regenerando o token antes de repetir a chamada.
+
+Para detalhes técnicos do endpoint, consulte a
+[API Reference](/api-reference/boas-vindas).

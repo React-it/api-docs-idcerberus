@@ -1,0 +1,2408 @@
+---
+title: Serviços de Pessoa Física
+description: Serviços externos disponíveis para consultas de CPF
+---
+
+# Serviços de Pessoa Física
+
+Os serviços de pessoa física permitem consultar, validar e enriquecer dados de
+CPF em fluxos de onboarding, KYC, prevenção a fraude, análise cadastral,
+biometria, documentos, compliance e dados eleitorais.
+
+Todos são executados pelo endpoint central de serviços. O campo `service`
+define qual produto será processado, e os demais campos variam conforme a
+consulta escolhida.
+
+```http
+POST /api/service-api
+```
+
+Nos exemplos de `curl`, `{base_url}` representa a URL do ambiente escolhido:
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Exemplo de requisição:
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+## Como usar este catálogo
+
+Use esta página para consultar a lista completa de serviços de CPF, seus códigos
+`service`, campos principais e exemplos mais extensos de request e response.
+
+Para uma visão orientada por caso de uso, veja [Escolha o serviço certo](/guides/escolha-o-servico-certo).
+Para implementação endpoint a endpoint, use a [API Reference](/api-reference/boas-vindas).
+
+## Status e erros
+
+No retorno das consultas, a API inclui um objeto `status` que indica o status da
+consulta. Esse objeto apresenta os atributos `code` e `message`, usados para
+interpretar o processamento técnico.
+
+```json
+{
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
+
+## Serviços disponíveis
+
+### Cadastro e identidade
+
+| Serviço | Código `service` | Campos principais |
+| --- | --- | --- |
+| Enriquecimento de dados de PF | `service_person_data_enrichment` | `cpf` |
+| Status do CPF na Receita Federal | `service_rfb_pf` | `cpf`, `dataDeNascimento` |
+| Consulta de MEI | `service_mei` | `cpf` |
+| Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` |
+| Endereços | `service_address` | `cpf` |
+| Relacionamentos econômicos | `economic_relationships` | `cpf` |
+| Histórico profissional | `service_professional_history` | `cpf` |
+
+### Biometria e documentos
+
+| Serviço | Código `service` | Campos principais |
+| --- | --- | --- |
+| OCR de documentos | `service_ocr` | `image1`, `image2`, `image1Url`, `image2Url` |
+| FaceMatch | `service_face_match` | `image1`, `image2` |
+| Liveness 2D | `service_liveness_2d` | `image1` |
+| Score biométrico | `service_biometric_score` | `cpf`, `image1` |
+| Documentoscopia digital | `service_digital_documentoscopy` | `key`, `image1`, `image2`, `selfie1` |
+| Resultado da documentoscopia | `service_digital_documentoscopy_consult` | `key` |
+
+### Risco, compliance e validações
+
+| Serviço | Código `service` | Campos principais |
+| --- | --- | --- |
+| Pessoa politicamente exposta | `service_pep` | `cpf` |
+| Dívida ativa PF | `service_active_debt` | `cpf` |
+| Score de risco de fraude | `service_fraud_risk_score` | `cpf`, `factor` |
+| Score de inadimplência | `service_default_risk_score` | `cpf` |
+| Nada consta em ações judiciais | `service_nothing_record_lawsuits` | `cpf`, `court`, `uf`, `sphere` |
+| Antecedentes criminais federais | `service_criminal_record_federal` | `cpf` |
+| Antecedentes criminais civis | `service_criminal_record_civil` | `cpf`, `rg`, `uf` |
+| Certidão negativa de protesto | `service_protest_clearance_certificate` | `cpf` |
+| Validação de e-mail | `service_email_validation` | `email` |
+| Validação de CPF com telefone | `service_cpf_phone_validation` | `cpf`, `phone` |
+| Validação de CPF com endereço | `service_cpf_address_validation` | `cpf`, `zipcode`, `numberAddress` |
+| Informações financeiras | `service_financial_information` | `cpf` |
+| Dados PIS | `service_pis_consultation` | `cpf` |
+| Validação E-Social | `service_esocial_registration_qualification` | `cpf`, `nit` |
+| Processos jurídicos | `service_juridical_processes` | `cpf` |
+| Servidores públicos | `service_public_servants` | `cpf` |
+| Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` |
+| Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
+| Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA` | `cpf` |
+| Doações eleitorais | `SERVICE_ELECTORAL_DONORS` | `cpf` |
+| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
+| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` | `cpf` |
+| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS` | `cpf` |
+
+## Exemplos
+
+### Enriquecimento de dados de pessoa física
+
+A consulta de enriquecimento de dados de pessoa física retorna informações de
+uma pessoa física existente no site da Receita Federal. O retorno pode incluir
+status cadastral, protocolo da consulta, indicação de óbito quando disponível e
+outras informações relacionadas ao CPF consultado.
+
+As informações dessa consulta são obtidas a partir da consulta pública de pessoa
+física no site da Receita Federal.
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status na base da Receita Federal |
+| `result.statusDate` | Data do status na base da Receita Federal |
+| `result.name` | Nome |
+| `result.fatherName` | Nome do pai |
+| `result.motherName` | Nome da mãe |
+| `result.birthdate` | Data de nascimento |
+| `result.birthCountry` | País de nascimento |
+| `result.dead` | Indicação de óbito |
+| `result.deathYear` | Ano do óbito |
+| `result.gender` | Gênero |
+| `result.age` | Idade |
+| `result.origin` | Origem das informações |
+| `result.fiscalRegion` | Região fiscal do CPF |
+| `result.numberOfPeopleWithTheSameName` | Quantidade de pessoas com o mesmo nome completo |
+| `result.nameWordCount` | Quantidade de nomes no nome completo |
+| `result.nameUniqueScore` | Score de unicidade do nome, em que `1` indica único e `0` extremamente comum |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "06319423196",
+    "status": "REGULAR",
+    "statusDate": "2022-05-29T00:00:00",
+    "name": "FULANINHO DA SILVA",
+    "gender": "M",
+    "fatherName": "",
+    "motherName": "FULANA DA SILVA",
+    "birthdate": "1998-07-05",
+    "birthCountry": "BRASILEIRA",
+    "dead": false,
+    "country": "BRAZIL",
+    "fiscalRegion": "DF-GO-MS-MT-TO",
+    "numberOfPeopleWithTheSameName": "3",
+    "nameWordCount": "3",
+    "nameUniqueScore": "0.994",
+    "origin": "RECEITA FEDERAL",
+    "age": 24
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Status do CPF na Receita Federal
+
+A consulta de status do CPF na Receita Federal retorna a situação cadastral de
+um CPF existente na base pública da Receita Federal.
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "service_rfb_pf",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status na base da Receita Federal |
+| `result.statusDate` | Data do status na base da Receita Federal |
+| `result.origin` | Origem das informações |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_rfb_pf",
+    "cpf": "cpf",
+    "dataDeNascimento": "yyyy-MM-dd (opcional) "
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "123414124",
+    "status": "REGULAR",
+    "name": "NOME EXEMPLO",
+    "birthDate": "yyyy-MM-ddT00:00",
+    "dead": false,
+    "origin": "RECEITA FEDERAL",
+    "age": 30
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  },
+  "externalId": "1782ea0a-8663-41a8-b156-688527f5363b"
+}
+```
+
+### OCR de documentos
+
+Esse serviço realiza a extração das informações de um documento. Durante o
+processamento, uma IA identifica o tipo da imagem e executa os procedimentos de
+classificação do documento. É possível enviar a imagem em base64 ou por URL.
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "service_ocr",
+  "image1": "base64",
+  "image2": "base64",
+  "image1Url": "url_image",
+  "image2Url": "urlImageMatch"
+}
+```
+
+Tipos de documento suportados:
+
+| Documento | Valor |
+| --- | --- |
+| CNH | `CNH` |
+| RG | `RG` |
+| RG novo | `NEWRG` |
+| RNE | `RNE` |
+| Cartão CPF | `CARTAOCPF` |
+| Passaporte | `PASSPORT` |
+| CRLV | `BR_CAR_LICENCE` |
+| Comprovante de luz | `LIGHTRECEIPT` |
+| Carteira de trabalho | `CTPS` |
+
+Lados do documento por tipo:
+
+| Documento | Valor |
+| --- | --- |
+| Frente da CNH, lado da foto | `A` |
+| Verso da CNH | `B` |
+| CNH aberta | `C` |
+| Frente do RG, lado da foto | `A` |
+| Verso do RG | `B` |
+| RG aberto | `C` |
+| CRLV | `C` |
+| Demais documentos | `A` |
+
+Campos principais do retorno para CNH:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.name` | Nome |
+| `result.nome` | Nome, quando retornado com essa nomenclatura |
+| `result.fatherName` | Nome do pai |
+| `result.motherName` | Nome da mãe |
+| `result.birthDate` | Data de nascimento |
+| `result.birthdate` | Data de nascimento, quando retornada com essa nomenclatura |
+| `result.cnhCategory` | Categoria |
+| `result.cnhNumber` | Número da CNH |
+| `result.emissionPlace` | Órgão emissor |
+| `result.expeditionDate` | Data de expedição |
+| `result.rg` | RG |
+| `result.rgUf` | UF do RG |
+| `result.doc` | Tipo de documento |
+| `result.reanch` | Número do Renach |
+| `result.REANCH` | Número do Renach, quando retornado em maiúsculas |
+| `result.orgEmission` | Órgão emissor do RG |
+| `result.place` | Local de emissão da CNH |
+| `result.side` | Lado do documento |
+| `result.validDate` | Data de validade |
+| `result.paidActivity` | Informa se a CNH exerce atividade remunerada |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Campos principais do retorno para RG:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.rg` | RG |
+| `result.name` | Nome |
+| `result.fatherName` | Nome do pai |
+| `result.motherName` | Nome da mãe |
+| `result.MotherName` | Nome da mãe, quando retornado com `M` maiúsculo |
+| `result.birthDate` | Data de nascimento |
+| `result.doc` | Tipo de documento |
+| `result.emissionPlace` | Órgão emissor |
+| `result.side` | Lado do documento |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Campos principais do retorno para RNE:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.rne` | RNE |
+| `result.name` | Nome |
+| `result.gender` | Gênero |
+| `result.fatherName` | Nome do pai |
+| `result.motherName` | Nome da mãe |
+| `result.expeditionDate` | Data de expedição |
+| `result.orgEmission` | Órgão emissor |
+| `result.validDate` | Data de validade |
+| `result.classification` | Classificação da RNE |
+| `result.entryDate` | Data de entrada na RNE |
+| `result.nacionality` | Nacionalidade |
+| `result.naturality` | Naturalidade |
+| `result.doc` | Tipo de documento |
+| `result.side` | Lado do documento |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Campos principais do retorno para Cartão CPF:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.name` | Nome |
+| `result.birthDate` | Data de nascimento |
+| `result.doc` | Tipo de documento |
+| `result.side` | Lado do documento |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Campos principais do retorno para CRLV:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.uf` | UF da CRLV |
+| `result.name` | Nome |
+| `result.birthDate` | Data de nascimento |
+| `result.chassis` | Chassi do veículo |
+| `result.color` | Cor do veículo |
+| `result.year` | Ano do veículo |
+| `result.fabricationYear` | Ano de fabricação do veículo |
+| `result.modelYear` | Ano do modelo do veículo |
+| `result.plate` | Placa do veículo |
+| `result.renavam` | RENAVAM |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_ocr",
+    "image1": "base64",
+    "image2": "base64",
+    "image1Url": "url_image",
+    "image2Url": "urlImageMatch"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "06319423196",
+    "name": "FULANO DA SILVA",
+    "fatherName": "MARIO SOUSA",
+    "motherName": "FRANCISCA SOUSA",
+    "birthdate": "1992-01-05",
+    "cnhCategory": "AB",
+    "cnhNumber": "07796497926",
+    "emissionPlace": "DETRAN DE",
+    "expeditionDate": "13/04/2020",
+    "rg": "3451620",
+    "rgUf": "DF",
+    "doc": "CNH",
+    "orgEmission": "DETRAN",
+    "place": "BRASILIA-DISTRITO FEDERAL, DF",
+    "side": "C",
+    "validDate": "13/02/2021",
+    "paidActivity": "False",
+    "REANCH": "DF767732467"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### FaceMatch
+
+Esse serviço compara duas imagens e retorna a similaridade entre as pessoas nas
+imagens. As imagens podem ser enviadas em base64 ou por URL, conforme a
+integração.
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "service_face_match",
+  "image1": "base64",
+  "image2": "base64"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.status` | Status da similaridade facial das imagens |
+| `result.similarity` | Similaridade facial das imagens |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_face_match",
+    "image1": "base64",
+    "image2": "base64"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "status": "Face picture match",
+    "similarity": 99.95
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Liveness 2D
+
+Serviço que executa a verificação de vivacidade a partir de uma selfie,
+processando se a imagem enviada representa uma pessoa real.
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "service_liveness_2d",
+  "image1": "selfie"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.message` | Mensagem do resultado da verificação do Liveness 2D |
+| `result.likeRealPerson` | Resultado da verificação do Liveness 2D |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_liveness_2d",
+    "image1": "selfie"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "message": "The subject in the submitted Image is likely a Real Human.",
+    "likeRealPerson": true
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Pessoa politicamente exposta
+
+Consulta o CPF de um indivíduo e retorna se a pessoa é politicamente exposta.
+
+```json
+{
+  "service": "service_pep",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status indicando se a pessoa é politicamente exposta |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_pep",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "74768289096",
+    "status": "Pessoa não exposta politicamente"
+  },
+  "status": {
+    "code": 200,
+    "message": "success"
+  }
+}
+```
+
+### Dívida ativa - Pessoa Física
+
+Consulta a situação dos débitos relativos a créditos tributários federais e à
+Dívida Ativa da União, disponível na Receita Federal e na Procuradoria-Geral da
+Fazenda Nacional (PGFN).
+
+```json
+{
+  "service": "service_active_debt",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status da dívida ativa |
+| `result.statusDate` | Data do status |
+| `result.origin` | Origem do status |
+| `result.validDate` | Data de validade |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "service_active_debt",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "88154726068",
+    "status": "NEGATIVA",
+    "statusDate": "2022-08-16",
+    "origin": "Receita-Federal PGFN",
+    "validDate": "0001-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Score de risco de fraude
+
+O score de risco de fraude mede a propensão de fraude de uma interação associada
+a um CPF. Essa propensão é calculada a partir de inferência estatística baseada
+em informações históricas de fraude e apoia decisões de prevenção à fraude e
+análise de risco.
+
+```json
+{
+  "service": "service_fraud_risk_score",
+  "cpf": "cpf",
+  "factor": "minRisk or minattrition"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.score` | Score de risco de fraude |
+| `result.factor` | Status de risco retornado pela DataRisk: `HIGH RISK`, `MEDIUM RISK` ou `LOW RISK` |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_fraud_risk_score",
+    "cpf": "cpf",
+    "factor": "minRisk or minattrition"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "score": "8.0691",
+    "factor": "MEDIUM RISK",
+    "message": "Success calculating score"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Score de inadimplência
+
+O score de inadimplência identifica o nível de risco de inadimplência de um
+cliente ou prospecto. O resultado varia de 0 a 1000; quanto maior o valor, menor
+o risco de inadimplência.
+
+```json
+{
+  "service": "service_default_risk_score",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.score` | Score de inadimplência |
+| `result.origin` | Origem do score |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_default_risk_score",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "{80246074507}",
+    "status": "REGULAR",
+    "origin": "Datarisk",
+    "score": "462",
+    "rank": "E",
+    "expectedDefault": "58.94%",
+    "processType": "SEM PROCESSOS"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Score biométrico
+
+A consulta de score biométrico compara um CPF e uma selfie com imagens presentes
+em bases do Governo Federal, como CPF, CNPJ e CNH. O retorno indica o índice de
+similaridade encontrado.
+
+```json
+{
+  "service": "service_biometric_score",
+  "cpf": "cpf",
+  "image1": "{base64Image}"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status da consulta do score biométrico |
+| `result.message` | Mensagem da consulta |
+| `result.similarity` | Score de similaridade da imagem com a base do Governo Federal |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_biometric_score",
+    "cpf": "cpf",
+    "image1": "{base64Image}"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "73583960149",
+    "status": "Altíssima probabilidade",
+    "message": "Biometrics exist at the base of the Government",
+    "similarity": 99.66
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Certidão de Nada Consta - Ações Judiciais
+
+Emite uma certidão de Nada Consta em tribunais regionais federais. Na esfera
+eleitoral, a consulta está disponível apenas para fontes do TRF1 e TRF4.
+
+```json
+{
+  "service": "service_nothing_record_lawsuits",
+  "cpf": "cpf",
+  "court": "TRF1",
+  "uf": "uf",
+  "sphere": "CIVIL"
+}
+```
+
+Parâmetros opcionais:
+
+| Campo | Descrição |
+| --- | --- |
+| `court` | Tribunal: `TRF1`, `TRF2`, `TRF3`, `TRF4` ou `TRF5` |
+| `uf` | UF da federação brasileira |
+| `sphere` | Esfera: `CIVIL`, `CRIMINAL` ou `ELEITORAL` |
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status do Nada Consta |
+| `result.origin` | Origem do Nada Consta |
+| `result.uf` | UF do Nada Consta, quando retornado com essa nomenclatura |
+| `result.state` | Tribunal ou estado retornado no exemplo da API |
+| `result.name` | Nome do indivíduo |
+| `result.certificateNumber` | Número da certidão |
+| `result.certificateText` | Texto da certidão |
+| `result.expirationDate` | Data de expiração |
+| `result.emissionDate` | Data de emissão |
+| `result.type` | Tipo da certidão |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_nothing_record_lawsuits",
+    "cpf": "cpf",
+    "court": "TRF1",
+    "uf": "uf",
+    "sphere": "CIVIL"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "status": "NADA CONSTA",
+    "origin": "NadaConsta",
+    "state": "TRF1",
+    "name": "Fulano",
+    "certificateNumber": "212312312311231",
+    "certificateText": "A Polícia Federal CERTIFICA, após pesquisa no Sistema Nacional de Informações Criminais - SINIC, que até a presente data, NÃO CONSTA decisão judicial condenatória com trânsito em julgado* em nome de Fulano de Tal, nascido(a) aos 05/07/1998",
+    "expirationDate": "2022-10-20",
+    "emissionDate": "2022-10-20",
+    "type": "CIVEL E CRIMINAL"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Certidão de antecedentes criminais - Federal
+
+Emite uma certidão de antecedentes criminais junto à Polícia Federal. Quando não
+há antecedentes, o status do resultado retorna como `NADA CONSTA`.
+
+```json
+{
+  "service": "service_criminal_record_federal",
+  "cpf": "cpf"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status da certidão criminal |
+| `result.expirationDate` | Data de expiração da certidão |
+| `result.certificateNumber` | Número da certidão criminal |
+| `result.certificateText` | Texto da certidão criminal |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_criminal_record_federal",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "status": "NADA CONSTA",
+    "certificateNumber": "79222652022",
+    "certificateText": "A Polícia Federal CERTIFICA, após pesquisa no Sistema Nacional de Informações Criminais - SINIC, que até a presente data, NÃO CONSTA decisão judicial condenatória com trânsito em julgado* em nome de FULANINHO DA SILVA, nascido(a) aos 05/07/1998",
+    "expirationDate": "2022-10-20"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Certidão de antecedentes criminais - Civil
+
+Emite uma certidão de antecedentes criminais junto à Polícia Civil do estado
+consultado. Caso a pessoa não possua antecedentes, o status do resultado retorna
+como `NADA CONSTA`. Quando houver antecedentes, a descrição dos registros não é
+retornada por essa consulta.
+
+```json
+{
+  "service": "service_criminal_record_civil",
+  "cpf": "cpf",
+  "rg": "rg",
+  "uf": "uf"
+}
+```
+
+Parâmetros aceitos:
+
+| Campo | Descrição | Valor aceito |
+| --- | --- | --- |
+| `cpf` | Número do CPF | Qualquer texto |
+| `rg` | Número do RG da identidade | Qualquer texto |
+| `uf` | UF do estado | Qualquer texto |
+| `motherName` | Nome da mãe | Qualquer texto |
+| `fatherName` | Nome do pai | Qualquer texto |
+| `rgIssuingAgency` | Órgão emissor do documento | Qualquer texto |
+| `rgIssuingUf` | Estado do órgão emissor do documento | Qualquer texto |
+| `rgExpeditionDate` | Data de emissão do documento | Qualquer data válida |
+| `dateFormat` | Formato da data de emissão do documento | Exemplo: `yyyy-MM-dd` |
+| `placeOfBirth` | Local de nascimento | Qualquer texto |
+| `address` | Endereço | Qualquer texto |
+| `numberAddress` | Número do endereço | Qualquer número |
+| `zipcode` | CEP | Qualquer texto |
+| `neighborhood` | Bairro | Qualquer texto |
+| `city` | Cidade | Qualquer texto |
+
+Obrigatoriedade de parâmetros por estado:
+
+| Estado | CPF | UF | RG | MOTHERNAME | FATHERNAME | RGISSUINGAGENCY | RGISSUINGUF | RGEXPEDITIONDATE | DATEFORMAT | PLACEOFBIRTH | ADDRESS | NUMBERADDRESS | NEIGHBORHOOD | CITY | ZIPCODE |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MG | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
+| CE | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
+| RR | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
+| MT | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | Opcional | Obrigatório | Obrigatório | - | - | Obrigatório | - | - | - | - | - |
+| RJ | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | Opcional | Obrigatório | - | Obrigatório | - | - | Semi-obrigatório | Semi-obrigatório | Semi-obrigatório | Semi-obrigatório | Semi-obrigatório |
+| PE | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | Obrigatório | Obrigatório | - | - | Obrigatório | Semi-obrigatório | - | Semi-obrigatório | Semi-obrigatório | - |
+| PA | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | Obrigatório | - | - | Obrigatório | - | - | - | - | - |
+| MS | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | Obrigatório | Obrigatório | - | - | - | - | - | - | - | - |
+| SE | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | Opcional | - | - | - | - | - | - | - | - | - | - |
+| BA | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | Opcional | - | - | - | - | - | - | - | - | - | - |
+| SP | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | Opcional | - | - | Obrigatório | Obrigatório | - | - | - | - | - | - |
+| ES | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | Opcional | - | Obrigatório | - | - | - | - | - | - | - | - |
+| RS | Obrigatório | Obrigatório | Obrigatório | - | - | - | - | - | - | - | - | - | - | - | - |
+
+Estados disponíveis para consulta: `BA`, `CE`, `ES`, `MG`, `MS`, `MT`, `PA`,
+`PE`, `RJ`, `RR`, `RS`, `SE` e `SP`.
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status da certidão criminal |
+| `result.uf` | UF consultada |
+| `result.emissionDate` | Data de emissão da certidão |
+| `result.expirationDate` | Data de expiração da certidão, quando retornada |
+| `result.certificateNumber` | Número da certidão criminal |
+| `result.certificateText` | Texto da certidão criminal |
+| `result.origin` | Origem da certidão |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_criminal_record_civil",
+    "cpf": "cpf",
+    "rg": "rg",
+    "uf": "uf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "status": "NADA CONSTA",
+    "uf": "BA",
+    "emissionDate": "00:00 de 20/12/2022",
+    "certificateNumber": "A5FD4A36-3F31-4F75-8AF0-103B7BB66212",
+    "certificateText": "Antecedentes Criminais CERTIFICADO DE ANTECEDENTES CRIMINAIS Nome: FULANINHO DE TAL Número do Rg: 14781688 Nome do Pai: Nome da Mãe: FULANA DE TAL Data de Nascimento: 19/6/1997 Naturalidade: \"Certifico que o requerente acima qualificado NÃO registra antecedentes criminais até a presente data no Centro de Documentação e Estatística Policial (CEDEP), da Polícia Civil \". IMPORTANTE: Este certificado é válido somente com a apresentação da cédula de Identidade expedida pelo Instituto de Identificação Pedro Melo/DPT/SSP. Este certificado foi emitido terça-feira, 20 de dezembro de 2022 e está disponível para consulta no endereço http://www.ba.gov.br/antecedentes/validar_atestado.asp, informando o código A5FD4A36-3F31-4F75-8AF0-103B7BB66212 Obs: Este certificado tem validade até a data 20/3/2023 Imprimir Fechar Janela",
+    "origin": "PoliciaCivilAntecedentes"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Certidão negativa de protesto
+
+Consulta informações de protestos em cartórios. Quando não existem protestos de
+títulos contra o indivíduo, retorna uma certidão emitida pelo Instituto de
+Estudos de Protestos de Títulos do Brasil.
+
+```json
+{
+  "service": "service_protest_clearance_certificate",
+  "cpf": "cpf"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_protest_clearance_certificate",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "77272722134",
+    "protestos": [
+      {
+        "cartorio": "CARTÓRIO LARANJEIRAS - 32º OFÍCIO DE NOTAS DO RIO DE JANEIRO",
+        "obterDetalhes": null,
+        "cidade": "RIO DE JANEIRO",
+        "quantidadeTitulos": "",
+        "endereco": "R. DAS LARANJEIRAS - LARANJEIRAS, RIO DE JANEIRO - RJ, 22221-060",
+        "telefone": "19 3396-2809",
+        "protestos": [
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2017-10-10",
+            "dataProtesto": "2017-10-10",
+            "dataVencimento": "",
+            "valor": "9.900,00"
+          },
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2018-01-01",
+            "dataProtesto": "2018-01-01",
+            "dataVencimento": "",
+            "valor": "16.000,00"
+          }
+        ]
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Validação de e-mail
+
+Realiza uma verificação em tempo real do e-mail informado, aplicada a cenários
+como prevenção à fraude, identificação correta de e-mail, marketing, campanhas e
+envio de cobranças.
+
+```json
+{
+  "service": "service_email_validation",
+  "email": "email@email.com"
+}
+```
+
+Status possíveis:
+
+| Status | Descrição |
+| --- | --- |
+| `VALID` | O e-mail é válido e não apresenta restrições |
+| `INVALID` | O e-mail é inválido |
+| `UNKNOWN` | A validação não foi concluída no tempo limite |
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.email` | E-mail |
+| `result.status` | Status do e-mail |
+| `result.normalizedEmail` | E-mail normalizado |
+| `result.address` | Endereço |
+| `result.account` | Conta do e-mail |
+| `result.domain` | Domínio do e-mail |
+| `result.disposable` | Indica se o e-mail é temporário |
+| `result.roleAddress` | Indica se o e-mail referencia um grupo |
+| `result.riskyAccount` | Indica padrão de conta de risco |
+| `result.riskyDomain` | Indica padrão de domínio de risco |
+| `result.junk` | Indica possibilidade de spam ou lixo eletrônico |
+| `result.limited` | Indica regras de filtragem por volume |
+| `result.acceptAll` | Indica se o domínio aceita qualquer e-mail |
+| `result.possibleSpamTrap` | Indica possível e-mail armadilha |
+| `result.wasSyntaxValid` | Indica se a sintaxe original é válida |
+| `result.wasSyntaxNormalized` | Indica se a sintaxe foi normalizada |
+| `result.wasOwnershipFound` | Indica se foi encontrada propriedade do domínio |
+| `result.possibleStoogeDomain` | Indica possível domínio laranja |
+| `result.domainType` | Tipo do domínio |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+    "service": "service_email_validation",
+    "email": "usuario@example.com"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "email": "usuario@example.com",
+    "status": "VALID",
+    "normalizedEmail": "usuario@example.com",
+    "address": "usuario@example.com",
+    "account": "teste",
+    "domain": "test.com",
+    "disposable": false,
+    "roleAddress": false,
+    "riskyAccount": false,
+    "riskyDomain": false,
+    "junk": false,
+    "limited": false,
+    "acceptAll": false,
+    "possibleSpamTrap": false,
+    "wasSyntaxValid": true,
+    "wasSyntaxNormalized": false,
+    "wasSiteFound": true,
+    "wasOwnershipFound": false,
+    "possibleStoogeDomain": false,
+    "domainType": "BLOG"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Validação de CPF com telefone
+
+Verifica a associação entre CPF e número de telefone nas principais operadoras
+do Brasil. Esse serviço pode apoiar redução de custos e validações antes de
+envios de mensagens.
+
+```json
+{
+  "service": "service_cpf_phone_validation",
+  "cpf": "cpf",
+  "phone": "11900000000"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.phone` | Telefone |
+| `result.operator` | Nome da operadora retornado no exemplo da API |
+| `result.carrierName` | Nome da operadora, quando retornado com essa nomenclatura |
+| `result.validCarrierPhone` | Indica se o telefone é válido |
+| `result.matchRateCpfPhone` | Taxa de correspondência entre CPF e telefone |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_cpf_phone_validation",
+    "cpf": "cpf",
+    "phone": "11900000000"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "phone": "5561982358585",
+    "operator": "OPERADORA EXEMPLO",
+    "validCarrierPhone": true,
+    "matchRateCpfPhone": 100
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Validação de CPF com endereço
+
+Valida a associação entre CPF e endereço nas principais operadoras de telefonia
+do Brasil. Essa consulta ajuda a verificar se o indivíduo está associado ao
+endereço informado e também apoia verificações relacionadas à localização.
+
+```json
+{
+  "service": "service_cpf_address_validation",
+  "cpf": "cpf",
+  "zipcode": "00000-000",
+  "numberAddress": 13
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.zipcode` | CEP |
+| `result.numberAddress` | Número do endereço |
+| `result.carrierName` | Nome da operadora de telefonia |
+| `result.zipCodeMatchRate` | Taxa de correspondência entre CPF e CEP |
+| `result.numberMatchRate` | Taxa de correspondência entre CPF, CEP e número informado |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "service_cpf_address_validation",
+    "cpf": "cpf",
+    "zipcode": "00000-000",
+    "numberAddress": 13
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "message": "Customer not found",
+    "carrierName": "CLARO S.A.",
+    "zipcode": "00000000",
+    "zipCodeMatchRate": -1,
+    "numberMatchRate": -1,
+    "numberAddress": "13"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de informações financeiras
+
+Consulta informações financeiras associadas ao CPF informado.
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+Body:
+
+```json
+{
+  "service": "service_financial_information",
+  "cpf": "cpf"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_financial_information",
+    "cpf": "cpf"
+  }'
+```
+
+Esse serviço não possui exemplo de body de resposta JSON nesta referência.
+
+### Consulta de dados PIS
+
+A consulta de dados do PIS busca informações do Programa de Integração Social
+disponíveis no portal do Cadastro Nacional de Informações Sociais (CNIS).
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "service_pis_consultation",
+  "cpf": "cpf"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_pis_consultation",
+    "cpf": "cpf"
+  }'
+```
+
+Esse serviço aparece como indisponível nesta referência e não possui body de
+resposta documentado.
+
+### Validação do E-Social
+
+A validação do E-Social consulta o status cadastral do indivíduo no E-Social.
+Embora a consulta possa usar o NIT, esse campo não é obrigatório. Caso o NIT não
+seja enviado, a API utiliza o dado disponível na base.
+
+```http
+POST /api/service-api
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+Body:
+
+```json
+{
+  "service": "service_esocial_registration_qualification",
+  "cpf": "cpf",
+  "nit": "(opcional)"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status da validação cadastral |
+| `result.message` | Mensagem da consulta |
+| `result.name` | Nome |
+| `result.birthdate` | Data de nascimento |
+| `result.pis` | Número do PIS |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "service_esocial_registration_qualification",
+    "cpf": "cpf",
+    "nit": "(opcional)"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "status": "VERIFIED",
+    "message": "Os dados estão corretos.",
+    "name": "NOME EXEMPLO",
+    "birthdate": "1971-11-23",
+    "pis": "12460888617"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Documentoscopia digital
+
+Esse serviço realiza a extração das informações do documento enviado e executa
+FaceMatch entre a selfie informada e o documento, podendo também comparar com
+bases do governo.
+
+```json
+{
+  "service": "service_digital_documentoscopy",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}
+```
+
+Campos de entrada:
+
+| Campo | Descrição |
+| --- | --- |
+| `key` | Chave usada para consultar o resultado da documentoscopia. Pode ser um UUID ou outra chave definida pela integração |
+| `image1` | Documento em base64, PDF ou imagem, com a parte frontal do RG ou CNH. Também pode conter a foto da CNH completa. Campo obrigatório |
+| `image2` | Documento em base64 com a parte de trás do RG ou CNH. Campo opcional |
+| `selfie1` | Selfie da pessoa do documento para FaceMatch. Campo opcional |
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.name` | Nome |
+| `result.fatherName` | Nome do pai |
+| `result.motherName` | Nome da mãe |
+| `result.birthdate` | Data de nascimento |
+| `result.cnhCategory` | Categoria da CNH |
+| `result.expeditionDate` | Data de expedição |
+| `result.rg` | Número do RG |
+| `result.rgUf` | UF do RG |
+| `result.reanch` | Número do RENACH |
+| `result.place` | Local de emissão do documento |
+| `result.validDate` | Data de validade |
+| `result.biometry` | FaceMatch entre documento e selfie na base do governo |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "service_digital_documentoscopy",
+    "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+    "image1": "base64",
+    "image2": "base64",
+    "selfie1": "base64"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "name": "FULANINHO DA SILVA",
+    "fatherName": "FULANO DA SILVA",
+    "motherName": "FULANA DA SILVA",
+    "birthdate": "1984-05-21",
+    "cnhCategory": "AD",
+    "expeditionDate": "19/03/2021",
+    "rg": "3261880",
+    "rgUf": "DF",
+    "reanch": "DF765309297",
+    "place": "Distrito Federal, Goiás, Mato Grosso, Mato Grosso do Sul ou Tocantins",
+    "validDate": "2026-02-24",
+    "biometry": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta do resultado da documentoscopia digital
+
+Consulta o resultado da documentoscopia digital usando a chave informada na
+requisição de criação.
+
+```json
+{
+  "service": "service_digital_documentoscopy_consult",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.name` | Nome |
+| `result.fatherName` | Nome do pai |
+| `result.motherName` | Nome da mãe |
+| `result.birthdate` | Data de nascimento |
+| `result.cnhCategory` | Categoria da CNH |
+| `result.cnhNumber` | Número da CNH |
+| `result.expeditionDate` | Data de expedição |
+| `result.rg` | Número do RG |
+| `result.rgUf` | UF do RG |
+| `result.doc` | Tipo de documento |
+| `result.place` | Local de emissão do documento |
+| `result.validDate` | Data de validade do documento |
+| `result.reanch` | Número do RENACH |
+| `result.biometry` | FaceMatch documento x selfie na base do governo |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "service_digital_documentoscopy_consult",
+    "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "name": "FULANINHO DA SILVA",
+    "fatherName": "FULANO DA SILVA",
+    "motherName": "FULANA DA SILVA",
+    "birthdate": "1992-01-05",
+    "cnhCategory": "AB",
+    "cnhNumber": "07796497926",
+    "expeditionDate": "2020-04-13",
+    "rg": "3451620",
+    "rgUf": "DF",
+    "doc": "CNH",
+    "place": "BRASILIA-DISTRITO FEDERAL, DF",
+    "validDate": "2021-02-13",
+    "REANCH": "DF767732467",
+    "biometry": 5
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de MEI
+
+Consulta os MEIs que um CPF possui.
+
+```json
+{
+  "service": "service_mei",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.meis` | Empresas MEI do CPF informado |
+| `result.meis.cpf` | CPF |
+| `result.meis.cnpj` | CNPJ do MEI |
+| `result.meis.companyName` | Nome da empresa |
+| `result.meis.sector` | Setor da empresa |
+| `result.meis.classification` | Classificação da empresa |
+| `result.meis.startDate` | Data de início da empresa |
+| `result.meis.endDate` | Data de fim da empresa |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "service_mei",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "meis": [
+      {
+        "cpf": "34449772040",
+        "cnpj": "22745099000193",
+        "companyName": "EMPRESA MEI EXEMPLO",
+        "sector": "PRIVATE - 9511800 - REPARACAO E MANUTENCAO DE COMPUTADORES E DE EQUIPAMENTOS PERIFERICOS",
+        "classification": "SELF-EMPLOYED",
+        "startDate": "2022-02-03",
+        "endDate": "2022-02-10"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Processos jurídicos e administrativos
+
+Consulta processos jurídicos e administrativos associados ao CPF informado.
+
+```json
+{
+  "service": "service_juridical_processes",
+  "cpf": "cpf"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_juridical_processes",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "processes": [
+      {
+        "cpf": "",
+        "numberLegalProcess": "",
+        "trialCourt": "",
+        "processDate": "",
+        "mainSubjectProcess": "",
+        "classification": "",
+        "relatedParties": ""
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de servidores públicos
+
+Consulta vínculos relacionados a servidores públicos para o CPF informado.
+
+```json
+{
+  "service": "service_public_servants",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.totalPublicPositions` | Total de vínculos ou posições públicas encontradas |
+| `result.inServiceServices` | Total de vínculos públicos em serviço |
+| `result.income` | Valor de renda retornado pela consulta |
+| `result.isCurrentlyPublicServant` | Indica se a pessoa é atualmente servidora pública |
+| `result.professionalHistory` | Histórico profissional relacionado ao serviço público |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_public_servants",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "totalPublicPositions": 6,
+    "inServiceServices": 0,
+    "income": 0,
+    "isCurrentlyPublicServant": false,
+    "professionalHistory": []
+  },
+  "status": {
+    "code": 400,
+    "message": "Failed to fetch information"
+  }
+}
+```
+
+### Consulta de endereços
+
+Consulta endereços associados ao CPF informado.
+
+```json
+{
+  "service": "service_address",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.addresses` | Lista de endereços associados ao CPF |
+| `result.addresses.zipcode` | CEP |
+| `result.addresses.country` | País |
+| `result.addresses.address` | Logradouro |
+| `result.addresses.city` | Cidade |
+| `result.addresses.addressType` | Tipo do endereço |
+| `result.addresses.neighborhood` | Bairro |
+| `result.addresses.state` | UF |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_address",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "addresses": [
+      {
+        "zipcode": "",
+        "country": "BRASIL",
+        "address": "",
+        "city": "SALVADOR",
+        "addressType": "HOME",
+        "neighborhood": "GRACA",
+        "state": "BA"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de relacionamentos econômicos
+
+Consulta relacionamentos econômicos associados ao CPF informado.
+
+```json
+{
+  "service": "economic_relationships",
+  "cpf": "cpf"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "economic_relationships",
+    "cpf": "cpf"
+  }'
+```
+
+O retorno desse serviço não foi informado no trecho atual da documentação antiga.
+
+### Consulta do histórico profissional
+
+Consulta histórico profissional associado ao CPF informado.
+
+```json
+{
+  "service": "service_professional_history",
+  "cpf": "cpf"
+}
+```
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_professional_history",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "professionalHistory": [
+      {
+        "endDate": "2007-12-23",
+        "companyName": "CRN CURSOS PROFISSIONALIZANTES LTDA",
+        "cnpj": "05731652000209",
+        "classification": "EMPLOYEE",
+        "sector": "PRIVATE - 8599604 - TREINAMENTO EM DESENVOLVIMENTO PROFISSIONAL E GERENCIAL",
+        "startDate": "2004-02-10"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de dados pelo telefone
+
+Consulta dados da pessoa a partir do telefone informado.
+
+```json
+{
+  "service": "SERVICE_CONFIRM_PHONE",
+  "phone": "+5561123456789"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `cpf` | CPF |
+| `name` | Nome da pessoa |
+| `phone` | Telefone consultado |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_CONFIRM_PHONE",
+    "phone": "+5561123456789"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "11111111111",
+    "name": "FULANO DA SILVA",
+    "phone": "+5561123456789"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de mandado de prisão
+
+Consulta mandado de prisão associado aos dados informados.
+
+```json
+{
+  "service": "SERVICE_ARREST_WARRANT",
+  "nome": "nome",
+  "motherName": "nome da mãe",
+  "fatherName": "nome do pai",
+  "birthDate": "dd/MM/yyyy",
+  "cpf": "cpf"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `message` | Mensagem de retorno |
+| `arrestWarrantFound` | Indica se existe mandado de prisão |
+
+### Consulta de débitos ativos
+
+Consulta débitos ativos associados ao CPF informado.
+
+```json
+{
+  "service": "SERVICE_ACTIVE_DEBT_PF",
+  "cpf": "cpf"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `result.totalDebtValue` | Valor total dos débitos |
+| `result.totalDebts` | Quantidade total de débitos |
+| `result.debts` | Lista de débitos |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+### Consulta de dados eleitorais de um candidato
+
+Consulta dados eleitorais associados a um candidato.
+
+```json
+{
+  "service": "SERVICE_ELECTION_CANDIDATE_DATA",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `hasRunForOffice` | Indica se o indivíduo já concorreu a algum cargo público |
+| `hasBeenElected` | Indica se o indivíduo já foi eleito |
+| `numberOfTimesRanForOffice` | Número de vezes que concorreu a cargos públicos |
+| `numberOfTimesElected` | Número de vezes que foi eleito |
+| `lastElectedRole` | Último cargo para o qual foi eleito |
+| `electionData` | Dados detalhados sobre candidaturas e eleições |
+| `accountability` | Dados de prestação de contas |
+| `assetsList` | Lista de bens declarados |
+| `providersRanking` | Ranking de fornecedores |
+| `donorsRanking` | Ranking de doadores |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_ELECTION_CANDIDATE_DATA",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "hasRunForOffice": true,
+    "hasBeenElected": true,
+    "numberOfTimesRanForOffice": 1,
+    "numberOfTimesElected": 1,
+    "lastElectedRole": "Presidente",
+    "firstElectionYearRanForOffice": "2000",
+    "lastElectionYearRanForOffice": "2020",
+    "firstElectionYearElected": "2000",
+    "lastElectionYearElected": "2020",
+    "electionData": [
+      {
+        "ballotName": "ROG***NHO",
+        "ballotNumber": 77789,
+        "fullName": "CAR***************************IRA",
+        "normalizedName": "CAR***************************IRA",
+        "docNumber": "832*****753",
+        "voterNumber": "079******370",
+        "url": "https://divulgacandcontas.tse.jus.br/divulga/rest/v1/candidatura/buscar/2020/58955/2030402020/candidato/190000751750",
+        "electionYear": "2020",
+        "electionType": "Municipal",
+        "applicationRole": "Vereador",
+        "applicationPlace": "SÃO FIDÉLIS",
+        "applicationUf": "RJ",
+        "campaignCNPJ": "38646823000161",
+        "status": "Eleito por QP",
+        "wasElected": true,
+        "candidateSituation": "Consta da urna",
+        "applicationSituation": "Deferido",
+        "partyNumber": 77,
+        "partyAcronym": "SOLIDARIEDADE",
+        "partyName": "Sol*******ade",
+        "campaignSpendingFirstRound": 122565.82,
+        "totalAssetsValue": 93100,
+        "assetsList": [
+          {
+            "description": "economia pessoal",
+            "type": "Dinheiro em espécie - moeda nacional",
+            "value": 8100
+          }
+        ],
+        "accountability": {
+          "accountabilityControlNumber": "777***************502",
+          "consolidatedRevenueValues": {
+            "totalReceivedResources": 13390.8,
+            "totalFinancialResources": 9230
+          },
+          "consolidatedExpensesValues": {
+            "expensesThreshold": 122565.82,
+            "totalExpensesContracted": 9230
+          }
+        }
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de doações eleitorais
+
+Consulta doações eleitorais realizadas por uma pessoa.
+
+```json
+{
+  "service": "SERVICE_ELECTORAL_DONORS",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `totalDonationsAmount` | Quantidade total de doações realizadas |
+| `totalDonatedValue` | Valor total doado |
+| `quantityOfDonationsLastElection` | Quantidade de doações na última eleição |
+| `quantityOfDonationsLastTwoElections` | Quantidade de doações nas últimas duas eleições |
+| `quantityOfDonationsLastThreeElection` | Quantidade de doações nas últimas três eleições |
+| `donatedValueLastElection` | Valor doado na última eleição |
+| `donatedValueLastTwoElections` | Valor doado nas últimas duas eleições |
+| `donatedValueLastThreeElection` | Valor doado nas últimas três eleições |
+| `partiesThatReceivedDonation` | Lista dos partidos que receberam doações |
+| `maxDonationValue` | Valor máximo de uma doação |
+| `averageDonationValue` | Valor médio das doações |
+| `minDonationValue` | Valor mínimo de uma doação |
+| `electionDonationData` | Dados detalhados das doações realizadas em eleições |
+| `electionDonationData.politicianBallotNumber` | Número na urna do político que recebeu a doação |
+| `electionDonationData.politicianFullName` | Nome completo do político que recebeu a doação |
+| `electionDonationData.electionYear` | Ano da eleição em que a doação foi realizada |
+| `electionDonationData.partyName` | Nome do partido que recebeu a doação |
+| `electionDonationData.donationsAmount` | Quantidade de doações feitas para o político ou partido |
+| `electionDonationData.totalDonationValue` | Valor total das doações feitas para o político ou partido |
+| `electionDonationData.isCrowdfunding` | Indica se a doação foi realizada via crowdfunding |
+| `electionDonationData.donationRecipient` | Destinatário da doação |
+| `electionDonationData.isCrossDonation` | Indica se a doação foi cruzada |
+| `electionDonationData.partyCrossDonationValue` | Valor da doação cruzada para o partido |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_ELECTORAL_DONORS",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "totalDonationsAmount": 15,
+    "totalDonatedValue": 57930428,
+    "quantityOfDonationsLastElection": 0,
+    "quantityOfDonationsLastTwoElections": 0,
+    "quantityOfDonationsLastThreeElection": 1,
+    "donatedValueLastElection": 0,
+    "donatedValueLastTwoElections": 0,
+    "donatedValueLastThreeElection": 25000000,
+    "partiesThatReceivedDonation": [
+      "PSDB",
+      "PST",
+      "PRP",
+      "PFL",
+      "MDB"
+    ],
+    "maxDonationValue": 57030000,
+    "averageDonationValue": 8275775.5,
+    "minDonationValue": 684,
+    "electionDonationData": [
+      {
+        "politicianBallotNumber": 0,
+        "politicianFullName": "HEN**********************LES",
+        "electionYear": "2002",
+        "partyName": "P**B",
+        "donationsAmount": "6",
+        "totalDonationValue": 887050.1,
+        "isCrowdfunding": false,
+        "donationRecipient": "CANDIDATE",
+        "isCrossDonation": false,
+        "partyCrossDonationValue": 0
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de envolvimento político
+
+Consulta indicadores de envolvimento político de uma pessoa.
+
+```json
+{
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
+  "cpf": "cpf"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `electionsCount` | Número de eleições nas quais o indivíduo participou |
+| `isCurrentlyInOffice` | Indica se está atualmente em cargo público |
+| `wasFormerlyElected` | Indica se já foi eleito anteriormente |
+| `isPep` | Indica se é Pessoa Politicamente Exposta |
+| `amountDonated` | Valor total doado |
+| `amountReceived` | Valor total recebido |
+| `politicalInvolvementScore` | Pontuação de envolvimento político |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_POLITICAL_INVOLVEMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "electionsCount": 5,
+    "isCurrentlyInOffice": true,
+    "wasFormerlyElected": true,
+    "isPep": true,
+    "amountDonated": 19804076,
+    "amountReceived": 20599420,
+    "politicalInvolvementScore": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de histórico familiar político
+
+Consulta histórico político familiar de uma pessoa.
+
+```json
+{
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `totalMembers` | Número total de membros da família |
+| `policalMembers` | Número de membros políticos na família |
+| `currentlyElectedMembers` | Número de membros atualmente eleitos |
+| `totalDisputedElections` | Total de eleições disputadas pela família |
+| `totalWonElections` | Total de eleições ganhas |
+| `familyFirstDisputedElectionYear` | Ano da primeira eleição disputada pela família |
+| `familyFirstWonElectionYear` | Ano da primeira eleição ganha pela família |
+| `familyLastDisputedElectionYear` | Ano da última eleição disputada pela família |
+| `familyLastWonElectionYear` | Ano da última eleição ganha pela família |
+| `relationshipTypeWithMoreWonElections` | Tipo de relação com mais eleições ganhas |
+| `relationshipTypeWithMoreDisputedElections` | Tipo de relação com mais eleições disputadas |
+| `highestDisputedPolicalPosition` | Posição política mais alta disputada |
+| `highestHeldPolicalPosition` | Posição política mais alta ocupada |
+| `electionsTimeline` | Linha do tempo de eleições disputadas |
+| `disputedPoliticalPositionsDistribution` | Distribuição dos cargos disputados |
+| `heldPoliticalPositionsDistribution` | Distribuição dos cargos ocupados |
+| `totalDisputedElectionsByRelationshipType` | Total de eleições disputadas por tipo de relação |
+| `totalWonElectionsByRelationshipType` | Total de eleições ganhas por tipo de relação |
+| `totalDisputedElectionsByPartyAcronym` | Total de eleições disputadas por sigla partidária |
+| `totalDisputedElectionsByRegion` | Total de eleições disputadas por região |
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "totalMembers": 10,
+    "policalMembers": 3,
+    "currentlyElectedMembers": 2,
+    "totalDisputedElections": 22,
+    "totalWonElections": 11,
+    "familyFirstDisputedElectionYear": 1998,
+    "familyFirstWonElectionYear": 1998,
+    "familyLastDisputedElectionYear": 2022,
+    "familyLastWonElectionYear": 2022,
+    "relationshipTypeWithMoreWonElections": "SON",
+    "relationshipTypeWithMoreDisputedElections": "SON",
+    "highestDisputedPolicalPosition": "PRESIDENTE",
+    "highestHeldPolicalPosition": "PRESIDENTE",
+    "electionsTimeline": [
+      {
+        "eelationshipType": "SELF",
+        "electionYear": 2022,
+        "electionType": "FEDERAL",
+        "electionRegion": "BRASIL - BR",
+        "role": "PRESIDENTE",
+        "partyAcronym": "PL",
+        "wasElected": false
+      }
+    ],
+    "disputedPoliticalPositionsDistribution": {
+      "DEPUTADO FEDERAL": 9,
+      "VEREADOR": 9,
+      "PRESIDENTE": 2,
+      "PREFEITO": 2
+    },
+    "heldPoliticalPositionsDistribution": {
+      "DEPUTADO FEDERAL": 6,
+      "VEREADOR": 4,
+      "PRESIDENTE": 1
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Consulta de prestadores de serviço eleitorais
+
+Consulta prestadores de serviço eleitorais associados à pessoa.
+
+```json
+{
+  "service": "SERVICE_ELECTORAL_PROVIDERS",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `name` | Nome do indivíduo ou entidade |
+| `partiesThatReceivedProvision` | Lista dos partidos que receberam provisões |
+| `electionProvisionData` | Dados detalhados sobre provisões eleitorais |
+| `politicianBallotNumber` | Número na urna do político que recebeu a provisão |
+| `politicianFullName` | Nome completo do político que recebeu a provisão |
+| `politicianDocNumber` | Número do documento do político |
+| `partyName` | Nome do partido que recebeu a provisão |
+| `provisionRequester` | Solicitante da provisão |
+| `electionYear` | Ano da eleição |
+| `applicationRole` | Cargo ao qual o candidato se candidatou |
+| `numberOfProvisions` | Número de provisões feitas |
+| `totalProvisionValue` | Valor total das provisões |
+| `crossDonationFlagFound` | Indica se foi encontrada doação cruzada |
+| `entityCrossDonationValue` | Valor da doação cruzada pela entidade |
+| `entityCrossDonationYield` | Rendimento da doação cruzada pela entidade |
+| `crossDonationRelationshipLevel` | Nível de relacionamento da doação cruzada |
+| `minProvisionValue` | Valor mínimo de provisão |
+| `maxProvisionValue` | Valor máximo de provisão |
+| `avgProvisionValue` | Valor médio das provisões |

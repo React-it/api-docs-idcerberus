@@ -1,8 +1,145 @@
 ---
-title: Introduction
-description: ReactIt documentation
+title: Boas-vindas
+description: Integre onboarding, KYC, biometria, risco e compliance com a API idCerberus
 ---
 
-# ReactIt Docs
+# Boas-vindas
 
-Bem-vindo à documentação.
+Comece sua jornada de integração com a idCerberus. Aqui você encontra os guias,
+referências técnicas e exemplos necessários para conectar sua aplicação aos
+produtos de onboarding digital, KYC, biometria, prevenção a fraude, compliance e
+enriquecimento cadastral.
+
+Esta documentação foi organizada para dois momentos: entender qual produto usar
+e implementar a chamada correta no código.
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" href="/guides/quickstart">
+    Gere um token, execute sua primeira consulta e entenda o padrão de resposta
+    da API.
+  </Card>
+  <Card title="Guias de integração" href="/guides/visao-geral">
+    Entenda ambientes, autenticação, fluxo de onboarding, uso por domínio e
+    melhores caminhos para montar a integração.
+  </Card>
+  <Card title="Escolha o serviço certo" href="/guides/escolha-o-servico-certo">
+    Saia de uma necessidade de negócio e encontre os códigos `service`
+    indicados para o seu fluxo.
+  </Card>
+  <Card title="API Reference" href="/api-reference/boas-vindas">
+    Consulte endpoints, parâmetros, bodies, exemplos de request, responses e
+    schemas retornados pela API.
+  </Card>
+  <Card title="Serviços de pessoas" href="/guides/pessoas/enriquecimento-cadastral">
+    Valide CPF, dados cadastrais, documentos, biometria, risco, compliance,
+    contatos e informações eleitorais.
+  </Card>
+  <Card title="Serviços de empresas" href="/guides/empresas/dados-cadastrais">
+    Consulte CNPJ, Receita Federal, SINTEGRA, sócios, relacionamentos, débitos,
+    protestos e compliance PJ.
+  </Card>
+</CardGroup>
+
+## Comece por aqui
+
+<Steps>
+  <Step title="Entenda a estrutura da plataforma">
+    Leia o [Quickstart](/guides/quickstart) e a [visão geral](/guides/visao-geral) para conhecer os modelos de
+    integração, ambientes, endpoints principais e padrão de
+    resposta.
+  </Step>
+  <Step title="Gere um token JWT">
+    Use `POST /api/token-generate` com `client` e `secret`. O token retornado deve
+    ser enviado no header `Authorization`.
+  </Step>
+  <Step title="Escolha o fluxo de uso">
+    Para cadastro completo, use onboarding via SDK. Para consultas avulsas,
+    chame diretamente `POST /api/service-api` e consulte [Escolha o serviço certo](/guides/escolha-o-servico-certo).
+  </Step>
+  <Step title="Implemente pelo API Reference">
+    Abra a [API Reference](/api-reference/boas-vindas), escolha o endpoint e
+    copie o exemplo de request correspondente ao produto desejado.
+  </Step>
+</Steps>
+
+## Modelos de integração
+
+| Modelo | Quando usar | O que você implementa |
+| --- | --- | --- |
+| API direta | Consultas server-to-server por CPF ou CNPJ | Autenticação, payloads, chamada HTTP e tratamento do response |
+| SDK | Captura de documentos, selfie e dados em aplicativo mobile | Geração do `tokenOnboarding` e consulta do resultado |
+| Cliente Web | Fluxos em WebView, navegador ou QR Code | Redirecionamento do usuário e leitura do resultado processado |
+
+## Endpoints essenciais
+
+| Operação | Endpoint | Uso |
+| --- | --- | --- |
+| Gerar token | `POST /api/token-generate` | Autenticar chamadas protegidas |
+| Gerar TokenOnboarding | `POST /api/token-history-onboarding` | Iniciar fluxo via SDK |
+| Consultar onboarding | `GET /api/onboarding/report/{tokenOnboarding}` | Obter status, campos e regras processadas |
+| Baixar relatório PDF | `GET /api/history-onboarding-report/{tokenOnboarding}` | Armazenar ou auditar o resultado final |
+| Executar serviço | `POST /api/service-api` | Rodar consultas de CPF, CNPJ, biometria, risco e compliance |
+| Consultar cliente | `GET /api/customer?documentKey={documentKey}` | Buscar cliente por CPF ou CNPJ |
+| Alterar status | `POST /api/changeStatusOfCustomer` | Ativar ou inativar clientes |
+
+## Ambientes
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Os endpoints são os mesmos nos dois ambientes. Nos exemplos, substitua
+`{base_url}` pela URL do ambiente escolhido.
+
+## Exemplo rápido
+
+Gere um token:
+
+```bash
+curl --location '{base_url}/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Use o token para executar uma consulta:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+## Padrão de resposta
+
+A maior parte dos serviços retorna um objeto com os dados da consulta em
+`result` e o status técnico em `status`.
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+<Note>
+  O campo `service` define qual produto será executado dentro de
+  `POST /api/service-api`. Os demais campos mudam conforme a consulta escolhida.
+</Note>
+
+## Próximos passos
+
+- Para entender a organização da documentação, veja [Como usar esta documentação](/guides/como-usar-a-documentacao).
+- Para autenticar a aplicação, veja [Autenticação](/guides/autenticacao).
+- Para onboarding via aplicativo, veja [Onboarding via SDK](/guides/onboarding-sdk).
+- Para implementar endpoint a endpoint, use a [API Reference](/api-reference/boas-vindas).

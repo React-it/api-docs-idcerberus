@@ -1,0 +1,347 @@
+---
+title: Onboarding via SDK
+description: Gere TokenOnboarding, acompanhe o status do cadastro e baixe o relatório final
+---
+
+# Onboarding via SDK
+
+Use este fluxo quando a captura dos dados do usuário acontecer pelo SDK
+idCerberus. O back-end da sua empresa gera um `tokenOnboarding`, entrega esse
+token ao aplicativo integrado ao SDK e depois consulta o resultado processado
+pelo backoffice.
+
+O `tokenOnboarding` identifica o cadastro durante todo o ciclo: criação,
+execução no SDK, processamento, consulta de resultado e download do relatório em
+PDF.
+
+## Quando usar
+
+Use esta integração quando precisar:
+
+- iniciar um fluxo de onboarding em aplicativo mobile ou experiência web
+  integrada ao SDK;
+- enviar documentos ou dados iniciais para apoiar o cadastro;
+- consultar status, campos capturados e serviços executados;
+- baixar o relatório final em PDF para auditoria ou armazenamento.
+
+## Fluxo de integração
+
+1. Gere um token de API em [Autenticação](/guides/autenticacao).
+2. Gere um `tokenOnboarding` para o usuário.
+3. Envie o `tokenOnboarding` para o aplicativo integrado ao SDK.
+4. O usuário realiza o cadastro no fluxo de onboarding.
+5. Consulte o resultado usando o mesmo `tokenOnboarding`.
+6. Se necessário, baixe o PDF do relatório do onboarding.
+
+## Endpoints do fluxo
+
+| Etapa | Endpoint | Objetivo |
+| --- | --- | --- |
+| Gerar token de API | `POST /api/token-generate` | Autenticar a aplicação |
+| Gerar TokenOnboarding | `POST /api/token-history-onboarding` | Criar o identificador do cadastro |
+| Consultar resultado | `GET /api/onboarding/report/{tokenOnboarding}` | Obter status, campos e serviços processados |
+| Baixar relatório | `GET /api/history-onboarding-report/{tokenOnboarding}` | Obter o PDF final do onboarding |
+
+## Ambientes
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Nos exemplos abaixo, `{base_url}` representa a URL base do ambiente escolhido.
+
+## Gerar TokenOnboarding
+
+Gera um novo `tokenOnboarding` para identificar o cadastro do usuário no fluxo
+do SDK. Esse token será usado depois para consultar o resultado processado pelo
+backoffice.
+
+```http
+POST /api/token-history-onboarding
+```
+
+Endpoint completo:
+
+```txt
+{base_url}/api/token-history-onboarding
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Exemplo de requisição:
+
+```json
+{
+  "document": "cpf",
+  "cpf": "cpf",
+  "cnpj": "cnpj",
+  "name": "name",
+  "documentFiles": [
+    {
+      "documentFileType": "OTHER",
+      "document": "data:image/jpeg;base64",
+      "documentUrl": "url"
+    }
+  ]
+}
+```
+
+Campos principais:
+
+| Campo | Descrição |
+| --- | --- |
+| `document` | CPF ou CNPJ usado no onboarding |
+| `cpf` | CPF do usuário, quando aplicável |
+| `cnpj` | CNPJ relacionado, quando aplicável |
+| `name` | Nome do usuário que fará o KYC |
+| `documentFiles` | Lista de documentos enviados para o cadastro |
+| `documentFiles.documentFileType` | Tipo do documento enviado |
+| `documentFiles.document` | Arquivo em base64 |
+| `documentFiles.documentUrl` | URL do arquivo a ser enviado |
+
+Tipos de documento aceitos em `documentFiles.documentFileType`:
+
+| Valor | Descrição |
+| --- | --- |
+| `RG_FRONT` | RG frente |
+| `RG_BACK` | RG verso |
+| `CNH` | Carteira Nacional de Habilitação |
+| `SELFIE` | Selfie |
+| `SELFIE_3D` | Selfie 3D |
+| `OAB_FRONT` | Carteira OAB frente |
+| `OAB_BACK` | Carteira OAB verso |
+| `OTHER` | Outros |
+| `OTHER_SINGLE_FILE` | Outros, arquivo único |
+
+Exemplo de resposta:
+
+```json
+{
+  "tokenOnboarding": "56950dae-2d19-4092-a918-a612b3ca8f68",
+  "dateHourProcess": "2023-02-17T16:49:41.577364Z"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `tokenOnboarding` | UUID do onboarding usado nas próximas consultas |
+| `dateHourProcess` | Data e hora de criação do token |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/token-history-onboarding' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "document": "cpf",
+    "cpf": "cpf",
+    "cnpj": "cnpj",
+    "name": "name",
+    "documentFiles": [
+      {
+        "documentFileType": "OTHER",
+        "document": "data:image/jpeg;base64",
+        "documentUrl": "url"
+      }
+    ]
+  }'
+```
+
+## Consultar resultado
+
+Retorna o status e os resultados de um onboarding. Para consultar, informe o
+`tokenOnboarding` que foi entregue ao SDK.
+
+```http
+GET /api/onboarding/report/{tokenOnboarding}
+```
+
+Endpoint completo:
+
+```txt
+{base_url}/api/onboarding/report/{tokenOnboarding}
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+Campo de entrada:
+
+| Campo | Descrição |
+| --- | --- |
+| `tokenOnboarding` | UUID do onboarding retornado ao SDK |
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `tokenOnboarding` | UUID do onboarding usado para a consulta |
+| `createdDate` | Data e hora de criação do onboarding |
+| `numberSteps` | Número de etapas configuradas para o cadastro |
+| `status` | Status do onboarding: `APPROVED`, `IN_PROCESS` ou `REFUSED` |
+| `result` | Resultado do processamento: `AUT_APPROVED`, `IN_PROCESS` ou `REFUSED` |
+| `fields` | Campos capturados durante o cadastro |
+| `services` | Serviços executados durante o onboarding |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/onboarding/report/<tokenOnboarding>' \
+  --header 'Authorization: Bearer {jwt_token}'
+```
+
+Exemplo de resposta resumido:
+
+```json
+{
+  "tokenOnboarding": "bb6adc72-0132-4b27-a723-98fe9f20cb81",
+  "createdDate": "2022-06-15T19:02:04.877688Z",
+  "numberSteps": 4,
+  "status": "APPROVED",
+  "result": "AUT_APPROVED",
+  "fields": [
+    {
+      "field": "selfie_liveness_3d",
+      "name": "Selfie Liveness 3D",
+      "step": "1",
+      "value": "https://bucket-onboarding.s3.amazonaws.com/arquivo"
+    },
+    {
+      "field": "button_cnh",
+      "name": "CNH - Carteira Nacional de Habilitação",
+      "step": "2"
+    }
+  ],
+  "services": [
+    {
+      "serviceName": "service_liveness_ft",
+      "createdDate": "2022-06-15T19:02:06.233020Z",
+      "status": "APPROVED",
+      "statusMessage": "USER PASSED THE LIVENESS CHALLENGE",
+      "fields": [],
+      "rules": []
+    }
+  ]
+}
+```
+
+### Campos capturados
+
+O array `fields` retorna os dados capturados durante o cadastro.
+
+| Campo | Descrição |
+| --- | --- |
+| `fields.field` | Alias do campo |
+| `fields.name` | Nome do campo |
+| `fields.step` | Etapa em que o campo foi capturado |
+| `fields.value` | Valor capturado |
+
+Exemplo:
+
+```json
+{
+  "field": "cnh_image",
+  "name": "CNH",
+  "step": "3.1",
+  "value": "https://bucket-onboarding.s3.amazonaws.com/arquivo"
+}
+```
+
+### Serviços executados
+
+O array `services` retorna os serviços processados durante o onboarding, como
+OCR, validação na Receita Federal, PEP, FaceMatch e Liveness.
+
+| Campo | Descrição |
+| --- | --- |
+| `services.serviceName` | Alias do serviço executado |
+| `services.createdDate` | Data e hora de execução do serviço |
+| `services.status` | Status do serviço: `APPROVED`, `IN_PROCESS` ou `REFUSED` |
+| `services.statusMessage` | Resultado ou mensagem do processamento |
+| `services.fields` | Campos extraídos pelo serviço |
+| `services.rules` | Regras avaliadas durante o processamento |
+
+Exemplo:
+
+```json
+{
+  "serviceName": "service_face_match_1",
+  "createdDate": "2022-06-15T19:04:10.963326Z",
+  "status": "APPROVED",
+  "statusMessage": "SIMILARITY SCORE: 99.97%",
+  "fields": [],
+  "rules": []
+}
+```
+
+### Regras de processamento
+
+Alguns serviços retornam regras avaliadas no processamento. Elas ajudam a
+entender por que o onboarding foi aprovado, recusado ou ficou em processamento.
+
+Exemplo:
+
+```json
+{
+  "name": "situation_cpf_rfb",
+  "value": "REGULAR"
+}
+```
+
+## Baixar relatório em PDF
+
+Realiza o download do relatório do onboarding em PDF.
+
+```http
+GET /api/history-onboarding-report/{tokenOnboarding}
+```
+
+Endpoint completo:
+
+```txt
+{base_url}/api/history-onboarding-report/{tokenOnboarding}
+```
+
+Autorização:
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+Campo de entrada:
+
+| Campo | Descrição |
+| --- | --- |
+| `tokenOnboarding` | UUID do onboarding retornado ao SDK |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/history-onboarding-report/{tokenOnboarding}' \
+  --header 'Authorization: Bearer {jwt_token}'
+```
+
+Esse endpoint não retorna um body JSON. Use-o quando precisar armazenar ou
+apresentar o relatório final do processo de onboarding em PDF.
+
+## Boas práticas
+
+- Gere o `tokenOnboarding` no back-end, nunca diretamente no aplicativo.
+- Entregue ao SDK apenas o token necessário para iniciar o fluxo.
+- Use o mesmo `tokenOnboarding` para consultar resultado e baixar relatório.
+- Trate `IN_PROCESS` como estado intermediário e consulte novamente depois.
+- Armazene o relatório PDF somente quando houver necessidade operacional,
+  regulatória ou de auditoria.
+
+Para detalhes técnicos dos endpoints, consulte a
+[API Reference](/api-reference/boas-vindas).

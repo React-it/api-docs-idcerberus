@@ -1,0 +1,165 @@
+---
+title: Exemplos por linguagem
+description: Exemplos de integração com curl, Node.js, Python e C#
+---
+
+# Exemplos por linguagem
+
+Os exemplos abaixo usam o mesmo fluxo: gerar token e chamar `POST /api/service-api`
+com o serviço de enriquecimento de pessoa física.
+
+Escolha a URL base do ambiente antes de executar:
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+## curl
+
+```bash
+BASE_URL="https://backoffice-hml.idcerberus.com"
+
+TOKEN=$(curl --silent --location "${BASE_URL}/api/token-generate" \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }' | jq -r '.access_token')
+
+curl --location "${BASE_URL}/api/service-api" \
+  --header "Authorization: Bearer ${TOKEN}" \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+## Node.js
+
+```js
+const baseUrl = "https://backoffice-hml.idcerberus.com";
+
+async function gerarToken() {
+  const response = await fetch(`${baseUrl}/api/token-generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client: "{client}",
+      secret: "{secret}",
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Falha ao gerar token: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+async function executarServico(token) {
+  const response = await fetch(`${baseUrl}/api/service-api`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      service: "service_person_data_enrichment",
+      cpf: "cpf",
+    }),
+  });
+
+  const body = await response.json();
+
+  if (body.status?.code !== 200) {
+    throw new Error(body.status?.message || "Falha no processamento");
+  }
+
+  return body.result;
+}
+
+const { access_token } = await gerarToken();
+const result = await executarServico(access_token);
+console.log(result);
+```
+
+## Python
+
+```python
+import requests
+
+BASE_URL = "https://backoffice-hml.idcerberus.com"
+
+token_response = requests.post(
+    f"{BASE_URL}/api/token-generate",
+    json={
+        "client": "{client}",
+        "secret": "{secret}",
+    },
+    timeout=30,
+)
+token_response.raise_for_status()
+token = token_response.json()["access_token"]
+
+service_response = requests.post(
+    f"{BASE_URL}/api/service-api",
+    headers={"Authorization": f"Bearer {token}"},
+    json={
+        "service": "service_person_data_enrichment",
+        "cpf": "cpf",
+    },
+    timeout=60,
+)
+service_response.raise_for_status()
+body = service_response.json()
+
+if body.get("status", {}).get("code") != 200:
+    raise RuntimeError(body.get("status", {}).get("message", "Falha no processamento"))
+
+print(body["result"])
+```
+
+## C#
+
+```csharp
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+
+var baseUrl = "https://backoffice-hml.idcerberus.com";
+using var http = new HttpClient();
+
+var tokenPayload = JsonSerializer.Serialize(new
+{
+    client = "{client}",
+    secret = "{secret}"
+});
+
+var tokenResponse = await http.PostAsync(
+    $"{baseUrl}/api/token-generate",
+    new StringContent(tokenPayload, Encoding.UTF8, "application/json")
+);
+
+tokenResponse.EnsureSuccessStatusCode();
+using var tokenJson = JsonDocument.Parse(await tokenResponse.Content.ReadAsStringAsync());
+var token = tokenJson.RootElement.GetProperty("access_token").GetString();
+
+http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+var servicePayload = JsonSerializer.Serialize(new
+{
+    service = "service_person_data_enrichment",
+    cpf = "cpf"
+});
+
+var serviceResponse = await http.PostAsync(
+    $"{baseUrl}/api/service-api",
+    new StringContent(servicePayload, Encoding.UTF8, "application/json")
+);
+
+serviceResponse.EnsureSuccessStatusCode();
+var serviceBody = await serviceResponse.Content.ReadAsStringAsync();
+Console.WriteLine(serviceBody);
+```

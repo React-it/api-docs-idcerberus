@@ -1,0 +1,97 @@
+---
+title: Risco e compliance
+description: Avalie exposição, restrições, certidões, débitos e sinais de risco de pessoas físicas
+---
+
+# Risco e compliance
+
+Use estes serviços para identificar sinais de risco associados a uma pessoa
+física, incluindo exposição política, certidões, antecedentes, protestos, débitos,
+processos, mandados e scores. Eles apoiam decisões de onboarding, crédito,
+prevenção a fraude, compliance e monitoramento contínuo.
+
+Todos os serviços desta categoria são consumidos pelo endpoint:
+
+```http
+POST /api/service-api
+```
+
+## Quando usar
+
+Use esta categoria quando precisar:
+
+- verificar se a pessoa é PEP ou possui exposição pública relevante;
+- avaliar propensão de fraude ou inadimplência;
+- consultar certidões, antecedentes criminais e nada consta;
+- verificar protestos, débitos ativos e processos;
+- complementar uma esteira de aprovação com sinais de risco.
+
+## Serviços disponíveis
+
+| Serviço | Código `service` | Uso principal |
+| --- | --- | --- |
+| Pessoa politicamente exposta | `service_pep` | Indica se o CPF pertence a uma Pessoa Politicamente Exposta |
+| Dívida ativa PF | `service_active_debt` | Consulta situação de dívida ativa em fontes públicas |
+| Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF` | Retorna totais e lista de débitos ativos associados ao CPF |
+| Score de risco de fraude | `service_fraud_risk_score` | Mede propensão de fraude com base em fator de risco |
+| Score de inadimplência | `service_default_risk_score` | Retorna score, faixa de risco e probabilidade esperada de inadimplência |
+| Nada consta em ações judiciais | `service_nothing_record_lawsuits` | Emite certidão de Nada Consta em tribunais regionais federais |
+| Antecedentes criminais federais | `service_criminal_record_federal` | Consulta certidão de antecedentes criminais federal |
+| Antecedentes criminais civis | `service_criminal_record_civil` | Consulta certidão de antecedentes criminais estadual |
+| Certidão negativa de protesto | `service_protest_clearance_certificate` | Consulta protestos em cartórios e detalhes de títulos |
+| Processos jurídicos | `service_juridical_processes` | Consulta processos jurídicos e administrativos associados ao CPF |
+| Servidores públicos | `service_public_servants` | Consulta vínculos com serviço público |
+| Mandado de prisão | `SERVICE_ARREST_WARRANT` | Consulta existência de mandado de prisão |
+
+## Exemplo rápido
+
+Consulta de score de risco de fraude:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_fraud_risk_score",
+    "cpf": "cpf",
+    "factor": "minRisk or minattrition"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "service_fraud_risk_score",
+  "cpf": "cpf",
+  "factor": "minRisk or minattrition"
+}
+```
+
+Resposta esperada:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "score": "8.0691",
+    "factor": "MEDIUM RISK",
+    "message": "Success calculating score"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Leitura dos resultados
+
+O objeto `status` indica o resultado técnico da chamada. Os sinais de negócio
+ficam no objeto `result`, como status da certidão, scores, fatores de risco,
+valores de dívida, protestos e indicadores encontrados. Em fluxos críticos,
+combine mais de uma consulta para reduzir decisão baseada em um único sinal.
+
+Para campos, exemplos completos e responses, consulte a
+[API Reference](/api-reference/boas-vindas) ou o
+[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).
