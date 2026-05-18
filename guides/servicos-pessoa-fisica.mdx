@@ -89,6 +89,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | --- | --- | --- |
 | Pessoa politicamente exposta | `service_pep` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` |
+| Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
 | Dívida ativa PF | `service_active_debt` | `cpf` |
 | Score de risco de fraude | `service_fraud_risk_score` | `cpf`, `factor` |
 | Score de inadimplência | `service_default_risk_score` | `cpf` |
@@ -682,6 +683,62 @@ Exemplo de resposta:
     "isCurrentlySanctioned": false,
     "sanctionsHistory": [],
     "pepHistories": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  }
+}
+```
+
+### Exposição e perfil na mídia de pessoa física
+
+Consulta exposição pública e perfil de mídia associado ao CPF, incluindo nível
+de exposição, celebridade, impopularidade, unicidade do nome e notícias
+relacionadas quando disponíveis.
+
+```json
+{
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
+  "cpf": "cpf"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF consultado |
+| `result.mediaExposureLevel` | Nível de exposição em mídia |
+| `result.celebrityLevel` | Nível de notoriedade pública |
+| `result.unpopularityLevel` | Nível de impopularidade |
+| `result.fullName` | Nome completo retornado |
+| `result.shortName` | Nome curto retornado |
+| `result.fullNameUniquenessScore` | Score de unicidade do nome completo |
+| `result.shortNameUniquenessScore` | Score de unicidade do nome curto |
+| `result.newsItems` | Notícias relacionadas encontradas |
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "12345678901",
+    "mediaExposureLevel": "MEDIUM",
+    "celebrityLevel": "LOW",
+    "unpopularityLevel": "LOW",
+    "fullName": "NOME EXEMPLO",
+    "shortName": "NOME EXEMPLO",
+    "fullNameUniquenessScore": 0.98,
+    "shortNameUniquenessScore": 0.91,
+    "newsItems": [
+      {
+        "title": "Notícia de exemplo",
+        "url": "https://www.exemplo.com/noticia",
+        "publicationDate": "2024-01-15",
+        "sentimentAnalysis": "NEUTRAL"
+      }
+    ]
   },
   "status": {
     "code": 200,

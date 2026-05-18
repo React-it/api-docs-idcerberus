@@ -61,6 +61,7 @@ Para implementação endpoint a endpoint, use a [API Reference](/api-reference/b
 | Sócios de primeiro nível | `service_first_level_partner` | `cnpj` |
 | Processos jurídicos dos sócios | `service_juridical_processes_pj_owners` | `cnpj` |
 | KYC e compliance dos sócios | `service_company_kyc_owners` | `cnpj` |
+| Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` |
 | Débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
 | Certidão negativa de protesto PJ | `service_protest_clearance_certificate_pj` | `cnpj` |
 | Compliance de casas de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
@@ -663,6 +664,32 @@ Campos principais do retorno:
 | `partnersHistory.IsCurrentlyPEP` | Indica se o sócio é PEP atualmente |
 | `partnersHistory.IsCurrentlySanctioned` | Indica se o sócio está sancionado atualmente |
 | `partnersHistory.SanctionsHistory` | Histórico de sanções |
+
+### Exposição e perfil na mídia dos sócios
+
+Consulta exposição pública e perfil de mídia dos sócios relacionados ao CNPJ.
+O retorno traz uma lista em `results`, com um item por pessoa física encontrada.
+
+```json
+{
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `results.cpf` | CPF do sócio consultado |
+| `results.mediaExposureLevel` | Nível de exposição em mídia |
+| `results.celebrityLevel` | Nível de notoriedade pública |
+| `results.unpopularityLevel` | Nível de impopularidade |
+| `results.fullName` | Nome completo retornado |
+| `results.shortName` | Nome curto retornado |
+| `results.fullNameUniquenessScore` | Score de unicidade do nome completo |
+| `results.shortNameUniquenessScore` | Score de unicidade do nome curto |
+| `results.newsItems` | Notícias relacionadas encontradas |
 
 ### Consulta de débitos ativos
 
