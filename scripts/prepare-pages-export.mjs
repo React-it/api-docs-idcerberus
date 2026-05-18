@@ -67,6 +67,7 @@ function withBase(value) {
 function normalizeHtml(html, route) {
   let next = html
     .replace('data-current-path="/"', `data-current-path="${route}"`)
+    .replace('!function(){var b="";', `!function(){var b=${basePathJson};`)
     .replaceAll('href="/_next/', `href="${basePath}/_next/`)
     .replaceAll('src="/_next/', `src="${basePath}/_next/`)
     .replaceAll('href="/assets/', `href="${basePath}/assets/`)
