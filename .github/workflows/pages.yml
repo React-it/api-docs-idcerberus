@@ -37,14 +37,28 @@ jobs:
       - name: Export static docs
         run: mint export --output export.zip
 
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Prepare Pages artifact
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
         run: |
           mkdir dist
           unzip -q export.zip -d dist
+          if [ -n "$BASE_PATH" ]; then
+            find dist -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" \) -print0 \
+              | xargs -0 sed -i \
+                -e "s|href=\"/|href=\"$BASE_PATH/|g" \
+                -e "s|src=\"/|src=\"$BASE_PATH/|g" \
+                -e "s|url(/|url($BASE_PATH/|g" \
+                -e "s|'/_next/|'$BASE_PATH/_next/|g" \
+                -e "s|\"/_next/|\"$BASE_PATH/_next/|g" \
+                -e "s|'\/assets/|'$BASE_PATH/assets/|g" \
+                -e "s|\"/assets/|\"$BASE_PATH/assets/|g"
+          fi
           touch dist/.nojekyll
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
