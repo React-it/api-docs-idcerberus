@@ -97,6 +97,9 @@ O Quickstart foi pensado para usuários com diferentes níveis técnicos. Ele mo
 como executar a primeira chamada usando Postman, Windows PowerShell/CMD, macOS e
 Linux.
 
+Também existem guias práticos para primeira consulta de CPF, primeira consulta
+de CNPJ, checklist de produção, glossário e tratamento de status/erros.
+
 ## Validação rápida
 
 Para validar a estrutura do OpenAPI e do `docs.json`:

@@ -1,0 +1,118 @@
+---
+title: Primeira consulta CNPJ
+description: Execute uma consulta simples de pessoa jurídica do início ao fim
+---
+
+# Primeira consulta CNPJ
+
+Este guia mostra como executar uma primeira consulta de pessoa jurídica usando o
+endpoint `POST /api/service-api`.
+
+O exemplo usa o serviço `service_corporate_data_enrichment`, que retorna dados
+cadastrais de uma empresa.
+
+## O que você vai fazer
+
+1. Escolher o ambiente.
+2. Gerar um token.
+3. Copiar o `access_token`.
+4. Executar uma consulta de CNPJ.
+5. Ler `result` e `status`.
+
+## 1. Escolha o ambiente
+
+Homologação:
+
+```txt
+https://backoffice-hml.idcerberus.com
+```
+
+Produção:
+
+```txt
+https://backoffice.idcerberus.com
+```
+
+## 2. Gere o token
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Resposta esperada:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+## 3. Execute a consulta
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_corporate_data_enrichment",
+    "cnpj": "cnpj"
+  }'
+```
+
+Substitua:
+
+| Valor | O que colocar |
+| --- | --- |
+| `{jwt_token}` | Token gerado no passo anterior |
+| `cnpj` | CNPJ que será consultado |
+
+## 4. Entenda o body
+
+```json
+{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `service` | Define o produto que será executado |
+| `cnpj` | Documento da pessoa jurídica consultada |
+
+## 5. Leia o retorno
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000150",
+    "status": "ATIVA",
+    "name": "REACT IT SOLUCOES EM TECNOLOGIA LTDA",
+    "fantasyName": "REACT IT SOLUTIONS"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## 6. Próximos serviços comuns
+
+| Necessidade | Serviço |
+| --- | --- |
+| Consultar status do CNPJ na Receita Federal | `service_rfb_pj` |
+| Consultar SINTEGRA | `service_sintegra_consultation` |
+| Consultar relacionamentos da empresa | `service_company_relationship` |
+| Consultar sócios de primeiro nível | `service_first_level_partner` |
+| Consultar KYC dos sócios | `service_company_kyc_owners` |
+| Consultar débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` |
+
+Para ver todos os serviços de pessoa jurídica, consulte
+[Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica).

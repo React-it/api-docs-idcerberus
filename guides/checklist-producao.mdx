@@ -1,0 +1,86 @@
+---
+title: Checklist para produção
+description: Confira os pontos essenciais antes de usar a API em produção
+---
+
+# Checklist para produção
+
+Use esta lista antes de trocar a integração de homologação para produção.
+
+## Ambiente
+
+| Item | Status |
+| --- | --- |
+| Testei o fluxo completo em homologação | Pendente |
+| Troquei a URL base para produção | Pendente |
+| Usei credenciais de produção | Pendente |
+| Gereei token na URL de produção | Pendente |
+| Removi CPFs e CNPJs de teste | Pendente |
+
+Produção usa:
+
+```txt
+https://backoffice.idcerberus.com
+```
+
+Homologação usa:
+
+```txt
+https://backoffice-hml.idcerberus.com
+```
+
+## Autenticação
+
+| Item | Status |
+| --- | --- |
+| `client` e `secret` não estão no front-end | Pendente |
+| `client` e `secret` não estão em repositório público | Pendente |
+| O token é renovado quando expira | Pendente |
+| O header `Authorization` é enviado em chamadas protegidas | Pendente |
+
+Header esperado:
+
+```txt
+Authorization: Bearer {jwt_token}
+```
+
+## Tratamento de resposta
+
+| Item | Status |
+| --- | --- |
+| A aplicação lê `status.code` | Pendente |
+| A aplicação lê `status.message` | Pendente |
+| A aplicação trata `status.code` diferente de 200 | Pendente |
+| A aplicação não depende apenas do HTTP status | Pendente |
+| O `externalId` é salvo quando retornado | Pendente |
+
+## Segurança e logs
+
+| Item | Status |
+| --- | --- |
+| Logs não expõem `client` e `secret` | Pendente |
+| Logs não expõem token JWT completo | Pendente |
+| Dados sensíveis são armazenados conforme a política do projeto | Pendente |
+| Retentativas possuem limite | Pendente |
+| Erros de payload não entram em retry automático | Pendente |
+
+## Operação
+
+| Item | Status |
+| --- | --- |
+| Time sabe diferenciar HML e produção | Pendente |
+| Time sabe onde consultar API Reference | Pendente |
+| Time sabe como identificar erro de autenticação | Pendente |
+| Time sabe qual `service` está usando em cada fluxo | Pendente |
+| Time sabe quem acionar em caso de indisponibilidade | Pendente |
+
+## Teste final recomendado
+
+Antes de liberar produção, execute:
+
+1. Gerar token em produção.
+2. Executar uma consulta simples.
+3. Confirmar `status.code`.
+4. Confirmar presença de `result`.
+5. Conferir logs internos.
+6. Confirmar que nenhuma credencial foi exposta.

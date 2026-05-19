@@ -1,0 +1,125 @@
+---
+title: Primeira consulta CPF
+description: Execute uma consulta simples de pessoa física do início ao fim
+---
+
+# Primeira consulta CPF
+
+Este guia mostra, passo a passo, como executar uma primeira consulta de pessoa
+física usando o endpoint `POST /api/service-api`.
+
+O exemplo usa o serviço `service_person_data_enrichment`, que consulta dados
+cadastrais de um CPF.
+
+## O que você vai fazer
+
+1. Escolher o ambiente.
+2. Gerar um token.
+3. Copiar o `access_token`.
+4. Executar uma consulta de CPF.
+5. Ler `result` e `status`.
+
+## 1. Escolha o ambiente
+
+Use homologação para testes:
+
+```txt
+https://backoffice-hml.idcerberus.com
+```
+
+Use produção somente quando a integração já estiver validada:
+
+```txt
+https://backoffice.idcerberus.com
+```
+
+## 2. Gere o token
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Resposta esperada:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+Copie o valor de `access_token`.
+
+## 3. Execute a consulta
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+Substitua:
+
+| Valor | O que colocar |
+| --- | --- |
+| `{jwt_token}` | Token gerado no passo anterior |
+| `cpf` | CPF que será consultado |
+
+## 4. Entenda o body
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+| Campo | Descrição |
+| --- | --- |
+| `service` | Define o produto que será executado |
+| `cpf` | Documento da pessoa física consultada |
+
+## 5. Leia o retorno
+
+```json
+{
+  "result": {
+    "cpf": "06319423196",
+    "status": "REGULAR",
+    "name": "FULANINHO DA SILVA"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+| Campo | Como usar |
+| --- | --- |
+| `result` | Dados retornados pela consulta |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica do processamento |
+
+## 6. Próximos serviços comuns
+
+| Necessidade | Serviço |
+| --- | --- |
+| Consultar status do CPF na Receita Federal | `service_rfb_pf` |
+| Validar CPF com telefone | `service_cpf_phone_validation` |
+| Validar CPF com endereço | `service_cpf_address_validation` |
+| Consultar PEP | `service_pep` |
+| Executar OCR de documento | `service_ocr` |
+| Comparar faces | `service_face_match` |
+
+Para ver todos os serviços de pessoa física, consulte
+[Serviços de Pessoa Física](/guides/servicos-pessoa-fisica).

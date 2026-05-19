@@ -38,6 +38,20 @@ integrações, leia os dois.
 | Timeout | Fonte externa ou rede pode ter demorado | Aplicar retry controlado, sem loop agressivo |
 | Sem body JSON | O endpoint retorna outro tipo de conteúdo | Tratar conforme contrato, como PDF no relatório de onboarding |
 
+## Problemas comuns
+
+| Problema | Possível causa | Como resolver |
+| --- | --- | --- |
+| Token inválido | Token gerado com credenciais erradas ou ambiente incorreto | Gere um novo token no mesmo ambiente da chamada |
+| Token expirado | O tempo de validade do token acabou | Gere um novo token e repita a chamada |
+| `Authorization` ausente | Header não foi enviado | Envie `Authorization: Bearer {jwt_token}` |
+| `Content-Type` ausente | Body JSON enviado sem header correto | Envie `Content-Type: application/json` |
+| Campo `service` ausente | Payload não informou qual produto executar | Inclua o campo `service` no body |
+| CPF ou CNPJ inválido | Documento incompleto, mascarado ou fora do padrão esperado | Revise o valor enviado antes de chamar a API |
+| Serviço sem permissão | Produto não liberado para a conta | Confirme a liberação do serviço com o time responsável |
+| Fonte externa indisponível | Consulta depende de órgão, base ou parceiro externo | Faça retry controlado ou tente novamente depois |
+| URL de ambiente errada | Token de HML usado em produção, ou o contrário | Confira se a URL base e o token são do mesmo ambiente |
+
 ## Negativo não é erro técnico
 
 Alguns serviços retornam uma consulta negativa como sucesso técnico. Exemplos:
