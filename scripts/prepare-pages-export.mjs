@@ -1,4 +1,4 @@
-import { readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const [distDir, rawBasePath] = process.argv.slice(2);
@@ -125,3 +125,10 @@ for (const file of files) {
     await writeFile(file, normalizeJs(js));
   }
 }
+
+const apiWelcomeRedirectDir = path.join(distDir, 'api-reference', 'boas-vindas');
+const apiWelcomeTarget = `${basePath}/api-reference/autorização/gerar-token-de-api/`;
+const apiWelcomeRedirect = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=${apiWelcomeTarget}"><link rel="canonical" href="${apiWelcomeTarget}"><script>location.replace(${JSON.stringify(apiWelcomeTarget)});</script></head><body><a href="${apiWelcomeTarget}">Gerar token de API</a></body></html>`;
+
+await mkdir(apiWelcomeRedirectDir, { recursive: true });
+await writeFile(path.join(apiWelcomeRedirectDir, 'index.html'), apiWelcomeRedirect);
