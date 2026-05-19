@@ -1,12 +1,26 @@
 ---
 title: Quickstart
-description: Faça sua primeira chamada na API idCerberus em poucos minutos
+description: Faça sua primeira chamada na API idCerberus com Postman, Windows, macOS ou Linux
 ---
 
 # Quickstart
 
-Este guia mostra o caminho mínimo para autenticar, executar um serviço e tratar
-o retorno da API idCerberus.
+Este guia mostra o caminho mais simples para fazer a primeira chamada na API
+idCerberus. Ele foi escrito para quem ainda não tem familiaridade com API,
+terminal ou `curl`.
+
+Você pode testar de três formas:
+
+| Forma | Quando usar |
+| --- | --- |
+| Postman | Melhor opção para quem prefere interface visual |
+| Windows PowerShell ou CMD | Bom para testar direto no Windows |
+| Terminal do macOS ou Linux | Bom para quem usa terminal Unix |
+
+<Tip>
+  Se você nunca executou um `curl`, comece pelo Postman. Depois que a chamada
+  funcionar, copie o mesmo padrão para o terminal ou para o código da aplicação.
+</Tip>
 
 ## Antes de começar
 
@@ -27,9 +41,56 @@ Os endpoints base são:
 A chamada é a mesma nos dois ambientes. Para usar produção, mantenha método,
 headers e body iguais e troque apenas a URL.
 
-## 1. Gere um token
+## 1. Escolha onde vai testar
 
-HML:
+### Postman
+
+1. Abra o Postman.
+2. Clique em **New**.
+3. Escolha **HTTP Request**.
+4. Selecione o método `POST`.
+5. Cole a URL do ambiente desejado.
+6. Vá na aba **Headers** e adicione `Content-Type` com valor `application/json`.
+7. Vá na aba **Body**.
+8. Escolha **raw**.
+9. Selecione **JSON**.
+10. Cole o body do exemplo.
+11. Clique em **Send**.
+
+### Windows PowerShell
+
+1. Abra o menu iniciar.
+2. Pesquise por `PowerShell`.
+3. Abra o PowerShell.
+4. Cole o comando `curl.exe` do exemplo.
+5. Pressione **Enter**.
+
+No Windows, prefira `curl.exe`. O comando `curl` sozinho pode ser interpretado
+como outro comando interno do PowerShell.
+
+### Windows CMD
+
+1. Abra o menu iniciar.
+2. Pesquise por `cmd`.
+3. Abra o Prompt de Comando.
+4. Cole o comando em uma única linha ou use `^` para quebrar linhas.
+5. Pressione **Enter**.
+
+### macOS ou Linux
+
+1. Abra o Terminal.
+2. Cole o comando `curl` do exemplo.
+3. Pressione **Enter**.
+
+Em macOS e Linux, o `curl` normalmente já vem instalado. Se o terminal informar
+que o comando não existe, instale o pacote `curl` pelo gerenciador do sistema.
+
+## 2. Gere um token
+
+O primeiro request gera um token JWT. Esse token será usado nas próximas chamadas
+protegidas.
+
+### HML
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
@@ -40,7 +101,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
   }'
 ```
 
-Produção:
+### Produção
 
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
@@ -51,7 +112,15 @@ curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
   }'
 ```
 
-Resposta:
+### Windows CMD
+
+```bat
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
+  --header "Content-Type: application/json" ^
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+Resposta esperada:
 
 ```json
 {
@@ -60,11 +129,13 @@ Resposta:
 }
 ```
 
-## 2. Execute um serviço
+Copie o valor de `access_token`. Ele será usado no próximo passo.
+
+## 3. Execute um serviço
 
 Use o token retornado no header `Authorization`.
 
-HML:
+### HML
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -76,7 +147,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   }'
 ```
 
-Produção:
+### Produção
 
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/service-api' \
@@ -88,7 +159,24 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
   }'
 ```
 
-## 3. Leia o resultado
+### Windows CMD
+
+```bat
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
+  --header "Authorization: Bearer {jwt_token}" ^
+  --header "Content-Type: application/json" ^
+  --data "{\"service\":\"service_person_data_enrichment\",\"cpf\":\"cpf\"}"
+```
+
+Substitua:
+
+| Valor | O que colocar |
+| --- | --- |
+| `{jwt_token}` | Token retornado no passo anterior |
+| `cpf` | CPF usado para teste |
+| `service_person_data_enrichment` | Código do serviço que deseja executar |
+
+## 4. Leia o resultado
 
 A maior parte dos serviços retorna os dados em `result` e o status técnico em
 `status`.
@@ -107,7 +195,14 @@ A maior parte dos serviços retorna os dados em `result` e o status técnico em
 }
 ```
 
-## 4. Trate sucesso e falha
+| Campo | Como interpretar |
+| --- | --- |
+| `result` | Dados retornados pelo serviço |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica da consulta |
+| `externalId` | Identificador da consulta, quando retornado |
+
+## 5. Trate sucesso e falha
 
 Use `status.code` para decidir o comportamento da sua aplicação.
 
@@ -118,8 +213,8 @@ Use `status.code` para decidir o comportamento da sua aplicação.
 | Token expirado | Gere um novo token e repita a chamada. |
 | Sem body JSON | Trate conforme o endpoint. O relatório de onboarding retorna PDF. |
 
-## 5. Escolha o próximo serviço
+## 6. Próximo passo
 
-Se você já sabe qual produto consumir, vá para a [API Reference](/api-reference/boas-vindas).
+Se você já sabe qual produto consumir, vá para a [API Reference](/api-reference/autorização/gerar-token-de-api).
 
 Se ainda está desenhando o fluxo, use [Escolha o serviço certo](/guides/escolha-o-servico-certo).

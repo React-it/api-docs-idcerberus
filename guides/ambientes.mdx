@@ -1,0 +1,97 @@
+---
+title: Ambientes
+description: Entenda a diferença entre homologação e produção na API idCerberus
+---
+
+# Ambientes
+
+A API idCerberus possui dois ambientes principais: homologação e produção. Os
+endpoints, métodos, headers e bodies são os mesmos. O que muda é apenas a URL
+base usada na chamada.
+
+| Ambiente | Base URL | Quando usar |
+| --- | --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validações e homologação da integração |
+| Produção | `https://backoffice.idcerberus.com` | Consultas reais em operação |
+
+<Warning>
+  Não misture credenciais e dados de ambientes diferentes. Um token gerado em
+  homologação deve ser usado com a URL de homologação. Um token gerado em
+  produção deve ser usado com a URL de produção.
+</Warning>
+
+## Como trocar de ambiente
+
+Para trocar de homologação para produção, altere somente a URL base.
+
+| Item | Homologação | Produção |
+| --- | --- | --- |
+| Base URL | `https://backoffice-hml.idcerberus.com` | `https://backoffice.idcerberus.com` |
+| Gerar token | `/api/token-generate` | `/api/token-generate` |
+| Executar serviço | `/api/service-api` | `/api/service-api` |
+| Header | Igual | Igual |
+| Body | Igual | Igual |
+
+## Exemplo: gerar token
+
+Homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+## Exemplo: executar serviço
+
+Homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+Produção:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "service_person_data_enrichment",
+    "cpf": "cpf"
+  }'
+```
+
+## Erros comuns
+
+| Situação | Como resolver |
+| --- | --- |
+| Token de HML usado em produção | Gere um token novo na URL de produção |
+| Token de produção usado em HML | Gere um token novo na URL de homologação |
+| URL com ambiente errado | Confira se está usando `backoffice-hml` ou `backoffice` |
+| Credenciais inválidas | Verifique `client`, `secret` e ambiente liberado |
+
+## Recomendação
+
+Comece sempre por homologação. Depois que o fluxo estiver validado, altere a URL
+base e as credenciais para produção.

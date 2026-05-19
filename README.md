@@ -93,6 +93,10 @@ Dentro dos guias, os conteúdos estão organizados por:
 - Empresas
 - Catálogo técnico
 
+O Quickstart foi pensado para usuários com diferentes níveis técnicos. Ele mostra
+como executar a primeira chamada usando Postman, Windows PowerShell/CMD, macOS e
+Linux.
+
 ## Validação rápida
 
 Para validar a estrutura do OpenAPI e do `docs.json`:

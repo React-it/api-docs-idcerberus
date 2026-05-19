@@ -33,6 +33,21 @@ consulta: documentos usam imagens ou URLs, serviços PF usam `cpf`, serviços PJ
 usam `cnpj` e algumas certidões exigem dados complementares como `uf`, `rg` ou
 `court`.
 
+Pense no `POST /api/service-api` como um executor. A rota é sempre a mesma, mas
+o serviço executado muda de acordo com o valor enviado em `service`.
+
+Exemplo:
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+Neste caso, a API entende que deve executar o serviço de enriquecimento de dados
+de pessoa física. Se o `service` mudar, o produto executado também muda.
+
 | Tipo de consulta | Documento principal | Observação |
 | --- | --- | --- |
 | Pessoa física | `cpf` | Pode exigir dados adicionais em certidões, validações ou biometria |

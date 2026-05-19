@@ -69,6 +69,43 @@ O retorno contém o token de acesso e o tempo de expiração.
 | `access_token` | Token JWT |
 | `expires_in` | Tempo de expiração do token |
 
+## Como testar
+
+Você pode gerar o token pelo Postman, pelo PowerShell/CMD no Windows ou pelo
+terminal do macOS/Linux.
+
+### No Postman
+
+1. Crie uma requisição `POST`.
+2. Use a URL `https://backoffice-hml.idcerberus.com/api/token-generate`.
+3. Na aba **Headers**, adicione `Content-Type` com valor `application/json`.
+4. Na aba **Body**, selecione **raw** e depois **JSON**.
+5. Cole o body com `client` e `secret`.
+6. Clique em **Send**.
+7. Copie o campo `access_token` retornado.
+
+### No Windows
+
+No PowerShell, use `curl.exe` para evitar conflito com comandos internos:
+
+```powershell
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" `
+  --header "Content-Type: application/json" `
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+No CMD, use `^` para quebrar linhas:
+
+```bat
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
+  --header "Content-Type: application/json" ^
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+### No macOS ou Linux
+
+Use o comando `curl` no terminal:
+
 Exemplo com `curl` em HML:
 
 ```bash
