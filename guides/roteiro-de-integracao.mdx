@@ -1,0 +1,109 @@
+---
+title: Roteiro de integração
+description: Um passo a passo prático para sair do primeiro teste até uma integração pronta para produção
+---
+
+# Roteiro de integração
+
+Use este roteiro como checklist de execução. A ideia é sair de uma primeira
+chamada manual, validar o comportamento esperado e só depois levar o fluxo para
+o código da aplicação.
+
+## 1. Confirme o ambiente
+
+Escolha onde o teste será feito:
+
+| Ambiente | Base URL | Quando usar |
+| --- | --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validação de payloads e desenvolvimento |
+| Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação de credenciais e permissões |
+
+A estrutura da chamada é a mesma nos dois ambientes. Para trocar de HML para
+produção, altere apenas a base URL.
+
+## 2. Gere o token
+
+Antes de executar serviços protegidos, gere um token JWT.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Copie o valor de `access_token` retornado. Nas chamadas seguintes, envie:
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+## 3. Teste manualmente antes de codar
+
+Se a pessoa integrando ainda não tem familiaridade com terminal, comece pelo
+Postman. Ele deixa URL, headers e body separados, o que reduz erro de digitação.
+
+Fluxo recomendado:
+
+1. testar no Postman;
+2. repetir o mesmo request com `curl`;
+3. confirmar o response esperado;
+4. levar o request para Node.js, Python, C# ou outra linguagem.
+
+## 4. Escolha o serviço correto
+
+O endpoint `POST /api/service-api` funciona como executor de produtos. A rota é
+sempre a mesma, mas o campo `service` define o que será executado.
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+Para pessoa física, a entrada principal costuma ser `cpf`. Para pessoa jurídica,
+costuma ser `cnpj`. Serviços de documento, biometria e documentoscopia podem
+exigir imagens em base64, URLs de imagem, selfie ou chave de consulta.
+
+## 5. Valide o response
+
+Na maioria dos serviços, os dados de negócio ficam em `result` e o status técnico
+fica em `status`.
+
+```json
+{
+  "result": {
+    "cpf": "06319423196",
+    "status": "REGULAR"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+Não valide apenas o HTTP status. Leia também `status.code`, `status.message` e,
+quando existir, `externalId`.
+
+## 6. Prepare a integração para produção
+
+Antes de subir para produção, confirme:
+
+- credenciais de produção foram liberadas;
+- a base URL foi trocada para `https://backoffice.idcerberus.com`;
+- token expirado é tratado gerando um novo token;
+- erros `400`, `401` e `403` têm tratamento claro;
+- logs registram `service`, documento consultado de forma segura, `status.code`,
+  `status.message` e `externalId`, quando retornado;
+- dados sensíveis, base64 e tokens não são gravados em log aberto.
+
+## 7. Onde continuar
+
+- Para primeira chamada completa: [Quickstart](/guides/quickstart)
+- Para escolher produtos: [Escolha o serviço certo](/guides/escolha-o-servico-certo)
+- Para ver todos os grupos de serviço: [Matriz de serviços](/guides/matriz-de-servicos)
+- Para contrato técnico: [API Reference](/api-reference/autorização/gerar-token-de-api)

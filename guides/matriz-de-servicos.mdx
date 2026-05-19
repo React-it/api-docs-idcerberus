@@ -1,0 +1,61 @@
+---
+title: Matriz de serviços
+description: Visão resumida dos principais serviços por tipo de documento, entrada e momento de uso
+---
+
+# Matriz de serviços
+
+Esta matriz ajuda a localizar rapidamente qual serviço usar antes de abrir o
+payload completo no API Reference.
+
+<Tip>
+  Todos os itens abaixo são executados por `POST /api/service-api`, exceto os
+  endpoints de autenticação, onboarding e customers. No endpoint central, o campo
+  `service` escolhe o produto.
+</Tip>
+
+## Pessoa física
+
+| Objetivo | Serviço | Entrada principal | Quando usar |
+| --- | --- | --- | --- |
+| Enriquecer dados cadastrais | `service_person_data_enrichment` | `cpf` | Obter dados básicos de identificação |
+| Consultar CPF na Receita | `service_rfb_pf` | `cpf` | Validar situação cadastral do CPF |
+| Extrair dados de documento | `service_ocr` | `image1`, `image2` ou URLs | Ler CNH, RG, RNE, CPF, CRLV e outros documentos |
+| Comparar faces | `service_face_match` | `image1`, `image2` | Comparar selfie com documento ou outra imagem |
+| Validar presença real | `service_liveness_2d` | `image1` | Verificar se a selfie aparenta ser de pessoa real |
+| Consultar PEP | `service_pep` | `cpf` | Avaliar exposição política |
+| Consultar KYC/compliance PF | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf` | Análise mais ampla de compliance |
+| Consultar processos | `service_juridical_processes` | `cpf` | Levantar processos jurídicos e administrativos |
+| Consultar histórico profissional | `service_professional_history` | `cpf` | Recuperar vínculos profissionais |
+| Validar CPF com telefone | `service_cpf_phone_validation` | `cpf`, `phone` | Conferir associação entre CPF e telefone |
+| Validar CPF com endereço | `service_cpf_address_validation` | `cpf`, `zipcode`, `numberAddress` | Conferir associação entre CPF e endereço |
+
+## Pessoa jurídica
+
+| Objetivo | Serviço | Entrada principal | Quando usar |
+| --- | --- | --- | --- |
+| Enriquecer dados cadastrais | `service_corporate_data_enrichment` | `cnpj` | Obter dados da empresa na Receita Federal |
+| Consultar status do CNPJ | `service_rfb_pj` | `cnpj` | Validar situação cadastral da empresa |
+| Consultar SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` | Verificar inscrição e situação estadual |
+| Consultar relacionamentos | `service_company_relationship` | `cnpj` | Entender vínculos societários e de empresa |
+| Consultar sócios de primeiro nível | `service_first_level_partner` | `cnpj` | Avaliar círculo de pessoas relacionadas |
+| Consultar KYC dos sócios | `service_company_kyc_owners` | `cnpj` | Avaliar PEP, sanções e compliance dos sócios |
+| Consultar processos dos sócios | `service_juridical_processes_pj_owners` | `cnpj` | Levantar processos relacionados aos sócios |
+| Consultar débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | Verificar débitos com o governo |
+| Consultar protestos PJ | `service_protest_clearance_certificate_pj` | `cnpj` | Emitir ou consultar certidão/protestos |
+| Consultar compliance de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Avaliar exposição relacionada a apostas |
+
+## Fluxos fora do service-api
+
+| Objetivo | Endpoint | Quando usar |
+| --- | --- | --- |
+| Gerar token JWT | `POST /api/token-generate` | Antes de chamadas protegidas |
+| Gerar token de onboarding | `POST /api/token-history-onboarding` | Antes de iniciar integração via SDK |
+| Consultar onboarding | `GET /api/onboarding/report/{tokenOnboarding}` | Para recuperar resultado estruturado em JSON |
+| Baixar relatório de onboarding | `GET /api/history-onboarding-report/{tokenOnboarding}` | Para obter o PDF final |
+| Consultar cliente | `GET /api/customer` | Para localizar cliente por CPF ou CNPJ |
+| Alterar status de cliente | `POST /api/changeStatusOfCustomer` | Para ativar ou desativar cliente |
+
+## Próximo passo
+
+Depois de escolher o serviço, abra [POST /api/service-api](/api-reference/serviços--pessoas/executar-serviço-de-dados-risco-ou-compliance) na API Reference e copie o exemplo correspondente.
