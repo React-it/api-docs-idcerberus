@@ -93,6 +93,10 @@ paths:
               example:
                 access_token: "{jwt_token}"
                 expires_in: "300"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /api/token-history-onboarding:
     post:
@@ -138,6 +142,12 @@ paths:
               example:
                 tokenOnboarding: 56950dae-2d19-4092-a918-a612b3ca8f68
                 dateHourProcess: 2023-02-17T16:49:41.577364Z
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /api/onboarding/report/{tokenOnboarding}:
     get:
@@ -192,6 +202,10 @@ paths:
                     statusMessage: USER PASSED THE LIVENESS CHALLENGE
                     fields: []
                     rules: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /api/history-onboarding-report/{tokenOnboarding}:
     get:
@@ -220,6 +234,10 @@ paths:
               schema:
                 type: string
                 format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /api/service-api:
     post:
@@ -279,18 +297,18 @@ paths:
               $ref: '#/components/schemas/ServiceApiRequest'
             examples:
               enriquecimentoPessoaFisica:
-                summary: Enriquecimento de dados de pessoa física
+                summary: PF - Enriquecimento de dados
                 value:
                   service: service_person_data_enrichment
                   cpf: cpf
               statusCpfReceitaFederal:
-                summary: Status do CPF na Receita Federal
+                summary: PF - Status do CPF na Receita Federal
                 value:
                   service: service_rfb_pf
                   cpf: cpf
                   dataDeNascimento: yyyy-MM-dd (opcional)
               ocrDocumentos:
-                summary: OCR de documentos
+                summary: PF - OCR de documentos
                 value:
                   service: service_ocr
                   image1: base64
@@ -298,45 +316,45 @@ paths:
                   image1Url: url_image
                   image2Url: urlImageMatch
               faceMatch:
-                summary: FaceMatch
+                summary: PF - FaceMatch
                 value:
                   service: service_face_match
                   image1: base64
                   image2: base64
               liveness2d:
-                summary: Liveness 2D
+                summary: PF - Liveness 2D
                 value:
                   service: service_liveness_2d
                   image1: selfie
               pessoaPoliticamenteExposta:
-                summary: Pessoa politicamente exposta
+                summary: PF - Pessoa politicamente exposta
                 value:
                   service: service_pep
                   cpf: cpf
               dividaAtivaPessoaFisica:
-                summary: Dívida ativa - Pessoa Física
+                summary: PF - Dívida ativa
                 value:
                   service: service_active_debt
                   cpf: cpf
               scoreRiscoFraude:
-                summary: Score de risco de fraude
+                summary: PF - Score de risco de fraude
                 value:
                   service: service_fraud_risk_score
                   cpf: cpf
                   factor: minRisk or minattrition
               scoreInadimplencia:
-                summary: Score de inadimplência
+                summary: PF - Score de inadimplência
                 value:
                   service: service_default_risk_score
                   cpf: cpf
               scoreBiometrico:
-                summary: Score biométrico
+                summary: PF - Score biométrico
                 value:
                   service: service_biometric_score
                   cpf: cpf
                   image1: "{base64Image}"
               nadaConstaAcoesJudiciais:
-                summary: Certidão de Nada Consta - Ações Judiciais
+                summary: PF - Certidão de Nada Consta
                 value:
                   service: service_nothing_record_lawsuits
                   cpf: cpf
@@ -344,42 +362,42 @@ paths:
                   uf: uf
                   sphere: CIVIL
               antecedentesCriminaisFederal:
-                summary: Certidão de antecedentes criminais - Federal
+                summary: PF - Antecedentes criminais federais
                 value:
                   service: service_criminal_record_federal
                   cpf: cpf
               antecedentesCriminaisCivil:
-                summary: Certidão de antecedentes criminais - Civil
+                summary: PF - Antecedentes criminais civis
                 value:
                   service: service_criminal_record_civil
                   cpf: cpf
                   rg: rg
                   uf: uf
               certidaoNegativaProtesto:
-                summary: Certidão negativa de protesto
+                summary: PF - Certidão negativa de protesto
                 value:
                   service: service_protest_clearance_certificate
                   cpf: cpf
               validacaoEmail:
-                summary: Validação de e-mail
+                summary: PF - Validação de e-mail
                 value:
                   service: service_email_validation
                   email: email@email.com
               validacaoCpfTelefone:
-                summary: Validação de CPF com telefone
+                summary: PF - Validação de CPF com telefone
                 value:
                   service: service_cpf_phone_validation
                   cpf: cpf
                   phone: "11900000000"
               validacaoCpfEndereco:
-                summary: Validação de CPF com endereço
+                summary: PF - Validação de CPF com endereço
                 value:
                   service: service_cpf_address_validation
                   cpf: cpf
                   zipcode: 00000-000
                   numberAddress: 13
               documentoscopiaDigital:
-                summary: Documentoscopia Digital
+                summary: PF - Documentoscopia digital
                 value:
                   service: service_digital_documentoscopy
                   key: 84bfcd2e-2336-4e30-bcab-15348b7890b5
@@ -387,47 +405,47 @@ paths:
                   image2: base64
                   selfie1: base64
               resultadoDocumentoscopiaDigital:
-                summary: Consulta do resultado da documentoscopia digital
+                summary: PF - Resultado da documentoscopia digital
                 value:
                   service: service_digital_documentoscopy_consult
                   key: de0cd562-5962-40bd-8f94-5a7184ecde0e
               consultaMei:
-                summary: Consulta de MEI
+                summary: PF - Consulta de MEI
                 value:
                   service: service_mei
                   cpf: cpf
               processosJuridicosAdministrativos:
-                summary: Processos jurídicos e administrativos
+                summary: PF - Processos jurídicos e administrativos
                 value:
                   service: service_juridical_processes
                   cpf: cpf
               servidoresPublicos:
-                summary: Consulta de servidores públicos
+                summary: PF - Servidores públicos
                 value:
                   service: service_public_servants
                   cpf: cpf
               consultaEnderecos:
-                summary: Consulta de endereços
+                summary: PF - Endereços
                 value:
                   service: service_address
                   cpf: cpf
               relacionamentosEconomicos:
-                summary: Consulta de relacionamentos econômicos
+                summary: PF - Relacionamentos econômicos
                 value:
                   service: economic_relationships
                   cpf: cpf
               historicoProfissional:
-                summary: Consulta do histórico profissional
+                summary: PF - Histórico profissional
                 value:
                   service: service_professional_history
                   cpf: cpf
               dadosPeloTelefone:
-                summary: Consulta de dados pelo telefone
+                summary: PF - Dados pelo telefone
                 value:
                   service: SERVICE_CONFIRM_PHONE
                   phone: "+5561123456789"
               mandadoPrisao:
-                summary: Consulta de mandado de prisão
+                summary: PF - Mandado de prisão
                 value:
                   service: SERVICE_ARREST_WARRANT
                   nome: nome
@@ -436,124 +454,124 @@ paths:
                   birthDate: dd/MM/yyyy
                   cpf: cpf
               debitosAtivosPf:
-                summary: Consulta de débitos ativos PF
+                summary: PF - Débitos ativos
                 value:
                   service: SERVICE_ACTIVE_DEBT_PF
                   cpf: cpf
               dadosEleitoraisCandidato:
-                summary: Consulta de dados eleitorais de candidato
+                summary: PF - Dados eleitorais de candidato
                 value:
                   service: SERVICE_ELECTION_CANDIDATE_DATA
                   cpf: cpf
               doacoesEleitorais:
-                summary: Consulta de doações eleitorais
+                summary: PF - Doações eleitorais
                 value:
                   service: SERVICE_ELECTORAL_DONORS
                   cpf: cpf
               envolvimentoPolitico:
-                summary: Consulta de envolvimento político
+                summary: PF - Envolvimento político
                 value:
                   service: SERVICE_POLITICAL_INVOLVEMENT
                   cpf: cpf
               kycCompliancePessoaFisica:
-                summary: KYC e compliance de pessoa física
+                summary: PF - KYC e compliance
                 value:
                   service: SERVICE_PERSON_KYC_BIGDATACORP
                   cpf: cpf
                   birthDate: yyyy-MM-dd (opcional)
               exposicaoPerfilMidiaPf:
-                summary: Exposição e perfil na mídia de pessoa física
+                summary: PF - Exposição e perfil na mídia
                 value:
                   service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF
                   cpf: cpf
               historicoFamiliarPolitico:
-                summary: Consulta de histórico familiar político
+                summary: PF - Histórico familiar político
                 value:
                   service: SERVICE_FAMILY_POLITICAL_HISTORY
                   cpf: cpf
               prestadoresServicoEleitorais:
-                summary: Consulta de prestadores de serviço eleitorais
+                summary: PF - Prestadores de serviço eleitorais
                 value:
                   service: SERVICE_ELECTORAL_PROVIDERS
                   cpf: cpf
               dasMeiReceita:
-                summary: Consulta de DAS MEI na Receita
+                summary: PJ - DAS MEI na Receita
                 value:
                   service: service_das_mei
                   cnpj: cnpj
               processosJuridicosSocios:
-                summary: Consulta de processos jurídicos dos sócios
+                summary: PJ - Processos jurídicos dos sócios
                 value:
                   service: service_juridical_processes_pj_owners
                   cnpj: cnpj
               enriquecimentoPessoaJuridica:
-                summary: Enriquecimento de dados de pessoa jurídica
+                summary: PJ - Enriquecimento de dados
                 value:
                   service: service_corporate_data_enrichment
                   cnpj: cnpj
               statusCnpjReceitaFederal:
-                summary: Status do CNPJ na Receita Federal
+                summary: PJ - Status do CNPJ na Receita Federal
                 value:
                   service: service_rfb_pj
                   cnpj: cnpj
               relacionamentosEmpresa:
-                summary: Consulta de relacionamentos de uma empresa
+                summary: PJ - Relacionamentos da empresa
                 value:
                   service: service_company_relationship
                   cnpj: cnpj
               sintegra:
-                summary: Consulta do SINTEGRA
+                summary: PJ - SINTEGRA
                 value:
                   service: service_sintegra_consultation
                   cnpj: cnpj
                   uf: uf (opcional)
               enderecosEstendidosEmpresa:
-                summary: Endereços estendidos de empresa
+                summary: PJ - Endereços estendidos
                 value:
                   service: SERVICE_ADDRESSES_EXTENDED_CNPJ
                   cnpj: cnpj
               sociosPrimeiroNivel:
-                summary: Consulta de sócios de primeiro nível
+                summary: PJ - Sócios de primeiro nível
                 value:
                   service: service_first_level_partner
                   cnpj: cnpj
               kycComplianceSocios:
-                summary: Consulta de KYC e compliance dos sócios
+                summary: PJ - KYC e compliance dos sócios
                 value:
                   service: service_company_kyc_owners
                   cnpj: cnpj
               exposicaoPerfilMidiaPj:
-                summary: Exposição e perfil na mídia dos sócios
+                summary: PJ - Exposição e perfil na mídia dos sócios
                 value:
                   service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ
                   cnpj: cnpj
               debitosAtivosPj:
-                summary: Consulta de débitos ativos PJ
+                summary: PJ - Débitos ativos
                 value:
                   service: SERVICE_ACTIVE_DEBT_PJ
                   cnpj: cnpj
               certidaoNegativaProtestoPj:
-                summary: Certidão negativa de protesto PJ
+                summary: PJ - Certidão negativa de protesto
                 value:
                   service: service_protest_clearance_certificate_pj
                   cnpj: cnpj
               complianceCasasApostasPj:
-                summary: Consulta de compliance de casas de apostas PJ
+                summary: PJ - Compliance de casas de apostas
                 value:
                   service: SERVICE_COMPLIANCE_BET_PJ
                   cnpj: cnpj
               informacoesFinanceiras:
-                summary: Consulta de informações financeiras
+                summary: PF - Informações financeiras
                 value:
                   service: service_financial_information
                   cpf: cpf
               dadosPis:
-                summary: Consulta de dados PIS
+                summary: PF - Dados PIS
                 value:
                   service: service_pis_consultation
                   cpf: cpf
               validacaoEsocial:
-                summary: Validação do E-Social
+                summary: PF - Validação do E-Social
                 value:
                   service: service_esocial_registration_qualification
                   cpf: cpf
@@ -570,7 +588,7 @@ paths:
                 $ref: '#/components/schemas/ServiceApiResponse'
               examples:
                 enriquecimentoPessoaFisica:
-                  summary: Enriquecimento de dados de pessoa física
+                  summary: PF - Enriquecimento de dados
                   value:
                     result:
                       cpf: "06319423196"
@@ -593,7 +611,7 @@ paths:
                       code: 200
                       message: Success
                 statusCpfReceitaFederal:
-                  summary: Status do CPF na Receita Federal
+                  summary: PF - Status do CPF na Receita Federal
                   value:
                     result:
                       cpf: "123414124"
@@ -608,7 +626,7 @@ paths:
                       message: Consulta de API Realizada com Sucesso
                     externalId: 1782ea0a-8663-41a8-b156-688527f5363b
                 ocrDocumentos:
-                  summary: OCR de documentos
+                  summary: PF - OCR de documentos
                   value:
                     result:
                       cpf: "06319423196"
@@ -633,7 +651,7 @@ paths:
                       code: 200
                       message: Success
                 faceMatch:
-                  summary: FaceMatch
+                  summary: PF - FaceMatch
                   value:
                     result:
                       status: Face picture match
@@ -642,7 +660,7 @@ paths:
                       code: 200
                       message: Success
                 liveness2d:
-                  summary: Liveness 2D
+                  summary: PF - Liveness 2D
                   value:
                     result:
                       message: The subject in the submitted Image is likely a Real Human.
@@ -651,7 +669,7 @@ paths:
                       code: 200
                       message: Success
                 pessoaPoliticamenteExposta:
-                  summary: Pessoa politicamente exposta
+                  summary: PF - Pessoa politicamente exposta
                   value:
                     result:
                       cpf: "74768289096"
@@ -660,7 +678,7 @@ paths:
                       code: 200
                       message: success
                 dividaAtivaPessoaFisica:
-                  summary: Dívida ativa - Pessoa Física
+                  summary: PF - Dívida ativa
                   value:
                     result:
                       cpf: "88154726068"
@@ -672,7 +690,7 @@ paths:
                       code: 200
                       message: Success
                 scoreRiscoFraude:
-                  summary: Score de risco de fraude
+                  summary: PF - Score de risco de fraude
                   value:
                     result:
                       cpf: "80246074507"
@@ -683,7 +701,7 @@ paths:
                       code: 200
                       message: Success
                 scoreInadimplencia:
-                  summary: Score de inadimplência
+                  summary: PF - Score de inadimplência
                   value:
                     result:
                       cpf: "{80246074507}"
@@ -697,7 +715,7 @@ paths:
                       code: 200
                       message: Success
                 scoreBiometrico:
-                  summary: Score biométrico
+                  summary: PF - Score biométrico
                   value:
                     result:
                       cpf: "73583960149"
@@ -708,7 +726,7 @@ paths:
                       code: 200
                       message: Success
                 nadaConstaAcoesJudiciais:
-                  summary: Certidão de Nada Consta - Ações Judiciais
+                  summary: PF - Certidão de Nada Consta
                   value:
                     result:
                       cpf: "80246074507"
@@ -725,7 +743,7 @@ paths:
                       code: 200
                       message: Success
                 antecedentesCriminaisCivil:
-                  summary: Certidão de antecedentes criminais - Civil
+                  summary: PF - Antecedentes criminais civis
                   value:
                     result:
                       cpf: "80246074507"
@@ -739,7 +757,7 @@ paths:
                       code: 200
                       message: Success
                 validacaoEmail:
-                  summary: Validação de e-mail
+                  summary: PF - Validação de e-mail
                   value:
                     result:
                       email: usuario@example.com
@@ -766,7 +784,7 @@ paths:
                       code: 200
                       message: Success
                 validacaoEsocial:
-                  summary: Validação do E-Social
+                  summary: PF - Validação do E-Social
                   value:
                     result:
                       cpf: "80246074507"
@@ -779,7 +797,7 @@ paths:
                       code: 200
                       message: Success
                 antecedentesCriminaisFederal:
-                  summary: Certidão de antecedentes criminais - Federal
+                  summary: PF - Antecedentes criminais federais
                   value:
                     result:
                       cpf: "80246074507"
@@ -791,7 +809,7 @@ paths:
                       code: 200
                       message: Success
                 validacaoCpfTelefone:
-                  summary: Validação de CPF com telefone
+                  summary: PF - Validação de CPF com telefone
                   value:
                     result:
                       cpf: "80246074507"
@@ -803,7 +821,7 @@ paths:
                       code: 200
                       message: Success
                 validacaoCpfEndereco:
-                  summary: Validação de CPF com endereço
+                  summary: PF - Validação de CPF com endereço
                   value:
                     result:
                       cpf: "80246074507"
@@ -837,7 +855,7 @@ paths:
                       code: 200
                       message: Success
                 resultadoDocumentoscopiaDigital:
-                  summary: Consulta do resultado da documentoscopia digital
+                  summary: PF - Resultado da documentoscopia digital
                   value:
                     result:
                       cpf: "80246074507"
@@ -859,7 +877,7 @@ paths:
                       code: 200
                       message: Success
                 consultaMei:
-                  summary: Consulta de MEI
+                  summary: PF - Consulta de MEI
                   value:
                     result:
                       meis:
@@ -874,7 +892,7 @@ paths:
                       code: 200
                       message: Success
                 dadosPeloTelefone:
-                  summary: Consulta de dados pelo telefone
+                  summary: PF - Dados pelo telefone
                   value:
                     result:
                       cpf: "11111111111"
@@ -884,7 +902,7 @@ paths:
                       code: 200
                       message: Success
                 mandadoPrisao:
-                  summary: Consulta de mandado de prisão
+                  summary: PF - Mandado de prisão
                   value:
                     result:
                       message: Nenhum mandado de prisão encontrado.
@@ -983,7 +1001,7 @@ paths:
                       code: 200
                       message: Success
                 doacoesEleitorais:
-                  summary: Consulta de doações eleitorais
+                  summary: PF - Doações eleitorais
                   value:
                     result:
                       totalDonationsAmount: 15
@@ -1018,7 +1036,7 @@ paths:
                       code: 200
                       message: Success
                 envolvimentoPolitico:
-                  summary: Consulta de envolvimento político
+                  summary: PF - Envolvimento político
                   value:
                     result:
                       electionsCount: 5
@@ -1032,7 +1050,7 @@ paths:
                       code: 200
                       message: Success
                 kycCompliancePessoaFisica:
-                  summary: KYC e compliance de pessoa física
+                  summary: PF - KYC e compliance
                   value:
                     result:
                       cpf: "12345678901"
@@ -1044,7 +1062,7 @@ paths:
                       code: 200
                       message: Consulta de API Realizada com Sucesso
                 exposicaoPerfilMidiaPf:
-                  summary: Exposição e perfil na mídia de pessoa física
+                  summary: PF - Exposição e perfil na mídia
                   value:
                     result:
                       cpf: "12345678901"
@@ -1064,7 +1082,7 @@ paths:
                       code: 200
                       message: Consulta de API Realizada com Sucesso
                 historicoFamiliarPolitico:
-                  summary: Consulta de histórico familiar político
+                  summary: PF - Histórico familiar político
                   value:
                     result:
                       totalMembers: 10
@@ -1086,7 +1104,7 @@ paths:
                       code: 200
                       message: Success
                 prestadoresServicoEleitorais:
-                  summary: Consulta de prestadores de serviço eleitorais
+                  summary: PF - Prestadores de serviço eleitorais
                   value:
                     result:
                       name: BARBOSA REIS
@@ -1110,7 +1128,7 @@ paths:
                       code: 200
                       message: Success
                 dasMeiReceita:
-                  summary: Consulta de DAS MEI na Receita
+                  summary: PJ - DAS MEI na Receita
                   value:
                     result:
                       periodos:
@@ -1172,7 +1190,7 @@ paths:
                       code: 200
                       message: Success
                 enriquecimentoPessoaJuridica:
-                  summary: Enriquecimento de dados de pessoa jurídica
+                  summary: PJ - Enriquecimento de dados
                   value:
                     result:
                       cnpj: "30108283000150"
@@ -1208,7 +1226,7 @@ paths:
                       code: 200
                       message: Success
                 statusCnpjReceitaFederal:
-                  summary: Status do CNPJ na Receita Federal
+                  summary: PJ - Status do CNPJ na Receita Federal
                   value:
                     result:
                       cnpj: "30108283000150"
@@ -1219,7 +1237,7 @@ paths:
                       code: 200
                       message: Success
                 relacionamentosEmpresa:
-                  summary: Consulta de relacionamentos de uma empresa
+                  summary: PJ - Relacionamentos da empresa
                   value:
                     result:
                       cnpj: "99244297000106"
@@ -1242,7 +1260,7 @@ paths:
                       code: 200
                       message: Success
                 sintegra:
-                  summary: Consulta do SINTEGRA
+                  summary: PJ - SINTEGRA
                   value:
                     result:
                       cnpj: "30108283000000"
@@ -1254,7 +1272,7 @@ paths:
                       code: 200
                       message: Success
                 sociosPrimeiroNivel:
-                  summary: Consulta de sócios de primeiro nível
+                  summary: PJ - Sócios de primeiro nível
                   value:
                     result:
                       cnpj: "99244297000106"
@@ -1335,7 +1353,7 @@ paths:
                       code: 200
                       message: Success
                 processosJuridicosSocios:
-                  summary: Consulta de processos jurídicos dos sócios
+                  summary: PJ - Processos jurídicos dos sócios
                   value:
                     result:
                       totalLawsuitsOwners: 2
@@ -1364,7 +1382,7 @@ paths:
                       code: 200
                       message: Success
                 kycComplianceSocios:
-                  summary: Consulta de KYC e compliance dos sócios
+                  summary: PJ - KYC e compliance dos sócios
                   value:
                     result:
                       totalCurrentPep: 0
@@ -1386,7 +1404,7 @@ paths:
                       code: 200
                       message: Success
                 exposicaoPerfilMidiaPj:
-                  summary: Exposição e perfil na mídia dos sócios
+                  summary: PJ - Exposição e perfil na mídia dos sócios
                   value:
                     results:
                       - cpf: "12345678901"
@@ -1406,7 +1424,7 @@ paths:
                       code: 200
                       message: Consulta de API Realizada com Sucesso
                 enderecosEstendidosEmpresa:
-                  summary: Endereços estendidos de empresa
+                  summary: PJ - Endereços estendidos
                   value:
                     result:
                       cnpj: "30108283000150"
@@ -1515,7 +1533,7 @@ paths:
                       message: Consulta de API Realizada com Sucesso
                     externalId: 8e1ac243-4510-4ebf-ac7d-4b6d133dd619
                 certidaoNegativaProtesto:
-                  summary: Certidão negativa de protesto
+                  summary: PF - Certidão negativa de protesto
                   value:
                     result:
                       cpf: "77272722134"
@@ -1541,7 +1559,7 @@ paths:
                       code: 200
                       message: Success
                 processosJuridicosAdministrativos:
-                  summary: Processos jurídicos e administrativos
+                  summary: PF - Processos jurídicos e administrativos
                   value:
                     result:
                       processes:
@@ -1556,7 +1574,7 @@ paths:
                       code: 200
                       message: Success
                 servidoresPublicos:
-                  summary: Consulta de servidores públicos
+                  summary: PF - Servidores públicos
                   value:
                     result:
                       totalPublicPositions: 6
@@ -1568,7 +1586,7 @@ paths:
                       code: 400
                       message: Failed to fetch information
                 consultaEnderecos:
-                  summary: Consulta de endereços
+                  summary: PF - Endereços
                   value:
                     result:
                       addresses:
@@ -1583,14 +1601,14 @@ paths:
                       code: 200
                       message: Success
                 relacionamentosEconomicos:
-                  summary: Consulta de relacionamentos econômicos
+                  summary: PF - Relacionamentos econômicos
                   value:
                     result: {}
                     status:
                       code: 200
                       message: Success
                 historicoProfissional:
-                  summary: Consulta do histórico profissional
+                  summary: PF - Histórico profissional
                   value:
                     result:
                       professionalHistory:
@@ -1604,7 +1622,7 @@ paths:
                       code: 200
                       message: Success
                 certidaoNegativaProtestoPj:
-                  summary: Certidão negativa de protesto PJ
+                  summary: PJ - Certidão negativa de protesto
                   value:
                     result:
                       cnpj: "77272722134"
@@ -1630,17 +1648,23 @@ paths:
                       code: 200
                       message: Success
                 informacoesFinanceiras:
-                  summary: Consulta de informações financeiras
+                  summary: PF - Informações financeiras
                   value:
                     status:
                       code: 200
                       message: Success
                 dadosPis:
-                  summary: Consulta de dados PIS
+                  summary: PF - Dados PIS
                   value:
                     status:
                       code: 200
                       message: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /api/customer:
     get:
@@ -1671,7 +1695,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
+                  $ref: '#/components/schemas/Customer'
               example:
                 - tokenCustomer: c65449cd-5ce5-40b8-9aa4-0726b118f73e
                   type: null
@@ -1680,6 +1704,12 @@ paths:
                   addInformation: null
                   active: false
                   imageUrl: null
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
   /api/changeStatusOfCustomer:
     post:
@@ -1694,6 +1724,7 @@ paths:
       security:
         - bearerAuth: []
       requestBody:
+        description: Lista de clientes que devem ter o status alterado.
         required: true
         content:
           application/json:
@@ -1710,11 +1741,17 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/GenericStatusResponse'
               example:
                 status:
                   code: 200
                   message: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
 
 components:
   securitySchemes:
@@ -1723,29 +1760,63 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  responses:
+    BadRequest:
+      description: Payload inválido, parâmetro ausente ou falha técnica no processamento.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status:
+              code: 400
+              message: Failed to fetch information
+    Unauthorized:
+      description: Token ausente, inválido ou expirado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status:
+              code: 401
+              message: Unauthorized
+    Forbidden:
+      description: Credenciais válidas, mas sem permissão para executar a operação ou serviço.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status:
+              code: 403
+              message: Forbidden
+
   schemas:
     TokenRequest:
       type: object
+      description: Credenciais da aplicação usadas para gerar token JWT.
       required:
         - client
         - secret
       properties:
         client:
           type: string
-          description: ClientId fornecido previamente.
+          description: Identificador da aplicação fornecido previamente.
         secret:
           type: string
-          description: Secret fornecido previamente.
+          description: Segredo da aplicação fornecido previamente.
 
     TokenResponse:
       type: object
+      description: Resposta da geração de token.
       properties:
         access_token:
           type: string
-          description: Token JWT.
+          description: Token JWT usado no header `Authorization`.
         expires_in:
           type: string
-          description: Tempo de expiração.
+          description: Tempo de expiração do token em segundos.
 
     TokenOnboardingRequest:
       type: object
@@ -1867,7 +1938,7 @@ components:
         produto será executado; os demais campos são dinâmicos e dependem do
         serviço escolhido.
 
-        Familias principais:
+        Famílias principais:
 
         - Cadastro e identidade PF
         - Documentos e biometria
@@ -1914,18 +1985,27 @@ components:
         image1:
           type: string
           description: Imagem em base64 ou conteúdo principal para serviços de OCR, biometria e FaceMatch.
+          example: base64
         image2:
           type: string
           description: Segunda imagem em base64, quando o serviço exigir comparação ou verso de documento.
+          example: base64
         image1Url:
           type: string
           description: URL da primeira imagem, quando a integração usa arquivo hospedado.
+          example: url_image
         image2Url:
           type: string
           description: URL da segunda imagem, quando a integração usa arquivo hospedado.
+          example: urlImageMatch
+        selfie1:
+          type: string
+          description: Selfie em base64 usada em documentoscopia ou comparação facial.
+          example: base64
         key:
           type: string
           description: Chave de consulta usada em serviços assíncronos, como documentoscopia digital.
+          example: de0cd562-5962-40bd-8f94-5a7184ecde0e
         nit:
           type: string
           description: Número de identificação do trabalhador, quando aplicável.
@@ -1964,6 +2044,58 @@ components:
           type: string
           description: Mensagem técnica do processamento.
           example: Success
+
+    GenericStatusResponse:
+      type: object
+      description: Resposta genérica com status técnico.
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusResponse'
+
+    ErrorResponse:
+      type: object
+      description: Resposta de erro técnico ou falha de processamento.
+      properties:
+        result:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Dados parciais retornados, quando existirem.
+        status:
+          $ref: '#/components/schemas/StatusResponse'
+        externalId:
+          type: string
+          description: Identificador externo da consulta, quando retornado.
+
+    Customer:
+      type: object
+      description: Cliente cadastrado na base idCerberus.
+      properties:
+        tokenCustomer:
+          type: string
+          description: Token identificador do cliente.
+        type:
+          type: string
+          nullable: true
+          description: Tipo do cliente, quando disponível.
+        documentKey:
+          type: string
+          description: CPF ou CNPJ usado como chave do cliente.
+        name:
+          type: string
+          nullable: true
+          description: Nome do cliente, quando disponível.
+        addInformation:
+          type: string
+          nullable: true
+          description: Informação adicional vinculada ao cliente.
+        active:
+          type: boolean
+          description: Indica se o cliente está ativo.
+        imageUrl:
+          type: string
+          nullable: true
+          description: URL de imagem vinculada ao cliente, quando disponível.
 
     PersonDataEnrichmentResult:
       type: object
