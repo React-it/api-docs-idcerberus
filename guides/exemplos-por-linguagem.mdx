@@ -5,17 +5,26 @@ description: Exemplos de integração com curl, Node.js, Python e C#
 
 # Exemplos por linguagem
 
-Os exemplos abaixo usam o mesmo fluxo: gerar token e chamar `POST /api/service-api`
-com o serviço de enriquecimento de pessoa física.
+Os exemplos abaixo seguem o mesmo fluxo:
 
-Escolha a URL base do ambiente antes de executar:
+1. Gerar token em `POST /api/token-generate`.
+2. Copiar o `access_token`.
+3. Chamar `POST /api/service-api`.
+4. Ler `result` e `status`.
+
+O serviço usado nos exemplos é `service_person_data_enrichment`, mas você pode
+trocar o campo `service` e os demais parâmetros conforme o produto desejado.
+
+## Ambientes
 
 | Ambiente | Base URL |
 | --- | --- |
 | Homologação | `https://backoffice-hml.idcerberus.com` |
 | Produção | `https://backoffice.idcerberus.com` |
 
-## curl
+## cURL em macOS ou Linux
+
+Este exemplo usa `jq` para extrair o token automaticamente.
 
 ```bash
 BASE_URL="https://backoffice-hml.idcerberus.com"
@@ -34,6 +43,28 @@ curl --location "${BASE_URL}/api/service-api" \
     "service": "service_person_data_enrichment",
     "cpf": "cpf"
   }'
+```
+
+Se não tiver `jq`, gere o token em um primeiro comando, copie `access_token` e
+use no segundo comando.
+
+## cURL no Windows PowerShell
+
+No PowerShell, use `curl.exe`.
+
+```powershell
+$baseUrl = "https://backoffice-hml.idcerberus.com"
+
+$tokenResponse = curl.exe --silent --location "$baseUrl/api/token-generate" `
+  --header "Content-Type: application/json" `
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+
+$token = ($tokenResponse | ConvertFrom-Json).access_token
+
+curl.exe --location "$baseUrl/api/service-api" `
+  --header "Authorization: Bearer $token" `
+  --header "Content-Type: application/json" `
+  --data "{\"service\":\"service_person_data_enrichment\",\"cpf\":\"cpf\"}"
 ```
 
 ## Node.js
@@ -162,4 +193,27 @@ var serviceResponse = await http.PostAsync(
 serviceResponse.EnsureSuccessStatusCode();
 var serviceBody = await serviceResponse.Content.ReadAsStringAsync();
 Console.WriteLine(serviceBody);
+```
+
+## Como adaptar para outro serviço
+
+Troque o valor de `service` e os campos do body.
+
+Exemplo para CNPJ:
+
+```json
+{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}
+```
+
+Exemplo para FaceMatch:
+
+```json
+{
+  "service": "service_face_match",
+  "image1": "base64",
+  "image2": "base64"
+}
 ```

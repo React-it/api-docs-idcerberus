@@ -1,0 +1,125 @@
+---
+title: Troubleshooting
+description: Resolva problemas comuns ao integrar com a API idCerberus
+---
+
+# Troubleshooting
+
+Use esta página quando uma chamada não funcionar como esperado.
+
+## Recebi 401 ou 403
+
+Possíveis causas:
+
+- Token ausente.
+- Token expirado.
+- Token gerado em outro ambiente.
+- Produto não liberado para a conta.
+
+Como resolver:
+
+1. Gere um novo token.
+2. Confirme se a URL é de HML ou produção.
+3. Envie o header:
+
+```txt
+Authorization: Bearer {jwt_token}
+```
+
+4. Confirme se o serviço está liberado para a conta.
+
+## Recebi `status.code` 400
+
+Possíveis causas:
+
+- Body inválido.
+- Campo obrigatório ausente.
+- Código `service` incorreto.
+- CPF ou CNPJ inválido.
+- Serviço sem permissão.
+- Fonte externa indisponível.
+
+Como resolver:
+
+1. Leia `status.message`.
+2. Confira se o body está em JSON válido.
+3. Confira se enviou `Content-Type: application/json`.
+4. Confira se o campo `service` está correto.
+5. Compare o body com o exemplo da API Reference.
+
+## O token funciona em HML, mas não em produção
+
+Token e URL precisam ser do mesmo ambiente.
+
+| Ambiente | URL |
+| --- | --- |
+| HML | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Gere um token novo em produção usando credenciais de produção.
+
+## O cURL funciona, mas meu código não
+
+Confira:
+
+- URL base.
+- Método HTTP.
+- Headers.
+- Body JSON.
+- Timeout.
+- Serialização do JSON.
+- Header `Authorization`.
+- Header `Content-Type`.
+
+Compare o request do código com o request da API Reference.
+
+## O PowerShell quebra o comando cURL
+
+No Windows, use `curl.exe` em vez de `curl`.
+
+```powershell
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" `
+  --header "Content-Type: application/json" `
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+O comando `curl` sozinho pode ser interpretado pelo PowerShell como outro alias.
+
+## A consulta retornou sucesso, mas não veio o dado esperado
+
+Nem todo retorno sem dado é erro técnico.
+
+Exemplos:
+
+- certidão com “Nada consta”;
+- CPF não encontrado em validação de endereço;
+- pessoa não exposta politicamente;
+- empresa sem débitos;
+- lista vazia de relacionamentos.
+
+Leia `result` e aplique a regra de negócio do seu produto.
+
+## A resposta não veio em JSON
+
+Alguns endpoints retornam outro tipo de conteúdo. Exemplo:
+
+```txt
+GET /api/history-onboarding-report/{tokenOnboarding}
+```
+
+Esse endpoint retorna PDF, não JSON.
+
+## Checklist rápido
+
+Antes de pedir apoio, confira:
+
+- A URL está correta?
+- O método HTTP está correto?
+- O token foi gerado no mesmo ambiente?
+- O header `Authorization` foi enviado?
+- O header `Content-Type` foi enviado?
+- O body é JSON válido?
+- O campo `service` está correto?
+- O CPF/CNPJ está no campo esperado?
+- O serviço está liberado para a conta?
+- Você leu `status.message`?

@@ -1,0 +1,138 @@
+---
+title: Postman do zero
+description: Configure o Postman para testar a API idCerberus sem escrever código
+---
+
+# Postman do zero
+
+Este guia mostra como testar a API idCerberus no Postman, sem precisar usar
+terminal ou escrever código.
+
+## O que você vai configurar
+
+1. Uma collection.
+2. Um environment de homologação.
+3. Variáveis `base_url` e `jwt_token`.
+4. Um request para gerar token.
+5. Um request para executar `POST /api/service-api`.
+
+## 1. Crie uma collection
+
+1. Abra o Postman.
+2. Clique em **Collections**.
+3. Clique em **New Collection**.
+4. Nomeie como `idCerberus API`.
+5. Salve.
+
+## 2. Crie um environment de HML
+
+1. Clique em **Environments**.
+2. Clique em **New Environment**.
+3. Nomeie como `idCerberus HML`.
+4. Crie a variável `base_url`.
+5. No valor, coloque:
+
+```txt
+https://backoffice-hml.idcerberus.com
+```
+
+6. Crie a variável `jwt_token`.
+7. Deixe o valor vazio por enquanto.
+8. Salve o environment.
+9. Selecione `idCerberus HML` no canto superior direito do Postman.
+
+## 3. Crie o request de token
+
+1. Dentro da collection, clique em **Add request**.
+2. Nomeie como `Gerar token`.
+3. Selecione o método `POST`.
+4. Use a URL:
+
+```txt
+{{base_url}}/api/token-generate
+```
+
+5. Na aba **Headers**, adicione:
+
+| Key | Value |
+| --- | --- |
+| `Content-Type` | `application/json` |
+
+6. Na aba **Body**, escolha **raw**.
+7. Selecione **JSON**.
+8. Cole:
+
+```json
+{
+  "client": "{client}",
+  "secret": "{secret}"
+}
+```
+
+9. Clique em **Send**.
+10. Copie o valor de `access_token` retornado.
+11. Cole esse valor na variável `jwt_token` do environment.
+
+## 4. Crie o request de serviço
+
+1. Dentro da collection, clique em **Add request**.
+2. Nomeie como `Executar service-api`.
+3. Selecione o método `POST`.
+4. Use a URL:
+
+```txt
+{{base_url}}/api/service-api
+```
+
+5. Na aba **Headers**, adicione:
+
+| Key | Value |
+| --- | --- |
+| `Authorization` | `Bearer {{jwt_token}}` |
+| `Content-Type` | `application/json` |
+
+6. Na aba **Body**, escolha **raw**.
+7. Selecione **JSON**.
+8. Cole:
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+9. Clique em **Send**.
+
+## 5. Leia a resposta
+
+Uma resposta bem-sucedida costuma retornar:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+Leia:
+
+| Campo | O que significa |
+| --- | --- |
+| `result` | Dados retornados pelo serviço |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica do processamento |
+
+## 6. Troque para produção
+
+Para criar um environment de produção, repita o processo e use:
+
+```txt
+https://backoffice.idcerberus.com
+```
+
+Use credenciais de produção e gere um novo token. Não reutilize token de HML em
+produção.

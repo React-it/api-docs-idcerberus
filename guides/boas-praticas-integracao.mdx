@@ -1,0 +1,87 @@
+---
+title: Boas práticas de integração
+description: Recomendações para integrar a API idCerberus com segurança e estabilidade
+---
+
+# Boas práticas de integração
+
+Use estas recomendações para reduzir falhas, evitar exposição de credenciais e
+deixar a integração pronta para produção.
+
+## Credenciais e token
+
+| Prática | Motivo |
+| --- | --- |
+| Gere token no back-end | Evita expor `client` e `secret` |
+| Não coloque `client` e `secret` no front-end | Usuários poderiam inspecionar as credenciais |
+| Não versione credenciais no Git | Evita vazamento acidental |
+| Renove o token quando expirar | O token tem validade limitada |
+| Não logue o JWT completo | Token pode permitir chamadas protegidas |
+
+## Ambientes
+
+- Use HML para desenvolvimento e homologação.
+- Use produção somente depois de validar o fluxo.
+- Não misture token de HML com URL de produção.
+- Não misture token de produção com URL de HML.
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+## Requests
+
+- Sempre envie `Content-Type: application/json` em requests com body JSON.
+- Sempre envie `Authorization: Bearer {jwt_token}` em chamadas protegidas.
+- Valide campos obrigatórios antes de chamar a API.
+- Envie CPF/CNPJ no formato esperado pelo seu fluxo.
+- Use timeout nas chamadas HTTP.
+
+## Retry
+
+Use retry apenas quando fizer sentido.
+
+| Situação | Retry? |
+| --- | --- |
+| Timeout | Sim, com limite |
+| Falha temporária de rede | Sim, com limite |
+| Token expirado | Gere novo token e repita |
+| Payload inválido | Não |
+| Serviço sem permissão | Não |
+| CPF/CNPJ inválido | Não |
+
+## Respostas
+
+- Não use apenas o status HTTP para decidir sucesso de negócio.
+- Leia também `status.code` e `status.message`.
+- Trate `status.code` diferente de 200.
+- Salve `externalId` quando ele for retornado.
+- Lembre que resultado negativo não é necessariamente erro técnico.
+
+Exemplo:
+
+```js
+if (body.status?.code !== 200) {
+  throw new Error(body.status?.message || "Falha no processamento");
+}
+
+return body.result;
+```
+
+## Logs
+
+Registre informações úteis para investigação, mas sem expor dados sensíveis.
+
+| Pode logar | Evite logar |
+| --- | --- |
+| Endpoint chamado | `client` e `secret` |
+| Código `service` | Token JWT completo |
+| `status.code` | Documento completo sem necessidade |
+| `status.message` | Imagens em base64 |
+| `externalId` | Selfies e documentos |
+
+## Produção
+
+Antes de ir para produção, revise o
+[Checklist para produção](/guides/checklist-producao).

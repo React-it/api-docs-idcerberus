@@ -99,6 +99,8 @@ Linux.
 
 Também existem guias práticos para primeira consulta de CPF, primeira consulta
 de CNPJ, checklist de produção, glossário e tratamento de status/erros.
+Para apoio operacional, a documentação também inclui mapa da documentação,
+Postman do zero, boas práticas de integração e troubleshooting.
 
 ## Validação rápida
 
