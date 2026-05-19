@@ -5,12 +5,17 @@ info:
   version: 1.0.0
   description: |
     Referência técnica da API idCerberus para integração com produtos de
-    onboarding digital, KYC, biometria, prevenção a fraude, análise de risco,
+    onboarding digital, KYC, biometria, prevenção à fraude, análise de risco,
     compliance, enriquecimento cadastral e consultas de pessoa física e pessoa
     jurídica.
 
-    Use esta referência para consultar endpoints, autenticação, parâmetros,
-    bodies, exemplos de request, exemplos de response e schemas retornados.
+    Use esta referência quando já souber qual endpoint ou serviço deseja
+    implementar. Para entender fluxos, ambientes, boas práticas e critérios de
+    escolha entre serviços, consulte primeiro os guias.
+
+    A maioria das consultas de dados é executada por `POST /api/service-api`.
+    Nesse endpoint, a rota permanece a mesma e o produto executado é definido
+    pelo campo `service` enviado no body.
 
 servers:
   - url: https://backoffice-hml.idcerberus.com
@@ -21,24 +26,24 @@ servers:
 tags:
   - name: Autorização
     description: |
-      Geração de token JWT para autenticar chamadas protegidas da API. Antes de
-      consumir onboarding, serviços externos ou customers, gere um token com
-      `client` e `secret` e envie-o no header `Authorization`.
+      Gere o token JWT usado nas chamadas protegidas. Antes de consumir
+      onboarding, serviços externos ou customers, gere um token com `client` e
+      `secret` e envie-o no header `Authorization`.
   - name: Integração via SDK
     description: |
-      Endpoints usados no fluxo de onboarding via SDK. Permitem gerar o
-      `tokenOnboarding`, consultar o resultado processado e baixar o relatório
-      final em PDF.
+      Endpoints usados no fluxo de onboarding via SDK. Use esta seção para
+      gerar o `tokenOnboarding`, consultar o resultado processado e baixar o
+      relatório final em PDF.
   - name: Serviços - Pessoas
     description: |
-      Consultas de pessoa física executadas por `POST /api/service-api`. Inclui
-      enriquecimento de CPF, Receita Federal, OCR, biometria, FaceMatch,
-      Liveness, risco, compliance, certidões, contatos, dados eleitorais e
-      outros serviços definidos pelo campo `service`.
+      Serviços de pessoa física executados por `POST /api/service-api`.
+      Inclui enriquecimento de CPF, Receita Federal, OCR, biometria,
+      FaceMatch, Liveness, risco, compliance, certidões, contatos, dados
+      eleitorais e outros produtos definidos pelo campo `service`.
   - name: Serviços - Empresas
     description: |
-      Consultas de pessoa jurídica executadas por `POST /api/service-api`. Inclui
-      enriquecimento de CNPJ, Receita Federal, SINTEGRA, sócios,
+      Serviços de pessoa jurídica executados por `POST /api/service-api`.
+      Inclui enriquecimento de CNPJ, Receita Federal, SINTEGRA, sócios,
       relacionamentos, débitos, protestos, KYC dos sócios e compliance.
   - name: Customers
     description: |
@@ -60,6 +65,13 @@ paths:
         `Authorization: Bearer {jwt_token}`
 
         Quando o token expirar, gere um novo token usando as mesmas credenciais.
+
+        Ambientes disponíveis:
+
+        | Ambiente | URL |
+        | --- | --- |
+        | Homologação | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+        | Produção | `https://backoffice.idcerberus.com/api/token-generate` |
       requestBody:
         description: |
           Envie as credenciais da aplicação para gerar um token JWT.
@@ -140,6 +152,9 @@ paths:
         retorno pode incluir dados capturados durante o cadastro, URLs de
         documentos, mensagens de processamento, regras avaliadas e status dos
         serviços executados.
+
+        Use este endpoint quando precisar consultar o resultado estruturado do
+        onboarding em JSON.
       security:
         - bearerAuth: []
       parameters:
@@ -211,15 +226,33 @@ paths:
       tags:
         - Serviços - Pessoas
         - Serviços - Empresas
-      summary: Executar serviço de dados, risco ou compliance
+      summary: Executar serviço via service-api
       description: |
         Endpoint central para executar produtos de dados, risco, biometria,
         documentos e compliance de pessoa física e pessoa jurídica.
 
-        O processamento é definido pelo campo `service` enviado no body. Os
-        demais campos variam conforme o serviço escolhido. Por exemplo, consultas
-        de CPF normalmente usam `cpf`, consultas de CNPJ usam `cnpj`, e serviços
-        de biometria ou documentos usam imagens em `base64` ou URL.
+        A rota é sempre `POST /api/service-api`. O produto executado é definido
+        pelo campo `service` enviado no body. Os demais campos variam conforme o
+        serviço escolhido.
+
+        Campos mais comuns:
+
+        | Campo | Uso |
+        | --- | --- |
+        | `service` | Código do produto que será executado |
+        | `cpf` | Documento principal em serviços de pessoa física |
+        | `cnpj` | Documento principal em serviços de pessoa jurídica |
+        | `image1`, `image2` | Imagens em base64 para OCR, biometria ou documentos |
+        | `image1Url`, `image2Url` | URLs de imagens, quando o serviço aceitar URL |
+        | `selfie1` | Selfie usada em documentoscopia e FaceMatch |
+        | `key` | Chave de consulta em fluxos assíncronos |
+
+        Exemplos:
+
+        - consulta de CPF normalmente usa `cpf`;
+        - consulta de CNPJ normalmente usa `cnpj`;
+        - OCR, FaceMatch e documentoscopia usam imagens em base64 ou URL;
+        - serviços assíncronos usam `key` para consultar o resultado depois.
 
         A maioria das respostas retorna:
 
@@ -228,15 +261,17 @@ paths:
         - `status.message`: mensagem técnica do processamento;
         - `externalId`: identificador externo, quando disponível.
 
-        Use os exemplos desta operação para selecionar rapidamente o payload do
-        produto desejado.
+        Use a lista de exemplos desta operação para selecionar rapidamente o
+        payload do produto desejado.
       security:
         - bearerAuth: []
       requestBody:
         description: |
           Informe o código do serviço no campo `service` e os parâmetros
-          exigidos por essa consulta. Use os exemplos para selecionar o payload
-          correto de cada produto.
+          exigidos por essa consulta. O campo `service` é obrigatório em todos
+          os casos. Os demais campos dependem do produto selecionado.
+
+          Use os exemplos para copiar o payload inicial do serviço desejado.
         required: true
         content:
           application/json:
