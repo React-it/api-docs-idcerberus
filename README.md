@@ -1,17 +1,18 @@
 # idCerberus Docs
 
-Documentação da API idCerberus construída com Mintlify.
+Documentacao da API idCerberus construida com Mintlify.
 
-O projeto organiza guias de integração, catálogo técnico e API Reference para
-produtos de onboarding, KYC, biometria, risco, compliance, enriquecimento
-cadastral e consultas de pessoa física e pessoa jurídica.
+O projeto organiza guias de integracao, catalogo tecnico, API Reference e
+arquivos auxiliares para LLMs. A documentacao cobre produtos de onboarding,
+KYC, biometria, risco, compliance, enriquecimento cadastral e consultas de
+pessoa fisica e pessoa juridica.
 
 ## Requisitos
 
 - Node.js 20+
 - npm
 
-## Instalação
+## Instalacao
 
 Entre na pasta do projeto:
 
@@ -19,7 +20,7 @@ Entre na pasta do projeto:
 cd api-docs-idcerberus
 ```
 
-Instale as dependências:
+Instale as dependencias:
 
 ```bash
 npm install
@@ -33,7 +34,7 @@ Inicie o servidor de desenvolvimento:
 npm run dev
 ```
 
-A documentação fica disponível em:
+A documentacao fica disponivel em:
 
 ```txt
 http://localhost:3000
@@ -45,83 +46,166 @@ No Windows, se o PowerShell bloquear `npm.ps1`, use:
 npm.cmd run dev
 ```
 
+## Arquivos para LLMs
+
+O projeto gera arquivos em texto simples e JSON para uso por ChatGPT, Claude,
+Cursor, Windsurf, validadores internos e outros assistentes:
+
+- `llms.txt`: indice curto da documentacao.
+- `llms-small.txt`: resumo operacional com ambientes, autenticacao, service-api,
+  fluxos principais e services documentados.
+- `llms-full.txt`: conteudo completo dos guias, API Reference, OpenAPI e
+  mapeamento de cobertura.
+- `llms-api-reference.txt`: resumo operacional do API Reference com services e
+  exemplos de curl.
+- `llms-services-coverage.txt`: mapa separado de services documentados e nao
+  documentados.
+- `services-catalog.json`: catalogo estruturado dos services documentados.
+
+Para gerar manualmente:
+
+```bash
+node scripts/generate-llms.mjs
+```
+
+Ou via npm:
+
+```bash
+npm run generate:llms
+```
+
+No Windows, caso o PowerShell bloqueie o npm:
+
+```powershell
+npm.cmd run generate:llms
+```
+
+O script de export tambem executa a geracao antes de publicar:
+
+```bash
+npm run export
+```
+
+No deploy, os arquivos devem ficar disponiveis em:
+
+- `https://react-it.github.io/api-docs-idcerberus/llms.txt`
+- `https://react-it.github.io/api-docs-idcerberus/llms-small.txt`
+- `https://react-it.github.io/api-docs-idcerberus/llms-full.txt`
+- `https://react-it.github.io/api-docs-idcerberus/llms-api-reference.txt`
+- `https://react-it.github.io/api-docs-idcerberus/llms-services-coverage.txt`
+- `https://react-it.github.io/api-docs-idcerberus/services-catalog.json`
+
 ## Estrutura
 
 ```txt
 api-docs-idcerberus/
-├─ api-reference/
-│  ├─ boas-vindas.mdx
-│  └─ openapi.json
-├─ assets/
-│  └─ idcerberus-logo-transparent.png
-├─ guides/
-│  ├─ pessoas/
-│  ├─ empresas/
-│  ├─ service-api/
-│  ├─ autenticacao.mdx
-│  ├─ onboarding-sdk.mdx
-│  ├─ quickstart.mdx
-│  └─ ...
-├─ docs.json
-├─ index.mdx
-├─ package.json
-└─ README.md
+|-- api-reference/
+|   |-- boas-vindas.mdx
+|   `-- openapi.json
+|-- assets/
+|   `-- idcerberus-logo-transparent.png
+|-- guides/
+|   |-- pessoas/
+|   |-- empresas/
+|   |-- service-api/
+|   |-- autenticacao.mdx
+|   |-- llms.mdx
+|   |-- onboarding-sdk.mdx
+|   |-- quickstart.mdx
+|   `-- ...
+|-- scripts/
+|   |-- check-text-quality.mjs
+|   |-- generate-llms.mjs
+|   `-- prepare-pages-export.mjs
+|-- docs.json
+|-- index.mdx
+|-- llms.txt
+|-- llms-small.txt
+|-- llms-full.txt
+|-- llms-api-reference.txt
+|-- llms-services-coverage.txt
+|-- services-catalog.json
+|-- package.json
+`-- README.md
 ```
 
-## Conteúdo principal
+## Conteudo principal
 
-- `index.mdx`: página inicial da documentação.
-- `docs.json`: configuração do Mintlify, tema, logo, navegação e OpenAPI.
-- `api-reference/openapi.json`: definição OpenAPI usada pela aba API Reference.
-- `api-reference/boas-vindas.mdx`: introdução da API Reference.
-- `guides/`: guias por fluxo, categoria de serviço e catálogo técnico.
-- `assets/`: imagens e logo usadas pela documentação.
+- `index.mdx`: pagina inicial da documentacao.
+- `docs.json`: configuracao do Mintlify, tema, logo, navegacao e OpenAPI.
+- `api-reference/openapi.json`: definicao OpenAPI usada pela aba API Reference.
+- `api-reference/boas-vindas.mdx`: introducao da API Reference.
+- `guides/`: guias por fluxo, categoria de servico e catalogo tecnico.
+- `guides/llms.mdx`: guia de uso dos arquivos para LLMs.
+- `guides/indice-de-services.mdx`: indice navegavel dos services documentados.
+- `assets/`: imagens e logo usadas pela documentacao.
+- `mapeamento-servicos-doc.txt`: mapa de services que ja estao ou ainda nao
+  estao documentados.
 
-## Organização da navegação
+## Organizacao da navegacao
 
-A documentação está dividida em duas áreas principais:
+A documentacao esta dividida em duas areas principais:
 
-- **Guias**: explicam fluxos, categorias, casos de uso e como escolher serviços.
-- **API Reference**: concentra endpoints, exemplos de request/response e schemas.
+- Guias: explicam fluxos, categorias, casos de uso e como escolher services.
+- API Reference: concentra endpoints, exemplos de request/response e schemas.
 
-Dentro dos guias, os conteúdos estão organizados por:
+Dentro dos guias, os conteudos estao organizados por:
 
 - Comece aqui
 - Fluxos principais
 - POST `/api/service-api`
 - Pessoas
 - Empresas
-- Catálogo técnico
+- Catalogo tecnico
 
-O Quickstart foi pensado para usuários com diferentes níveis técnicos. Ele mostra
-como executar a primeira chamada usando Postman, Windows PowerShell/CMD, macOS e
-Linux.
+## Qualidade de texto
 
-Também existem guias práticos para primeira consulta de CPF, primeira consulta
-de CNPJ, checklist de produção, glossário e tratamento de status/erros.
-Para apoio operacional, a documentação também inclui mapa da documentação,
-Postman do zero, boas práticas de integração e troubleshooting.
-
-## Validação rápida
-
-Para validar a estrutura do OpenAPI e do `docs.json`:
+Antes de publicar, rode o check de texto para capturar caracteres quebrados,
+mojibake, frases duplicadas comuns e placeholders inseguros:
 
 ```bash
-node -e "const fs=require('fs'),yaml=require('js-yaml'); const doc=yaml.load(fs.readFileSync('api-reference/openapi.json','utf8')); JSON.parse(fs.readFileSync('docs.json','utf8')); console.log('openapi', doc.openapi); console.log('docs.json ok');"
+npm run check:text
 ```
 
-## Observações
+Para checar texto e regenerar os arquivos de LLM:
 
-- O tema visual usa a identidade azul da idCerberus.
-- A logo utilizada fica em `assets/idcerberus-logo-transparent.png`.
-- O endpoint central de consultas é `POST /api/service-api`; o produto executado é
-  definido pelo campo `service`.
-- A documentação contempla os ambientes de homologação e produção:
-  - Homologação: `https://backoffice-hml.idcerberus.com`
-  - Produção: `https://backoffice.idcerberus.com`
-- A API Reference possui exemplos de request e response para os serviços
-  migrados da referência original.
+```bash
+npm run check
+```
+
+## Validacao rapida
+
+Para validar `docs.json`:
+
+```bash
+node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('docs.json','utf8')); console.log('docs.json ok');"
+```
+
+Para regenerar e validar arquivos de LLM:
+
+```bash
+node scripts/generate-llms.mjs
+node -e "const fs=require('fs'); for (const f of ['llms.txt','llms-small.txt','llms-full.txt']) { const s=fs.readFileSync(f,'utf8'); console.log(f, s.includes('\\uFFFD') ? 'encoding ruim' : 'ok'); }"
+```
+
+## Ambientes
+
+- Homologacao: `https://backoffice-hml.idcerberus.com`
+- Producao: `https://backoffice.idcerberus.com`
+
+O endpoint central de consultas e `POST /api/service-api`. O produto executado e
+definido pelo campo `service`.
 
 ## Deploy
 
-O deploy pode ser feito pela plataforma Mintlify conectada ao repositório GitHub.
+O export deve gerar os arquivos de LLM antes da publicacao:
+
+```bash
+npm run export
+```
+
+No Windows:
+
+```powershell
+npm.cmd run export
+```

@@ -1,0 +1,817 @@
+# idCerberus API Reference - resumo operacional para LLM
+
+Use este arquivo para gerar exemplos de request, explicar chamadas da API e escolher o `service` correto sem depender do OpenAPI completo.
+
+## Regras obrigatorias
+
+- Nao invente endpoints, parametros ou services.
+- Para consultas externas, use `POST /api/service-api` e envie o campo `service` no body.
+- Use homologacao para testes: `https://backoffice-hml.idcerberus.com`.
+- Use producao somente quando o usuario pedir explicitamente: `https://backoffice.idcerberus.com`.
+- Nunca exponha `client`, `secret`, JWT real, CPF real, CNPJ real ou imagens reais em exemplos.
+- Quando faltar um service no catalogo, diga que ele precisa ser confirmado no backend/onboarding antes de documentar.
+
+## Autenticacao
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+## Pessoa Fisica
+
+### Antecedentes criminais civis
+
+- Service: `service_criminal_record_civil`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `rg`, `uf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "rg": "rg",
+  "uf": "uf"
+}'
+```
+
+### Antecedentes criminais federais
+
+- Service: `service_criminal_record_federal`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Certidao de Nada Consta
+
+- Service: `service_nothing_record_lawsuits`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `court`, `uf`, `sphere`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "court": "TRF1",
+  "uf": "uf",
+  "sphere": "CIVIL"
+}'
+```
+
+### Certidao negativa de protesto
+
+- Service: `service_protest_clearance_certificate`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Consulta de MEI
+
+- Service: `service_mei`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Dados eleitorais de candidato
+
+- Service: `SERVICE_ELECTION_CANDIDATE_DATA`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Dados pelo telefone
+
+- Service: `SERVICE_CONFIRM_PHONE`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `phone`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "phone": "+5561123456789"
+}'
+```
+
+### Dados PIS
+
+- Service: `service_pis_consultation`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Debitos ativos
+
+- Service: `SERVICE_ACTIVE_DEBT_PF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Divida ativa
+
+- Service: `service_active_debt`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Doacoes eleitorais
+
+- Service: `SERVICE_ELECTORAL_DONORS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Documentoscopia digital
+
+- Service: `service_digital_documentoscopy`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `key`, `image1`, `image2`, `selfie1`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}'
+```
+
+### Enderecos
+
+- Service: `service_address`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Enriquecimento de dados
+
+- Service: `service_person_data_enrichment`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Envolvimento politico
+
+- Service: `SERVICE_POLITICAL_INVOLVEMENT`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Exposicao e perfil na midia
+
+- Service: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### FaceMatch
+
+- Service: `service_face_match`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `image1`, `image2`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "image1": "base64",
+  "image2": "base64"
+}'
+```
+
+### Historico familiar politico
+
+- Service: `SERVICE_FAMILY_POLITICAL_HISTORY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Historico profissional
+
+- Service: `service_professional_history`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Informacoes financeiras
+
+- Service: `service_financial_information`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### KYC e compliance
+
+- Service: `SERVICE_PERSON_KYC_BIGDATACORP`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `birthDate`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Liveness 2D
+
+- Service: `service_liveness_2d`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `image1`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "image1": "selfie"
+}'
+```
+
+### Mandado de prisao
+
+- Service: `SERVICE_ARREST_WARRANT`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `nome`, `motherName`, `fatherName`, `birthDate`, `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "nome": "nome",
+  "motherName": "nome da mae",
+  "fatherName": "nome do pai",
+  "birthDate": "dd/MM/yyyy",
+  "cpf": "cpf"
+}'
+```
+
+### OCR de documentos
+
+- Service: `service_ocr`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `image1`, `image2`, `image1Url`, `image2Url`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "image1": "base64",
+  "image2": "base64",
+  "image1Url": "url_image",
+  "image2Url": "urlImageMatch"
+}'
+```
+
+### Pessoa politicamente exposta
+
+- Service: `service_pep`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Prestadores de servico eleitorais
+
+- Service: `SERVICE_ELECTORAL_PROVIDERS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Processos juridicos e administrativos
+
+- Service: `service_juridical_processes`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Relacionamentos economicos
+
+- Service: `economic_relationships`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Resultado da documentoscopia digital
+
+- Service: `service_digital_documentoscopy_consult`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `key`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}'
+```
+
+### Score biometrico
+
+- Service: `service_biometric_score`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `image1`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "image1": "{base64Image}"
+}'
+```
+
+### Score de inadimplencia
+
+- Service: `service_default_risk_score`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Score de risco de fraude
+
+- Service: `service_fraud_risk_score`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `factor`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "factor": "minRisk or minattrition"
+}'
+```
+
+### Servidores publicos
+
+- Service: `service_public_servants`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf"
+}'
+```
+
+### Status do CPF na Receita Federal
+
+- Service: `service_rfb_pf`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `dataDeNascimento`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Validacao de CPF com endereco
+
+- Service: `service_cpf_address_validation`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `zipcode`, `numberAddress`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "zipcode": "00000-000",
+  "numberAddress": "13"
+}'
+```
+
+### Validacao de CPF com telefone
+
+- Service: `service_cpf_phone_validation`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `phone`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "phone": "11900000000"
+}'
+```
+
+### Validacao de e-mail
+
+- Service: `service_email_validation`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `email`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "email": "email@email.com"
+}'
+```
+
+### Validacao do E-Social
+
+- Service: `service_esocial_registration_qualification`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `nit`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cpf": "cpf",
+  "nit": "(opcional)"
+}'
+```
+
+## Pessoa Juridica
+
+### Certidao negativa de protesto
+
+- Service: `service_protest_clearance_certificate_pj`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Compliance de casas de apostas
+
+- Service: `SERVICE_COMPLIANCE_BET_PJ`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### DAS MEI na Receita
+
+- Service: `service_das_mei`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Debitos ativos
+
+- Service: `SERVICE_ACTIVE_DEBT_PJ`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Enderecos estendidos
+
+- Service: `SERVICE_ADDRESSES_EXTENDED_CNPJ`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Enriquecimento de dados
+
+- Service: `service_corporate_data_enrichment`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Exposicao e perfil na midia dos socios
+
+- Service: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### KYC e compliance dos socios
+
+- Service: `service_company_kyc_owners`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Processos juridicos dos socios
+
+- Service: `service_juridical_processes_pj_owners`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Relacionamentos da empresa
+
+- Service: `service_company_relationship`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### SINTEGRA
+
+- Service: `service_sintegra_consultation`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`, `uf`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj",
+  "uf": "uf (opcional)"
+}'
+```
+
+### Socios de primeiro nivel
+
+- Service: `service_first_level_partner`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```
+
+### Status do CNPJ na Receita Federal
+
+- Service: `service_rfb_pj`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "cnpj": "cnpj"
+}'
+```

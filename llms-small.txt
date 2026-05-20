@@ -1,0 +1,98 @@
+# idCerberus API Docs - resumo operacional para LLM
+
+Use este arquivo quando precisar de contexto rapido para integrar com a API idCerberus.
+
+## Regras para assistentes de IA
+
+- Use a documentacao como fonte principal e nao invente endpoints, parametros ou services.
+- Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.
+- Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
+- Use homologacao para testes e producao somente quando o usuario pedir explicitamente.
+- Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
+- Se um service nao aparecer no catalogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
+
+## Ambientes
+
+- Homologacao: `https://backoffice-hml.idcerberus.com`
+- Producao: `https://backoffice.idcerberus.com`
+
+## Autenticacao
+
+- Gere token em `POST /api/token-generate` com `client` e `secret`.
+- Envie o token nas chamadas protegidas com `Authorization: Bearer {jwt_token}`.
+- Quando expirar, gere um novo token.
+
+## Endpoint principal
+
+- Use `POST /api/service-api` para consultas de dados, risco, compliance, biometria e enriquecimento.
+- O campo `service` define qual produto sera executado.
+- Os demais campos variam conforme o servico escolhido.
+
+## Fluxos principais
+
+- [Quickstart](https://react-it.github.io/api-docs-idcerberus/guides/quickstart): Faça sua primeira chamada na API idCerberus com Postman, Windows, macOS ou Linux
+- [Autenticação](https://react-it.github.io/api-docs-idcerberus/guides/autenticacao): Gere tokens JWT e autentique chamadas protegidas da API idCerberus
+- [Primeira consulta CPF](https://react-it.github.io/api-docs-idcerberus/guides/primeira-consulta-cpf): Execute uma consulta simples de pessoa física do início ao fim
+- [Primeira consulta CNPJ](https://react-it.github.io/api-docs-idcerberus/guides/primeira-consulta-cnpj): Execute uma consulta simples de pessoa jurídica do início ao fim
+- [Onboarding via SDK](https://react-it.github.io/api-docs-idcerberus/guides/onboarding-sdk): Gere TokenOnboarding, acompanhe o status do cadastro e baixe o relatório final
+- [Matriz de serviços](https://react-it.github.io/api-docs-idcerberus/guides/matriz-de-servicos): Visão resumida dos principais serviços por tipo de documento, entrada e momento de uso
+
+## Services documentados no API Reference
+
+- PF - Antecedentes criminais civis: `service_criminal_record_civil`
+- PF - Antecedentes criminais federais: `service_criminal_record_federal`
+- PF - Certidão de Nada Consta: `service_nothing_record_lawsuits`
+- PF - Certidão negativa de protesto: `service_protest_clearance_certificate`
+- PF - Consulta de MEI: `service_mei`
+- PF - Dados eleitorais de candidato: `SERVICE_ELECTION_CANDIDATE_DATA`
+- PF - Dados pelo telefone: `SERVICE_CONFIRM_PHONE`
+- PF - Dados PIS: `service_pis_consultation`
+- PF - Débitos ativos: `SERVICE_ACTIVE_DEBT_PF`
+- PF - Dívida ativa: `service_active_debt`
+- PF - Doações eleitorais: `SERVICE_ELECTORAL_DONORS`
+- PF - Documentoscopia digital: `service_digital_documentoscopy`
+- PF - Endereços: `service_address`
+- PF - Enriquecimento de dados: `service_person_data_enrichment`
+- PF - Envolvimento político: `SERVICE_POLITICAL_INVOLVEMENT`
+- PF - Exposição e perfil na mídia: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
+- PF - FaceMatch: `service_face_match`
+- PF - Histórico familiar político: `SERVICE_FAMILY_POLITICAL_HISTORY`
+- PF - Histórico profissional: `service_professional_history`
+- PF - Informações financeiras: `service_financial_information`
+- PF - KYC e compliance: `SERVICE_PERSON_KYC_BIGDATACORP`
+- PF - Liveness 2D: `service_liveness_2d`
+- PF - Mandado de prisão: `SERVICE_ARREST_WARRANT`
+- PF - OCR de documentos: `service_ocr`
+- PF - Pessoa politicamente exposta: `service_pep`
+- PF - Prestadores de serviço eleitorais: `SERVICE_ELECTORAL_PROVIDERS`
+- PF - Processos jurídicos e administrativos: `service_juridical_processes`
+- PF - Relacionamentos econômicos: `economic_relationships`
+- PF - Resultado da documentoscopia digital: `service_digital_documentoscopy_consult`
+- PF - Score biométrico: `service_biometric_score`
+- PF - Score de inadimplência: `service_default_risk_score`
+- PF - Score de risco de fraude: `service_fraud_risk_score`
+- PF - Servidores públicos: `service_public_servants`
+- PF - Status do CPF na Receita Federal: `service_rfb_pf`
+- PF - Validação de CPF com endereço: `service_cpf_address_validation`
+- PF - Validação de CPF com telefone: `service_cpf_phone_validation`
+- PF - Validação de e-mail: `service_email_validation`
+- PF - Validação do E-Social: `service_esocial_registration_qualification`
+- PJ - Certidão negativa de protesto: `service_protest_clearance_certificate_pj`
+- PJ - Compliance de casas de apostas: `SERVICE_COMPLIANCE_BET_PJ`
+- PJ - DAS MEI na Receita: `service_das_mei`
+- PJ - Débitos ativos: `SERVICE_ACTIVE_DEBT_PJ`
+- PJ - Endereços estendidos: `SERVICE_ADDRESSES_EXTENDED_CNPJ`
+- PJ - Enriquecimento de dados: `service_corporate_data_enrichment`
+- PJ - Exposição e perfil na mídia dos sócios: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
+- PJ - KYC e compliance dos sócios: `service_company_kyc_owners`
+- PJ - Processos jurídicos dos sócios: `service_juridical_processes_pj_owners`
+- PJ - Relacionamentos da empresa: `service_company_relationship`
+- PJ - SINTEGRA: `service_sintegra_consultation`
+- PJ - Sócios de primeiro nível: `service_first_level_partner`
+- PJ - Status do CNPJ na Receita Federal: `service_rfb_pj`
+
+## Cobertura
+
+- Total mapeado no onboarding/backend: 421
+- Ja esta na doc: 51
+- Nao esta na doc: 370
