@@ -821,6 +821,8 @@ ambientes, exemplos e cobertura atual da API idCerberus.
 | [`/llms-api-reference.txt`](/llms-api-reference.txt) | Versao operacional do API Reference, com services e exemplos de curl prontos para consulta por IA. |
 | [`/llms-services-coverage.txt`](/llms-services-coverage.txt) | Mapa separado do que ja esta documentado e do que foi encontrado no onboarding/backend. |
 | [`/services-catalog.json`](/services-catalog.json) | Catalogo estruturado em JSON para automacoes, validadores e agentes. |
+| [`/coverage-report.json`](/coverage-report.json) | Relatorio estruturado com totais, categorias, pendencias e divergencias de coverage. |
+| [`/examples/*.curl`](/examples/auth.hml.curl) | Chamadas prontas para homologacao e producao. |
 
 ## Uso recomendado
 
@@ -855,6 +857,20 @@ onboarding/backend, use:
 
 ```txt
 https://react-it.github.io/api-docs-idcerberus/llms-services-coverage.txt
+```
+
+Para automacoes que precisam de dados estruturados, use:
+
+```txt
+https://react-it.github.io/api-docs-idcerberus/services-catalog.json
+https://react-it.github.io/api-docs-idcerberus/coverage-report.json
+```
+
+Para importar exemplos prontos em ferramentas ou scripts, use:
+
+```txt
+https://react-it.github.io/api-docs-idcerberus/examples/auth.hml.curl
+https://react-it.github.io/api-docs-idcerberus/examples/service-api-cpf.hml.curl
 ```
 
 ## Exemplo de prompt
@@ -1137,6 +1153,68 @@ produção.
 
 ---
 
+# Organizacao do API Reference
+
+URL: https://react-it.github.io/api-docs-idcerberus/guides/organizacao-api-reference
+Fonte: guides/organizacao-api-reference.mdx
+Descricao: Entenda como os endpoints aparecem na referencia e quando usar cada grupo
+
+# Organizacao do API Reference
+
+O API Reference esta organizado por endpoint real da API. Alguns produtos usam
+rotas proprias, enquanto a maioria das consultas externas passa pelo endpoint
+central `POST /api/service-api`.
+
+## Grupos principais
+
+| Grupo | O que contem | Quando usar |
+| --- | --- | --- |
+| Autorizacao | `POST /api/token-generate` | Gerar JWT antes de chamadas protegidas |
+| Integracao via SDK | TokenOnboarding, consulta de resultado e PDF | Integrar jornadas de onboarding |
+| Servicos - Pessoas | Exemplos de `service` para CPF, biometria, risco e compliance | Executar consultas de pessoa fisica |
+| Servicos - Empresas | Exemplos de `service` para CNPJ, socios e compliance | Executar consultas de pessoa juridica |
+| Customers | Consulta e alteracao de status de clientes | Operar registros cadastrados |
+
+## Por que varios produtos usam a mesma rota?
+
+O endpoint `POST /api/service-api` funciona como uma entrada unica para varios
+produtos. A rota nao muda; quem define o produto e o campo `service`.
+
+Exemplo:
+
+```json
+{
+  "service": "service_rfb_pf",
+  "cpf": "cpf"
+}
+```
+
+Para trocar de produto, mantenha a rota e altere o `service` e os campos
+necessarios:
+
+```json
+{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}
+```
+
+## Como navegar
+
+1. Comece pelos guias quando ainda estiver entendendo o fluxo.
+2. Use [Escolha o servico certo](/guides/escolha-o-servico-certo) para achar o service.
+3. Use [Indice de services](/guides/indice-de-services) para copiar o nome exato.
+4. Abra o API Reference para copiar request, response e schemas.
+5. Use [Exemplos por ambiente](/guides/exemplos-por-ambiente) para conferir HML e producao.
+
+## Arquivos auxiliares
+
+- [`/services-catalog.json`](/services-catalog.json): catalogo estruturado dos services documentados.
+- [`/llms-api-reference.txt`](/llms-api-reference.txt): resumo operacional para assistentes de IA.
+- [`/coverage-report.json`](/coverage-report.json): cobertura entre documentacao e backend/onboarding.
+
+---
+
 # Status e erros
 
 URL: https://react-it.github.io/api-docs-idcerberus/guides/status-e-erros
@@ -1224,6 +1302,72 @@ if (response.status?.code !== 200) {
 
 return response.result;
 ```
+
+---
+
+# Erros comuns de integracao
+
+URL: https://react-it.github.io/api-docs-idcerberus/guides/erros-comuns-integracao
+Fonte: guides/erros-comuns-integracao.mdx
+Descricao: Checklist pratico para diagnosticar falhas de token, ambiente, payload, base64 e service
+
+# Erros comuns de integracao
+
+Use este checklist quando uma chamada falhar ou quando o resultado parecer
+diferente do esperado.
+
+## Diagnostico rapido
+
+| Sintoma | Causa comum | Como corrigir |
+| --- | --- | --- |
+| `401` ou `403` | Token ausente, expirado, invalido ou de outro ambiente | Gere um novo token no mesmo ambiente da chamada |
+| `status.code` diferente de `200` | Payload incompleto, permissao ausente ou fonte externa falhou | Leia `status.message` e revise os campos obrigatorios |
+| API retorna erro mesmo com HTTP 200 | O processamento tecnico falhou dentro do body | Use `status.code` e `status.message`, nao apenas o HTTP status |
+| Service nao executa | Campo `service` escrito errado ou produto nao liberado | Copie o nome pelo [Indice de services](/guides/indice-de-services) |
+| Resultado vazio | Documento sem dados na fonte ou retorno negativo de negocio | Trate como resposta valida quando `status.code` for 200 |
+| Token funciona em uma rota e falha em outra | Credencial sem permissao para o produto | Confirme liberacao do service para o cliente |
+| Base64 rejeitado | Prefixo, encoding ou arquivo invalido | Envie apenas a string esperada pelo service ou use URL quando suportado |
+| CNPJ/CPF nao encontrado | Documento mascarado, incompleto ou ambiente errado | Teste sem mascara e confira a base URL |
+| PDF nao abre | Endpoint retorna binario, nao JSON | Trate a resposta como `application/pdf` |
+| Timeout | Fonte externa demorou ou ficou indisponivel | Aplique retry controlado e registre o `externalId`, quando houver |
+
+## Antes de chamar a API
+
+1. Confirme a base URL: homologacao ou producao.
+2. Gere token no mesmo ambiente.
+3. Envie `Authorization: Bearer {jwt_token}`.
+4. Envie `Content-Type: application/json`.
+5. Copie o `service` exatamente como esta na documentacao.
+6. Valide campos obrigatorios antes da chamada.
+7. Use dados de teste em homologacao.
+8. Nunca registre `client`, `secret`, JWT, CPF, CNPJ ou imagem sensivel em log publico.
+
+## Campos que mais geram erro
+
+| Campo | Cuidado |
+| --- | --- |
+| `service` | Deve bater exatamente com o nome documentado |
+| `cpf` | Envie o valor esperado pelo contrato do cliente, de preferencia sem mascara |
+| `cnpj` | Envie o CNPJ completo, de preferencia sem mascara |
+| `phone` | Verifique DDI/DDD e formato aceito pelo service |
+| `image1`, `image2`, `selfie1` | Confirme se o service espera base64 puro, data URI ou URL |
+| `key` | Use a chave retornada pelo fluxo que iniciou a consulta |
+| `dataDeNascimento` | Use o formato documentado, normalmente `yyyy-MM-dd` |
+
+## Como abrir um chamado interno
+
+Ao reportar um problema, envie:
+
+- ambiente usado;
+- endpoint chamado;
+- `service` enviado;
+- horario aproximado da chamada;
+- `externalId`, quando retornado;
+- `status.code` e `status.message`;
+- payload sem dados sensiveis.
+
+Nao envie token JWT, `client`, `secret`, documento real ou imagem real em canais
+abertos.
 
 ---
 
@@ -1674,6 +1818,478 @@ não deve ser publicado como endpoint ativo sem confirmação do time responsáv
 
 Serviços encontrados com evidência de API direta foram adicionados também aos
 guias, não apenas ao API Reference.
+
+---
+
+# Cobertura de services
+
+URL: https://react-it.github.io/api-docs-idcerberus/guides/cobertura-de-services
+Fonte: guides/cobertura-de-services.mdx
+Descricao: Acompanhe quais services ja estao documentados e quais ainda aparecem apenas no backend/onboarding
+
+# Cobertura de services
+
+Esta pagina transforma o mapeamento tecnico em uma visao facil de acompanhar. Ela compara os services documentados no API Reference com os aliases encontrados no projeto de onboarding/backend.
+
+> Info: 
+A cobertura e gerada automaticamente por `node scripts/generate-llms.mjs`. Use esta pagina para priorizar quais services ainda precisam virar documentacao.
+
+## Resumo
+
+| Indicador | Valor |
+| --- | --- |
+| Total encontrado no backend/onboarding | 421 |
+| Ja documentado | 51 |
+| Ainda nao documentado | 370 |
+| Cobertura atual | 12% |
+| Aliases repetidos encontrados | 175 |
+| Aliases com nomes divergentes | 28 |
+
+## Por categoria
+
+| Categoria | Total | Documentados | Pendentes |
+| --- | --- | --- | --- |
+| Onboarding e Biometria | 37 | 5 | 32 |
+| Outros | 61 | 3 | 58 |
+| Pessoa Fisica | 189 | 31 | 158 |
+| Pessoa Juridica | 134 | 12 | 122 |
+
+## Ja esta na doc
+
+| Service | Categoria |
+| --- | --- |
+| `economic_relationships` | Outros |
+| `service_active_debt` | Pessoa Fisica |
+| `SERVICE_ACTIVE_DEBT_PF` | Pessoa Fisica |
+| `SERVICE_ACTIVE_DEBT_PJ` | Pessoa Juridica |
+| `service_address` | Pessoa Fisica |
+| `SERVICE_ADDRESSES_EXTENDED_CNPJ` | Pessoa Juridica |
+| `SERVICE_ARREST_WARRANT` | Pessoa Fisica |
+| `service_biometric_score` | Pessoa Fisica |
+| `service_company_kyc_owners` | Pessoa Juridica |
+| `service_company_relationship` | Pessoa Juridica |
+| `SERVICE_COMPLIANCE_BET_PJ` | Pessoa Juridica |
+| `SERVICE_CONFIRM_PHONE` | Pessoa Fisica |
+| `service_corporate_data_enrichment` | Pessoa Juridica |
+| `service_cpf_address_validation` | Pessoa Fisica |
+| `service_cpf_phone_validation` | Pessoa Fisica |
+| `service_criminal_record_civil` | Pessoa Fisica |
+| `service_criminal_record_federal` | Pessoa Fisica |
+| `service_das_mei` | Pessoa Fisica |
+| `service_default_risk_score` | Pessoa Fisica |
+| `service_digital_documentoscopy` | Onboarding e Biometria |
+| `service_digital_documentoscopy_consult` | Onboarding e Biometria |
+| `SERVICE_ELECTION_CANDIDATE_DATA` | Pessoa Fisica |
+| `SERVICE_ELECTORAL_DONORS` | Pessoa Fisica |
+| `SERVICE_ELECTORAL_PROVIDERS` | Pessoa Fisica |
+| `service_email_validation` | Pessoa Fisica |
+| `service_esocial_registration_qualification` | Pessoa Fisica |
+| `service_face_match` | Onboarding e Biometria |
+| `SERVICE_FAMILY_POLITICAL_HISTORY` | Pessoa Fisica |
+| `service_financial_information` | Pessoa Fisica |
+| `service_first_level_partner` | Pessoa Juridica |
+| `service_fraud_risk_score` | Pessoa Fisica |
+| `service_juridical_processes` | Pessoa Fisica |
+| `service_juridical_processes_pj_owners` | Pessoa Juridica |
+| `service_liveness_2d` | Onboarding e Biometria |
+| `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | Pessoa Fisica |
+| `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | Pessoa Juridica |
+| `service_mei` | Pessoa Fisica |
+| `service_nothing_record_lawsuits` | Pessoa Fisica |
+| `service_ocr` | Onboarding e Biometria |
+| `service_pep` | Pessoa Fisica |
+| `service_person_data_enrichment` | Pessoa Fisica |
+| `SERVICE_PERSON_KYC_BIGDATACORP` | Pessoa Fisica |
+| `service_pis_consultation` | Pessoa Fisica |
+| `SERVICE_POLITICAL_INVOLVEMENT` | Pessoa Fisica |
+| `service_professional_history` | Pessoa Fisica |
+| `service_protest_clearance_certificate` | Outros |
+| `service_protest_clearance_certificate_pj` | Pessoa Juridica |
+| `service_public_servants` | Outros |
+| `service_rfb_pf` | Pessoa Fisica |
+| `service_rfb_pj` | Pessoa Juridica |
+| `service_sintegra_consultation` | Pessoa Juridica |
+
+## Ainda nao esta na doc
+
+| Service | Categoria | Nome encontrado |
+| --- | --- | --- |
+| `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_ACTIVITIES_INDICATORS` | Outros | Indicadores de atividade de uma empresa |
+| `SERVICE_ACTIVITIES_INDICATORS_BIGDATACORP` | Outros | - |
+| `SERVICE_ADDRESS_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_ADDRESS_RISK_CEP` | Pessoa Fisica | Enderecos em Area de Risco |
+| `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_ANALYZE_FACE_COMPARISON_DOCUMENT_LIVENESS` | Onboarding e Biometria | - |
+| `SERVICE_ANALYZE_FACE_COMPARISON_DOCUMENT_SELFIE` | Onboarding e Biometria | - |
+| `SERVICE_ANALYZE_FACE_COMPARISON_LIVENESS_SELFIE` | Onboarding e Biometria | - |
+| `SERVICE_APPS_NETWORKS_AND_PLATFORMS_CPF` | Pessoa Fisica | Presenca em Apps e Plataformas* |
+| `SERVICE_ARCHAEOLOGICAL_SITES_CEP` | Outros | Georreferenciamento de Sitios Arqueologicos |
+| `SERVICE_AVAILABILITY_DATA_EAN` | Outros | Dados de Disponibilidade |
+| `SERVICE_AWARDS_AND_CERTIFICATIONS_CNPJ` | Pessoa Juridica | Premios e Certificacoes - Empresa |
+| `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | Pessoa Fisica | Premios e Certificacoes - Pessoa |
+| `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_BASIC_DATA_CEP` | Outros | Dados Basicos de enderecos |
+| `SERVICE_BASIC_DATA_EAN` | Outros | Dados de Cadastro e Categorizacao |
+| `SERVICE_BASIC_DATA_PROCESSNUMBER` | Outros | Dados Basicos de Processos Judiciais |
+| `SERVICE_BIOMES_DATA_CEP` | Outros | Biomas |
+| `SERVICE_CADE_PROCESSES_DATA_PROCESSNUMBER` | Outros | Dados de Processos do CADE |
+| `SERVICE_CIRCLES_BUILDING_CPF` | Pessoa Fisica | Circulos - Ocupantes do Predio |
+| `SERVICE_CIRCLES_COLLEGE_CLASS_CPF` | Pessoa Fisica | Circulos - Turma de Faculdade |
+| `SERVICE_CIRCLES_COWORKERS_CPF` | Pessoa Fisica | Circulos - Colegas de Trabalho |
+| `SERVICE_CIRCLES_EMPLOYEES_CNPJ` | Pessoa Juridica | Circulos - Funcionarios da Empresa |
+| `SERVICE_CIRCLES_FIRST_LEVEL_RELATIVES_CPF` | Pessoa Fisica | Circulos - Parentes de 1o Grau |
+| `SERVICE_CIRCLES_HOUSEHOLD_CPF` | Pessoa Fisica | Circulos - Domicilio |
+| `SERVICE_CIRCLES_LAWSUIT_PARTIES_CPF` | Pessoa Fisica | Circulos - Partes em Processos |
+| `SERVICE_CIRCLES_NEIGHBORS_CPF` | Pessoa Fisica | Circulos - Vizinhos |
+| `SERVICE_CIRCLES_PARTNERS_CPF` | Pessoa Fisica | Circulos - Socios Relacionados |
+| `SERVICE_CIRCLES_RELATIVES_CPF` | Pessoa Fisica | Circulos - Parentes |
+| `SERVICE_CITY` | Outros | Buscar cidades |
+| `SERVICE_CIVIL_CONSTRUCTION_DATA_CNPJ` | Pessoa Juridica | Dados de Obras Civis |
+| `SERVICE_CLASS_ORGANIZATION_CPF` | Pessoa Fisica | Conselhos de Classe |
+| `SERVICE_COLLECTIONS_CNPJ` | Pessoa Juridica | Presenca em Cobranca - Empresa |
+| `SERVICE_COLLECTIONS_CPF` | Pessoa Fisica | Presenca em Cobranca - Pessoa |
+| `SERVICE_COMPANIES_DATA_LAT_LONG` | Outros | Dados de Empresas nas Proximidades |
+| `SERVICE_COMPANIES_STATISTICS_CEP` | Outros | Estatisticas de Empresas |
+| `SERVICE_COMPANY_EVOLUTION_CNPJ` | Pessoa Juridica | Evolucao da Empresa |
+| `SERVICE_COMPANY_GROUP_BUILDING_ACTIVITY_CNPJ` | Pessoa Juridica | Grupos Empresariais - Edificio e Atividade |
+| `SERVICE_COMPANY_GROUP_BUILDING_CNPJ` | Pessoa Juridica | Grupos Empresariais - Empresas no Mesmo Edificio |
+| `SERVICE_COMPANY_GROUP_DOCUMENTROOT_CNPJ` | Pessoa Juridica | Grupos Empresariais - Mesma Raiz de Documento |
+| `SERVICE_COMPANY_GROUP_EMPLOYED_CPF` | Pessoa Fisica | Grupos Empresariais - Empregadores da Pessoa |
+| `SERVICE_COMPANY_GROUP_FAMILY_OWNERSHIP_CPF` | Pessoa Fisica | Grupos Empresariais - Empresas da Familia |
+| `SERVICE_COMPANY_GROUP_HOUSEHOLD_ACTIVITY_CNPJ` | Pessoa Juridica | Grupos Empresariais - Residencia e Atividade |
+| `SERVICE_COMPANY_GROUP_HOUSEHOLD_CNPJ` | Pessoa Juridica | Grupos Empresariais - Mesma Residencia |
+| `SERVICE_COMPANY_GROUP_HOUSEHOLD_OWNERS_SURNAME_CNPJ` | Pessoa Juridica | Grupos Empresariais - Socios por Sobrenome e Residencia |
+| `SERVICE_COMPANY_GROUP_LEGAL_REPRESENTATIVE_CNPJ` | Pessoa Juridica | Grupos Empresariais - Mesmo Representante Legal |
+| `SERVICE_COMPANY_GROUP_OFFICIALNAME_CNPJ` | Pessoa Juridica | Grupos Empresariais - Mesma Razao Social |
+| `SERVICE_COMPANY_GROUP_OWNERS_CNPJ` | Pessoa Juridica | Grupos Empresariais - Mesmo Quadro Societario |
+| `SERVICE_COMPANY_GROUP_OWNERSHIP_CPF` | Pessoa Fisica | Grupos Empresariais - Empresas em que e Socio |
+| `SERVICE_COMPANY_GROUP_RFCONTACT_CNPJ` | Pessoa Juridica | Grupos Empresariais - Contatos Receita Federal |
+| `SERVICE_COMPANY_GROUP_SUED_CPF` | Pessoa Fisica | Grupos Empresariais - Empresas em Acoes com a Pessoa |
+| `SERVICE_COMPANY_GROUP_TRADENAME_CITY_CNPJ` | Pessoa Juridica | Grupos Empresariais - Nome Fantasia e Cidade |
+| `SERVICE_COMPANY_GROUP_TRADENAME_CNPJ` | Pessoa Juridica | Grupos Empresariais - Mesmo Nome Fantasia |
+| `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_COMPANY_RFB_OWNERS` | Pessoa Juridica | Consulta de socios na receita federal |
+| `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_COMPLIANCE_BET` | Outros | Compliance de casa de apostas |
+| `SERVICE_COMPLIANCE_BET_BIGDATACORP` | Outros | - |
+| `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_CONFIRM_PHONE_FACETEC` | Onboarding e Biometria | - |
+| `SERVICE_CONSERVATION_UNITS_CEP` | Outros | Unidades de conservacao |
+| `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_COUNTIES_MAP_CEP` | Outros | Mapa de Municipios |
+| `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_CPF_PHONE_VALIDATION_FACETEC` | Pessoa Fisica | - |
+| `SERVICE_CREATE_USER` | Outros | Criacao de usuario via formulario |
+| `SERVICE_CREATE_USER_KEYCLOAK` | Outros | - |
+| `SERVICE_CREDIT_RISK_COMPANY` | Pessoa Juridica | Risco de credito para empresas |
+| `SERVICE_CREDIT_RISK_COMPANY_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | Pessoa Juridica | Risco de Credito |
+| `SERVICE_CREDIT_RISK_COMPANY_MURABEI_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_CREDIT_SCORE` | Outros | Consulta de Score de Credito |
+| `SERVICE_CREDIT_SCORE_ASSERTIVA` | Outros | - |
+| `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_CRIMINAL_STATISTICS_DATA_CEP` | Pessoa Fisica | Estatisticas de Criminalidade |
+| `SERVICE_DAS_MEI_INFOSIMPLES` | Pessoa Fisica | - |
+| `SERVICE_DATAVALID` | Outros | Validacao de dados de CNH no DataValid |
+| `SERVICE_DATAVALID_CNH_SERPRO` | Outros | - |
+| `SERVICE_DEBT_COLLECTION_STATS` | Pessoa Fisica | Consulta de dividas |
+| `SERVICE_DEBT_COLLECTION_STATS_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_DEFAULT_RISK_SCORE_QUANTUM_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_DEFAULT_SCORE_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_DEMOGRAPHIC_DATA_CPF` | Pessoa Fisica | Informacoes Socio-Demograficas |
+| `SERVICE_DEMOGRAPHIC_DATA_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | Onboarding e Biometria | - |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | Onboarding e Biometria | - |
+| `SERVICE_DOCUMENTOSCOPY` | Onboarding e Biometria | Documentoscopia digital |
+| `SERVICE_DOMAINS_CNPJ` | Pessoa Juridica | Dados de Sites - Empresa (Basico) |
+| `SERVICE_DOMAINS_CNPJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_DOMAINS_CPF` | Pessoa Fisica | Dados de Sites - Pessoa (Basico) |
+| `SERVICE_DOMAINS_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_DOMAINS_EXTENDED_CNPJ` | Pessoa Juridica | Dados de Sites - Empresa (Estendido) |
+| `SERVICE_DOMAINS_EXTENDED_CPF` | Pessoa Fisica | Dados de Sites - Pessoa (Estendido) |
+| `SERVICE_DYNAMIC_QSA_DATA_CNPJ` | Pessoa Juridica | Busca Dinamica de QSA |
+| `SERVICE_ECONOMIC_GROUP_FIRST_LEVEL_CNPJ` | Pessoa Juridica | Grupos Economicos - 1o Nivel |
+| `SERVICE_ECONOMIC_GROUP_FIRST_LEVEL_EXTENDED_CNPJ` | Pessoa Juridica | Grupos Economicos - 1o Nivel Estendido |
+| `SERVICE_ECONOMIC_GROUP_FULL_CNPJ` | Pessoa Juridica | Grupos Economicos - Completo |
+| `SERVICE_ECONOMIC_GROUP_FULL_EXTENDED_CNPJ` | Pessoa Juridica | Grupos Economicos - Completo Estendido |
+| `SERVICE_ECONOMIC_GROUP_KYC_CNPJ` | Pessoa Juridica | Informacoes de KYC e Compliance do Grupo Economico |
+| `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS_CNPJ` | Pessoa Juridica | Relacionamentos - Grupo Economico |
+| `SERVICE_ECONOMIC_GROUP_SECOND_LEVEL_CNPJ` | Pessoa Juridica | Grupos Economicos - 2o Nivel |
+| `SERVICE_ECONOMIC_GROUP_SECOND_LEVEL_EXTENDED_CNPJ` | Pessoa Juridica | Grupos Economicos - 2o Nivel Estendido |
+| `SERVICE_ECONOMIC_GROUP_THIRD_LEVEL_CNPJ` | Pessoa Juridica | Grupos Economicos - 3o Nivel |
+| `SERVICE_ECONOMIC_GROUP_THIRD_LEVEL_EXTENDED_CNPJ` | Pessoa Juridica | Grupos Economicos - 3o Nivel Estendido |
+| `SERVICE_ECONOMIC_RELATIONSHIP` | Outros | Consulta de Relacionamentos Economicos |
+| `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | Outros | - |
+| `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | Pessoa Fisica | Consulta de candidatos eleitorais PF |
+| `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_ELECTORAL_DONORS_CNPJ` | Pessoa Fisica | Consulta de doacoes eleitorais |
+| `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_ELECTORAL_DONORS_CPF` | Pessoa Fisica | Consulta de doacoes eleitorais PF |
+| `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | Pessoa Fisica | Consulta de fornecedores eleitorais |
+| `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_ELECTORAL_PROVIDERS_CPF` | Pessoa Fisica | Consulta de prestadores de servicos eleitorais PF |
+| `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_EMAILS_EXTENDED` | Pessoa Fisica | Consulta de historico de e-mails |
+| `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_EMAILS_EXTENDED_CNPJ` | Pessoa Juridica | E-mails Estendido - Empresa |
+| `SERVICE_EMBARGOED_AREAS_CEP` | Outros | Areas Embargadas ICMBio |
+| `SERVICE_EMPLOYEES_INDUSTRIAL_PROPERTY_CNPJ` | Pessoa Juridica | Propriedades Industriais de Funcionarios |
+| `SERVICE_EMPLOYEES_KYC_CNPJ` | Pessoa Juridica | Informacoes de KYC e Compliance dos Funcionarios |
+| `SERVICE_ENVIRONMENTAL_PRESERVATION_AREAS_CEP` | Outros | Areas de Protecao Ambiental |
+| `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_EXTRA_INFO_DATA_EAN` | Outros | Dados Extras |
+| `SERVICE_FACE_INDEX` | Onboarding e Biometria | Face Index |
+| `SERVICE_FACE_INDEX_AWS` | Onboarding e Biometria | - |
+| `SERVICE_FACE_MATCH_ACERTPIX` | Onboarding e Biometria | - |
+| `SERVICE_FACE_MATCH_AWS` | Onboarding e Biometria | - |
+| `SERVICE_FACE_MATCH_BIGDATACORP` | Onboarding e Biometria | - |
+| `SERVICE_FACE_MATCH_FACETEC` | Onboarding e Biometria | - |
+| `SERVICE_FAMILY_FINANCIAL_DATA_CPF` | Pessoa Fisica | Dados Financeiros Familiares |
+| `SERVICE_FAMILY_FINANCIAL_RISK_CPF` | Pessoa Fisica | Uma perspectiva mais ampla do cenario de risco de credito de um individuo |
+| `SERVICE_FAMILY_LAWSUITS_DISTRIBUTION_DATA_CPF` | Pessoa Fisica | Dados de Distribuicao de Processos Judiciais Familiares |
+| `SERVICE_FAMILY_ONLINE_PARTICIPATION_CPF` | Pessoa Fisica | Presenca Online Familiar |
+| `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | Pessoa Fisica | Consulta de historico politico familiar PF |
+| `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_FAMILY_SOCIAL_BENEFITS` | Outros | Beneficios Sociais Familiares |
+| `SERVICE_FAMILY_SOCIAL_BENEFITS_BIGDATACORP` | Outros | - |
+| `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_FINANCIAL_INTERESTS_CPF` | Pessoa Fisica | Interesses Financeiros |
+| `SERVICE_FINANCIAL_MARKET_CNPJ` | Pessoa Juridica | Mercado Financeiro |
+| `SERVICE_FINANCIAL_RISK_SCORE` | Pessoa Fisica | Risco Financeiro |
+| `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_FIRST_LEVEL_RELATIVES_KYC_CPF` | Pessoa Fisica | Informacoes de KYC e Compliance dos Familiares de Primeiro Nivel |
+| `SERVICE_FIRST_LEVEL_RELATIVES_LAWSUIT_DATA_CPF` | Pessoa Fisica | Processos Judiciais e Administrativos de Familiares de Primeiro Nivel |
+| `SERVICE_FLAGS_AND_FEATURES_CPF` | Pessoa Fisica | Indicadores e Caracteristicas |
+| `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_GET_CITIES` | Outros | - |
+| `SERVICE_HISTORICAL_BASIC_DATA_CPF` | Pessoa Fisica | Historico de Dados Basicos |
+| `SERVICE_HISTORY_BASIC_DATA_CNPJ` | Pessoa Juridica | Historico de Dados Basicos Cadastrais |
+| `SERVICE_IMAGES_DATA_EAN` | Outros | Dados de Imagens |
+| `SERVICE_INDEBTEDNESS_QUESTION_CPF` | Pessoa Fisica | Estimativa de Inadimplencia/Negativacao |
+| `SERVICE_INDIGENOUS_LANDS_DATA_CEP` | Outros | Terras Indigenas |
+| `SERVICE_INDUSTRIAL_PROPERTY_CNPJ` | Pessoa Juridica | Propriedades Industriais - Empresa |
+| `SERVICE_INDUSTRIAL_PROPERTY_CPF` | Pessoa Fisica | Propriedades Industriais - Pessoa |
+| `SERVICE_INFLUENCE_DATA_CPF` | Pessoa Fisica | Dados de Influencia |
+| `SERVICE_INTERESTS_AND_BEHAVIORS_CNPJ` | Pessoa Juridica | Interesses e Comportamentos - Empresa |
+| `SERVICE_INTERESTS_AND_BEHAVIORS_CPF` | Pessoa Fisica | Interesses e Comportamentos - Pessoa |
+| `SERVICE_INVESTMENT_FUND_DATA_CNPJ` | Pessoa Juridica | Dados de Fundos de Investimento |
+| `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_JURIDICAL_PROCESSES_PJ` | Pessoa Juridica | Processos Judiciais e Administrativos - Empresa |
+| `SERVICE_JURIDICAL_PROCESSES_PJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_KYC_CNPJ` | Pessoa Juridica | Informacoes de KYC e Compliance - Empresa |
+| `SERVICE_KYC_CPF` | Pessoa Fisica | Informacoes de KYC e Compliance - Pessoa |
+| `SERVICE_LAWSUITS_DISTRIBUTION_DATA_CNPJ` | Pessoa Juridica | Dados de Distribuicao de Processos Judiciais - Empresa |
+| `SERVICE_LAWSUITS_DISTRIBUTION_DATA_CPF` | Pessoa Fisica | Dados de Distribuicao de Processos Judiciais - Pessoa |
+| `SERVICE_LEGAL_AMAZON_CEP` | Outros | Amazonia Legal |
+| `SERVICE_LEGAL_RESERVE_CEP` | Outros | Reservas Legais SICAR |
+| `SERVICE_LICENSE_PLATES_PLATE` | Outros | Dados de Placas de Veiculos |
+| `SERVICE_LICENSES_AND_AUTHORIZATIONS_CNPJ` | Pessoa Juridica | Licencas e Autorizacoes - Empresa |
+| `SERVICE_LICENSES_AND_AUTHORIZATIONS_CPF` | Pessoa Fisica | Licencas e Autorizacoes - Pessoa |
+| `SERVICE_LIFE_STAGES_CPF` | Pessoa Fisica | Momentos de Vida |
+| `SERVICE_LIVENESS` | Onboarding e Biometria | - |
+| `SERVICE_LIVENESS_2D_FACETEC` | Onboarding e Biometria | - |
+| `SERVICE_LIVENESS_3D` | Onboarding e Biometria | Liveness passivo 3D |
+| `SERVICE_LIVENESS_3D_AWS` | Onboarding e Biometria | Prova de vida 3D AWS |
+| `SERVICE_LIVENESS_3D_REACT` | Onboarding e Biometria | - |
+| `SERVICE_LIVENESS_FACETEC` | Onboarding e Biometria | - |
+| `SERVICE_LIVENESS_REACT` | Onboarding e Biometria | Liveness 3D |
+| `SERVICE_MARKETPLACE_DATA_CNPJ` | Pessoa Juridica | Marketplaces |
+| `SERVICE_MEDIA_PROFILE_AND_EXPOSURE_CNPJ` | Pessoa Juridica | Exposicao e Perfil na Midia - Empresa |
+| `SERVICE_MEDIA_PROFILE_AND_EXPOSURE_CPF` | Pessoa Fisica | Exposicao e Perfil na Midia - Pessoa |
+| `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_MEI_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_MERCHANT_CATEGORY_DATA_CNPJ` | Pessoa Juridica | Dados de Categoria Comercial |
+| `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_OCR_BIGDATACORP` | Onboarding e Biometria | - |
+| `SERVICE_OCR_CNH` | Onboarding e Biometria | - |
+| `SERVICE_OCR_CNPJ_CARD_TEXTRACT` | Pessoa Juridica | - |
+| `SERVICE_OCR_EMANCIPATION` | Onboarding e Biometria | OCR Documento de Emancipacao |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | Onboarding e Biometria | OCR Comprovante de endereco |
+| `SERVICE_OCR_PROOF_OF_ADDRESS_TESSERACT` | Onboarding e Biometria | - |
+| `SERVICE_OCR_PROOF_OF_ADDRESS_TEXTRACT` | Onboarding e Biometria | - |
+| `SERVICE_OCR_REACT` | Onboarding e Biometria | - |
+| `SERVICE_OCR_RG` | Onboarding e Biometria | - |
+| `SERVICE_OCR_RNE` | Onboarding e Biometria | - |
+| `SERVICE_ONBOARDING` | Onboarding e Biometria | Mensalidade do Onboarding |
+| `SERVICE_ONDEMAND_ADMINISTRATIVE_SANCTIONS_PERSON_CPF` | Pessoa Fisica | Certidao Negativa de Sancao Administrativa do Banco Central |
+| `SERVICE_ONDEMAND_ANTT_DATA_VEHICLE_LICENSEPLATE_CPF_CNPJ` | Pessoa Fisica | Transportadores |
+| `SERVICE_ONDEMAND_CARTAOSUS_PERSON_CPF_UF` | Pessoa Fisica | Cartao do SUS busca informacoes de fontes publicas relacionadas ao numero identificador do cartao do SUS da pessoa fisica informada |
+| `SERVICE_ONDEMAND_CDCIT_COMPANY_CNPJ` | Pessoa Juridica | Certidao de Contratacao de Pessoas com Deficiencia e Beneficiarios Reabilitados da Previdencia Social |
+| `SERVICE_ONDEMAND_CERT_DEBT_ABSENCE_BY_STATE_COMPANY_CNPJ` | Pessoa Juridica | Certidao Negativa de Debitos Estadual |
+| `SERVICE_ONDEMAND_CERT_DEBT_ABSENCE_BY_STATE_PERSON_CPF` | Pessoa Fisica | Certidao Negativa de Debitos Estaduais |
+| `SERVICE_ONDEMAND_CERT_LABOR_DEBT_ABSENCE_COMPANY_CNPJ` | Pessoa Juridica | Certidao Negativa de Debitos Trabalhistas - Empresa |
+| `SERVICE_ONDEMAND_CERT_LABOR_DEBT_ABSENCE_PERSON_CPF` | Pessoa Fisica | Certidao Negativa de Debitos Trabalhistas - Pessoa |
+| `SERVICE_ONDEMAND_CERT_SIPROQUIM_COMPANY_CNPJ` | Pessoa Juridica | Certidao SIPROQUIM |
+| `SERVICE_ONDEMAND_CGU_NEGATIVE_CERTIFICATE_COMPANY_CNPJ` | Pessoa Juridica | Certidao Negativa Correcional CGU - Empresa |
+| `SERVICE_ONDEMAND_CGU_NEGATIVE_CERTIFICATE_PERSON_CPF` | Pessoa Fisica | Certidao Negativa Correcional CGU - Pessoa |
+| `SERVICE_ONDEMAND_CNJ_NEGATIVE_CERTIFICATE_COMPANY_CNPJ` | Pessoa Juridica | Certidao Negativa CNJ - Empresa |
+| `SERVICE_ONDEMAND_CNJ_NEGATIVE_CERTIFICATE_PERSON_CPF` | Pessoa Fisica | Certidao Negativa CNJ - Pessoa |
+| `SERVICE_ONDEMAND_COMEX_COMPANY_CNPJ` | Pessoa Juridica | Dados de Habilitacao COMEX |
+| `SERVICE_ONDEMAND_COMPROT_PROCESSES_COMPANY_CNPJ` | Pessoa Juridica | Processos no COMPROT - Empresa |
+| `SERVICE_ONDEMAND_COMPROT_PROCESSES_PERSON_CPF` | Pessoa Fisica | Processos no COMPROT - Pessoa |
+| `SERVICE_ONDEMAND_DATA_RECEIPT_RECEIPTNUMBER` | Outros | Consulta NFe |
+| `SERVICE_ONDEMAND_DETRAN_DATA_VEHICLE_LICENSEPLATE` | Outros | Consulta Detran |
+| `SERVICE_ONDEMAND_FGTS_COMPANY_CNPJ` | Pessoa Juridica | Certidao do FGTS |
+| `SERVICE_ONDEMAND_FREIGHT_SERVICE_CERTIFICATE_RECEIPT_RECEIPTNUMBER` | Outros | Consulta CTe |
+| `SERVICE_ONDEMAND_IBAMA_CERT_NEGATIVA_COMPANY_CNPJ` | Pessoa Juridica | Certidao Negativa do Ibama - Empresa |
+| `SERVICE_ONDEMAND_IBAMA_CERT_NEGATIVA_PERSON_CPF` | Pessoa Fisica | Certidao Negativa do Ibama - Pessoa |
+| `SERVICE_ONDEMAND_IBAMA_EMBARGADOS_COMPANY_CNPJ` | Pessoa Juridica | Certidao de Embargos do Ibama - Empresa |
+| `SERVICE_ONDEMAND_IBAMA_EMBARGADOS_PERSON_CPF` | Pessoa Fisica | Certidao de Embargos do Ibama - Pessoa |
+| `SERVICE_ONDEMAND_IRT_CERTIFICATE_COMPANY_CNPJ` | Pessoa Juridica | Certidao do IRT - Empresa |
+| `SERVICE_ONDEMAND_IRT_CERTIFICATE_PERSON_CPF` | Pessoa Fisica | Certidao do IRT - Pessoa |
+| `SERVICE_ONDEMAND_LABOR_LAWSUITS_CERTIFICATE_COMPANY_CNPJ` | Pessoa Juridica | Acoes Trabalhistas - Empresa (certidao on-demand) |
+| `SERVICE_ONDEMAND_LABOR_LAWSUITS_CERTIFICATE_PERSON_CPF` | Pessoa Fisica | Acoes Trabalhistas - Pessoa (certidao on-demand) |
+| `SERVICE_ONDEMAND_LEGAL_REPRESENTATIVE_COMPANY_CNPJ` | Pessoa Juridica | Representante Legal na Receita Federal |
+| `SERVICE_ONDEMAND_MUNICIPAL_REGISTRATION_COMPANY_CNPJ` | Pessoa Juridica | Inscricao Municipal |
+| `SERVICE_ONDEMAND_NADA_CONSTA_PERSON_CPF` | Pessoa Fisica | Certidao de Nada Consta da Justica |
+| `SERVICE_ONDEMAND_PGFN_COMPANY_CNPJ` | Pessoa Juridica | Certidao PGFN - Empresa |
+| `SERVICE_ONDEMAND_PGFN_PERSON_CPF` | Pessoa Fisica | Certidao PGFN - Pessoa |
+| `SERVICE_ONDEMAND_PGMEI_COMPANY_CNPJ` | Pessoa Fisica | Informacoes sobre o Documento de Arrecadacao do Simples Nacional |
+| `SERVICE_ONDEMAND_PUBLIC_PROJECTS_COMPANY_CNPJ` | Pessoa Juridica | Projetos Publicos |
+| `SERVICE_ONDEMAND_REGULARITY_CERTIFICATE_IBAMA_COMPANY_CNPJ` | Pessoa Juridica | Certidao Regulatoria do Ibama |
+| `SERVICE_ONDEMAND_REGULARITY_CERTIFICATE_IBAMA_PERSON_CPF` | Pessoa Fisica | Certificado de Regularidade Ibama |
+| `SERVICE_ONDEMAND_RESTITUICAO_PERSON_CPF` | Pessoa Fisica | Restituicao do Imposto de Renda |
+| `SERVICE_ONDEMAND_RF_QSA_COMPANY_CNPJ` | Pessoa Juridica | QSA na Receita Federal |
+| `SERVICE_ONDEMAND_SANITARY_LICENSE_COMPANY_CNPJ` | Pessoa Juridica | Licencas Sanitarias - Empresa |
+| `SERVICE_ONDEMAND_SANITARY_LICENSE_PERSON_CPF` | Pessoa Fisica | Licencas Sanitarias - Pessoa |
+| `SERVICE_ONDEMAND_SICAR_STATEMENT_ADDRESS_CARNUMBER` | Pessoa Fisica | Certificado SICAR realiza a emissao automatica do certificado de demonstrativo de Cadastro Ambiental Rural |
+| `SERVICE_ONDEMAND_SIMPLES_COMPANY_CNPJ` | Pessoa Juridica | Optante pelo Simples* |
+| `SERVICE_ONDEMAND_SINTEGRA_COMPANY_CNPJ` | Pessoa Juridica | Consulta ao SINTEGRA - Versao 1 |
+| `SERVICE_ONDEMAND_SINTEGRA_COMPANY_V2_CNPJ` | Pessoa Juridica | Consulta ao SINTEGRA - Versao 2 |
+| `SERVICE_ONDEMAND_TRAFFIC_TICKET_PERSON_LICENSENUMBER_CPF_UF` | Pessoa Fisica | Multa de Transito |
+| `SERVICE_ONDEMAND_TSE_ELECTORAL_DISCHARGE_PERSON_CPF` | Pessoa Fisica | Certidao de Quitacao Eleitoral |
+| `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | Pessoa Fisica | TSE sobre o Local de Votacao |
+| `SERVICE_ONLINE_ADS_CNPJ` | Pessoa Juridica | Anuncios Online - Pessoa Juridica |
+| `SERVICE_ONLINE_ADS_CPF` | Pessoa Fisica | Anuncios Online - Pessoa Fisica |
+| `SERVICE_ONLINE_BETTING_PROPENSITY_CPF` | Pessoa Fisica | Propensao a Apostas Online |
+| `SERVICE_ONLINE_PRESENCE_CPF` | Pessoa Fisica | Presenca Online |
+| `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | Pessoa Fisica | Consulta de doacoes eleitorais dos socios |
+| `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_OWNERS_INDUSTRIAL_PROPERTY_CNPJ` | Pessoa Juridica | Propriedades Industriais de Socios |
+| `SERVICE_OWNERS_INFLUENCE_CNPJ` | Pessoa Juridica | Influencia do Quadro Societario |
+| `SERVICE_OWNERS_KYC_CNPJ` | Pessoa Juridica | Informacoes de KYC e Compliance dos Socios |
+| `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION_DATA_CNPJ` | Pessoa Juridica | Dados de Distribuicao de Processos dos Socios |
+| `SERVICE_PARTNER_B4B_OPTIN_CONTACT_PERSON_CPF` | Pessoa Fisica | Opt-In de Contatos |
+| `SERVICE_PARTNER_BLU365_PHONE_REPORT_DATA_PERSON_CPF_PHONE` | Pessoa Fisica | De |
+| `SERVICE_PARTNER_BLU365_PHONE_SCORE_DATA_PERSON_CPF` | Pessoa Fisica | Score de Telefone |
+| `SERVICE_PARTNER_BOAVISTA_CREDIT_SCORE_COMPANY_CNPJ` | Pessoa Juridica | Dados de biro de credito - Score Boavista (Empresa) |
+| `SERVICE_PARTNER_BOAVISTA_ONE_SCORE_COMPANY_CNPJ` | Pessoa Juridica | Dados de biro de credito - One Score (Empresa) |
+| `SERVICE_PARTNER_BOAVISTA_ONE_SCORE_PERSON_CPF` | Pessoa Fisica | Dados de biro de credito - One Score (Pessoa) |
+| `SERVICE_PARTNER_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY_CNPJ` | Pessoa Juridica | Percentual de Participacao Societaria |
+| `SERVICE_PARTNER_FUELLOG_FUEL_PRICING_DATA_ADDRESS_CEP` | Pessoa Juridica | Precos de Combustivel - Por CEP |
+| `SERVICE_PARTNER_FUELLOG_FUEL_PRICING_DATA_COMPANY_CNPJ` | Pessoa Juridica | Precos de Combustivel - Empresa |
+| `SERVICE_PARTNER_FUELLOG_FUEL_PRICING_DATA_PERSON_CPF` | Pessoa Fisica | Precos de Combustivel - Pessoa |
+| `SERVICE_PARTNER_NETWORK_DATA_IP` | Pessoa Juridica | Dados de Rede |
+| `SERVICE_PARTNER_PUBLIC_SAFETY_COMPANY_CNPJ` | Pessoa Juridica | Seguranca Publica - Empresa |
+| `SERVICE_PARTNER_PUBLIC_SAFETY_PERSON_CPF` | Pessoa Fisica | Seguranca Publica - Pessoa |
+| `SERVICE_PARTNER_QUANTUM_CUSTOM_SCORE_COMPANY_CNPJ` | Pessoa Juridica | Credito de Pessoa Juridica Quantum |
+| `SERVICE_PARTNER_QUANTUM_SCORE_PERSON_CPF` | Pessoa Fisica | Score de Credito Rotativo |
+| `SERVICE_PARTNER_QUOD_CREDIT_RISK_COMPANY_CNPJ` | Pessoa Juridica | Informacoes referentes ao risco de credito de uma empresa no mercado - Resumo |
+| `SERVICE_PARTNER_QUOD_CREDIT_RISK_DETAILS_COMPANY_CNPJ` | Pessoa Juridica | Informacoes referentes ao risco de credito de uma empresa no mercado - Detalhado |
+| `SERVICE_PARTNER_QUOD_CREDIT_RISK_DETAILS_PERSON_CPF` | Pessoa Fisica | Informacoes referentes ao risco de credito de uma pessoa no mercado - Detalhado |
+| `SERVICE_PARTNER_QUOD_CREDIT_RISK_PERSON_CPF` | Pessoa Fisica | Informacoes referentes ao risco de credito de uma pessoa no mercado - Resumo |
+| `SERVICE_PARTNER_QUOD_CREDIT_SCORE_COMPANY_CNPJ` | Pessoa Juridica | Informacoes relevantes a respeito do comportamento de credito de uma empresa no mercado |
+| `SERVICE_PARTNER_QUOD_CREDIT_SCORE_PERSON_CPF` | Pessoa Fisica | Informacoes de uma pessoa no que diz respeito ao seu comportamento de credito no mercado |
+| `SERVICE_PARTNER_REDE_VISTORIAS_ADDRESS_CEP` | Pessoa Juridica | Qualificacao de Imoveis da Rede Vistorias |
+| `SERVICE_PARTNER_SCOREPOSITIVO_COMPANY_FINANCE_CNPJ` | Pessoa Juridica | Exposicao Financeira de Pessoa Juridica |
+| `SERVICE_PARTNER_SCOREPOSITIVO_INDIVIDUAL_FINANCE_CPF` | Pessoa Fisica | Exposicao Financeira de Pessoa Fisica |
+| `SERVICE_PARTNER_TELESIGN_PHONE_ID_PORTING_HISTORY_PERSON_PHONE` | Pessoa Fisica | Historico de Portabilidade de Contato |
+| `SERVICE_PARTNER_TELESIGN_PHONE_ID_PORTING_STATUS_PERSON_PHONE` | Pessoa Fisica | Status de Portabilidade |
+| `SERVICE_PARTNER_TELESIGN_PHONE_ID_STANDARD_PERSON_PHONE` | Pessoa Fisica | Informacoes de Numero de Telefone realiza a limpeza e formatacao de um numero de telefone enviado e |
+| `SERVICE_PARTNER_TELESIGN_PHONE_ID_SUBSCRIBER_STATUS_PERSON_PHONE` | Pessoa Fisica | Status do Assinante |
+| `SERVICE_PARTNER_ULTIMATE_BENEFICIAL_OWNERS_COMPANY_CNPJ` | Pessoa Juridica | Beneficiarios Finais |
+| `SERVICE_PASSAGES_CPF` | Pessoa Fisica | Passagens pela Web |
+| `SERVICE_PERSON_AI_PROMPT_OPENAI` | Pessoa Fisica | - |
+| `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_PHONE_HISTORY` | Pessoa Fisica | Consulta de Historico de Telefones |
+| `SERVICE_PHONE_HISTORY_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_PHONES_EXTENDED_CNPJ` | Pessoa Juridica | Telefones Estendido - Empresa |
+| `SERVICE_PIS_CONSULTATION_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_POLITICAL_INVOLVEMENT_CNPJ` | Pessoa Fisica | Envolvimento Politico |
+| `SERVICE_POLITICAL_INVOLVEMENT_CPF` | Pessoa Fisica | Consulta de envolvimento politico PF |
+| `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_POLITICAL_RELATIONSHIPS_CPF` | Pessoa Fisica | Relacionamentos Politicos |
+| `SERVICE_PRICE_DATA_EAN` | Outros | Dados de Precificacao |
+| `SERVICE_PRODUCT_SCORE` | Outros | - |
+| `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_PROFESSIONAL_TURNOVER_CPF` | Pessoa Fisica | Turnover Profissional |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | Outros | - |
+| `SERVICE_PROTEST_PF_INFOSIMPLES` | Pessoa Fisica | - |
+| `SERVICE_PROTEST_PF_NETRIN` | Pessoa Fisica | - |
+| `SERVICE_PROTEST_PJ_INFOSIMPLES` | Pessoa Juridica | - |
+| `SERVICE_PROTEST_PJ_NETRIN` | Pessoa Juridica | - |
+| `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | Outros | - |
+| `SERVICE_QSA_BET_DATA_CPF` | Pessoa Fisica | QSA |
+| `SERVICE_REGISTRATION_DATA_CNPJ` | Pessoa Juridica | Dados Cadastrais - Empresa |
+| `SERVICE_REGISTRATION_DATA_CNPJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_REGISTRATION_DATA_CPF` | Pessoa Fisica | Dados Cadastrais - Pessoa |
+| `SERVICE_RELATED_PEOPLE` | Outros | Consulta de Pessoas Relacionadas |
+| `SERVICE_RELATED_PEOPLE_ADDRESSES_CNPJ` | Pessoa Juridica | Enderecos de Pessoas Relacionadas - Empresa |
+| `SERVICE_RELATED_PEOPLE_ADDRESSES_CPF` | Pessoa Fisica | Enderecos de Pessoas Relacionadas - Pessoa |
+| `SERVICE_RELATED_PEOPLE_BIGDATACORP` | Outros | - |
+| `SERVICE_RELATED_PEOPLE_EMAILS_CNPJ` | Pessoa Juridica | Emails de Pessoas Relacionadas - Empresa |
+| `SERVICE_RELATED_PEOPLE_EMAILS_CPF` | Pessoa Fisica | Emails de Pessoas Relacionadas - Pessoa |
+| `SERVICE_RELATED_PEOPLE_PHONES_CNPJ` | Pessoa Juridica | Telefones de Pessoas Relacionadas - Empresa |
+| `SERVICE_RELATED_PEOPLE_PHONES_CPF` | Pessoa Fisica | Telefones de Pessoas Relacionadas - Pessoa |
+| `SERVICE_RELATED_PRODUCT_DATA_EAN` | Outros | Dados de Produtos Relacionados |
+| `SERVICE_REPORT_ONBOARDING` | Onboarding e Biometria | Report do Onboarding |
+| `SERVICE_REPORT_ONBOARDING_REACT` | Onboarding e Biometria | - |
+| `SERVICE_REPUTATIONS_AND_REVIEWS_CNPJ` | Pessoa Juridica | Avaliacoes e Reputacao |
+| `SERVICE_RESEND_SMS_CODE` | Outros | Reenvio de codigo SMS |
+| `SERVICE_REVIEW_DATA_EAN` | Outros | Dados de Avaliacoes |
+| `SERVICE_RFB_PF_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | Pessoa Fisica | - |
+| `SERVICE_RFB_PF_SERPRO` | Pessoa Fisica | - |
+| `SERVICE_RFB_PJ_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_RFB_PJ_ON_DEMAND` | Pessoa Juridica | CNPJ na Receita Federal |
+| `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_RFB_PJ_SERPRO` | Pessoa Juridica | - |
+| `SERVICE_S3` | Outros | Salvar imagem |
+| `SERVICE_SAVE_GENERIC_FILE_CERBERUS` | Outros | - |
+| `SERVICE_SAVE_PROOF_OF_ADDRESS` | Pessoa Fisica | Salvar Comprovante de endereco |
+| `SERVICE_SAVE_PROOF_OF_ADDRESS_CERBERUS` | Pessoa Fisica | - |
+| `SERVICE_SECURITY_DATA_CPF` | Pessoa Fisica | Dados agregados sobre as estatisticas de criminalidade associada a cada um dos enderecos relacionados ao individuo consultado |
+| `SERVICE_SEND_SMS_CODE` | Outros | Envio de codigo SMS |
+| `SERVICE_SERVICES` | Outros | - |
+| `SERVICE_SICAR_PROPERTY_DATA_CARNUMBER` | Outros | Dados de Propriedades Rurais SICAR |
+| `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | Pessoa Juridica | - |
+| `SERVICE_SOCIAL_ASSISTANCE_CPF` | Pessoa Fisica | Programas de Beneficios e Assistencia Social - Basico (Pessoa) |
+| `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | Outros | Programas de Beneficios e Assistencia Social - Estendido |
+| `SERVICE_SOCIAL_ASSISTANCE_EXTENDED_BIGDATACORP` | Outros | - |
+| `SERVICE_SOCIAL_CONSCIENCE_CNPJ` | Pessoa Juridica | Consciencia Social das empresas |
+| `SERVICE_SPORTS_EXPOSURE_CPF` | Pessoa Fisica | Exposicao Esportiva |
+| `SERVICE_SUGARCANE_AGROECOLOGICAL_ZONING_CEP` | Outros | Zoneamento Agroecologico |
+| `SERVICE_SYNDICATE_AGREEMENTS_CNPJ` | Pessoa Juridica | Acordos Sindicais |
+| `SERVICE_UNIFIED_MODELING_DATA_X1_5_CNPJ` | Pessoa Juridica | Dados Unificados para Modelagem - Empresa |
+| `SERVICE_UNIFIED_MODELING_DATA_X1_5_CPF` | Pessoa Fisica | Dados Unificados para Modelagem - Pessoa |
+| `SERVICE_UNIVERSITY_STUDENT_DATA_CPF` | Pessoa Fisica | Historico Escolar e Academico |
+| `SERVICE_VALID_SMS_CODE` | Outros | Validacao de codigo SMS |
+| `SERVICE_VALIDATE_EMAIL` | Pessoa Fisica | Validacao de usuario no formulario |
+| `SERVICE_VALIDATE_EMAIL_KEYCLOAK` | Pessoa Fisica | - |
+| `SERVICE_VALIDATION_SMS_CODE` | Outros | - |
+| `SERVICE_VEHICLES_CPF` | Pessoa Fisica | Veiculos |
+| `SERVICE_ZIPCODE` | Outros | Consulta CEP nos correios |
+
+## Arquivos relacionados
+
+- [`/llms-services-coverage.txt`](/llms-services-coverage.txt): versao em texto para LLM.
+- [`/coverage-report.json`](/coverage-report.json): relatorio estruturado para automacoes.
+- [`/mapeamento-servicos-doc.txt`](/mapeamento-servicos-doc.txt): mapeamento simples em texto.
 
 ---
 
@@ -2464,106 +3080,238 @@ Para detalhes técnicos dos endpoints, consulte a
 
 ---
 
-# Escolha o serviço certo
+# Escolha o servico certo
 
 URL: https://react-it.github.io/api-docs-idcerberus/guides/escolha-o-servico-certo
 Fonte: guides/escolha-o-servico-certo.mdx
-Descricao: Encontre os serviços idCerberus mais indicados para cada caso de uso
+Descricao: Encontre os services idCerberus mais indicados para cada caso de uso
 
-# Escolha o serviço certo
+# Escolha o servico certo
 
-Use esta página para sair de uma necessidade de negócio e chegar nos códigos
+Use esta pagina para sair de uma necessidade de negocio e chegar nos codigos
 `service` que devem ser usados em `POST /api/service-api`.
+
+## Como decidir
+
+1. Identifique se a consulta e de pessoa fisica, pessoa juridica, onboarding ou customer.
+2. Confirme o documento principal: `cpf`, `cnpj`, `phone`, imagens ou `tokenOnboarding`.
+3. Escolha o service pela necessidade de negocio, nao pelo nome tecnico.
+4. Copie o nome exato pelo [Indice de services](/guides/indice-de-services).
+5. Monte o request em homologacao.
+6. Leia `status.code`, `status.message` e `result` antes de liberar em producao.
+
+> Nota: 
+Se a pessoa que vai integrar nao conhece a API, comece pelos exemplos de CPF,
+CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-por-ambiente).
 
 ## Atalhos por necessidade
 
-| Se você quer... | Use este serviço |
+| Se voce quer... | Use este service |
 | --- | --- |
 | Consultar dados cadastrais de CPF | `service_person_data_enrichment` |
 | Verificar CPF na Receita Federal | `service_rfb_pf` |
 | Extrair dados de documento | `service_ocr` |
 | Comparar selfie e documento | `service_face_match` |
-| Validar prova de vida | `service_liveness_2d` |
+| Validar prova de vida simples | `service_liveness_2d` |
+| Consultar score biometrico | `service_biometric_score` |
 | Consultar PEP | `service_pep` |
+| Consultar KYC/compliance de pessoa fisica | `SERVICE_PERSON_KYC_BIGDATACORP` |
+| Consultar processos de pessoa fisica | `service_juridical_processes` |
+| Validar CPF com telefone | `service_cpf_phone_validation` |
+| Validar CPF com endereco | `service_cpf_address_validation` |
 | Consultar dados cadastrais de CNPJ | `service_corporate_data_enrichment` |
 | Verificar CNPJ na Receita Federal | `service_rfb_pj` |
-| Consultar sócios ou vínculos da empresa | `service_company_relationship`, `service_first_level_partner` |
-| Consultar débitos de empresa | `SERVICE_ACTIVE_DEBT_PJ` |
+| Consultar socios ou vinculos da empresa | `service_company_relationship`, `service_first_level_partner` |
+| Consultar debitos de empresa | `SERVICE_ACTIVE_DEBT_PJ` |
+| Consultar KYC dos socios | `service_company_kyc_owners` |
+| Consultar protestos de empresa | `service_protest_clearance_certificate_pj` |
 
 ## Validar identidade de uma pessoa
 
-| Necessidade | Serviços indicados | Quando usar |
+| Necessidade | Services indicados | Quando usar |
 | --- | --- | --- |
-| Confirmar dados cadastrais do CPF | `service_person_data_enrichment`, `service_rfb_pf` | Validar nome, nascimento, situação cadastral e origem Receita Federal |
+| Confirmar dados cadastrais do CPF | `service_person_data_enrichment`, `service_rfb_pf` | Validar nome, nascimento, situacao cadastral e origem Receita Federal |
 | Extrair dados de documento | `service_ocr` | Ler CNH, RG, RNE, CPF, passaporte, CRLV e outros documentos suportados |
 | Comparar selfie e documento | `service_face_match` | Validar se duas imagens pertencem a mesma pessoa |
 | Validar prova de vida | `service_liveness_2d` | Reduzir risco de foto, tela ou tentativa de fraude simples |
 | Consultar biometria governamental | `service_biometric_score` | Obter score de similaridade com bases governamentais |
-| Fazer análise documental completa | `service_digital_documentoscopy` | Extrair dados e combinar documento com selfie em um fluxo único |
+| Fazer analise documental completa | `service_digital_documentoscopy` | Extrair dados e combinar documento com selfie em um fluxo unico |
 
 ## Montar um onboarding completo
 
-| Etapa | Serviços ou endpoints |
+| Etapa | Services ou endpoints |
 | --- | --- |
 | Criar jornada via SDK | `POST /api/token-history-onboarding` |
 | Capturar documento e selfie | SDK ou Cliente Web |
 | Consultar resultado | `GET /api/onboarding/report/{tokenOnboarding}` |
-| Baixar evidências | `GET /api/history-onboarding-report/{tokenOnboarding}` |
+| Baixar evidencias | `GET /api/history-onboarding-report/{tokenOnboarding}` |
 | Complementar com consultas avulsas | `service_rfb_pf`, `service_pep`, `service_face_match`, `service_biometric_score` |
 
-## Analisar risco e compliance de pessoa física
+## Analisar risco e compliance de pessoa fisica
 
-| Necessidade | Serviços indicados |
+| Necessidade | Services indicados |
 | --- | --- |
 | Pessoa politicamente exposta | `service_pep` |
+| KYC/compliance consolidado | `SERVICE_PERSON_KYC_BIGDATACORP` |
 | Score de fraude | `service_fraud_risk_score` |
-| Score de inadimplência | `service_default_risk_score` |
-| Débitos com governo | `service_active_debt`, `SERVICE_ACTIVE_DEBT_PF` |
-| Processos e certidões | `service_juridical_processes`, `service_nothing_record_lawsuits`, `service_criminal_record_federal`, `service_criminal_record_civil` |
+| Score de inadimplencia | `service_default_risk_score` |
+| Debitos com governo | `service_active_debt`, `SERVICE_ACTIVE_DEBT_PF` |
+| Processos e certidoes | `service_juridical_processes`, `service_nothing_record_lawsuits`, `service_criminal_record_federal`, `service_criminal_record_civil` |
 | Protestos | `service_protest_clearance_certificate` |
-| Mandado de prisão | `SERVICE_ARREST_WARRANT` |
+| Mandado de prisao | `SERVICE_ARREST_WARRANT` |
 
-## Validar contato e residência
+## Validar contato e residencia
 
-| Necessidade | Serviços indicados |
+| Necessidade | Services indicados |
 | --- | --- |
 | Validar e-mail | `service_email_validation` |
 | Confirmar CPF com telefone | `service_cpf_phone_validation` |
 | Buscar pessoa por telefone | `SERVICE_CONFIRM_PHONE` |
-| Confirmar CPF com endereço | `service_cpf_address_validation` |
-| Consultar endereços | `service_address` |
+| Confirmar CPF com endereco | `service_cpf_address_validation` |
+| Consultar enderecos | `service_address` |
 
-## Analisar histórico político e eleitoral
+## Analisar historico politico e eleitoral
 
-| Necessidade | Serviços indicados |
+| Necessidade | Services indicados |
 | --- | --- |
-| Candidaturas e eleições | `SERVICE_ELECTION_CANDIDATE_DATA` |
-| Doações eleitorais | `SERVICE_ELECTORAL_DONORS` |
-| Envolvimento político consolidado | `SERVICE_POLITICAL_INVOLVEMENT` |
-| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` |
-| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS` |
+| Candidaturas e eleicoes | `SERVICE_ELECTION_CANDIDATE_DATA` |
+| Doacoes eleitorais | `SERVICE_ELECTORAL_DONORS` |
+| Envolvimento politico consolidado | `SERVICE_POLITICAL_INVOLVEMENT` |
+| Historico familiar politico | `SERVICE_FAMILY_POLITICAL_HISTORY` |
+| Prestadores de servico eleitorais | `SERVICE_ELECTORAL_PROVIDERS` |
 
 ## Analisar uma empresa
 
-| Necessidade | Serviços indicados |
+| Necessidade | Services indicados |
 | --- | --- |
 | Dados cadastrais de CNPJ | `service_corporate_data_enrichment`, `service_rfb_pj` |
-| Inscrição estadual e operação | `service_sintegra_consultation` |
-| Sócios e relacionamentos | `service_company_relationship`, `service_first_level_partner` |
-| Processos dos sócios | `service_juridical_processes_pj_owners` |
-| KYC e compliance dos sócios | `service_company_kyc_owners` |
-| Débitos, protestos e regularidade | `SERVICE_ACTIVE_DEBT_PJ`, `service_protest_clearance_certificate_pj`, `service_das_mei` |
+| Inscricao estadual e operacao | `service_sintegra_consultation` |
+| Socios e relacionamentos | `service_company_relationship`, `service_first_level_partner` |
+| Processos dos socios | `service_juridical_processes_pj_owners` |
+| KYC e compliance dos socios | `service_company_kyc_owners` |
+| Debitos, protestos e regularidade | `SERVICE_ACTIVE_DEBT_PJ`, `service_protest_clearance_certificate_pj`, `service_das_mei` |
 | Compliance de apostas | `SERVICE_COMPLIANCE_BET_PJ` |
 
-## Combinações comuns
+## Combinacoes comuns
 
-| Fluxo | Combinação recomendada |
+| Fluxo | Combinacao recomendada |
 | --- | --- |
 | Cadastro simples de CPF | `service_rfb_pf` + `service_person_data_enrichment` |
 | Onboarding com documento | `service_ocr` + `service_face_match` + `service_liveness_2d` |
-| KYC pessoa física | `service_pep` + certidões + débitos + score de risco |
+| KYC pessoa fisica | `service_pep` + certidoes + debitos + score de risco |
 | Cadastro de empresa | `service_rfb_pj` + `service_corporate_data_enrichment` + `service_sintegra_consultation` |
-| KYC empresarial | dados PJ + sócios + KYC dos sócios + débitos + protestos |
+| KYC empresarial | dados PJ + socios + KYC dos socios + debitos + protestos |
+
+## Proximo passo
+
+Depois de escolher o service, abra o [API Reference](/api-reference/servicos--pessoas/executar-servico-de-dados-risco-ou-compliance) ou use os arquivos prontos em [Exemplos por ambiente](/guides/exemplos-por-ambiente).
+
+---
+
+# Exemplos por ambiente
+
+URL: https://react-it.github.io/api-docs-idcerberus/guides/exemplos-por-ambiente
+Fonte: guides/exemplos-por-ambiente.mdx
+Descricao: Copie chamadas equivalentes para homologacao e producao sem trocar parametros por engano
+
+# Exemplos por ambiente
+
+Use esta pagina quando precisar conferir rapidamente a mesma chamada em
+homologacao e producao. A estrutura do request e a mesma; o que muda e a URL
+base.
+
+> Atencao: 
+Use credenciais, token e base URL do mesmo ambiente. Token de homologacao nao
+deve ser usado em producao, e token de producao nao deve ser usado em
+homologacao.
+
+## URLs base
+
+| Ambiente | Base URL | Quando usar |
+| --- | --- | --- |
+| Homologacao | `https://backoffice-hml.idcerberus.com` | Testes, validacao de payload e homologacao da integracao |
+| Producao | `https://backoffice.idcerberus.com` | Operacao real, com credenciais produtivas |
+
+## Gerar token
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+## Consulta de CPF
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pf",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pf",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+## Consulta de CNPJ
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}'
+```
+
+## Arquivos prontos
+
+Alguns exemplos tambem sao publicados como arquivos `.curl`:
+
+| Arquivo | Uso |
+| --- | --- |
+| [`/examples/auth.hml.curl`](/examples/auth.hml.curl) | Gerar token em homologacao |
+| [`/examples/auth.prod.curl`](/examples/auth.prod.curl) | Gerar token em producao |
+| [`/examples/service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) | Consultar CPF em homologacao |
+| [`/examples/service-api-cpf.prod.curl`](/examples/service-api-cpf.prod.curl) | Consultar CPF em producao |
+| [`/examples/service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) | Consultar CNPJ em homologacao |
+| [`/examples/service-api-cnpj.prod.curl`](/examples/service-api-cnpj.prod.curl) | Consultar CNPJ em producao |
+| [`/examples/facematch.hml.curl`](/examples/facematch.hml.curl) | Executar FaceMatch em homologacao |
+| [`/examples/documentoscopia.hml.curl`](/examples/documentoscopia.hml.curl) | Executar documentoscopia em homologacao |
 
 ---
 
@@ -2871,61 +3619,61 @@ Todas as consultas abaixo usam `POST /api/service-api`. O produto executado e de
 
 | Nome | Service | Campos principais |
 | --- | --- | --- |
-| Antecedentes criminais civis | `service_criminal_record_civil` | `cpf`, `rg`, `uf` |
-| Antecedentes criminais federais | `service_criminal_record_federal` | `cpf` |
-| Certidão de Nada Consta | `service_nothing_record_lawsuits` | `cpf`, `court`, `uf`, `sphere` |
-| Certidão negativa de protesto | `service_protest_clearance_certificate` | `cpf` |
-| Consulta de MEI | `service_mei` | `cpf` |
-| Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA` | `cpf` |
-| Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` |
-| Dados PIS | `service_pis_consultation` | `cpf` |
-| Débitos ativos | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
-| Dívida ativa | `service_active_debt` | `cpf` |
-| Doações eleitorais | `SERVICE_ELECTORAL_DONORS` | `cpf` |
-| Documentoscopia digital | `service_digital_documentoscopy` | `key`, `image1`, `image2`, `selfie1` |
-| Endereços | `service_address` | `cpf` |
-| Enriquecimento de dados | `service_person_data_enrichment` | `cpf` |
-| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
-| Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
-| FaceMatch | `service_face_match` | `image1`, `image2` |
-| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` | `cpf` |
-| Histórico profissional | `service_professional_history` | `cpf` |
-| Informações financeiras | `service_financial_information` | `cpf` |
-| KYC e compliance | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` |
-| Liveness 2D | `service_liveness_2d` | `image1` |
-| Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` |
-| OCR de documentos | `service_ocr` | `image1`, `image2`, `image1Url`, `image2Url` |
-| Pessoa politicamente exposta | `service_pep` | `cpf` |
-| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS` | `cpf` |
-| Processos jurídicos e administrativos | `service_juridical_processes` | `cpf` |
-| Relacionamentos econômicos | `economic_relationships` | `cpf` |
-| Resultado da documentoscopia digital | `service_digital_documentoscopy_consult` | `key` |
-| Score biométrico | `service_biometric_score` | `cpf`, `image1` |
-| Score de inadimplência | `service_default_risk_score` | `cpf` |
-| Score de risco de fraude | `service_fraud_risk_score` | `cpf`, `factor` |
-| Servidores públicos | `service_public_servants` | `cpf` |
-| Status do CPF na Receita Federal | `service_rfb_pf` | `cpf`, `dataDeNascimento` |
-| Validação de CPF com endereço | `service_cpf_address_validation` | `cpf`, `zipcode`, `numberAddress` |
-| Validação de CPF com telefone | `service_cpf_phone_validation` | `cpf`, `phone` |
-| Validação de e-mail | `service_email_validation` | `email` |
-| Validação do E-Social | `service_esocial_registration_qualification` | `cpf`, `nit` |
+| [Antecedentes criminais civis](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_criminal_record_civil` | `cpf`, `rg`, `uf` |
+| [Antecedentes criminais federais](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_criminal_record_federal` | `cpf` |
+| [Certidão de Nada Consta](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_nothing_record_lawsuits` | `cpf`, `court`, `uf`, `sphere` |
+| [Certidão negativa de protesto](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_protest_clearance_certificate` | `cpf` |
+| [Consulta de MEI](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_mei` | `cpf` |
+| [Dados eleitorais de candidato](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTION_CANDIDATE_DATA` | `cpf` |
+| [Dados pelo telefone](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CONFIRM_PHONE` | `phone` |
+| [Dados PIS](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_pis_consultation` | `cpf` |
+| [Débitos ativos](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
+| [Dívida ativa](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_active_debt` | `cpf` |
+| [Doações eleitorais](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS` | `cpf` |
+| [Documentoscopia digital](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_digital_documentoscopy` | `key`, `image1`, `image2`, `selfie1` |
+| [Endereços](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_address` | `cpf` |
+| [Enriquecimento de dados](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_person_data_enrichment` | `cpf` |
+| [Envolvimento político](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
+| [Exposição e perfil na mídia](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
+| [FaceMatch](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_face_match` | `image1`, `image2` |
+| [Histórico familiar político](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_POLITICAL_HISTORY` | `cpf` |
+| [Histórico profissional](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_professional_history` | `cpf` |
+| [Informações financeiras](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_financial_information` | `cpf` |
+| [KYC e compliance](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` |
+| [Liveness 2D](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_liveness_2d` | `image1` |
+| [Mandado de prisão](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` |
+| [OCR de documentos](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_ocr` | `image1`, `image2`, `image1Url`, `image2Url` |
+| [Pessoa politicamente exposta](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_pep` | `cpf` |
+| [Prestadores de serviço eleitorais](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS` | `cpf` |
+| [Processos jurídicos e administrativos](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_juridical_processes` | `cpf` |
+| [Relacionamentos econômicos](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `economic_relationships` | `cpf` |
+| [Resultado da documentoscopia digital](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_digital_documentoscopy_consult` | `key` |
+| [Score biométrico](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_biometric_score` | `cpf`, `image1` |
+| [Score de inadimplência](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_default_risk_score` | `cpf` |
+| [Score de risco de fraude](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_fraud_risk_score` | `cpf`, `factor` |
+| [Servidores públicos](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_public_servants` | `cpf` |
+| [Status do CPF na Receita Federal](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_rfb_pf` | `cpf`, `dataDeNascimento` |
+| [Validação de CPF com endereço](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_cpf_address_validation` | `cpf`, `zipcode`, `numberAddress` |
+| [Validação de CPF com telefone](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_cpf_phone_validation` | `cpf`, `phone` |
+| [Validação de e-mail](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_email_validation` | `email` |
+| [Validação do E-Social](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_esocial_registration_qualification` | `cpf`, `nit` |
 ## Pessoa Juridica
 
 | Nome | Service | Campos principais |
 | --- | --- | --- |
-| Certidão negativa de protesto | `service_protest_clearance_certificate_pj` | `cnpj` |
-| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
-| DAS MEI na Receita | `service_das_mei` | `cnpj` |
-| Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
-| Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
-| Enriquecimento de dados | `service_corporate_data_enrichment` | `cnpj` |
-| Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` |
-| KYC e compliance dos sócios | `service_company_kyc_owners` | `cnpj` |
-| Processos jurídicos dos sócios | `service_juridical_processes_pj_owners` | `cnpj` |
-| Relacionamentos da empresa | `service_company_relationship` | `cnpj` |
-| SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` |
-| Sócios de primeiro nível | `service_first_level_partner` | `cnpj` |
-| Status do CNPJ na Receita Federal | `service_rfb_pj` | `cnpj` |
+| [Certidão negativa de protesto](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_protest_clearance_certificate_pj` | `cnpj` |
+| [Compliance de casas de apostas](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
+| [DAS MEI na Receita](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_das_mei` | `cnpj` |
+| [Débitos ativos](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
+| [Endereços estendidos](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
+| [Enriquecimento de dados](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_corporate_data_enrichment` | `cnpj` |
+| [Exposição e perfil na mídia dos sócios](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` |
+| [KYC e compliance dos sócios](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_company_kyc_owners` | `cnpj` |
+| [Processos jurídicos dos sócios](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_juridical_processes_pj_owners` | `cnpj` |
+| [Relacionamentos da empresa](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_company_relationship` | `cnpj` |
+| [SINTEGRA](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_sintegra_consultation` | `cnpj`, `uf` |
+| [Sócios de primeiro nível](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_first_level_partner` | `cnpj` |
+| [Status do CNPJ na Receita Federal](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_rfb_pj` | `cnpj` |
 
 ## Arquivos para IA
 

@@ -61,6 +61,9 @@ Cursor, Windsurf, validadores internos e outros assistentes:
 - `llms-services-coverage.txt`: mapa separado de services documentados e nao
   documentados.
 - `services-catalog.json`: catalogo estruturado dos services documentados.
+- `coverage-report.json`: relatorio estruturado de cobertura entre doc e
+  backend/onboarding.
+- `examples/*.curl`: exemplos prontos para homologacao e producao.
 
 Para gerar manualmente:
 
@@ -72,6 +75,12 @@ Ou via npm:
 
 ```bash
 npm run generate:llms
+```
+
+O mesmo gerador tambem atualiza catalogo, coverage e exemplos `.curl`:
+
+```bash
+npm run generate:artifacts
 ```
 
 No Windows, caso o PowerShell bloqueie o npm:
@@ -94,6 +103,8 @@ No deploy, os arquivos devem ficar disponiveis em:
 - `https://react-it.github.io/api-docs-idcerberus/llms-api-reference.txt`
 - `https://react-it.github.io/api-docs-idcerberus/llms-services-coverage.txt`
 - `https://react-it.github.io/api-docs-idcerberus/services-catalog.json`
+- `https://react-it.github.io/api-docs-idcerberus/coverage-report.json`
+- `https://react-it.github.io/api-docs-idcerberus/examples/auth.hml.curl`
 
 ## Estrutura
 
@@ -118,6 +129,10 @@ api-docs-idcerberus/
 |   |-- generate-llms.mjs
 |   `-- prepare-pages-export.mjs
 |-- docs.json
+|-- examples/
+|   |-- auth.hml.curl
+|   |-- auth.prod.curl
+|   `-- ...
 |-- index.mdx
 |-- llms.txt
 |-- llms-small.txt
@@ -125,6 +140,7 @@ api-docs-idcerberus/
 |-- llms-api-reference.txt
 |-- llms-services-coverage.txt
 |-- services-catalog.json
+|-- coverage-report.json
 |-- package.json
 `-- README.md
 ```
@@ -138,6 +154,9 @@ api-docs-idcerberus/
 - `guides/`: guias por fluxo, categoria de servico e catalogo tecnico.
 - `guides/llms.mdx`: guia de uso dos arquivos para LLMs.
 - `guides/indice-de-services.mdx`: indice navegavel dos services documentados.
+- `guides/cobertura-de-services.mdx`: visao visual da cobertura documentada.
+- `guides/exemplos-por-ambiente.mdx`: chamadas equivalentes de HML e producao.
+- `guides/erros-comuns-integracao.mdx`: diagnostico de falhas comuns.
 - `assets/`: imagens e logo usadas pela documentacao.
 - `mapeamento-servicos-doc.txt`: mapa de services que ja estao ou ainda nao
   estao documentados.

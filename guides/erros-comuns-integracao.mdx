@@ -1,0 +1,62 @@
+---
+title: Erros comuns de integracao
+description: Checklist pratico para diagnosticar falhas de token, ambiente, payload, base64 e service
+---
+
+# Erros comuns de integracao
+
+Use este checklist quando uma chamada falhar ou quando o resultado parecer
+diferente do esperado.
+
+## Diagnostico rapido
+
+| Sintoma | Causa comum | Como corrigir |
+| --- | --- | --- |
+| `401` ou `403` | Token ausente, expirado, invalido ou de outro ambiente | Gere um novo token no mesmo ambiente da chamada |
+| `status.code` diferente de `200` | Payload incompleto, permissao ausente ou fonte externa falhou | Leia `status.message` e revise os campos obrigatorios |
+| API retorna erro mesmo com HTTP 200 | O processamento tecnico falhou dentro do body | Use `status.code` e `status.message`, nao apenas o HTTP status |
+| Service nao executa | Campo `service` escrito errado ou produto nao liberado | Copie o nome pelo [Indice de services](/guides/indice-de-services) |
+| Resultado vazio | Documento sem dados na fonte ou retorno negativo de negocio | Trate como resposta valida quando `status.code` for 200 |
+| Token funciona em uma rota e falha em outra | Credencial sem permissao para o produto | Confirme liberacao do service para o cliente |
+| Base64 rejeitado | Prefixo, encoding ou arquivo invalido | Envie apenas a string esperada pelo service ou use URL quando suportado |
+| CNPJ/CPF nao encontrado | Documento mascarado, incompleto ou ambiente errado | Teste sem mascara e confira a base URL |
+| PDF nao abre | Endpoint retorna binario, nao JSON | Trate a resposta como `application/pdf` |
+| Timeout | Fonte externa demorou ou ficou indisponivel | Aplique retry controlado e registre o `externalId`, quando houver |
+
+## Antes de chamar a API
+
+1. Confirme a base URL: homologacao ou producao.
+2. Gere token no mesmo ambiente.
+3. Envie `Authorization: Bearer {jwt_token}`.
+4. Envie `Content-Type: application/json`.
+5. Copie o `service` exatamente como esta na documentacao.
+6. Valide campos obrigatorios antes da chamada.
+7. Use dados de teste em homologacao.
+8. Nunca registre `client`, `secret`, JWT, CPF, CNPJ ou imagem sensivel em log publico.
+
+## Campos que mais geram erro
+
+| Campo | Cuidado |
+| --- | --- |
+| `service` | Deve bater exatamente com o nome documentado |
+| `cpf` | Envie o valor esperado pelo contrato do cliente, de preferencia sem mascara |
+| `cnpj` | Envie o CNPJ completo, de preferencia sem mascara |
+| `phone` | Verifique DDI/DDD e formato aceito pelo service |
+| `image1`, `image2`, `selfie1` | Confirme se o service espera base64 puro, data URI ou URL |
+| `key` | Use a chave retornada pelo fluxo que iniciou a consulta |
+| `dataDeNascimento` | Use o formato documentado, normalmente `yyyy-MM-dd` |
+
+## Como abrir um chamado interno
+
+Ao reportar um problema, envie:
+
+- ambiente usado;
+- endpoint chamado;
+- `service` enviado;
+- horario aproximado da chamada;
+- `externalId`, quando retornado;
+- `status.code` e `status.message`;
+- payload sem dados sensiveis.
+
+Nao envie token JWT, `client`, `secret`, documento real ou imagem real em canais
+abertos.

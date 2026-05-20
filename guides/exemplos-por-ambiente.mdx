@@ -1,0 +1,131 @@
+---
+title: Exemplos por ambiente
+description: Copie chamadas equivalentes para homologacao e producao sem trocar parametros por engano
+---
+
+# Exemplos por ambiente
+
+Use esta pagina quando precisar conferir rapidamente a mesma chamada em
+homologacao e producao. A estrutura do request e a mesma; o que muda e a URL
+base.
+
+<Warning>
+Use credenciais, token e base URL do mesmo ambiente. Token de homologacao nao
+deve ser usado em producao, e token de producao nao deve ser usado em
+homologacao.
+</Warning>
+
+## URLs base
+
+| Ambiente | Base URL | Quando usar |
+| --- | --- | --- |
+| Homologacao | `https://backoffice-hml.idcerberus.com` | Testes, validacao de payload e homologacao da integracao |
+| Producao | `https://backoffice.idcerberus.com` | Operacao real, com credenciais produtivas |
+
+## Gerar token
+
+<Tabs>
+<Tab title="Homologacao">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+</Tab>
+<Tab title="Producao">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+</Tab>
+</Tabs>
+
+## Consulta de CPF
+
+<Tabs>
+<Tab title="Homologacao">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pf",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+</Tab>
+<Tab title="Producao">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pf",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+</Tab>
+</Tabs>
+
+## Consulta de CNPJ
+
+<Tabs>
+<Tab title="Homologacao">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Producao">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+## Arquivos prontos
+
+Alguns exemplos tambem sao publicados como arquivos `.curl`:
+
+| Arquivo | Uso |
+| --- | --- |
+| [`/examples/auth.hml.curl`](/examples/auth.hml.curl) | Gerar token em homologacao |
+| [`/examples/auth.prod.curl`](/examples/auth.prod.curl) | Gerar token em producao |
+| [`/examples/service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) | Consultar CPF em homologacao |
+| [`/examples/service-api-cpf.prod.curl`](/examples/service-api-cpf.prod.curl) | Consultar CPF em producao |
+| [`/examples/service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) | Consultar CNPJ em homologacao |
+| [`/examples/service-api-cnpj.prod.curl`](/examples/service-api-cnpj.prod.curl) | Consultar CNPJ em producao |
+| [`/examples/facematch.hml.curl`](/examples/facematch.hml.curl) | Executar FaceMatch em homologacao |
+| [`/examples/documentoscopia.hml.curl`](/examples/documentoscopia.hml.curl) | Executar documentoscopia em homologacao |

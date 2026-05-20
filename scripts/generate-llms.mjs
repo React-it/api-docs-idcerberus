@@ -15,6 +15,10 @@ function write(filePath, content) {
   fs.writeFileSync(filePath, content.replace(/\r?\n/g, '\n'), 'utf8');
 }
 
+function ensureDir(dirPath) {
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+
 function toAscii(content) {
   return content
     .normalize('NFD')
@@ -276,9 +280,13 @@ function generateCoverage(docServices) {
       services.set(key, {
         alias,
         name: toAscii(name || ''),
+        names: new Set(),
         sources: new Set(),
+        occurrences: 0,
       });
     }
+    services.get(key).occurrences++;
+    if (name) services.get(key).names.add(toAscii(name));
     if (source) services.get(key).sources.add(source);
   }
 
@@ -317,6 +325,26 @@ function generateCoverage(docServices) {
   const all = [...services.values()].sort((a, b) => a.alias.localeCompare(b.alias));
   const inDoc = all.filter((item) => docSet.has(item.alias.toUpperCase()));
   const notInDoc = all.filter((item) => !docSet.has(item.alias.toUpperCase()));
+  const duplicateAliases = all.filter((item) => item.occurrences > 1);
+  const aliasesWithMultipleNames = all.filter((item) => item.names.size > 1);
+  const documentedNotFound = docServices
+    .filter((service) => !services.has(service.toUpperCase()))
+    .sort((a, b) => a.localeCompare(b));
+  const byCategory = {};
+
+  for (const item of all) {
+    const category = inferCoverageCategory(item.alias, item.name);
+    if (!byCategory[category]) {
+      byCategory[category] = {
+        total: 0,
+        documented: 0,
+        missing: 0,
+      };
+    }
+    byCategory[category].total++;
+    if (docSet.has(item.alias.toUpperCase())) byCategory[category].documented++;
+    else byCategory[category].missing++;
+  }
 
   const lines = [];
   lines.push('MAPEAMENTO DE COBERTURA DE SERVICES');
@@ -340,8 +368,22 @@ function generateCoverage(docServices) {
     all,
     inDoc,
     notInDoc,
+    duplicateAliases,
+    aliasesWithMultipleNames,
+    documentedNotFound,
+    byCategory,
     content,
   };
+}
+
+function inferCoverageCategory(alias, name = '') {
+  const haystack = `${alias} ${name}`.toUpperCase();
+  if (/PERSON|_PF|CPF|PEP|ELECTION|ELECTORAL|POLITICAL|ARREST|MEI|PIS|ESOCIAL|FRAUD|DEFAULT|BIOMETRIC|NOTHING_RECORD/.test(haystack)) return 'Pessoa Fisica';
+  if (/_PJ|CNPJ|COMPANY|CORPORATE|SINTEGRA|DAS_MEI|OWNERS|PARTNER/.test(haystack)) return 'Pessoa Juridica';
+  if (/ONBOARDING|LIVENESS|DOCUMENTOSCOPY|OCR|FACE|SELFIE|SAVE_IMAGE/.test(haystack)) return 'Onboarding e Biometria';
+  if (/CUSTOMER/.test(haystack)) return 'Customers';
+  if (/ADDRESS|PHONE|EMAIL|PIS|CPF|PEP|ELECTION|POLITICAL|DEBT|RFB|CRIMINAL|PROFESSIONAL|JURIDICAL|FINANCIAL|MEDIA/.test(haystack)) return 'Pessoa Fisica';
+  return 'Outros';
 }
 
 function serviceCategory(summary, service) {
@@ -384,10 +426,131 @@ function buildServicesCatalog(openApiServices, coverage) {
         },
         requestFields: requestFieldsFromYaml(item.requestBody),
         requestExample: item.requestBody || `service: ${item.service}`,
-        documentationUrl: `${siteUrl}/api-reference/servicos--pessoas/executar-servico-de-dados-risco-ou-compliance`,
+        documentationUrl: apiReferenceServiceUrl(item),
+        guideUrl: guideUrlForCategory(serviceCategory(item.summary, item.service)),
+        apiReferenceSection: item.summary,
         sources: coverageItem ? [...coverageItem.sources].sort() : ['doc-local-openapi'],
       };
     });
+}
+
+function apiReferenceServiceUrl(item) {
+  const base = `${siteUrl}/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance`;
+  return base;
+}
+
+function guideUrlForCategory(category) {
+  const map = {
+    'Pessoa Fisica': `${siteUrl}/guides/servicos-pessoa-fisica`,
+    'Pessoa Juridica': `${siteUrl}/guides/servicos-pessoa-juridica`,
+    Customers: `${siteUrl}/guides/customers`,
+    Onboarding: `${siteUrl}/guides/onboarding-sdk`,
+  };
+  return map[category] || `${siteUrl}/guides/matriz-de-servicos`;
+}
+
+function jsonBodyFromRequestExample(requestExample) {
+  const entries = [];
+  for (const line of requestExample.split(/\r?\n/).filter(Boolean)) {
+    const field = line.match(/^\s*([A-Za-z0-9_]+):\s*(.*)$/);
+    if (!field) continue;
+    entries.push([field[1], field[2].replace(/^["']|["']$/g, '')]);
+  }
+  return Object.fromEntries(entries);
+}
+
+function renderCurl({ baseUrl, path: endpointPath, body, method = 'POST', bearer = true }) {
+  const headers = ["--header 'Content-Type: application/json'"];
+  if (bearer) headers.push("--header 'Authorization: Bearer {jwt_token}'");
+  const lines = [`curl --location '${baseUrl}${endpointPath}' \\`, ...headers.map((header) => `${header} \\`)];
+  if (body) {
+    lines.push(`--data '${JSON.stringify(body, null, 2)}'`);
+  }
+  if (method !== 'POST') {
+    lines[0] = `curl --location --request ${method} '${baseUrl}${endpointPath}' \\`;
+  }
+  return lines.join('\n');
+}
+
+function writeExampleFiles(catalog) {
+  const examplesDir = path.join(root, 'examples');
+  ensureDir(examplesDir);
+
+  const examples = [
+    {
+      file: 'auth.hml.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice-hml.idcerberus.com',
+        path: '/api/token-generate',
+        bearer: false,
+        body: { client: '{client}', secret: '{secret}' },
+      }),
+    },
+    {
+      file: 'auth.prod.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice.idcerberus.com',
+        path: '/api/token-generate',
+        bearer: false,
+        body: { client: '{client}', secret: '{secret}' },
+      }),
+    },
+    {
+      file: 'service-api-cpf.hml.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice-hml.idcerberus.com',
+        path: '/api/service-api',
+        body: { service: 'service_rfb_pf', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
+      }),
+    },
+    {
+      file: 'service-api-cpf.prod.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice.idcerberus.com',
+        path: '/api/service-api',
+        body: { service: 'service_rfb_pf', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
+      }),
+    },
+    {
+      file: 'service-api-cnpj.hml.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice-hml.idcerberus.com',
+        path: '/api/service-api',
+        body: { service: 'service_rfb_pj', cnpj: 'cnpj' },
+      }),
+    },
+    {
+      file: 'service-api-cnpj.prod.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice.idcerberus.com',
+        path: '/api/service-api',
+        body: { service: 'service_rfb_pj', cnpj: 'cnpj' },
+      }),
+    },
+    {
+      file: 'facematch.hml.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice-hml.idcerberus.com',
+        path: '/api/service-api',
+        body: { service: 'service_face_match', image1: 'base64', image2: 'base64' },
+      }),
+    },
+    {
+      file: 'documentoscopia.hml.curl',
+      content: renderCurl({
+        baseUrl: 'https://backoffice-hml.idcerberus.com',
+        path: '/api/service-api',
+        body: { service: 'service_digital_documentoscopy', key: '{key}', image1: 'base64', image2: 'base64', selfie1: 'base64' },
+      }),
+    },
+  ];
+
+  for (const example of examples) write(path.join(examplesDir, example.file), `${example.content}\n`);
+
+  return examples.map((example) => ({
+    file: example.file,
+    url: `${siteUrl}/examples/${example.file}`,
+  }));
 }
 
 function renderApiReferenceText(servicesCatalog) {
@@ -462,6 +625,14 @@ function renderCoverageText(coverage) {
   lines.push(`- Total encontrado no onboarding/backend: ${coverage.all.length}`);
   lines.push(`- Ja esta na doc: ${coverage.inDoc.length}`);
   lines.push(`- Nao esta na doc: ${coverage.notInDoc.length}`);
+  lines.push(`- Aliases repetidos encontrados: ${coverage.duplicateAliases.length}`);
+  lines.push(`- Aliases com nomes divergentes: ${coverage.aliasesWithMultipleNames.length}`);
+  lines.push('');
+  lines.push('## Cobertura por categoria');
+  lines.push('');
+  for (const [category, stats] of Object.entries(coverage.byCategory).sort(([a], [b]) => a.localeCompare(b))) {
+    lines.push(`- ${category}: ${stats.documented}/${stats.total} documentados; ${stats.missing} pendentes`);
+  }
   lines.push('');
   lines.push('## Ja esta na doc');
   lines.push('');
@@ -470,7 +641,117 @@ function renderCoverageText(coverage) {
   lines.push('## Nao esta na doc');
   lines.push('');
   for (const item of coverage.notInDoc) lines.push(`- ${item.alias}${item.name ? ` - ${item.name}` : ''}`);
+  if (coverage.duplicateAliases.length) {
+    lines.push('');
+    lines.push('## Aliases repetidos no backend/onboarding');
+    lines.push('');
+    for (const item of coverage.duplicateAliases) {
+      lines.push(`- ${item.alias}: ${item.occurrences} ocorrencias`);
+    }
+  }
+  if (coverage.aliasesWithMultipleNames.length) {
+    lines.push('');
+    lines.push('## Aliases com nomes divergentes');
+    lines.push('');
+    for (const item of coverage.aliasesWithMultipleNames) {
+      lines.push(`- ${item.alias}: ${[...item.names].join(' | ')}`);
+    }
+  }
   return toAscii(lines.join('\n'));
+}
+
+function renderCoverageReport(coverage) {
+  return {
+    generatedAt: new Date().toISOString(),
+    totals: {
+      all: coverage.all.length,
+      documented: coverage.inDoc.length,
+      missing: coverage.notInDoc.length,
+      duplicateAliases: coverage.duplicateAliases.length,
+      aliasesWithMultipleNames: coverage.aliasesWithMultipleNames.length,
+      documentedNotFound: coverage.documentedNotFound.length,
+    },
+    byCategory: coverage.byCategory,
+    documented: coverage.inDoc.map((item) => coverageJsonItem(item)),
+    missing: coverage.notInDoc.map((item) => coverageJsonItem(item)),
+    duplicateAliases: coverage.duplicateAliases.map((item) => coverageJsonItem(item)),
+    aliasesWithMultipleNames: coverage.aliasesWithMultipleNames.map((item) => ({
+      ...coverageJsonItem(item),
+      names: [...item.names].sort(),
+    })),
+    documentedNotFound: coverage.documentedNotFound,
+  };
+}
+
+function coverageJsonItem(item) {
+  return {
+    service: item.alias,
+    name: item.name || '',
+    category: inferCoverageCategory(item.alias, item.name),
+    occurrences: item.occurrences,
+    sources: [...item.sources].sort(),
+  };
+}
+
+function renderCoveragePage(coverage) {
+  const percent = coverage.all.length
+    ? Math.round((coverage.inDoc.length / coverage.all.length) * 100)
+    : 0;
+  const lines = [];
+  lines.push('---');
+  lines.push('title: Cobertura de services');
+  lines.push('description: Acompanhe quais services ja estao documentados e quais ainda aparecem apenas no backend/onboarding');
+  lines.push('---');
+  lines.push('');
+  lines.push('# Cobertura de services');
+  lines.push('');
+  lines.push('Esta pagina transforma o mapeamento tecnico em uma visao facil de acompanhar. Ela compara os services documentados no API Reference com os aliases encontrados no projeto de onboarding/backend.');
+  lines.push('');
+  lines.push('<Info>');
+  lines.push('A cobertura e gerada automaticamente por `node scripts/generate-llms.mjs`. Use esta pagina para priorizar quais services ainda precisam virar documentacao.');
+  lines.push('</Info>');
+  lines.push('');
+  lines.push('## Resumo');
+  lines.push('');
+  lines.push('| Indicador | Valor |');
+  lines.push('| --- | --- |');
+  lines.push(`| Total encontrado no backend/onboarding | ${coverage.all.length} |`);
+  lines.push(`| Ja documentado | ${coverage.inDoc.length} |`);
+  lines.push(`| Ainda nao documentado | ${coverage.notInDoc.length} |`);
+  lines.push(`| Cobertura atual | ${percent}% |`);
+  lines.push(`| Aliases repetidos encontrados | ${coverage.duplicateAliases.length} |`);
+  lines.push(`| Aliases com nomes divergentes | ${coverage.aliasesWithMultipleNames.length} |`);
+  lines.push('');
+  lines.push('## Por categoria');
+  lines.push('');
+  lines.push('| Categoria | Total | Documentados | Pendentes |');
+  lines.push('| --- | --- | --- | --- |');
+  for (const [category, stats] of Object.entries(coverage.byCategory).sort(([a], [b]) => a.localeCompare(b))) {
+    lines.push(`| ${category} | ${stats.total} | ${stats.documented} | ${stats.missing} |`);
+  }
+  lines.push('');
+  lines.push('## Ja esta na doc');
+  lines.push('');
+  lines.push('| Service | Categoria |');
+  lines.push('| --- | --- |');
+  for (const item of coverage.inDoc) {
+    lines.push(`| \`${item.alias}\` | ${inferCoverageCategory(item.alias, item.name)} |`);
+  }
+  lines.push('');
+  lines.push('## Ainda nao esta na doc');
+  lines.push('');
+  lines.push('| Service | Categoria | Nome encontrado |');
+  lines.push('| --- | --- | --- |');
+  for (const item of coverage.notInDoc) {
+    lines.push(`| \`${item.alias}\` | ${inferCoverageCategory(item.alias, item.name)} | ${item.name || '-'} |`);
+  }
+  lines.push('');
+  lines.push('## Arquivos relacionados');
+  lines.push('');
+  lines.push('- [`/llms-services-coverage.txt`](/llms-services-coverage.txt): versao em texto para LLM.');
+  lines.push('- [`/coverage-report.json`](/coverage-report.json): relatorio estruturado para automacoes.');
+  lines.push('- [`/mapeamento-servicos-doc.txt`](/mapeamento-servicos-doc.txt): mapeamento simples em texto.');
+  return lines.join('\n');
 }
 
 function renderServicesIndex(catalog) {
@@ -495,11 +776,11 @@ function renderServicesIndex(catalog) {
       currentCategory = service.category;
       lines.push(`## ${currentCategory}`);
       lines.push('');
-      lines.push('| Nome | Service | Campos principais |');
+  lines.push('| Nome | Service | Campos principais |');
       lines.push('| --- | --- | --- |');
     }
     const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
-    lines.push(`| ${service.name} | \`${service.service}\` | ${fields} |`);
+    lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} |`);
   }
 
   lines.push('');
@@ -522,6 +803,7 @@ const openApiSummary = extractOpenApiSummary(openApiContent);
 const coverage = generateCoverage(openApiSummary.services.map((item) => item.service));
 const coverageContent = coverage.content.trim();
 const servicesCatalog = buildServicesCatalog(openApiSummary.services, coverage);
+const exampleFiles = writeExampleFiles(servicesCatalog);
 const llmRules = [
   '## Regras para assistentes de IA',
   '',
@@ -535,9 +817,11 @@ const llmRules = [
 ].join('\n');
 
 write(path.join(root, 'services-catalog.json'), `${JSON.stringify(servicesCatalog, null, 2)}\n`);
+write(path.join(root, 'coverage-report.json'), `${JSON.stringify(renderCoverageReport(coverage), null, 2)}\n`);
 write(path.join(root, 'llms-api-reference.txt'), toAscii(renderApiReferenceText(servicesCatalog)));
 write(path.join(root, 'llms-services-coverage.txt'), renderCoverageText(coverage));
 write(path.join(root, 'guides', 'indice-de-services.mdx'), renderServicesIndex(servicesCatalog));
+write(path.join(root, 'guides', 'cobertura-de-services.mdx'), renderCoveragePage(coverage));
 
 const llmsLines = [];
 llmsLines.push('# idCerberus API Docs');
@@ -580,6 +864,11 @@ llmsLines.push(`- [llms-full.txt](${siteUrl}/llms-full.txt): versao consolidada 
 llmsLines.push(`- [llms-api-reference.txt](${siteUrl}/llms-api-reference.txt): referencia operacional dos services com exemplos de curl.`);
 llmsLines.push(`- [llms-services-coverage.txt](${siteUrl}/llms-services-coverage.txt): mapa do que ja esta e do que ainda nao esta na doc.`);
 llmsLines.push(`- [services-catalog.json](${siteUrl}/services-catalog.json): catalogo estruturado para ferramentas e automacoes.`);
+llmsLines.push(`- [coverage-report.json](${siteUrl}/coverage-report.json): relatorio estruturado de cobertura.`);
+llmsLines.push('');
+llmsLines.push('## Exemplos curl');
+llmsLines.push('');
+for (const example of exampleFiles) llmsLines.push(`- [${example.file}](${example.url})`);
 
 write(path.join(root, 'llms.txt'), llmsLines.join('\n'));
 
@@ -636,6 +925,13 @@ if (coverageContent) {
   smallLines.push(`- Ja esta na doc: ${inDoc || 'nao informado'}`);
   smallLines.push(`- Nao esta na doc: ${notInDoc || 'nao informado'}`);
 }
+smallLines.push('');
+smallLines.push('## Arquivos auxiliares');
+smallLines.push('');
+smallLines.push(`- Catalogo JSON: ${siteUrl}/services-catalog.json`);
+smallLines.push(`- Cobertura JSON: ${siteUrl}/coverage-report.json`);
+smallLines.push(`- API Reference para LLM: ${siteUrl}/llms-api-reference.txt`);
+smallLines.push(`- Exemplos curl: ${siteUrl}/examples/auth.hml.curl`);
 
 write(path.join(root, 'llms-small.txt'), smallLines.join('\n'));
 
@@ -701,4 +997,7 @@ console.log(`Generated llms-full.txt with ${openApiSummary.services.length} serv
 console.log('Generated llms-api-reference.txt.');
 console.log('Generated llms-services-coverage.txt.');
 console.log('Generated services-catalog.json.');
+console.log('Generated coverage-report.json.');
 console.log('Generated guides/indice-de-services.mdx.');
+console.log('Generated guides/cobertura-de-services.mdx.');
+console.log(`Generated ${exampleFiles.length} curl examples.`);
