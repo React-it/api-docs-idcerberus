@@ -41,6 +41,11 @@ Os endpoints base são:
 A chamada é a mesma nos dois ambientes. Para usar produção, mantenha método,
 headers e body iguais e troque apenas a URL.
 
+<Warning>
+  Não misture ambientes. Token gerado em homologação deve ser usado com URL de
+  homologação. Token gerado em produção deve ser usado com URL de produção.
+</Warning>
+
 ## 1. Escolha onde vai testar
 
 ### Postman
@@ -90,6 +95,25 @@ que o comando não existe, instale o pacote `curl` pelo gerenciador do sistema.
 O primeiro request gera um token JWT. Esse token será usado nas próximas chamadas
 protegidas.
 
+No Postman, configure assim:
+
+| Campo | Valor |
+| --- | --- |
+| Método | `POST` |
+| URL HML | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+| URL produção | `https://backoffice.idcerberus.com/api/token-generate` |
+| Header | `Content-Type: application/json` |
+| Body | `raw` + `JSON` |
+
+Body:
+
+```json
+{
+  "client": "{client}",
+  "secret": "{secret}"
+}
+```
+
 ### HML
 
 ```bash
@@ -131,9 +155,31 @@ Resposta esperada:
 
 Copie o valor de `access_token`. Ele será usado no próximo passo.
 
+No Postman, copie somente o conteúdo entre aspas. Exemplo:
+
+```json
+{
+  "access_token": "eyJhbGciOi...",
+  "expires_in": "300"
+}
+```
+
+Nesse caso, o token a ser usado no próximo passo é `eyJhbGciOi...`.
+
 ## 3. Execute um serviço
 
 Use o token retornado no header `Authorization`.
+
+No Postman, crie uma nova request:
+
+| Campo | Valor |
+| --- | --- |
+| Método | `POST` |
+| URL HML | `https://backoffice-hml.idcerberus.com/api/service-api` |
+| URL produção | `https://backoffice.idcerberus.com/api/service-api` |
+| Header 1 | `Authorization: Bearer {jwt_token}` |
+| Header 2 | `Content-Type: application/json` |
+| Body | `raw` + `JSON` |
 
 ### HML
 

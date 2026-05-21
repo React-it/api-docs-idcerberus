@@ -66,6 +66,9 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | --- | --- | --- |
 | Enriquecimento de dados de PF | `service_person_data_enrichment` | `cpf` |
 | Status do CPF na Receita Federal | `service_rfb_pf` | `cpf`, `dataDeNascimento` |
+| CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` |
+| Modelagem de dados de pessoa física | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` |
+| Prompt de IA para pessoa | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` |
 | Consulta de MEI | `service_mei` | `cpf` |
 | Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` |
 | Endereços | `service_address` | `cpf` |
@@ -76,6 +79,8 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Histórico de e-mails | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` |
 | Relacionamentos econômicos | `economic_relationships` | `cpf` |
 | Histórico profissional | `service_professional_history` | `cpf` |
+| Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` |
+| Dados financeiros e endereços PF | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` |
 
 ### Biometria e documentos
 
@@ -85,6 +90,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | FaceMatch | `service_face_match` | `image1`, `image2` |
 | Liveness 2D | `service_liveness_2d` | `image1` |
 | Score biométrico | `service_biometric_score` | `cpf`, `image1` |
+| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` |
 | Documentoscopia digital | `service_digital_documentoscopy` | `key`, `image1`, `image2`, `selfie1` |
 | Resultado da documentoscopia | `service_digital_documentoscopy_consult` | `key` |
 
@@ -97,6 +103,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
 | Dívida ativa PF | `service_active_debt` | `cpf` |
 | Score de risco de fraude | `service_fraud_risk_score` | `cpf`, `factor` |
+| Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` |
 | Score de inadimplência | `service_default_risk_score` | `cpf` |
 | Nada consta em ações judiciais | `service_nothing_record_lawsuits` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `service_criminal_record_federal` | `cpf` |
@@ -110,6 +117,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Validação E-Social | `service_esocial_registration_qualification` | `cpf`, `nit` |
 | Processos jurídicos | `service_juridical_processes` | `cpf` |
 | Servidores públicos | `service_public_servants` | `cpf` |
+| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` |
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` |
 | Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA` | `cpf` |
@@ -117,6 +125,31 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
 | Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` | `cpf` |
 | Prestadores de serviço eleitorais PF | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` |
+
+## Consultas avançadas adicionadas
+
+Alguns serviços retornam informações consolidadas ou análises derivadas de
+fontes complementares. Eles seguem o mesmo padrão de chamada do endpoint
+`POST /api/service-api`, mas podem ter respostas mais amplas conforme a
+disponibilidade dos dados no parceiro.
+
+| Serviço | Quando usar | Exemplo de body |
+| --- | --- | --- |
+| `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | Buscar o CPF na Receita Federal em tempo de consulta | `{ "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP", "cpf": "cpf" }` |
+| `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | Consolidar dados de modelagem, contatos, vínculos, processos e endereços | `{ "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP", "cpf": "cpf" }` |
+| `SERVICE_PERSON_AI_PROMPT_OPENAI` | Gerar resumo analítico textual a partir dos dados consolidados da pessoa | `{ "service": "SERVICE_PERSON_AI_PROMPT_OPENAI", "cpf": "cpf" }` |
+| `SERVICE_DATAVALID_CNH_SERPRO` | Validar CNH com apoio do DataValid/Serpro | `{ "service": "SERVICE_DATAVALID_CNH_SERPRO", "cpf": "cpf", "image1": "base64" }` |
+| `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | Consultar score de risco financeiro | `{ "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP", "cpf": "cpf" }` |
+| `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | Combinar dados cadastrais, endereços e informações financeiras | `{ "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP", "cpf": "cpf" }` |
+| `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | Retornar histórico profissional em que a pessoa aparece como titular ou sócia | `{ "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP", "cpf": "cpf" }` |
+| `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | Avaliar propensão a apostas online | `{ "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP", "cpf": "cpf" }` |
+
+<Warning>
+  O alias `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` está documentado sem a
+  letra `R` em `SERVICE` porque essa é a grafia implementada no backend. Não
+  corrija para `SERVICE_ONLINE...` sem validação técnica, pois a chamada pode
+  deixar de ser reconhecida.
+</Warning>
 
 ## Exemplos
 
@@ -283,6 +316,103 @@ Exemplo de resposta:
     "message": "Consulta de API Realizada com Sucesso"
   },
   "externalId": "1782ea0a-8663-41a8-b156-688527f5363b"
+}
+```
+
+### CPF na Receita Federal on-demand
+
+Executa a consulta do CPF na Receita Federal em modo on-demand. Use quando for
+necessário buscar ou atualizar os dados cadastrais diretamente no momento da
+requisição.
+
+```json
+{
+  "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+  "cpf": "cpf"
+}
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "123414124",
+    "status": "REGULAR",
+    "name": "NOME EXEMPLO",
+    "birthDate": "1994-05-21T00:00",
+    "dead": false,
+    "origin": "RECEITA FEDERAL",
+    "age": 30
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Modelagem de dados de pessoa física
+
+Consolida informações de modelagem, histórico de telefones, processos,
+relacionamentos econômicos, histórico profissional e endereços para apoiar
+análises mais completas de uma pessoa.
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+  "cpf": "cpf"
+}
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "modelData": "Dados de modelagem consolidados para o CPF consultado."
+  },
+  "results": [
+    {
+      "modelData": "Dados de modelagem consolidados para o CPF consultado."
+    }
+  ],
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Prompt de IA para pessoa
+
+Gera um resumo analítico a partir de dados consolidados da pessoa consultada.
+Esse serviço é útil quando a integração precisa transformar múltiplos sinais em
+uma explicação textual estruturada.
+
+```json
+{
+  "service": "SERVICE_PERSON_AI_PROMPT_OPENAI",
+  "cpf": "cpf"
+}
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "modelData": "Resumo analítico gerado a partir dos dados consolidados da pessoa consultada."
+  },
+  "results": [
+    {
+      "modelData": "Resumo analítico gerado a partir dos dados consolidados da pessoa consultada."
+    }
+  ],
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
 }
 ```
 
@@ -860,6 +990,45 @@ Exemplo de resposta:
 }
 ```
 
+### Risco financeiro
+
+Calcula um score de risco financeiro para o CPF informado. A resposta retorna o
+score normalizado e uma mensagem com a leitura resumida da análise.
+
+```json
+{
+  "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF consultado |
+| `result.score` | Score calculado |
+| `result.message` | Mensagem com score e interpretação de risco |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "80246074507",
+    "score": "650",
+    "message": "Score: 650 | Análise: RISCO MÉDIO"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
 ### Score de inadimplência
 
 O score de inadimplência identifica o nível de risco de inadimplência de um
@@ -959,6 +1128,34 @@ Exemplo de resposta:
     "status": "Altíssima probabilidade",
     "message": "Biometrics exist at the base of the Government",
     "similarity": 99.66
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Validação de CNH no DataValid
+
+Valida dados de CNH com apoio do DataValid/Serpro. O serviço recebe o CPF e a
+imagem de referência, normalmente em base64, para executar a validação
+disponível na integração.
+
+```json
+{
+  "service": "SERVICE_DATAVALID_CNH_SERPRO",
+  "cpf": "cpf",
+  "image1": "base64"
+}
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cpf": "73583960149"
   },
   "status": {
     "code": 200,

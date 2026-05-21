@@ -49,6 +49,7 @@ Para implementação endpoint a endpoint, use a [API Reference](/api-reference/a
 | --- | --- | --- |
 | Enriquecimento de dados de PJ | `service_corporate_data_enrichment` | `cnpj` |
 | Status do CNPJ na Receita Federal | `service_rfb_pj` | `cnpj` |
+| CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` |
 | SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` |
 | Endereços estendidos de empresa | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
 | Dados de sites da empresa | `SERVICE_DOMAINS_CNPJ` | `cnpj` |
@@ -70,6 +71,33 @@ Para implementação endpoint a endpoint, use a [API Reference](/api-reference/a
 | Débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
 | Certidão negativa de protesto PJ | `service_protest_clearance_certificate_pj` | `cnpj` |
 | Compliance de casas de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
+
+## Consulta on-demand de CNPJ
+
+O serviço `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` executa a consulta do CNPJ na
+Receita Federal em modo on-demand. Use quando a integração precisar buscar ou
+atualizar a informação cadastral da empresa diretamente no momento da requisição.
+
+```json
+{
+  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "cnpj": "cnpj"
+}
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000150"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
 
 ## Exemplos
 

@@ -69,6 +69,8 @@ curl.exe --location "$baseUrl/api/service-api" `
 
 ## Node.js
 
+### Node.js com fetch
+
 ```js
 const baseUrl = "https://backoffice-hml.idcerberus.com";
 
@@ -114,6 +116,42 @@ async function executarServico(token) {
 const { access_token } = await gerarToken();
 const result = await executarServico(access_token);
 console.log(result);
+```
+
+### Node.js com Axios
+
+```js
+import axios from "axios";
+
+const baseUrl = "https://backoffice-hml.idcerberus.com";
+
+const tokenResponse = await axios.post(`${baseUrl}/api/token-generate`, {
+  client: "{client}",
+  secret: "{secret}",
+});
+
+const token = tokenResponse.data.access_token;
+
+const serviceResponse = await axios.post(
+  `${baseUrl}/api/service-api`,
+  {
+    service: "service_person_data_enrichment",
+    cpf: "cpf",
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    timeout: 60000,
+  },
+);
+
+if (serviceResponse.data.status?.code !== 200) {
+  throw new Error(serviceResponse.data.status?.message || "Falha no processamento");
+}
+
+console.log(serviceResponse.data.result);
 ```
 
 ## Python
@@ -193,6 +231,54 @@ var serviceResponse = await http.PostAsync(
 serviceResponse.EnsureSuccessStatusCode();
 var serviceBody = await serviceResponse.Content.ReadAsStringAsync();
 Console.WriteLine(serviceBody);
+```
+
+## Java
+
+Exemplo usando `HttpClient`, disponível nas versões recentes do Java.
+
+```java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+public class IdCerberusExample {
+  public static void main(String[] args) throws Exception {
+    var baseUrl = "https://backoffice-hml.idcerberus.com";
+    var http = HttpClient.newHttpClient();
+
+    var tokenRequest = HttpRequest.newBuilder()
+      .uri(URI.create(baseUrl + "/api/token-generate"))
+      .header("Content-Type", "application/json")
+      .POST(HttpRequest.BodyPublishers.ofString("""
+        {
+          "client": "{client}",
+          "secret": "{secret}"
+        }
+      """))
+      .build();
+
+    var tokenResponse = http.send(tokenRequest, HttpResponse.BodyHandlers.ofString());
+    var tokenBody = tokenResponse.body();
+    var token = tokenBody.split("\"access_token\"\\s*:\\s*\"")[1].split("\"")[0];
+
+    var serviceRequest = HttpRequest.newBuilder()
+      .uri(URI.create(baseUrl + "/api/service-api"))
+      .header("Authorization", "Bearer " + token)
+      .header("Content-Type", "application/json")
+      .POST(HttpRequest.BodyPublishers.ofString("""
+        {
+          "service": "service_person_data_enrichment",
+          "cpf": "cpf"
+        }
+      """))
+      .build();
+
+    var serviceResponse = http.send(serviceRequest, HttpResponse.BodyHandlers.ofString());
+    System.out.println(serviceResponse.body());
+  }
+}
 ```
 
 ## Como adaptar para outro serviço

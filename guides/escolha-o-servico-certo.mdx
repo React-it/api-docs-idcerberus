@@ -8,6 +8,11 @@ description: Encontre os services idCerberus mais indicados para cada caso de us
 Use esta página para sair de uma necessidade de negócio e chegar nos códigos
 `service` que devem ser usados em `POST /api/service-api`.
 
+Termos úteis para busca: CPF Receita, RFB PF, CNPJ Receita, RFB PJ, KYC PF, KYC
+PJ, OCR, extração de documento, FaceMatch, comparação facial, Liveness, prova de
+vida, score de fraude, risco financeiro, dados eleitorais, débitos ativos,
+protestos, sócios e compliance.
+
 ## Como decidir
 
 1. Identifique se a consulta é de pessoa física, pessoa jurídica, onboarding ou customer.
@@ -28,13 +33,21 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | --- | --- |
 | Consultar dados cadastrais de CPF | `service_person_data_enrichment` |
 | Verificar CPF na Receita Federal | `service_rfb_pf` |
+| Verificar CPF na Receita Federal em modo on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` |
+| Consolidar modelagem de dados da pessoa | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` |
+| Gerar resumo analítico de pessoa com IA | `SERVICE_PERSON_AI_PROMPT_OPENAI` |
 | Extrair dados de documento | `service_ocr` |
 | Comparar selfie e documento | `service_face_match` |
 | Validar prova de vida simples | `service_liveness_2d` |
+| Validar CNH no DataValid | `SERVICE_DATAVALID_CNH_SERPRO` |
 | Consultar score biométrico | `service_biometric_score` |
 | Consultar PEP | `service_pep` |
 | Consultar KYC/compliance de pessoa física | `SERVICE_PERSON_KYC_BIGDATACORP` |
+| Consultar risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` |
 | Consultar processos de pessoa física | `service_juridical_processes` |
+| Consultar dados financeiros e endereços da pessoa | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` |
+| Consultar histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` |
+| Avaliar propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` |
 | Validar CPF com telefone | `service_cpf_phone_validation` |
 | Validar CPF com endereço | `service_cpf_address_validation` |
 | Consultar dados de sites da pessoa | `SERVICE_DOMAINS_CPF` |
@@ -44,6 +57,7 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Consultar pessoas relacionadas | `SERVICE_RELATED_PEOPLE` |
 | Consultar dados cadastrais de CNPJ | `service_corporate_data_enrichment` |
 | Verificar CNPJ na Receita Federal | `service_rfb_pj` |
+| Verificar CNPJ na Receita Federal em modo on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` |
 | Consultar dados de sites da empresa | `SERVICE_DOMAINS_CNPJ` |
 | Consultar sócios ou vínculos da empresa | `service_company_relationship`, `service_first_level_partner` |
 | Consultar débitos de empresa | `SERVICE_ACTIVE_DEBT_PJ` |
@@ -55,10 +69,12 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Necessidade | Services indicados | Quando usar |
 | --- | --- | --- |
 | Confirmar dados cadastrais do CPF | `service_person_data_enrichment`, `service_rfb_pf` | Validar nome, nascimento, situação cadastral e origem Receita Federal |
+| Atualizar dados do CPF em consulta on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | Buscar o dado cadastral no momento da requisição |
 | Extrair dados de documento | `service_ocr` | Ler CNH, RG, RNE, CPF, passaporte, CRLV e outros documentos suportados |
 | Comparar selfie e documento | `service_face_match` | Validar se duas imagens pertencem à mesma pessoa |
 | Validar prova de vida | `service_liveness_2d` | Reduzir risco de foto, tela ou tentativa de fraude simples |
 | Consultar biometria governamental | `service_biometric_score` | Obter score de similaridade com bases governamentais |
+| Validar CNH no DataValid | `SERVICE_DATAVALID_CNH_SERPRO` | Apoiar validação documental com integração DataValid/Serpro |
 | Fazer análise documental completa | `service_digital_documentoscopy` | Extrair dados e combinar documento com selfie em um fluxo único |
 
 ## Montar um onboarding completo
@@ -78,7 +94,9 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Pessoa politicamente exposta | `service_pep` |
 | KYC/compliance consolidado | `SERVICE_PERSON_KYC_BIGDATACORP` |
 | Score de fraude | `service_fraud_risk_score` |
+| Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` |
 | Score de inadimplência | `service_default_risk_score` |
+| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` |
 | Débitos com governo | `service_active_debt`, `SERVICE_ACTIVE_DEBT_PF` |
 | Processos e certidões | `service_juridical_processes`, `service_nothing_record_lawsuits`, `service_criminal_record_federal`, `service_criminal_record_civil` |
 | Protestos | `service_protest_clearance_certificate` |
@@ -110,6 +128,7 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Necessidade | Services indicados |
 | --- | --- |
 | Dados cadastrais de CNPJ | `service_corporate_data_enrichment`, `service_rfb_pj` |
+| Dados cadastrais de CNPJ on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` |
 | Inscrição estadual e operação | `service_sintegra_consultation` |
 | Presença digital e domínios | `SERVICE_DOMAINS_CNPJ` |
 | Sócios e relacionamentos | `service_company_relationship`, `SERVICE_COMPANY_RFB_OWNERS`, `service_first_level_partner` |

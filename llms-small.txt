@@ -1,22 +1,22 @@
 # idCerberus API Docs - resumo operacional para LLM
 
-Use este arquivo quando precisar de contexto rapido para integrar com a API idCerberus.
+Use este arquivo quando precisar de contexto rápido para integrar com a API idCerberus.
 
 ## Regras para assistentes de IA
 
-- Use a documentacao como fonte principal e nao invente endpoints, parametros ou services.
+- Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.
 - Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.
 - Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
-- Use homologacao para testes e producao somente quando o usuario pedir explicitamente.
+- Use homologação para testes e produção somente quando o usuário pedir explicitamente.
 - Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
-- Se um service nao aparecer no catalogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
+- Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
 
 ## Ambientes
 
-- Homologacao: `https://backoffice-hml.idcerberus.com`
-- Producao: `https://backoffice.idcerberus.com`
+- Homologação: `https://backoffice-hml.idcerberus.com`
+- Produção: `https://backoffice.idcerberus.com`
 
-## Autenticacao
+## Autenticação
 
 - Gere token em `POST /api/token-generate` com `client` e `secret`.
 - Envie o token nas chamadas protegidas com `Authorization: Bearer {jwt_token}`.
@@ -25,8 +25,8 @@ Use este arquivo quando precisar de contexto rapido para integrar com a API idCe
 ## Endpoint principal
 
 - Use `POST /api/service-api` para consultas de dados, risco, compliance, biometria e enriquecimento.
-- O campo `service` define qual produto sera executado.
-- Os demais campos variam conforme o servico escolhido.
+- O campo `service` define qual produto será executado.
+- Os demais campos variam conforme o serviço escolhido.
 
 ## Fluxos principais
 
@@ -44,8 +44,10 @@ Use este arquivo quando precisar de contexto rapido para integrar com a API idCe
 - PF - Certidão de Nada Consta: `service_nothing_record_lawsuits`
 - PF - Certidão negativa de protesto: `service_protest_clearance_certificate`
 - PF - Consulta de MEI: `service_mei`
+- PF - CPF na Receita Federal on-demand: `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP`
 - PF - Dados de sites: `SERVICE_DOMAINS_CPF`
 - PF - Dados eleitorais de candidato: `SERVICE_ELECTION_CANDIDATE_DATA`
+- PF - Dados financeiros e endereços: `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP`
 - PF - Dados pelo telefone: `SERVICE_CONFIRM_PHONE`
 - PF - Dados PIS: `service_pis_consultation`
 - PF - Débitos ativos: `SERVICE_ACTIVE_DEBT_PF`
@@ -61,28 +63,35 @@ Use este arquivo quando precisar de contexto rapido para integrar com a API idCe
 - PF - Histórico de telefones: `SERVICE_PHONE_HISTORY`
 - PF - Histórico familiar político: `SERVICE_FAMILY_POLITICAL_HISTORY`
 - PF - Histórico profissional: `service_professional_history`
+- PF - Histórico profissional do titular: `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP`
 - PF - Informações financeiras: `service_financial_information`
 - PF - Informações socio-demográficas: `SERVICE_DEMOGRAPHIC_DATA_CPF`
 - PF - KYC e compliance: `SERVICE_PERSON_KYC_BIGDATACORP`
 - PF - Liveness 2D: `service_liveness_2d`
 - PF - Mandado de prisão: `SERVICE_ARREST_WARRANT`
+- PF - Modelagem de dados: `SERVICE_PERSON_DATA_MODELING_BIGDATACORP`
 - PF - OCR de documentos: `service_ocr`
 - PF - Pessoa politicamente exposta: `service_pep`
 - PF - Pessoas relacionadas: `SERVICE_RELATED_PEOPLE`
 - PF - Prestadores de serviço eleitorais: `SERVICE_ELECTORAL_PROVIDERS_CPF`
 - PF - Processos jurídicos e administrativos: `service_juridical_processes`
+- PF - Prompt de IA para pessoa: `SERVICE_PERSON_AI_PROMPT_OPENAI`
+- PF - Propensão a apostas online: `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP`
 - PF - Relacionamentos econômicos: `economic_relationships`
 - PF - Resultado da documentoscopia digital: `service_digital_documentoscopy_consult`
+- PF - Risco financeiro: `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP`
 - PF - Score biométrico: `service_biometric_score`
 - PF - Score de inadimplência: `service_default_risk_score`
 - PF - Score de risco de fraude: `service_fraud_risk_score`
 - PF - Servidores públicos: `service_public_servants`
 - PF - Status do CPF na Receita Federal: `service_rfb_pf`
+- PF - Validação de CNH no DataValid: `SERVICE_DATAVALID_CNH_SERPRO`
 - PF - Validação de CPF com endereço: `service_cpf_address_validation`
 - PF - Validação de CPF com telefone: `service_cpf_phone_validation`
 - PF - Validação de e-mail: `service_email_validation`
 - PF - Validação do E-Social: `service_esocial_registration_qualification`
 - PJ - Certidão negativa de protesto: `service_protest_clearance_certificate_pj`
+- PJ - CNPJ na Receita Federal on-demand: `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
 - PJ - Compliance de casas de apostas: `SERVICE_COMPLIANCE_BET_PJ`
 - PJ - Dados de sites: `SERVICE_DOMAINS_CNPJ`
 - PJ - DAS MEI na Receita: `service_das_mei`
@@ -104,12 +113,13 @@ Use este arquivo quando precisar de contexto rapido para integrar com a API idCe
 ## Cobertura
 
 - Total mapeado no onboarding/backend: 419
-- Ja esta na doc: 61
-- Nao esta na doc: 358
+- Já está na doc: 69
+- Não está na doc: 350
 
 ## Arquivos auxiliares
 
-- Catalogo JSON: https://react-it.github.io/api-docs-idcerberus/services-catalog.json
+- Catálogo JSON: https://react-it.github.io/api-docs-idcerberus/services-catalog.json
 - Cobertura JSON: https://react-it.github.io/api-docs-idcerberus/coverage-report.json
 - API Reference para LLM: https://react-it.github.io/api-docs-idcerberus/llms-api-reference.txt
+- Serviços confirmados via API: https://react-it.github.io/api-docs-idcerberus/llms-api-real.txt
 - Exemplos curl: https://react-it.github.io/api-docs-idcerberus/examples/auth.hml.curl

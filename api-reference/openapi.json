@@ -17,6 +17,23 @@ info:
     Nesse endpoint, a rota permanece a mesma e o produto executado é definido
     pelo campo `service` enviado no body.
 
+    Na prática, o endpoint central funciona como um executor de produtos:
+    o método, a URL e os headers são iguais; o que muda é o valor de `service`
+    e os campos obrigatórios do produto escolhido.
+
+    - Serviços de pessoa física normalmente usam `cpf`.
+    - Serviços de pessoa jurídica normalmente usam `cnpj`.
+    - Serviços de biometria e documentos usam imagens em base64 ou URLs.
+    - Alguns serviços exigem campos complementares, como `birthDate`, `uf`,
+      `rg`, `phone`, `email`, `image1` ou `image2`.
+
+    Se estiver em dúvida sobre qual `service` usar, consulte os guias
+    "Escolha o serviço certo", "Matriz de serviços" e "Índice de services".
+
+    Termos úteis para busca: CPF Receita, RFB PF, CNPJ Receita, RFB PJ, KYC PF,
+    KYC PJ, OCR, FaceMatch, Liveness, score de fraude, risco financeiro,
+    dados eleitorais, débitos ativos e protestos.
+
 servers:
   - url: https://backoffice-hml.idcerberus.com
     description: Ambiente de homologação
@@ -311,6 +328,21 @@ paths:
                   service: service_rfb_pf
                   cpf: cpf
                   dataDeNascimento: yyyy-MM-dd (opcional)
+              statusCpfReceitaFederalOnDemand:
+                summary: PF - CPF na Receita Federal on-demand
+                value:
+                  service: SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP
+                  cpf: cpf
+              modelagemDadosPessoa:
+                summary: PF - Modelagem de dados
+                value:
+                  service: SERVICE_PERSON_DATA_MODELING_BIGDATACORP
+                  cpf: cpf
+              promptIaPessoa:
+                summary: PF - Prompt de IA para pessoa
+                value:
+                  service: SERVICE_PERSON_AI_PROMPT_OPENAI
+                  cpf: cpf
               ocrDocumentos:
                 summary: PF - OCR de documentos
                 value:
@@ -346,6 +378,12 @@ paths:
                   service: service_fraud_risk_score
                   cpf: cpf
                   factor: minRisk or minattrition
+              riscoFinanceiro:
+                summary: PF - Risco financeiro
+                value:
+                  service: SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (opcional)
               scoreInadimplencia:
                 summary: PF - Score de inadimplência
                 value:
@@ -357,6 +395,12 @@ paths:
                   service: service_biometric_score
                   cpf: cpf
                   image1: "{base64Image}"
+              validacaoCnhDatavalid:
+                summary: PF - Validação de CNH no DataValid
+                value:
+                  service: SERVICE_DATAVALID_CNH_SERPRO
+                  cpf: cpf
+                  image1: base64
               nadaConstaAcoesJudiciais:
                 summary: PF - Certidão de Nada Consta
                 value:
@@ -472,6 +516,23 @@ paths:
                 value:
                   service: service_professional_history
                   cpf: cpf
+              historicoProfissionalTitular:
+                summary: PF - Histórico profissional do titular
+                value:
+                  service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (opcional)
+              dadosFinanceirosEnderecosPf:
+                summary: PF - Dados financeiros e endereços
+                value:
+                  service: SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (opcional)
+              propensaoApostasOnline:
+                summary: PF - Propensão a apostas online
+                value:
+                  service: SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP
+                  cpf: cpf
               dadosPeloTelefone:
                 summary: PF - Dados pelo telefone
                 value:
@@ -546,6 +607,11 @@ paths:
                 summary: PJ - Status do CNPJ na Receita Federal
                 value:
                   service: service_rfb_pj
+                  cnpj: cnpj
+              statusCnpjReceitaFederalOnDemand:
+                summary: PJ - CNPJ na Receita Federal on-demand
+                value:
+                  service: SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP
                   cnpj: cnpj
               relacionamentosEmpresa:
                 summary: PJ - Relacionamentos da empresa
@@ -683,6 +749,40 @@ paths:
                       code: 200
                       message: Consulta de API Realizada com Sucesso
                     externalId: 1782ea0a-8663-41a8-b156-688527f5363b
+                statusCpfReceitaFederalOnDemand:
+                  summary: PF - CPF na Receita Federal on-demand
+                  value:
+                    result:
+                      cpf: "123414124"
+                      status: REGULAR
+                      name: NOME EXEMPLO
+                      birthDate: "1994-05-21T00:00"
+                      dead: false
+                      origin: RECEITA FEDERAL
+                      age: 30
+                    status:
+                      code: 200
+                      message: Success
+                modelagemDadosPessoa:
+                  summary: PF - Modelagem de dados
+                  value:
+                    result:
+                      modelData: Dados de modelagem consolidados para o CPF consultado.
+                    results:
+                      - modelData: Dados de modelagem consolidados para o CPF consultado.
+                    status:
+                      code: 200
+                      message: Success
+                promptIaPessoa:
+                  summary: PF - Prompt de IA para pessoa
+                  value:
+                    result:
+                      modelData: Resumo analítico gerado a partir dos dados consolidados da pessoa consultada.
+                    results:
+                      - modelData: Resumo analítico gerado a partir dos dados consolidados da pessoa consultada.
+                    status:
+                      code: 200
+                      message: Success
                 ocrDocumentos:
                   summary: PF - OCR de documentos
                   value:
@@ -755,6 +855,16 @@ paths:
                       score: "8.0691"
                       factor: MEDIUM RISK
                       message: Success calculating score
+                    status:
+                      code: 200
+                      message: Success
+                riscoFinanceiro:
+                  summary: PF - Risco financeiro
+                  value:
+                    result:
+                      cpf: "80246074507"
+                      score: "650"
+                      message: "Score: 650 | Análise: RISCO MÉDIO"
                     status:
                       code: 200
                       message: Success
@@ -956,6 +1066,60 @@ paths:
                       cpf: "11111111111"
                       name: FULANO DA SILVA
                       phone: "+5561123456789"
+                    status:
+                      code: 200
+                      message: Success
+                historicoProfissionalTitular:
+                  summary: PF - Histórico profissional do titular
+                  value:
+                    result:
+                      professionalHistory:
+                        - cnpj: "05731652000209"
+                          companyName: EMPRESA EXEMPLO LTDA
+                          classification: ENTREPRENEUR | BUSINESS OWNER
+                          sector: PRIVATE - 8599604 - TREINAMENTO EM DESENVOLVIMENTO PROFISSIONAL E GERENCIAL
+                          startDate: "2004-02-10"
+                          endDate: "2007-12-23"
+                    status:
+                      code: 200
+                      message: Success
+                dadosFinanceirosEnderecosPf:
+                  summary: PF - Dados financeiros e endereços
+                  value:
+                    result:
+                      cpf: "80246074507"
+                      name: NOME EXEMPLO
+                      status: REGULAR
+                      origin: RECEITA FEDERAL
+                      monthlyIncomeEstimate: "4 A 10 SM"
+                      equityEstimate: "100000.00"
+                      addresses:
+                        - zipcode: "70000000"
+                          country: BRASIL
+                          address: QUADRA EXEMPLO
+                          city: BRASILIA
+                          addressType: HOME
+                          neighborhood: ASA NORTE
+                          state: DF
+                      personalIncomeTaxReturns:
+                        - year: "2023"
+                          situation: CREDITADA
+                          bankAgency: BANCO EXEMPLO
+                    status:
+                      code: 200
+                      message: Success
+                propensaoApostasOnline:
+                  summary: PF - Propensão a apostas online
+                  value:
+                    result:
+                      propensityScore: 72
+                      totalPassages: 12
+                      firstPassageDate: "2024-01-10T00:00:00"
+                      lastPassageDate: "2024-09-18T00:00:00"
+                      last30DaysPassages: 1
+                      last90DaysPassages: 3
+                      last180DaysPassages: 7
+                      last365DaysPassages: 12
                     status:
                       code: 200
                       message: Success
@@ -1294,6 +1458,14 @@ paths:
                     status:
                       code: 200
                       message: Success
+                statusCnpjReceitaFederalOnDemand:
+                  summary: PJ - CNPJ na Receita Federal on-demand
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                    status:
+                      code: 200
+                      message: Success
                 relacionamentosEmpresa:
                   summary: PJ - Relacionamentos da empresa
                   value:
@@ -1314,6 +1486,14 @@ paths:
                           origin: RECEITA FEDERAL
                           relationshipStartDate: "2021-03-01"
                           relationshipEndDate: "2021-03-01"
+                    status:
+                      code: 200
+                      message: Success
+                validacaoCnhDatavalid:
+                  summary: PF - Validação de CNH no DataValid
+                  value:
+                    result:
+                      cpf: "73583960149"
                     status:
                       code: 200
                       message: Success

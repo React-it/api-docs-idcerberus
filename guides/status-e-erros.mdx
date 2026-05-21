@@ -52,6 +52,118 @@ integrações, leia os dois.
 | Fonte externa indisponível | Consulta depende de órgão, base ou parceiro externo | Faça retry controlado ou tente novamente depois |
 | URL de ambiente errada | Token de HML usado em produção, ou o contrário | Confira se a URL base e o token são do mesmo ambiente |
 
+## Exemplos de erro
+
+### Token ausente ou inválido
+
+Quando o header `Authorization` não é enviado, está expirado ou pertence a outro
+ambiente, a API pode retornar erro de autenticação.
+
+```http
+HTTP/1.1 401 Unauthorized
+```
+
+Como corrigir:
+
+1. Gere um novo token em `POST /api/token-generate`.
+2. Confirme se o token foi gerado no mesmo ambiente da chamada.
+3. Envie o header no formato abaixo.
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+### Campo `service` ausente
+
+O endpoint `POST /api/service-api` precisa do campo `service` para saber qual
+produto executar.
+
+Payload incorreto:
+
+```json
+{
+  "cpf": "cpf"
+}
+```
+
+Payload correto:
+
+```json
+{
+  "service": "service_person_data_enrichment",
+  "cpf": "cpf"
+}
+```
+
+### Documento obrigatório ausente
+
+Se o serviço exige `cpf`, `cnpj`, imagem ou outro campo obrigatório, envie o
+campo correspondente no body.
+
+Exemplo de retorno:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CPF não encontrado."
+  }
+}
+```
+
+Como corrigir:
+
+```json
+{
+  "service": "service_rfb_pf",
+  "cpf": "cpf"
+}
+```
+
+### Produto sem permissão ou não habilitado
+
+Se a credencial não tiver acesso ao produto, a chamada pode falhar mesmo com
+token válido.
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Serviço não disponível para este cliente."
+  }
+}
+```
+
+Como corrigir:
+
+- confirme se o `service` está escrito exatamente como na documentação;
+- valide se o produto está liberado para a conta;
+- confirme se está chamando o ambiente correto.
+
+### Fonte externa indisponível
+
+Algumas consultas dependem de bases externas. Quando a fonte falha ou demora, a
+API pode retornar erro técnico.
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Failed to fetch information"
+  }
+}
+```
+
+Como tratar:
+
+- registre o `externalId`, quando existir;
+- tente novamente depois com retry limitado;
+- não faça loop infinito de chamadas;
+- se o erro persistir, encaminhe o payload e o horário da tentativa para suporte.
+
 ## Negativo não é erro técnico
 
 Alguns serviços retornam uma consulta negativa como sucesso técnico. Exemplos:
