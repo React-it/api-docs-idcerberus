@@ -261,7 +261,7 @@ function generateCoverage(docServices) {
   const docSet = new Set(docServices.map((service) => service.toUpperCase()));
 
   function add(alias, name = '', source = '') {
-    if (!alias || !/^SERVICE_|^service_|^economic_relationships$/i.test(alias)) return;
+    if (!alias || !/^(SERVICE_|SEVICE_|service_|economic_relationships$)/i.test(alias)) return;
     const key = alias.toUpperCase();
     if (!services.has(key)) {
       services.set(key, {
@@ -304,7 +304,7 @@ function generateCoverage(docServices) {
     for (const file of walkFiles(scanRoot)) {
       if (!/\.(java|xml|jdl|csv)$/i.test(file)) continue;
       const relative = file.replaceAll(path.sep, '/').replace(onboardingRoot, 'onboarding');
-      const aliases = read(file).match(/SERVICE_[A-Z0-9_]+/g) || [];
+      const aliases = read(file).match(/(?:SERVICE|SEVICE)_[A-Z0-9_]+/g) || [];
       for (const alias of aliases) add(alias, '', relative);
     }
   }

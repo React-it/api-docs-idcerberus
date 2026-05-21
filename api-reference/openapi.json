@@ -2067,6 +2067,10 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/InvalidService'
+        '500':
+          $ref: '#/components/responses/ExternalSourceError'
 
   /api/customer:
     get:
@@ -2193,6 +2197,38 @@ components:
             status:
               code: 403
               message: Forbidden
+    InvalidService:
+      description: Serviço inexistente, não habilitado ou informado com grafia incorreta.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            serviceAusente:
+              summary: Campo service ausente
+              value:
+                result: {}
+                status:
+                  code: 400
+                  message: Campo service é obrigatório.
+            serviceInvalido:
+              summary: Service não reconhecido
+              value:
+                result: {}
+                status:
+                  code: 400
+                  message: Serviço não disponível para este cliente.
+    ExternalSourceError:
+      description: Falha temporária ou técnica na fonte externa consultada.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            result: {}
+            status:
+              code: 500
+              message: Failed to fetch information
 
   schemas:
     TokenRequest:

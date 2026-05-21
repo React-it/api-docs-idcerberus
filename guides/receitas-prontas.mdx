@@ -1,0 +1,114 @@
+---
+title: Receitas prontas
+description: Combinações recomendadas de serviços para fluxos comuns de integração
+---
+
+# Receitas prontas
+
+Use estas receitas quando precisar montar um fluxo completo sem escolher serviço
+por serviço do zero. Todas as chamadas de consulta usam `POST /api/service-api`
+e exigem `Authorization: Bearer {jwt_token}`.
+
+## Validar CPF simples
+
+Objetivo: confirmar dados cadastrais básicos antes de seguir com cadastro ou
+onboarding.
+
+| Etapa | Serviço | Por que usar |
+| --- | --- | --- |
+| 1 | `service_rfb_pf` | Confirma situação cadastral, nome, nascimento e óbito quando disponível |
+| 2 | `service_person_data_enrichment` | Complementa dados cadastrais e indicadores do CPF |
+
+Exemplo:
+
+```json
+{
+  "service": "service_rfb_pf",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}
+```
+
+## Onboarding com documento e selfie
+
+Objetivo: ler documento, comparar rosto e reduzir fraude de identidade.
+
+| Etapa | Serviço | Por que usar |
+| --- | --- | --- |
+| 1 | `service_ocr` | Extrai dados do documento enviado |
+| 2 | `service_face_match` | Compara selfie e documento |
+| 3 | `service_liveness_2d` | Verifica se a selfie aparenta ser de pessoa real |
+| 4 | `service_digital_documentoscopy` | Quando o fluxo exigir análise documental mais completa |
+
+Exemplo de FaceMatch:
+
+```json
+{
+  "service": "service_face_match",
+  "image1": "base64",
+  "image2": "base64"
+}
+```
+
+## KYC de pessoa física
+
+Objetivo: avaliar exposição, restrições e sinais de risco associados a uma
+pessoa.
+
+| Etapa | Serviço | Por que usar |
+| --- | --- | --- |
+| 1 | `SERVICE_PERSON_KYC_BIGDATACORP` | Consolida PEP, sanções e histórico de compliance |
+| 2 | `service_pep` | Consulta PEP de forma direta |
+| 3 | `service_juridical_processes` | Consulta processos jurídicos e administrativos |
+| 4 | `service_criminal_record_federal` | Consulta antecedentes criminais federais |
+| 5 | `service_protest_clearance_certificate` | Consulta protestos |
+| 6 | `SERVICE_ACTIVE_DEBT_PF` | Consulta débitos ativos |
+
+## KYC de pessoa jurídica
+
+Objetivo: avaliar empresa, sócios, vínculos, débitos e compliance.
+
+| Etapa | Serviço | Por que usar |
+| --- | --- | --- |
+| 1 | `service_corporate_data_enrichment` | Consulta dados cadastrais completos da empresa |
+| 2 | `service_rfb_pj` | Confirma status do CNPJ na Receita Federal |
+| 3 | `service_company_relationship` | Mapeia relacionamentos da empresa |
+| 4 | `SERVICE_COMPANY_RFB_OWNERS` | Consulta sócios na Receita Federal |
+| 5 | `service_company_kyc_owners` | Avalia KYC e compliance dos sócios |
+| 6 | `service_juridical_processes_pj_owners` | Consulta processos dos sócios |
+| 7 | `SERVICE_ACTIVE_DEBT_PJ` | Consulta débitos ativos da empresa |
+| 8 | `service_protest_clearance_certificate_pj` | Consulta protestos PJ |
+
+## Análise eleitoral
+
+Objetivo: entender envolvimento político, candidaturas, doações e vínculos
+familiares.
+
+| Etapa | Serviço | Por que usar |
+| --- | --- | --- |
+| 1 | `SERVICE_ELECTION_CANDIDATE_DATA` | Consulta dados eleitorais de candidato |
+| 2 | `SERVICE_ELECTORAL_DONORS_CPF` | Consulta doações eleitorais PF |
+| 3 | `SERVICE_ELECTORAL_PROVIDERS_CPF` | Consulta prestação de serviços eleitorais PF |
+| 4 | `SERVICE_POLITICAL_INVOLVEMENT` | Consolida envolvimento político |
+| 5 | `SERVICE_FAMILY_POLITICAL_HISTORY` | Consulta histórico político familiar |
+
+## Validação de contato e residência
+
+Objetivo: reduzir erro cadastral e confirmar associação entre pessoa, telefone,
+e-mail e endereço.
+
+| Etapa | Serviço | Por que usar |
+| --- | --- | --- |
+| 1 | `service_email_validation` | Valida e normaliza e-mail |
+| 2 | `service_cpf_phone_validation` | Confirma associação entre CPF e telefone |
+| 3 | `SERVICE_CONFIRM_PHONE` | Busca dados pelo telefone |
+| 4 | `service_cpf_address_validation` | Confirma associação entre CPF e endereço |
+| 5 | `service_address` | Lista endereços associados ao CPF |
+
+## Como adaptar
+
+1. Comece pela receita mais próxima do seu caso.
+2. Remova etapas que não sejam necessárias para sua regra de negócio.
+3. Confirme permissões dos serviços antes de usar em produção.
+4. Leia `status.code`, `status.message` e `result` em cada chamada.
+5. Registre `externalId` quando ele vier no retorno.
