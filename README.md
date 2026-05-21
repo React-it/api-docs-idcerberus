@@ -99,6 +99,11 @@ No deploy, os arquivos devem ficar disponiveis em:
 - `https://react-it.github.io/api-docs-idcerberus/services-catalog.json`
 - `https://react-it.github.io/api-docs-idcerberus/examples/auth.hml.curl`
 
+Nas paginas publicas, os links para esses arquivos devem usar a URL completa com
+`/api-docs-idcerberus/`. Links absolutos iniciados apenas com `/llms.txt`,
+`/services-catalog.json` ou `/examples/...` podem apontar para a raiz da
+organizacao no GitHub Pages e retornar 404.
+
 ## Estrutura
 
 ```txt
@@ -143,6 +148,7 @@ api-docs-idcerberus/
 - `api-reference/openapi.json`: definicao OpenAPI usada pela aba API Reference.
 - `api-reference/boas-vindas.mdx`: introducao da API Reference.
 - `guides/`: guias por fluxo, categoria de servico e catalogo tecnico.
+- `guides/llms.mdx`: pagina publica com links diretos para arquivos de contexto.
 - `guides/indice-de-services.mdx`: indice navegavel dos services documentados.
 - `guides/exemplos-por-ambiente.mdx`: chamadas equivalentes de HML e producao.
 - `guides/erros-comuns-integracao.mdx`: diagnostico de falhas comuns.
