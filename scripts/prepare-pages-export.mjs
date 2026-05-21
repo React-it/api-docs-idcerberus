@@ -155,10 +155,7 @@ for (const staticFile of [
   'llms-small.txt',
   'llms-full.txt',
   'llms-api-reference.txt',
-  'llms-services-coverage.txt',
   'services-catalog.json',
-  'coverage-report.json',
-  'mapeamento-servicos-doc.txt',
 ]) {
   try {
     await copyFile(path.join(process.cwd(), staticFile), path.join(distDir, staticFile));

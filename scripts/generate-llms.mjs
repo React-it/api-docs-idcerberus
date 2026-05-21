@@ -5,7 +5,6 @@ const root = process.cwd();
 const siteUrl = 'https://react-it.github.io/api-docs-idcerberus';
 const docsJsonPath = path.join(root, 'docs.json');
 const openApiPath = path.join(root, 'api-reference', 'openapi.json');
-const onboardingRoot = 'C:/dev/onboarding';
 
 function read(filePath) {
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
@@ -256,123 +255,6 @@ function extractOpenApiSummary(content) {
   };
 }
 
-function generateCoverage(docServices) {
-  const services = new Map();
-  const docSet = new Set(docServices.map((service) => service.toUpperCase()));
-
-  function add(alias, name = '', source = '') {
-    if (!alias || !/^(SERVICE_|SEVICE_|service_|economic_relationships$)/i.test(alias)) return;
-    const key = alias.toUpperCase();
-    if (!services.has(key)) {
-      services.set(key, {
-        alias,
-        name: name || '',
-        names: new Set(),
-        sources: new Set(),
-        occurrences: 0,
-      });
-    }
-    services.get(key).occurrences++;
-    if (name) services.get(key).names.add(name);
-    if (source) services.get(key).sources.add(source);
-  }
-
-  for (const service of docServices) add(service, '', 'doc-local-openapi');
-
-  const serviceOnboarding = path.join(onboardingRoot, 'src/main/resources/config/liquibase/fake-data/service_onboarding.csv');
-  const serviceRows = csvParse(read(serviceOnboarding), ';');
-  const serviceHeader = serviceRows.shift() || [];
-  const serviceIndex = Object.fromEntries(serviceHeader.map((header, index) => [header, index]));
-  for (const row of serviceRows) add(row[serviceIndex.alias], row[serviceIndex.name], 'onboarding-service_onboarding.csv');
-
-  const bigDataCorp = path.join(onboardingRoot, 'src/main/resources/bigdatacorp_services.csv');
-  const bigDataRows = csvParse(read(bigDataCorp), ',');
-  const bigDataHeader = bigDataRows.shift() || [];
-  const bigDataIndex = Object.fromEntries(bigDataHeader.map((header, index) => [header, index]));
-  for (const row of bigDataRows) add(row[bigDataIndex.alias], row[bigDataIndex.name], 'onboarding-bigdatacorp_services.csv');
-
-  const scanRoots = [
-    path.join(onboardingRoot, 'src/main/java/com/reactit/onboarding/domain/enumeration'),
-    path.join(onboardingRoot, 'src/main/java/com/reactit/onboarding/service/events/api'),
-    path.join(onboardingRoot, 'src/main/java/com/reactit/onboarding/service/events/onboarding'),
-    path.join(onboardingRoot, 'src/main/resources/config/liquibase/changelog'),
-    path.join(onboardingRoot, 'src/main/resources/config/liquibase/fake-data'),
-    path.join(onboardingRoot, 'jdl'),
-  ];
-
-  for (const scanRoot of scanRoots) {
-    for (const file of walkFiles(scanRoot)) {
-      if (!/\.(java|xml|jdl|csv)$/i.test(file)) continue;
-      const relative = file.replaceAll(path.sep, '/').replace(onboardingRoot, 'onboarding');
-      const aliases = read(file).match(/(?:SERVICE|SEVICE)_[A-Z0-9_]+/g) || [];
-      for (const alias of aliases) add(alias, '', relative);
-    }
-  }
-
-  const all = [...services.values()].sort((a, b) => a.alias.localeCompare(b.alias));
-  const inDoc = all.filter((item) => docSet.has(item.alias.toUpperCase()));
-  const notInDoc = all.filter((item) => !docSet.has(item.alias.toUpperCase()));
-  const duplicateAliases = all.filter((item) => item.occurrences > 1);
-  const aliasesWithMultipleNames = all.filter((item) => item.names.size > 1);
-  const documentedNotFound = docServices
-    .filter((service) => !services.has(service.toUpperCase()))
-    .sort((a, b) => a.localeCompare(b));
-  const byCategory = {};
-
-  for (const item of all) {
-    const category = inferCoverageCategory(item.alias, item.name);
-    if (!byCategory[category]) {
-      byCategory[category] = {
-        total: 0,
-        documented: 0,
-        missing: 0,
-      };
-    }
-    byCategory[category].total++;
-    if (docSet.has(item.alias.toUpperCase())) byCategory[category].documented++;
-    else byCategory[category].missing++;
-  }
-
-  const lines = [];
-  lines.push('MAPEAMENTO DE COBERTURA DE SERVICES');
-  lines.push('');
-  lines.push(`Total de services/aliases encontrados: ${all.length}`);
-  lines.push(`Já está na doc: ${inDoc.length}`);
-  lines.push(`Não está na doc: ${notInDoc.length}`);
-  lines.push('');
-  lines.push('JÁ ESTÁ NA DOC');
-  lines.push('');
-  for (const item of inDoc) lines.push(`- ${item.alias}${item.name ? ` - ${item.name}` : ''}`);
-  lines.push('');
-  lines.push('NÃO ESTÁ NA DOC');
-  lines.push('');
-  for (const item of notInDoc) lines.push(`- ${item.alias}${item.name ? ` - ${item.name}` : ''}`);
-
-  const content = lines.join('\n');
-  write(path.join(root, 'mapeamento-servicos-doc.txt'), content);
-
-  return {
-    all,
-    inDoc,
-    notInDoc,
-    duplicateAliases,
-    aliasesWithMultipleNames,
-    documentedNotFound,
-    byCategory,
-    content,
-  };
-}
-
-function inferCoverageCategory(alias, name = '') {
-  const haystack = `${alias} ${name}`.toUpperCase();
-  if (/_PJ|CNPJ|COMPANY|CORPORATE|SINTEGRA|DAS_MEI|OWNERS|PARTNER/.test(haystack)) return 'Pessoa Jurídica';
-  if (/PERSON|RELATED_PEOPLE|PUBLIC_SERVANTS|PROTEST_CLEARANCE_CERTIFICATE|_PF|CPF|PEP|ELECTION|ELECTORAL|POLITICAL|ARREST|MEI|PIS|ESOCIAL|FRAUD|DEFAULT|BIOMETRIC|NOTHING_RECORD/.test(haystack)) return 'Pessoa Física';
-  if (/ONBOARDING|LIVENESS|DOCUMENTOSCOPY|OCR|FACE|SELFIE|SAVE_IMAGE/.test(haystack)) return 'Onboarding e Biometria';
-  if (/CUSTOMER/.test(haystack)) return 'Customers';
-  if (/ADDRESS|PHONE|EMAIL|PIS|CPF|PEP|ELECTION|POLITICAL|DEBT|RFB|CRIMINAL|PROFESSIONAL|JURIDICAL|FINANCIAL|MEDIA/.test(haystack)) return 'Pessoa Física';
-  return 'Outros';
-}
-
 function serviceCategory(summary, service) {
   if (/^PJ\s+-/i.test(summary)) return 'Pessoa Jurídica';
   if (/^PF\s+-/i.test(summary)) return 'Pessoa Física';
@@ -391,122 +273,17 @@ function requestFieldsFromYaml(requestBody) {
   return fields;
 }
 
-const serviceApiPublicAliasMap = new Map(Object.entries({
-  SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP: 'service_person_data_enrichment',
-  SERVICE_RFB_PF_BIGDATACORP: 'service_rfb_pf',
-  SERVICE_OCR_BIGDATACORP: 'service_ocr',
-  SERVICE_FACE_MATCH_BIGDATACORP: 'service_face_match',
-  SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP: 'service_default_risk_score',
-  SERVICE_FRAUD_RISK_SCORE_BIGDATACORP: 'service_fraud_risk_score',
-  SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP: 'service_criminal_record_civil',
-  SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP: 'service_criminal_record_federal',
-  SERVICE_ACTIVE_DEBT_PF_BIGDATACORP: 'SERVICE_ACTIVE_DEBT_PF',
-  SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP: 'SERVICE_ACTIVE_DEBT_PJ',
-  SERVICE_FINANCIAL_INFORMATION_BIGDATACORP: 'service_financial_information',
-  SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP: 'service_cpf_address_validation',
-  SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP: 'service_cpf_phone_validation',
-  SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP: 'service_first_level_partner',
-  SERVICE_EMAIL_VALIDATION_BIGDATACORP: 'service_email_validation',
-  SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP: 'service_esocial_registration_qualification',
-  SERVICE_PIS_CONSULTATION_BIGDATACORP: 'service_pis_consultation',
-  SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP: 'service_sintegra_consultation',
-  SERVICE_RELATED_PEOPLE_BIGDATACORP: 'SERVICE_RELATED_PEOPLE',
-  SERVICE_PHONE_HISTORY_BIGDATACORP: 'SERVICE_PHONE_HISTORY',
-  SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP: 'service_company_relationship',
-  SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP: 'SERVICE_POLITICAL_INVOLVEMENT',
-  SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP: 'SERVICE_POLITICAL_INVOLVEMENT',
-  SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP: 'SERVICE_ELECTORAL_DONORS_CNPJ',
-  SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP: 'SERVICE_ELECTORAL_DONORS_CPF',
-  SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP: 'SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ',
-  SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP: 'SERVICE_ELECTORAL_PROVIDERS_CNPJ',
-  SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP: 'SERVICE_ELECTORAL_PROVIDERS_CPF',
-  SERVICE_MEI_BIGDATACORP: 'service_mei',
-  SERVICE_JURIDICAL_PROCESSES_BIGDATACORP: 'service_juridical_processes',
-  SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP: 'service_juridical_processes_pj_owners',
-  SERVICE_ADDRESS_BIGDATACORP: 'service_address',
-  SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP: 'SERVICE_ADDRESSES_EXTENDED_CNPJ',
-  SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP: 'service_professional_history',
-  SERVICE_PUBLIC_SERVANTS_BIGDATACORP: 'service_public_servants',
-  SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP: 'economic_relationships',
-  SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP: 'service_company_kyc_owners',
-  SERVICE_PERSON_KYC_BIGDATACORP: 'SERVICE_PERSON_KYC_BIGDATACORP',
-  SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP: 'service_nothing_record_lawsuits',
-  SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PF',
-  SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PJ',
-  SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP: 'SERVICE_COMPLIANCE_BET_PJ',
-  SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP: 'service_corporate_data_enrichment',
-  SERVICE_RFB_PJ_BIGDATACORP: 'service_rfb_pj',
-  SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP: 'SERVICE_COMPANY_RFB_OWNERS',
-  SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP: 'SERVICE_ELECTION_CANDIDATE_DATA',
-  SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP: 'SERVICE_FAMILY_POLITICAL_HISTORY',
-  SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP: 'service_protest_clearance_certificate',
-  SERVICE_DAS_MEI_INFOSIMPLES: 'service_das_mei',
-  SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX: 'service_digital_documentoscopy',
-  SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX: 'service_digital_documentoscopy_consult',
-  SERVICE_FACE_MATCH_AWS: 'service_face_match',
-  SERVICE_LIVENESS_2D_FACETEC: 'service_liveness_2d',
-  SERVICE_CPF_PHONE_VALIDATION_FACETEC: 'service_cpf_phone_validation',
-  SERVICE_CONFIRM_PHONE_FACETEC: 'SERVICE_CONFIRM_PHONE',
-  SERVICE_PROTEST_PF_INFOSIMPLES: 'service_protest_clearance_certificate',
-  SERVICE_PROTEST_PF_NETRIN: 'service_protest_clearance_certificate',
-  SERVICE_PROTEST_PJ_INFOSIMPLES: 'service_protest_clearance_certificate_pj',
-  SERVICE_PROTEST_PJ_NETRIN: 'service_protest_clearance_certificate_pj',
-  SERVICE_PEP: 'service_pep',
-}));
-
-function buildServicesCatalog(openApiServices, coverage) {
-  const coverageByAlias = new Map(
-    coverage.all.map((item) => [item.alias.toUpperCase(), item]),
-  );
-  const implementedByPublicAlias = new Map();
-  for (const [implemented, documented] of serviceApiPublicAliasMap) {
-    implementedByPublicAlias.set(documented.toUpperCase(), implemented);
-  }
-
+function buildServicesCatalog(openApiServices) {
   return openApiServices
     .slice()
     .sort((a, b) => a.summary.localeCompare(b.summary))
     .map((item) => {
-      const upperService = item.service.toUpperCase();
-      let coverageItem = coverageByAlias.get(upperService);
-      let implementedAlias = item.service;
-      let matchedByPublicAlias = false;
-      if (implementedByPublicAlias.has(upperService)) {
-        implementedAlias = implementedByPublicAlias.get(upperService);
-        coverageItem = coverageByAlias.get(implementedAlias.toUpperCase()) || coverageItem;
-        matchedByPublicAlias = Boolean(coverageByAlias.get(implementedAlias.toUpperCase()));
-      }
-      if (!matchedByPublicAlias) {
-        for (const candidate of coverage.all) {
-          if (candidate.alias.toUpperCase() === upperService) {
-            coverageItem = candidate;
-            implementedAlias = candidate.alias;
-            break;
-          }
-        }
-      }
-
-      if (!coverageItem) {
-        for (const candidate of coverage.all) {
-          const sources = [...candidate.sources].join(' ');
-          const aliases = [candidate.alias, candidate.alias.replace(/_BIGDATACORP$/, '')].map((alias) => alias.toUpperCase());
-          if (aliases.includes(upperService) || sources.toUpperCase().includes(upperService)) {
-            coverageItem = candidate;
-            implementedAlias = candidate.alias;
-            break;
-          }
-        }
-      }
-
-      const sourceFiles = coverageItem ? [...coverageItem.sources].sort() : ['doc-local-openapi'];
       return {
         service: item.service,
         documentedAlias: item.service,
-        implementedAlias,
         name: item.summary.replace(/^(PF|PJ)\s+-\s+/i, ''),
         category: serviceCategory(item.summary, item.service),
         documented: true,
-        confirmedApi: Boolean(coverageItem),
         endpoint: 'POST /api/service-api',
         method: 'POST',
         requiresAuth: true,
@@ -519,8 +296,6 @@ function buildServicesCatalog(openApiServices, coverage) {
         documentationUrl: apiReferenceServiceUrl(item),
         guideUrl: guideUrlForCategory(serviceCategory(item.summary, item.service)),
         apiReferenceSection: item.summary,
-        sourceFile: sourceFiles[0],
-        sources: sourceFiles,
         searchTerms: buildSearchTerms(item),
       };
     });
@@ -675,7 +450,7 @@ function renderApiReferenceText(servicesCatalog) {
   lines.push('- Use homologação para testes: `https://backoffice-hml.idcerberus.com`.');
   lines.push('- Use produção somente quando o usuário pedir explicitamente: `https://backoffice.idcerberus.com`.');
   lines.push('- Nunca exponha `client`, `secret`, JWT real, CPF real, CNPJ real ou imagens reais em exemplos.');
-  lines.push('- Quando faltar um service no catálogo, diga que ele precisa ser confirmado no backend/onboarding antes de documentar.');
+  lines.push('- Quando faltar um service no catálogo, diga que ele precisa ser confirmado antes de documentar ou integrar.');
   lines.push('');
   lines.push('## Autenticação');
   lines.push('');
@@ -725,171 +500,6 @@ function renderApiReferenceText(servicesCatalog) {
   return lines.join('\n');
 }
 
-function renderCoverageText(coverage) {
-  const lines = [];
-  lines.push('# idCerberus - cobertura de services');
-  lines.push('');
-  lines.push('Este arquivo separa o que já aparece na documentação do que foi encontrado no onboarding/backend e ainda não está documentado.');
-  lines.push('');
-  lines.push(`- Total encontrado no onboarding/backend: ${coverage.all.length}`);
-  lines.push(`- Já está na doc: ${coverage.inDoc.length}`);
-  lines.push(`- Não está na doc: ${coverage.notInDoc.length}`);
-  lines.push(`- Aliases repetidos encontrados: ${coverage.duplicateAliases.length}`);
-  lines.push(`- Aliases com nomes divergentes: ${coverage.aliasesWithMultipleNames.length}`);
-  lines.push('');
-  lines.push('## Cobertura por categoria');
-  lines.push('');
-  for (const [category, stats] of Object.entries(coverage.byCategory).sort(([a], [b]) => a.localeCompare(b))) {
-    lines.push(`- ${category}: ${stats.documented}/${stats.total} documentados; ${stats.missing} pendentes`);
-  }
-  lines.push('');
-  lines.push('## Já está na doc');
-  lines.push('');
-  for (const item of coverage.inDoc) lines.push(`- ${item.alias}${item.name ? ` - ${item.name}` : ''}`);
-  lines.push('');
-  lines.push('## Não está na doc');
-  lines.push('');
-  for (const item of coverage.notInDoc) lines.push(`- ${item.alias}${item.name ? ` - ${item.name}` : ''}`);
-  if (coverage.duplicateAliases.length) {
-    lines.push('');
-    lines.push('## Aliases repetidos no backend/onboarding');
-    lines.push('');
-    for (const item of coverage.duplicateAliases) {
-      lines.push(`- ${item.alias}: ${item.occurrences} ocorrências`);
-    }
-  }
-  if (coverage.aliasesWithMultipleNames.length) {
-    lines.push('');
-    lines.push('## Aliases com nomes divergentes');
-    lines.push('');
-    for (const item of coverage.aliasesWithMultipleNames) {
-      lines.push(`- ${item.alias}: ${[...item.names].join(' | ')}`);
-    }
-  }
-  return lines.join('\n');
-}
-
-function renderCoverageReport(coverage) {
-  return {
-    generatedAt: new Date().toISOString(),
-    totals: {
-      all: coverage.all.length,
-      documented: coverage.inDoc.length,
-      missing: coverage.notInDoc.length,
-      duplicateAliases: coverage.duplicateAliases.length,
-      aliasesWithMultipleNames: coverage.aliasesWithMultipleNames.length,
-      documentedNotFound: coverage.documentedNotFound.length,
-    },
-    byCategory: coverage.byCategory,
-    documented: coverage.inDoc.map((item) => coverageJsonItem(item)),
-    missing: coverage.notInDoc.map((item) => coverageJsonItem(item)),
-    duplicateAliases: coverage.duplicateAliases.map((item) => coverageJsonItem(item)),
-    aliasesWithMultipleNames: coverage.aliasesWithMultipleNames.map((item) => ({
-      ...coverageJsonItem(item),
-      names: [...item.names].sort(),
-    })),
-    documentedNotFound: coverage.documentedNotFound,
-  };
-}
-
-function coverageJsonItem(item) {
-  return {
-    service: item.alias,
-    name: item.name || '',
-    category: inferCoverageCategory(item.alias, item.name),
-    occurrences: item.occurrences,
-    sources: [...item.sources].sort(),
-  };
-}
-
-function displayCoverageName(name = '') {
-  return name
-    .replaceAll('Dados Basicos', 'Dados Básicos')
-    .replaceAll('enderecos', 'endereços')
-    .replaceAll('endereco', 'endereço')
-    .replaceAll('socios', 'sócios')
-    .replaceAll('Criacao', 'Criação')
-    .replaceAll('usuario', 'usuário')
-    .replaceAll('credito', 'crédito')
-    .replaceAll('doacoes', 'doações')
-    .replaceAll('servicos', 'serviços')
-    .replaceAll('historico', 'histórico')
-    .replaceAll('cenario', 'cenário')
-    .replaceAll('individuo', 'indivíduo')
-    .replaceAll('informacoes', 'informações')
-    .replaceAll('publicas', 'públicas')
-    .replaceAll('numero', 'número')
-    .replaceAll('cartao', 'cartão')
-    .replaceAll('Acoes', 'Ações')
-    .replaceAll('certidao', 'certidão')
-    .replaceAll('codigo', 'código')
-    .replaceAll('estatisticas', 'estatísticas')
-    .replaceAll('Validacao', 'Validação')
-    .replaceAll('politico', 'político')
-    .replaceAll('fisica', 'física');
-}
-
-function renderCoveragePage(coverage) {
-  const percent = coverage.all.length
-    ? Math.round((coverage.inDoc.length / coverage.all.length) * 100)
-    : 0;
-  const lines = [];
-  lines.push('---');
-  lines.push('title: Cobertura de services');
-  lines.push('description: Acompanhe quais services já estão documentados e quais ainda aparecem apenas no backend/onboarding');
-  lines.push('---');
-  lines.push('');
-  lines.push('# Cobertura de services');
-  lines.push('');
-  lines.push('Esta página transforma o mapeamento técnico em uma visão fácil de acompanhar. Ela compara os services documentados no API Reference com os aliases encontrados no projeto de onboarding/backend.');
-  lines.push('');
-  lines.push('<Info>');
-  lines.push('A cobertura é gerada automaticamente por `node scripts/generate-llms.mjs`. Use esta página para priorizar quais services ainda precisam virar documentação.');
-  lines.push('</Info>');
-  lines.push('');
-  lines.push('## Resumo');
-  lines.push('');
-  lines.push('| Indicador | Valor |');
-  lines.push('| --- | --- |');
-  lines.push(`| Total encontrado no backend/onboarding | ${coverage.all.length} |`);
-  lines.push(`| Já documentado | ${coverage.inDoc.length} |`);
-  lines.push(`| Ainda não documentado | ${coverage.notInDoc.length} |`);
-  lines.push(`| Cobertura atual | ${percent}% |`);
-  lines.push(`| Aliases repetidos encontrados | ${coverage.duplicateAliases.length} |`);
-  lines.push(`| Aliases com nomes divergentes | ${coverage.aliasesWithMultipleNames.length} |`);
-  lines.push('');
-  lines.push('## Por categoria');
-  lines.push('');
-  lines.push('| Categoria | Total | Documentados | Pendentes |');
-  lines.push('| --- | --- | --- | --- |');
-  for (const [category, stats] of Object.entries(coverage.byCategory).sort(([a], [b]) => a.localeCompare(b))) {
-    lines.push(`| ${category} | ${stats.total} | ${stats.documented} | ${stats.missing} |`);
-  }
-  lines.push('');
-  lines.push('## Já está na doc');
-  lines.push('');
-  lines.push('| Service | Categoria |');
-  lines.push('| --- | --- |');
-  for (const item of coverage.inDoc) {
-    lines.push(`| \`${item.alias}\` | ${inferCoverageCategory(item.alias, item.name)} |`);
-  }
-  lines.push('');
-  lines.push('## Ainda não está na doc');
-  lines.push('');
-  lines.push('| Service | Categoria | Nome encontrado |');
-  lines.push('| --- | --- | --- |');
-  for (const item of coverage.notInDoc) {
-    lines.push(`| \`${item.alias}\` | ${inferCoverageCategory(item.alias, item.name)} | ${item.name ? displayCoverageName(item.name) : '-'} |`);
-  }
-  lines.push('');
-  lines.push('## Arquivos relacionados');
-  lines.push('');
-  lines.push('- [`/llms-services-coverage.txt`](/llms-services-coverage.txt): versão em texto para LLM.');
-  lines.push('- [`/coverage-report.json`](/coverage-report.json): relatório estruturado para automações.');
-  lines.push('- [`/mapeamento-servicos-doc.txt`](/mapeamento-servicos-doc.txt): mapeamento simples em texto.');
-  return lines.join('\n');
-}
-
 function renderServicesIndex(catalog) {
   const lines = [];
   lines.push('---');
@@ -924,7 +534,6 @@ function renderServicesIndex(catalog) {
   lines.push('');
   lines.push('- [`/services-catalog.json`](/services-catalog.json): catálogo estruturado em JSON.');
   lines.push('- [`/llms-api-reference.txt`](/llms-api-reference.txt): resumo operacional do API Reference.');
-  lines.push('- [`/llms-services-coverage.txt`](/llms-services-coverage.txt): cobertura entre doc e backend/onboarding.');
   return lines.join('\n');
 }
 
@@ -936,9 +545,7 @@ const mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
 }));
 const openApiContent = read(openApiPath);
 const openApiSummary = extractOpenApiSummary(openApiContent);
-const coverage = generateCoverage(openApiSummary.services.map((item) => item.service));
-const coverageContent = coverage.content.trim();
-const servicesCatalog = buildServicesCatalog(openApiSummary.services, coverage);
+const servicesCatalog = buildServicesCatalog(openApiSummary.services);
 const exampleFiles = writeExampleFiles(servicesCatalog);
 const llmRules = [
   '## Regras para assistentes de IA',
@@ -953,11 +560,8 @@ const llmRules = [
 ].join('\n');
 
 write(path.join(root, 'services-catalog.json'), `${JSON.stringify(servicesCatalog, null, 2)}\n`);
-write(path.join(root, 'coverage-report.json'), `${JSON.stringify(renderCoverageReport(coverage), null, 2)}\n`);
 write(path.join(root, 'llms-api-reference.txt'), renderApiReferenceText(servicesCatalog));
-write(path.join(root, 'llms-services-coverage.txt'), renderCoverageText(coverage));
 write(path.join(root, 'guides', 'indice-de-services.mdx'), renderServicesIndex(servicesCatalog));
-write(path.join(root, 'guides', 'cobertura-de-services.mdx'), renderCoveragePage(coverage));
 
 const llmsLines = [];
 llmsLines.push('# idCerberus API Docs');
@@ -998,10 +602,7 @@ llmsLines.push('');
 llmsLines.push(`- [llms-small.txt](${siteUrl}/llms-small.txt): resumo operacional com fluxos, autenticação, service-api e services documentados.`);
 llmsLines.push(`- [llms-full.txt](${siteUrl}/llms-full.txt): versão consolidada dos guias e da API Reference.`);
 llmsLines.push(`- [llms-api-reference.txt](${siteUrl}/llms-api-reference.txt): referência operacional dos services com exemplos de curl.`);
-llmsLines.push(`- [llms-api-real.txt](${siteUrl}/llms-api-real.txt): lista restrita aos services confirmados por listener de API no backend.`);
-llmsLines.push(`- [llms-services-coverage.txt](${siteUrl}/llms-services-coverage.txt): mapa do que já está e do que ainda não está na doc.`);
 llmsLines.push(`- [services-catalog.json](${siteUrl}/services-catalog.json): catálogo estruturado para ferramentas e automações.`);
-llmsLines.push(`- [coverage-report.json](${siteUrl}/coverage-report.json): relatório estruturado de cobertura.`);
 llmsLines.push('');
 llmsLines.push('## Exemplos curl');
 llmsLines.push('');
@@ -1051,24 +652,11 @@ smallLines.push('');
 for (const item of openApiSummary.services.sort((a, b) => a.summary.localeCompare(b.summary))) {
   smallLines.push(`- ${item.summary}: \`${item.service}\``);
 }
-if (coverageContent) {
-  const total = coverageContent.match(/Total de services\/aliases encontrados: (\d+)/)?.[1];
-  const inDoc = coverageContent.match(/Já está na doc: (\d+)/)?.[1];
-  const notInDoc = coverageContent.match(/Não está na doc: (\d+)/)?.[1];
-  smallLines.push('');
-  smallLines.push('## Cobertura');
-  smallLines.push('');
-  smallLines.push(`- Total mapeado no onboarding/backend: ${total || 'não informado'}`);
-  smallLines.push(`- Já está na doc: ${inDoc || 'não informado'}`);
-  smallLines.push(`- Não está na doc: ${notInDoc || 'não informado'}`);
-}
 smallLines.push('');
 smallLines.push('## Arquivos auxiliares');
 smallLines.push('');
 smallLines.push(`- Catálogo JSON: ${siteUrl}/services-catalog.json`);
-smallLines.push(`- Cobertura JSON: ${siteUrl}/coverage-report.json`);
 smallLines.push(`- API Reference para LLM: ${siteUrl}/llms-api-reference.txt`);
-smallLines.push(`- Serviços confirmados via API: ${siteUrl}/llms-api-real.txt`);
 smallLines.push(`- Exemplos curl: ${siteUrl}/examples/auth.hml.curl`);
 
 write(path.join(root, 'llms-small.txt'), smallLines.join('\n'));
@@ -1111,16 +699,6 @@ fullLines.push('## API Reference operacional para LLM');
 fullLines.push('');
 fullLines.push(read(path.join(root, 'llms-api-reference.txt')).trim());
 fullLines.push('');
-if (coverageContent) {
-  fullLines.push('---');
-  fullLines.push('');
-  fullLines.push('# Cobertura de services');
-  fullLines.push('');
-  fullLines.push('Fonte: mapeamento-servicos-doc.txt');
-  fullLines.push('');
-  fullLines.push(coverageContent);
-  fullLines.push('');
-}
 fullLines.push('## OpenAPI bruto');
 fullLines.push('');
 fullLines.push('```yaml');
@@ -1133,9 +711,8 @@ console.log(`Generated llms.txt with ${mdxPages.length} pages.`);
 console.log('Generated llms-small.txt.');
 console.log(`Generated llms-full.txt with ${openApiSummary.services.length} service examples.`);
 console.log('Generated llms-api-reference.txt.');
-console.log('Generated llms-services-coverage.txt.');
 console.log('Generated services-catalog.json.');
-console.log('Generated coverage-report.json.');
 console.log('Generated guides/indice-de-services.mdx.');
-console.log('Generated guides/cobertura-de-services.mdx.');
 console.log(`Generated ${exampleFiles.length} curl examples.`);
+
+

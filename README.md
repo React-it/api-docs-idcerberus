@@ -49,20 +49,15 @@ npm.cmd run dev
 ## Arquivos para LLMs
 
 O projeto gera arquivos em texto simples e JSON para uso por ChatGPT, Claude,
-Cursor, Windsurf, validadores internos e outros assistentes:
+Cursor, Windsurf e outros assistentes:
 
 - `llms.txt`: indice curto da documentacao.
 - `llms-small.txt`: resumo operacional com ambientes, autenticacao, service-api,
   fluxos principais e services documentados.
-- `llms-full.txt`: conteudo completo dos guias, API Reference, OpenAPI e
-  mapeamento de cobertura.
+- `llms-full.txt`: conteudo completo dos guias, API Reference e OpenAPI.
 - `llms-api-reference.txt`: resumo operacional do API Reference com services e
   exemplos de curl.
-- `llms-services-coverage.txt`: mapa separado de services documentados e nao
-  documentados.
 - `services-catalog.json`: catalogo estruturado dos services documentados.
-- `coverage-report.json`: relatorio estruturado de cobertura entre doc e
-  backend/onboarding.
 - `examples/*.curl`: exemplos prontos para homologacao e producao.
 
 Para gerar manualmente:
@@ -77,7 +72,7 @@ Ou via npm:
 npm run generate:llms
 ```
 
-O mesmo gerador tambem atualiza catalogo, coverage e exemplos `.curl`:
+O mesmo gerador tambem atualiza catalogo e exemplos `.curl`:
 
 ```bash
 npm run generate:artifacts
@@ -101,9 +96,7 @@ No deploy, os arquivos devem ficar disponiveis em:
 - `https://react-it.github.io/api-docs-idcerberus/llms-small.txt`
 - `https://react-it.github.io/api-docs-idcerberus/llms-full.txt`
 - `https://react-it.github.io/api-docs-idcerberus/llms-api-reference.txt`
-- `https://react-it.github.io/api-docs-idcerberus/llms-services-coverage.txt`
 - `https://react-it.github.io/api-docs-idcerberus/services-catalog.json`
-- `https://react-it.github.io/api-docs-idcerberus/coverage-report.json`
 - `https://react-it.github.io/api-docs-idcerberus/examples/auth.hml.curl`
 
 ## Estrutura
@@ -138,9 +131,7 @@ api-docs-idcerberus/
 |-- llms-small.txt
 |-- llms-full.txt
 |-- llms-api-reference.txt
-|-- llms-services-coverage.txt
 |-- services-catalog.json
-|-- coverage-report.json
 |-- package.json
 `-- README.md
 ```
@@ -154,12 +145,9 @@ api-docs-idcerberus/
 - `guides/`: guias por fluxo, categoria de servico e catalogo tecnico.
 - `guides/llms.mdx`: guia de uso dos arquivos para LLMs.
 - `guides/indice-de-services.mdx`: indice navegavel dos services documentados.
-- `guides/cobertura-de-services.mdx`: visao visual da cobertura documentada.
 - `guides/exemplos-por-ambiente.mdx`: chamadas equivalentes de HML e producao.
 - `guides/erros-comuns-integracao.mdx`: diagnostico de falhas comuns.
 - `assets/`: imagens e logo usadas pela documentacao.
-- `mapeamento-servicos-doc.txt`: mapa de services que ja estao ou ainda nao
-  estao documentados.
 
 ## Organizacao da navegacao
 
