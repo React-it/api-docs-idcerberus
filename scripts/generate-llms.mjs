@@ -529,11 +529,6 @@ function renderServicesIndex(catalog) {
     lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} |`);
   }
 
-  lines.push('');
-  lines.push('## Arquivos para IA');
-  lines.push('');
-  lines.push('- [`/services-catalog.json`](/services-catalog.json): catálogo estruturado em JSON.');
-  lines.push('- [`/llms-api-reference.txt`](/llms-api-reference.txt): resumo operacional do API Reference.');
   return lines.join('\n');
 }
 

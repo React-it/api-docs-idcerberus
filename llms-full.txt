@@ -841,117 +841,6 @@ base e as credenciais para produção.
 
 ---
 
-# Arquivos para LLMs
-
-URL: https://react-it.github.io/api-docs-idcerberus/guides/llms
-Fonte: guides/llms.mdx
-Descrição: Use llms.txt, llms-small.txt, llms-full.txt e os catálogos auxiliares para dar contexto da documentação idCerberus a assistentes de IA
-
-# Arquivos para LLMs
-
-A documentação também publica arquivos em texto simples e JSON para uso por
-LLMs, assistentes de código e ferramentas como ChatGPT, Claude, Cursor e
-Windsurf.
-
-Esses arquivos ajudam a IA a entender rapidamente os guias, endpoints, services,
-ambientes e exemplos da API idCerberus.
-
-## Arquivos disponíveis
-
-| Arquivo | Quando usar |
-| --- | --- |
-| [`/llms.txt`](/llms.txt) | Índice curto da documentação, com links principais e visão geral. |
-| [`/llms-small.txt`](/llms-small.txt) | Resumo operacional para integrações: ambientes, autenticação, `POST /api/service-api`, fluxos e services documentados. |
-| [`/llms-full.txt`](/llms-full.txt) | Conteúdo completo consolidado dos guias, API Reference e OpenAPI. |
-| [`/llms-api-reference.txt`](/llms-api-reference.txt) | Versão operacional do API Reference, com services e exemplos de curl prontos para consulta por IA. |
-| [`/services-catalog.json`](/services-catalog.json) | Catálogo estruturado em JSON para automações, validadores e agentes. |
-| [`/examples/*.curl`](/examples/auth.hml.curl) | Chamadas prontas para homologação e produção. |
-
-## Uso recomendado
-
-Para tirar dúvidas rápidas sobre a estrutura da documentação, use:
-
-```txt
-https://react-it.github.io/api-docs-idcerberus/llms.txt
-```
-
-Para pedir ajuda de implementação, geração de `curl`, escolha de service ou
-explicação de fluxo, use:
-
-```txt
-https://react-it.github.io/api-docs-idcerberus/llms-small.txt
-```
-
-Para gerar exemplos de request a partir dos services documentados, use:
-
-```txt
-https://react-it.github.io/api-docs-idcerberus/llms-api-reference.txt
-```
-
-Para análises mais completas ou perguntas que dependem de todo o conteúdo da
-documentação, use:
-
-```txt
-https://react-it.github.io/api-docs-idcerberus/llms-full.txt
-```
-
-Para automações que precisam de dados estruturados, use:
-
-```txt
-https://react-it.github.io/api-docs-idcerberus/services-catalog.json
-```
-
-Para importar exemplos prontos em ferramentas ou scripts, use:
-
-```txt
-https://react-it.github.io/api-docs-idcerberus/examples/auth.hml.curl
-https://react-it.github.io/api-docs-idcerberus/examples/service-api-cpf.hml.curl
-```
-
-## Exemplo de prompt
-
-```txt
-Use esta documentação como fonte principal:
-https://react-it.github.io/api-docs-idcerberus/llms-small.txt
-
-Preciso integrar a API idCerberus para consultar dados de CPF.
-Explique o fluxo, gere o curl de autenticação e depois o curl do service correto.
-Não invente services que não estejam na documentação.
-```
-
-## Boas práticas para IA
-
-- Use homologação para exemplos e testes.
-- Use produção somente quando o usuário pedir explicitamente.
-- Nunca exponha `client`, `secret`, token JWT real, CPF real, CNPJ real ou imagem real.
-- Se um service não estiver no catálogo, confirme a disponibilidade antes de usar.
-- Para consultas externas, prefira sempre o endpoint `POST /api/service-api` com o campo `service`.
-
-## Atualização dos arquivos
-
-Os arquivos são gerados a partir dos guias locais, do OpenAPI e do catálogo de
-services. Para atualizar localmente:
-
-```bash
-node scripts/generate-llms.mjs
-```
-
-No Windows, se o PowerShell bloquear `npm.ps1`, use:
-
-```powershell
-npm.cmd run generate:llms
-```
-
-Para rodar a verificação de texto e regenerar os arquivos:
-
-```bash
-npm run check
-```
-
-O export da documentação também executa a geração antes de publicar os arquivos.
-
----
-
 # Como usar esta documentação
 
 URL: https://react-it.github.io/api-docs-idcerberus/guides/como-usar-a-documentacao
@@ -1241,11 +1130,6 @@ necessários:
 3. Use [Índice de services](/guides/indice-de-services) para copiar o nome exato.
 4. Abra o API Reference para copiar request, response e schemas.
 5. Use [Exemplos por ambiente](/guides/exemplos-por-ambiente) para conferir HML e produção.
-
-## Arquivos auxiliares
-
-- [`/services-catalog.json`](/services-catalog.json): catálogo estruturado dos services documentados.
-- [`/llms-api-reference.txt`](/llms-api-reference.txt): resumo operacional para assistentes de IA.
 
 ---
 
@@ -3461,11 +3345,6 @@ Todas as consultas abaixo usam `POST /api/service-api`. O produto executado é d
 | [Sócios de primeiro nível](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_first_level_partner` | `cnpj` |
 | [Sócios na Receita Federal](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
 | [Status do CNPJ na Receita Federal](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `service_rfb_pj` | `cnpj` |
-
-## Arquivos para IA
-
-- [`/services-catalog.json`](/services-catalog.json): catálogo estruturado em JSON.
-- [`/llms-api-reference.txt`](/llms-api-reference.txt): resumo operacional do API Reference.
 
 ---
 

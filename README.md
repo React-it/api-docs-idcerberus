@@ -143,7 +143,6 @@ api-docs-idcerberus/
 - `api-reference/openapi.json`: definicao OpenAPI usada pela aba API Reference.
 - `api-reference/boas-vindas.mdx`: introducao da API Reference.
 - `guides/`: guias por fluxo, categoria de servico e catalogo tecnico.
-- `guides/llms.mdx`: guia de uso dos arquivos para LLMs.
 - `guides/indice-de-services.mdx`: indice navegavel dos services documentados.
 - `guides/exemplos-por-ambiente.mdx`: chamadas equivalentes de HML e producao.
 - `guides/erros-comuns-integracao.mdx`: diagnostico de falhas comuns.
