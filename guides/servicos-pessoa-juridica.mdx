@@ -51,6 +51,9 @@ Para implementação endpoint a endpoint, use a [API Reference](/api-reference/a
 | Status do CNPJ na Receita Federal | `service_rfb_pj` | `cnpj` |
 | SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` |
 | Endereços estendidos de empresa | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
+| Dados de sites da empresa | `SERVICE_DOMAINS_CNPJ` | `cnpj` |
+| Doações eleitorais PJ | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` |
+| Fornecedores eleitorais PJ | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` |
 | DAS MEI na Receita | `service_das_mei` | `cnpj` |
 
 ### Sócios, relacionamentos e compliance
@@ -58,10 +61,12 @@ Para implementação endpoint a endpoint, use a [API Reference](/api-reference/a
 | Serviço | Código `service` | Campos principais |
 | --- | --- | --- |
 | Relacionamentos de uma empresa | `service_company_relationship` | `cnpj` |
+| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
 | Sócios de primeiro nível | `service_first_level_partner` | `cnpj` |
 | Processos jurídicos dos sócios | `service_juridical_processes_pj_owners` | `cnpj` |
 | KYC e compliance dos sócios | `service_company_kyc_owners` | `cnpj` |
 | Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` |
+| Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` |
 | Débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
 | Certidão negativa de protesto PJ | `service_protest_clearance_certificate_pj` | `cnpj` |
 | Compliance de casas de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
@@ -355,6 +360,92 @@ Exemplo de resposta:
         "addressType": "COMMERCIAL"
       }
     ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  }
+}
+```
+
+### Dados de sites da empresa
+
+Consulta dados de presença digital associados ao CNPJ, como domínios
+identificados, domínio principal, domínios ativos, uso de SSL, tecnologias,
+redes sociais, métodos de pagamento e sinais de registro em WHOIS.
+
+Use este serviço quando a análise da empresa precisar considerar sua presença
+online, infraestrutura digital ou indícios de operação em sites próprios.
+
+```json
+{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+Campos principais do retorno:
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ consultado |
+| `result.total_sites` | Quantidade de sites identificados |
+| `result.total_domains` | Quantidade total de domínios encontrados |
+| `result.total_active_domains` | Quantidade de domínios ativos |
+| `result.main_domain` | Domínio principal identificado |
+| `result.domains_list` | Lista de domínios encontrados |
+| `result.has_ssl` | Indica se há domínios com certificado SSL |
+| `result.ssl_domains` | Lista de domínios com SSL |
+| `result.domain_classes` | Classes ou categorias dos domínios |
+| `result.visitor_ranges` | Faixas estimadas de visitantes |
+| `result.frameworks` | Frameworks identificados |
+| `result.technologies` | Tecnologias ou servidores identificados |
+| `result.isp_names` | Provedores relacionados aos domínios |
+| `result.social_networks` | Redes sociais identificadas |
+| `result.payment_methods` | Métodos de pagamento encontrados |
+| `result.payment_services` | Serviços de pagamento encontrados |
+| `result.registered_in_whois` | Indica se há registro em WHOIS |
+| `result.main_domain_status` | Status do domínio principal |
+| `result.domains_from_partners` | Domínios associados a sócios |
+| `status.code` | Código da mensagem de status |
+| `status.message` | Mensagem do código de status |
+
+Exemplo com `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_DOMAINS_CNPJ",
+    "cnpj": "cnpj"
+  }'
+```
+
+Exemplo de resposta:
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000150",
+    "total_sites": "2",
+    "total_domains": "2",
+    "total_active_domains": "1",
+    "main_domain": "empresa.com.br",
+    "domains_list": "empresa.com.br | loja-empresa.com.br",
+    "has_ssl": "Sim",
+    "ssl_domains": "empresa.com.br",
+    "domain_classes": "CORPORATE | ECOMMERCE",
+    "visitor_ranges": "1K-5K",
+    "frameworks": "React | WordPress",
+    "technologies": "Nginx | PHP",
+    "isp_names": "PROVEDOR EXEMPLO",
+    "social_networks": "LinkedIn | Instagram",
+    "payment_methods": "Cartão de crédito | Pix",
+    "payment_services": "Mercado Pago",
+    "registered_in_whois": "Sim",
+    "main_domain_status": "ativo",
+    "domains_from_partners": "dominio-socio.com.br"
   },
   "status": {
     "code": 200,

@@ -378,17 +378,17 @@ function generateCoverage(docServices) {
 
 function inferCoverageCategory(alias, name = '') {
   const haystack = `${alias} ${name}`.toUpperCase();
-  if (/PERSON|_PF|CPF|PEP|ELECTION|ELECTORAL|POLITICAL|ARREST|MEI|PIS|ESOCIAL|FRAUD|DEFAULT|BIOMETRIC|NOTHING_RECORD/.test(haystack)) return 'Pessoa Fisica';
-  if (/_PJ|CNPJ|COMPANY|CORPORATE|SINTEGRA|DAS_MEI|OWNERS|PARTNER/.test(haystack)) return 'Pessoa Juridica';
+  if (/_PJ|CNPJ|COMPANY|CORPORATE|SINTEGRA|DAS_MEI|OWNERS|PARTNER/.test(haystack)) return 'Pessoa Jurídica';
+  if (/PERSON|RELATED_PEOPLE|PUBLIC_SERVANTS|PROTEST_CLEARANCE_CERTIFICATE|_PF|CPF|PEP|ELECTION|ELECTORAL|POLITICAL|ARREST|MEI|PIS|ESOCIAL|FRAUD|DEFAULT|BIOMETRIC|NOTHING_RECORD/.test(haystack)) return 'Pessoa Física';
   if (/ONBOARDING|LIVENESS|DOCUMENTOSCOPY|OCR|FACE|SELFIE|SAVE_IMAGE/.test(haystack)) return 'Onboarding e Biometria';
   if (/CUSTOMER/.test(haystack)) return 'Customers';
-  if (/ADDRESS|PHONE|EMAIL|PIS|CPF|PEP|ELECTION|POLITICAL|DEBT|RFB|CRIMINAL|PROFESSIONAL|JURIDICAL|FINANCIAL|MEDIA/.test(haystack)) return 'Pessoa Fisica';
+  if (/ADDRESS|PHONE|EMAIL|PIS|CPF|PEP|ELECTION|POLITICAL|DEBT|RFB|CRIMINAL|PROFESSIONAL|JURIDICAL|FINANCIAL|MEDIA/.test(haystack)) return 'Pessoa Física';
   return 'Outros';
 }
 
 function serviceCategory(summary, service) {
-  if (/^PJ\s+-/i.test(summary)) return 'Pessoa Juridica';
-  if (/^PF\s+-/i.test(summary)) return 'Pessoa Fisica';
+  if (/^PJ\s+-/i.test(summary)) return 'Pessoa Jurídica';
+  if (/^PF\s+-/i.test(summary)) return 'Pessoa Física';
   if (/CUSTOMER|changeStatusOfCustomer/i.test(service)) return 'Customers';
   if (/onboarding/i.test(service)) return 'Onboarding';
   return 'Geral';
@@ -441,8 +441,8 @@ function apiReferenceServiceUrl(item) {
 
 function guideUrlForCategory(category) {
   const map = {
-    'Pessoa Fisica': `${siteUrl}/guides/servicos-pessoa-fisica`,
-    'Pessoa Juridica': `${siteUrl}/guides/servicos-pessoa-juridica`,
+    'Pessoa Física': `${siteUrl}/guides/servicos-pessoa-fisica`,
+    'Pessoa Jurídica': `${siteUrl}/guides/servicos-pessoa-juridica`,
     Customers: `${siteUrl}/guides/customers`,
     Onboarding: `${siteUrl}/guides/onboarding-sdk`,
   };
@@ -693,6 +693,33 @@ function coverageJsonItem(item) {
   };
 }
 
+function displayCoverageName(name = '') {
+  return name
+    .replaceAll('Dados Basicos', 'Dados Básicos')
+    .replaceAll('enderecos', 'endereços')
+    .replaceAll('endereco', 'endereço')
+    .replaceAll('socios', 'sócios')
+    .replaceAll('Criacao', 'Criação')
+    .replaceAll('usuario', 'usuário')
+    .replaceAll('credito', 'crédito')
+    .replaceAll('doacoes', 'doações')
+    .replaceAll('servicos', 'serviços')
+    .replaceAll('historico', 'histórico')
+    .replaceAll('cenario', 'cenário')
+    .replaceAll('individuo', 'indivíduo')
+    .replaceAll('informacoes', 'informações')
+    .replaceAll('publicas', 'públicas')
+    .replaceAll('numero', 'número')
+    .replaceAll('cartao', 'cartão')
+    .replaceAll('Acoes', 'Ações')
+    .replaceAll('certidao', 'certidão')
+    .replaceAll('codigo', 'código')
+    .replaceAll('estatisticas', 'estatísticas')
+    .replaceAll('Validacao', 'Validação')
+    .replaceAll('politico', 'político')
+    .replaceAll('fisica', 'física');
+}
+
 function renderCoveragePage(coverage) {
   const percent = coverage.all.length
     ? Math.round((coverage.inDoc.length / coverage.all.length) * 100)
@@ -700,15 +727,15 @@ function renderCoveragePage(coverage) {
   const lines = [];
   lines.push('---');
   lines.push('title: Cobertura de services');
-  lines.push('description: Acompanhe quais services ja estao documentados e quais ainda aparecem apenas no backend/onboarding');
+  lines.push('description: Acompanhe quais services já estão documentados e quais ainda aparecem apenas no backend/onboarding');
   lines.push('---');
   lines.push('');
   lines.push('# Cobertura de services');
   lines.push('');
-  lines.push('Esta pagina transforma o mapeamento tecnico em uma visao facil de acompanhar. Ela compara os services documentados no API Reference com os aliases encontrados no projeto de onboarding/backend.');
+  lines.push('Esta página transforma o mapeamento técnico em uma visão fácil de acompanhar. Ela compara os services documentados no API Reference com os aliases encontrados no projeto de onboarding/backend.');
   lines.push('');
   lines.push('<Info>');
-  lines.push('A cobertura e gerada automaticamente por `node scripts/generate-llms.mjs`. Use esta pagina para priorizar quais services ainda precisam virar documentacao.');
+  lines.push('A cobertura é gerada automaticamente por `node scripts/generate-llms.mjs`. Use esta página para priorizar quais services ainda precisam virar documentação.');
   lines.push('</Info>');
   lines.push('');
   lines.push('## Resumo');
@@ -716,8 +743,8 @@ function renderCoveragePage(coverage) {
   lines.push('| Indicador | Valor |');
   lines.push('| --- | --- |');
   lines.push(`| Total encontrado no backend/onboarding | ${coverage.all.length} |`);
-  lines.push(`| Ja documentado | ${coverage.inDoc.length} |`);
-  lines.push(`| Ainda nao documentado | ${coverage.notInDoc.length} |`);
+  lines.push(`| Já documentado | ${coverage.inDoc.length} |`);
+  lines.push(`| Ainda não documentado | ${coverage.notInDoc.length} |`);
   lines.push(`| Cobertura atual | ${percent}% |`);
   lines.push(`| Aliases repetidos encontrados | ${coverage.duplicateAliases.length} |`);
   lines.push(`| Aliases com nomes divergentes | ${coverage.aliasesWithMultipleNames.length} |`);
@@ -730,7 +757,7 @@ function renderCoveragePage(coverage) {
     lines.push(`| ${category} | ${stats.total} | ${stats.documented} | ${stats.missing} |`);
   }
   lines.push('');
-  lines.push('## Ja esta na doc');
+  lines.push('## Já está na doc');
   lines.push('');
   lines.push('| Service | Categoria |');
   lines.push('| --- | --- |');
@@ -738,18 +765,18 @@ function renderCoveragePage(coverage) {
     lines.push(`| \`${item.alias}\` | ${inferCoverageCategory(item.alias, item.name)} |`);
   }
   lines.push('');
-  lines.push('## Ainda nao esta na doc');
+  lines.push('## Ainda não está na doc');
   lines.push('');
   lines.push('| Service | Categoria | Nome encontrado |');
   lines.push('| --- | --- | --- |');
   for (const item of coverage.notInDoc) {
-    lines.push(`| \`${item.alias}\` | ${inferCoverageCategory(item.alias, item.name)} | ${item.name || '-'} |`);
+    lines.push(`| \`${item.alias}\` | ${inferCoverageCategory(item.alias, item.name)} | ${item.name ? displayCoverageName(item.name) : '-'} |`);
   }
   lines.push('');
   lines.push('## Arquivos relacionados');
   lines.push('');
-  lines.push('- [`/llms-services-coverage.txt`](/llms-services-coverage.txt): versao em texto para LLM.');
-  lines.push('- [`/coverage-report.json`](/coverage-report.json): relatorio estruturado para automacoes.');
+  lines.push('- [`/llms-services-coverage.txt`](/llms-services-coverage.txt): versão em texto para LLM.');
+  lines.push('- [`/coverage-report.json`](/coverage-report.json): relatório estruturado para automações.');
   lines.push('- [`/mapeamento-servicos-doc.txt`](/mapeamento-servicos-doc.txt): mapeamento simples em texto.');
   return lines.join('\n');
 }
@@ -757,16 +784,16 @@ function renderCoveragePage(coverage) {
 function renderServicesIndex(catalog) {
   const lines = [];
   lines.push('---');
-  lines.push('title: Indice de services');
-  lines.push('description: Lista operacional dos services ja documentados no API Reference');
+  lines.push('title: Índice de services');
+  lines.push('description: Lista operacional dos services já documentados no API Reference');
   lines.push('---');
   lines.push('');
-  lines.push('# Indice de services');
+  lines.push('# Índice de services');
   lines.push('');
-  lines.push('Use este indice quando ja souber qual produto precisa executar e quiser confirmar o nome exato do `service` antes de montar a chamada.');
+  lines.push('Use este índice quando já souber qual produto precisa executar e quiser confirmar o nome exato do `service` antes de montar a chamada.');
   lines.push('');
   lines.push('<Info>');
-  lines.push('Todas as consultas abaixo usam `POST /api/service-api`. O produto executado e definido pelo campo `service` no body.');
+  lines.push('Todas as consultas abaixo usam `POST /api/service-api`. O produto executado é definido pelo campo `service` no body.');
   lines.push('</Info>');
   lines.push('');
 
@@ -786,7 +813,7 @@ function renderServicesIndex(catalog) {
   lines.push('');
   lines.push('## Arquivos para IA');
   lines.push('');
-  lines.push('- [`/services-catalog.json`](/services-catalog.json): catalogo estruturado em JSON.');
+  lines.push('- [`/services-catalog.json`](/services-catalog.json): catálogo estruturado em JSON.');
   lines.push('- [`/llms-api-reference.txt`](/llms-api-reference.txt): resumo operacional do API Reference.');
   lines.push('- [`/llms-services-coverage.txt`](/llms-services-coverage.txt): cobertura entre doc e backend/onboarding.');
   return lines.join('\n');

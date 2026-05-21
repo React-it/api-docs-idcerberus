@@ -1,46 +1,46 @@
 ---
-title: Erros comuns de integracao
-description: Checklist pratico para diagnosticar falhas de token, ambiente, payload, base64 e service
+title: Erros comuns de integração
+description: Checklist prático para diagnosticar falhas de token, ambiente, payload, base64 e service
 ---
 
-# Erros comuns de integracao
+# Erros comuns de integração
 
 Use este checklist quando uma chamada falhar ou quando o resultado parecer
 diferente do esperado.
 
-## Diagnostico rapido
+## Diagnóstico rápido
 
 | Sintoma | Causa comum | Como corrigir |
 | --- | --- | --- |
-| `401` ou `403` | Token ausente, expirado, invalido ou de outro ambiente | Gere um novo token no mesmo ambiente da chamada |
-| `status.code` diferente de `200` | Payload incompleto, permissao ausente ou fonte externa falhou | Leia `status.message` e revise os campos obrigatorios |
-| API retorna erro mesmo com HTTP 200 | O processamento tecnico falhou dentro do body | Use `status.code` e `status.message`, nao apenas o HTTP status |
-| Service nao executa | Campo `service` escrito errado ou produto nao liberado | Copie o nome pelo [Indice de services](/guides/indice-de-services) |
-| Resultado vazio | Documento sem dados na fonte ou retorno negativo de negocio | Trate como resposta valida quando `status.code` for 200 |
-| Token funciona em uma rota e falha em outra | Credencial sem permissao para o produto | Confirme liberacao do service para o cliente |
-| Base64 rejeitado | Prefixo, encoding ou arquivo invalido | Envie apenas a string esperada pelo service ou use URL quando suportado |
-| CNPJ/CPF nao encontrado | Documento mascarado, incompleto ou ambiente errado | Teste sem mascara e confira a base URL |
-| PDF nao abre | Endpoint retorna binario, nao JSON | Trate a resposta como `application/pdf` |
-| Timeout | Fonte externa demorou ou ficou indisponivel | Aplique retry controlado e registre o `externalId`, quando houver |
+| `401` ou `403` | Token ausente, expirado, inválido ou de outro ambiente | Gere um novo token no mesmo ambiente da chamada |
+| `status.code` diferente de `200` | Payload incompleto, permissão ausente ou fonte externa falhou | Leia `status.message` e revise os campos obrigatórios |
+| API retorna erro mesmo com HTTP 200 | O processamento técnico falhou dentro do body | Use `status.code` e `status.message`, não apenas o HTTP status |
+| Service não executa | Campo `service` escrito errado ou produto não liberado | Copie o nome pelo [Índice de services](/guides/indice-de-services) |
+| Resultado vazio | Documento sem dados na fonte ou retorno negativo de negócio | Trate como resposta válida quando `status.code` for 200 |
+| Token funciona em uma rota e falha em outra | Credencial sem permissão para o produto | Confirme liberação do service para o cliente |
+| Base64 rejeitado | Prefixo, encoding ou arquivo inválido | Envie apenas a string esperada pelo service ou use URL quando suportado |
+| CNPJ/CPF não encontrado | Documento mascarado, incompleto ou ambiente errado | Teste sem máscara e confira a base URL |
+| PDF não abre | Endpoint retorna binário, não JSON | Trate a resposta como `application/pdf` |
+| Timeout | Fonte externa demorou ou ficou indisponível | Aplique retry controlado e registre o `externalId`, quando houver |
 
 ## Antes de chamar a API
 
-1. Confirme a base URL: homologacao ou producao.
+1. Confirme a base URL: homologação ou produção.
 2. Gere token no mesmo ambiente.
 3. Envie `Authorization: Bearer {jwt_token}`.
 4. Envie `Content-Type: application/json`.
-5. Copie o `service` exatamente como esta na documentacao.
-6. Valide campos obrigatorios antes da chamada.
-7. Use dados de teste em homologacao.
-8. Nunca registre `client`, `secret`, JWT, CPF, CNPJ ou imagem sensivel em log publico.
+5. Copie o `service` exatamente como está na documentação.
+6. Valide campos obrigatórios antes da chamada.
+7. Use dados de teste em homologação.
+8. Nunca registre `client`, `secret`, JWT, CPF, CNPJ ou imagem sensível em log público.
 
 ## Campos que mais geram erro
 
 | Campo | Cuidado |
 | --- | --- |
 | `service` | Deve bater exatamente com o nome documentado |
-| `cpf` | Envie o valor esperado pelo contrato do cliente, de preferencia sem mascara |
-| `cnpj` | Envie o CNPJ completo, de preferencia sem mascara |
+| `cpf` | Envie o valor esperado pelo contrato do cliente, de preferência sem máscara |
+| `cnpj` | Envie o CNPJ completo, de preferência sem máscara |
 | `phone` | Verifique DDI/DDD e formato aceito pelo service |
 | `image1`, `image2`, `selfie1` | Confirme se o service espera base64 puro, data URI ou URL |
 | `key` | Use a chave retornada pelo fluxo que iniciou a consulta |
@@ -53,10 +53,10 @@ Ao reportar um problema, envie:
 - ambiente usado;
 - endpoint chamado;
 - `service` enviado;
-- horario aproximado da chamada;
+- horário aproximado da chamada;
 - `externalId`, quando retornado;
 - `status.code` e `status.message`;
-- payload sem dados sensiveis.
+- payload sem dados sensíveis.
 
-Nao envie token JWT, `client`, `secret`, documento real ou imagem real em canais
+Não envie token JWT, `client`, `secret`, documento real ou imagem real em canais
 abertos.

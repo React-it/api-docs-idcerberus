@@ -433,6 +433,35 @@ paths:
                 value:
                   service: service_address
                   cpf: cpf
+              dadosSitesPessoa:
+                summary: PF - Dados de sites
+                value:
+                  service: SERVICE_DOMAINS_CPF
+                  cpf: cpf
+              historicoTelefones:
+                summary: PF - Histórico de telefones
+                value:
+                  service: SERVICE_PHONE_HISTORY
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (opcional)
+                  limit: 10
+              pessoasRelacionadas:
+                summary: PF - Pessoas relacionadas
+                value:
+                  service: SERVICE_RELATED_PEOPLE
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (opcional)
+              historicoEmails:
+                summary: PF - Histórico de e-mails
+                value:
+                  service: SERVICE_EMAILS_EXTENDED
+                  cpf: cpf
+                  limit: 10
+              informacoesSociodemograficas:
+                summary: PF - Informações socio-demográficas
+                value:
+                  service: SERVICE_DEMOGRAPHIC_DATA_CPF
+                  cpf: cpf
               relacionamentosEconomicos:
                 summary: PF - Relacionamentos econômicos
                 value:
@@ -470,7 +499,7 @@ paths:
               doacoesEleitorais:
                 summary: PF - Doações eleitorais
                 value:
-                  service: SERVICE_ELECTORAL_DONORS
+                  service: SERVICE_ELECTORAL_DONORS_CPF
                   cpf: cpf
               envolvimentoPolitico:
                 summary: PF - Envolvimento político
@@ -496,7 +525,7 @@ paths:
               prestadoresServicoEleitorais:
                 summary: PF - Prestadores de serviço eleitorais
                 value:
-                  service: SERVICE_ELECTORAL_PROVIDERS
+                  service: SERVICE_ELECTORAL_PROVIDERS_CPF
                   cpf: cpf
               dasMeiReceita:
                 summary: PJ - DAS MEI na Receita
@@ -523,6 +552,26 @@ paths:
                 value:
                   service: service_company_relationship
                   cnpj: cnpj
+              sociosReceitaFederal:
+                summary: PJ - Sócios na Receita Federal
+                value:
+                  service: SERVICE_COMPANY_RFB_OWNERS
+                  cnpj: cnpj
+              doacoesEleitoraisPj:
+                summary: PJ - Doações eleitorais
+                value:
+                  service: SERVICE_ELECTORAL_DONORS_CNPJ
+                  cnpj: cnpj
+              doacoesEleitoraisSocios:
+                summary: PJ - Doações eleitorais dos sócios
+                value:
+                  service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ
+                  cnpj: cnpj
+              fornecedoresEleitoraisPj:
+                summary: PJ - Fornecedores eleitorais
+                value:
+                  service: SERVICE_ELECTORAL_PROVIDERS_CNPJ
+                  cnpj: cnpj
               sintegra:
                 summary: PJ - SINTEGRA
                 value:
@@ -533,6 +582,11 @@ paths:
                 summary: PJ - Endereços estendidos
                 value:
                   service: SERVICE_ADDRESSES_EXTENDED_CNPJ
+                  cnpj: cnpj
+              dadosSitesEmpresa:
+                summary: PJ - Dados de sites
+                value:
+                  service: SERVICE_DOMAINS_CNPJ
                   cnpj: cnpj
               sociosPrimeiroNivel:
                 summary: PJ - Sócios de primeiro nível
@@ -1263,6 +1317,71 @@ paths:
                     status:
                       code: 200
                       message: Success
+                sociosReceitaFederal:
+                  summary: PJ - Sócios na Receita Federal
+                  value:
+                    results:
+                      - cpf: "77272722314"
+                        name: MARIO SOUSA
+                        gender: M
+                        birthDate: "1984-05-21"
+                        age: 40
+                        taxIdStatus: REGULAR
+                        taxIdOrigin: RECEITA FEDERAL
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                doacoesEleitoraisPj:
+                  summary: PJ - Doações eleitorais
+                  value:
+                    result:
+                      cnpj: "12345678000190"
+                      electoralDonors:
+                        totalDonationsAmount: 3
+                        totalDonatedValue: 15000
+                        partiesThatReceivedDonation:
+                          - MDB
+                          - PSDB
+                        electionDonationData:
+                          - electionYear: "2022"
+                            partyName: MDB
+                            donationsAmount: "2"
+                            totalDonationValue: 10000
+                            isCrowdfunding: false
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                doacoesEleitoraisSocios:
+                  summary: PJ - Doações eleitorais dos sócios
+                  value:
+                    result:
+                      cnpj: "12345678000190"
+                      ownersElectoralDonors:
+                        - ownerDocNumber: "123***78901"
+                          ownerName: SOCIO EXEMPLO
+                          totalDonationsAmount: 2
+                          totalDonatedValue: 5000
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                fornecedoresEleitoraisPj:
+                  summary: PJ - Fornecedores eleitorais
+                  value:
+                    result:
+                      cnpj: "12345678000190"
+                      electoralProviders:
+                        name: EMPRESA EXEMPLO LTDA
+                        partiesThatReceivedProvision:
+                          - PSOL
+                        electionProvisionData:
+                          - politicianFullName: CANDIDATO EXEMPLO
+                            partyName: PSOL
+                            electionYear: 2022
+                            numberOfProvisions: 4
+                            totalProvisionValue: 2400
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
                 sintegra:
                   summary: PJ - SINTEGRA
                   value:
@@ -1536,6 +1655,32 @@ paths:
                       code: 200
                       message: Consulta de API Realizada com Sucesso
                     externalId: 8e1ac243-4510-4ebf-ac7d-4b6d133dd619
+                dadosSitesEmpresa:
+                  summary: PJ - Dados de sites
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      total_sites: "2"
+                      total_domains: "2"
+                      total_active_domains: "1"
+                      main_domain: empresa.com.br
+                      domains_list: empresa.com.br | loja-empresa.com.br
+                      has_ssl: Sim
+                      ssl_domains: empresa.com.br
+                      domain_classes: CORPORATE | ECOMMERCE
+                      visitor_ranges: 1K-5K
+                      frameworks: React | WordPress
+                      technologies: Nginx | PHP
+                      isp_names: PROVEDOR EXEMPLO
+                      social_networks: LinkedIn | Instagram
+                      payment_methods: Cartão de crédito | Pix
+                      payment_services: Mercado Pago
+                      registered_in_whois: Sim
+                      main_domain_status: ativo
+                      domains_from_partners: dominio-socio.com.br
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
                 certidaoNegativaProtesto:
                   summary: PF - Certidão negativa de protesto
                   value:
@@ -1604,6 +1749,79 @@ paths:
                     status:
                       code: 200
                       message: Success
+                dadosSitesPessoa:
+                  summary: PF - Dados de sites
+                  value:
+                    result:
+                      cpf: "80246074507"
+                      total_domains: "3"
+                      total_active_domains: "2"
+                      domains_list: pessoa.com.br | perfilprofissional.com.br | portfolio.com.br
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                historicoTelefones:
+                  summary: PF - Histórico de telefones
+                  value:
+                    result:
+                      cpf: "80246074507"
+                      phones:
+                        - number: "(61) 98235-8585"
+                          type: Celular
+                          isRecent: "true"
+                        - number: "(61) 3234-0000"
+                          type: Fixo
+                          isRecent: "false"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                pessoasRelacionadas:
+                  summary: PF - Pessoas relacionadas
+                  value:
+                    result:
+                      cpf: "80246074507"
+                      relatedPeople:
+                        - cpf: "123***78901"
+                          name: FULANO DA SILVA
+                          relationship: Mae
+                        - cpf: "987***32100"
+                          name: CICLANO DA SILVA
+                          relationship: Irmao
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                historicoEmails:
+                  summary: PF - Histórico de e-mails
+                  value:
+                    results:
+                      - emailAddress: usuario@example.com
+                        domain: example.com
+                        userName: usuario
+                        type: PERSONAL
+                        isMainForEntity: true
+                        isRecentForEntity: true
+                        validationStatus: VALID
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                informacoesSociodemograficas:
+                  summary: PF - Informações socio-demográficas
+                  value:
+                    result:
+                      cpf: "80246074507"
+                      estimated_income_range: 4 A 10 SM
+                      estimated_instruction_level: MEDIO COMPL
+                      social_class: B
+                      total_demographic_records: "1"
+                      has_demographic_data: Sim
+                      data_origin: IBGE
+                      data_aggregation_level: CENSUS SECTOR
+                      data_country: BRAZIL
+                      primary_demographic_record: "Classe: B, Renda: 4 A 10 SM, Escolaridade: MEDIO COMPL, Origem: IBGE, Nível: CENSUS SECTOR, País: BRAZIL"
+                      demographic_records: "Classe: B, Renda: 4 A 10 SM, Escolaridade: MEDIO COMPL, Origem: IBGE, Nível: CENSUS SECTOR, País: BRAZIL"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
                 relacionamentosEconomicos:
                   summary: PF - Relacionamentos econômicos
                   value:
