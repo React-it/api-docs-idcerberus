@@ -122,7 +122,7 @@ function cleanMdx(content) {
     .replace(/<\/Tip>/g, '')
     .replace(/<Warning>/g, '> Atencao: ')
     .replace(/<\/Warning>/g, '')
-    .replace(/<Info>/g, '> Info: ')
+    .replace(/<Info>/g, '> Info:')
     .replace(/<\/Info>/g, '')
     .replace(/<Note>/g, '> Nota: ')
     .replace(/<\/Note>/g, '')
@@ -532,6 +532,108 @@ function renderServicesIndex(catalog) {
   return lines.join('\n');
 }
 
+function escapeTable(value) {
+  return String(value).replaceAll('|', '\\|');
+}
+
+function escapeAttribute(value) {
+  return String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function renderApiReferenceServicesPage(catalog, category, title, description) {
+  const items = catalog.filter((service) => service.category === category);
+  const lines = [];
+
+  lines.push('---');
+  lines.push(`title: ${title}`);
+  lines.push(`description: ${description}`);
+  lines.push('---');
+  lines.push('');
+  lines.push(`# ${title}`);
+  lines.push('');
+  lines.push(description);
+  lines.push('');
+  lines.push('<Info>');
+  lines.push('Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produto executado é definido pelo campo `service` no body da requisição.');
+  lines.push('</Info>');
+  lines.push('');
+  lines.push('## Como ler esta referência');
+  lines.push('');
+  lines.push('- **Nome**: nome funcional do produto.');
+  lines.push('- **Service**: valor exato que deve ser enviado no campo `service`.');
+  lines.push('- **Campos principais**: campos esperados no body além de `service`.');
+  lines.push('- **Exemplo**: cada item traz JSON e curl de homologação prontos para copiar e adaptar.');
+  lines.push('');
+  lines.push('## Services');
+  lines.push('');
+  lines.push('| Nome | Service | Campos principais |');
+  lines.push('| --- | --- | --- |');
+
+  for (const service of items) {
+    const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
+    lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${fields} |`);
+  }
+
+  lines.push('');
+  lines.push('## Requests');
+  lines.push('');
+  lines.push('<AccordionGroup>');
+
+  for (const service of items) {
+    const body = jsonBodyFromRequestExample(service.requestExample);
+    const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : 'nenhum campo adicional mapeado';
+    lines.push(`<Accordion title="${escapeAttribute(service.name)}">`);
+    lines.push('');
+    lines.push(`**Service:** \`${service.service}\``);
+    lines.push('');
+    lines.push('**Endpoint:** `POST /api/service-api`');
+    lines.push('');
+    lines.push(`**Campos principais:** ${fields}`);
+    lines.push('');
+    lines.push('### Body');
+    lines.push('');
+    lines.push('```json');
+    lines.push(JSON.stringify(body, null, 2));
+    lines.push('```');
+    lines.push('');
+    lines.push('### curl de homologação');
+    lines.push('');
+    lines.push('```bash');
+    lines.push(renderCurl({
+      baseUrl: 'https://backoffice-hml.idcerberus.com',
+      path: '/api/service-api',
+      body,
+    }));
+    lines.push('```');
+    lines.push('');
+    lines.push('### Retorno');
+    lines.push('');
+    lines.push('O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.');
+    lines.push('');
+    lines.push('```json');
+    lines.push(JSON.stringify({
+      result: {},
+      status: {
+        code: 200,
+        message: 'Success',
+      },
+    }, null, 2));
+    lines.push('```');
+    lines.push('');
+    lines.push(`[Ver endpoint geral no API Reference](${siteUrl}/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)`);
+    lines.push('');
+    lines.push('</Accordion>');
+  }
+
+  lines.push('</AccordionGroup>');
+  lines.push('');
+  lines.push('## Produção');
+  lines.push('');
+  lines.push('Para executar em produção, mantenha o mesmo body e troque a base URL para `https://backoffice.idcerberus.com`.');
+
+  return lines.join('\n');
+}
+
 const docsConfig = JSON.parse(read(docsJsonPath));
 const pages = flattenPages(docsConfig.navigation);
 const mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
@@ -557,6 +659,18 @@ const llmRules = [
 write(path.join(root, 'services-catalog.json'), `${JSON.stringify(servicesCatalog, null, 2)}\n`);
 write(path.join(root, 'llms-api-reference.txt'), renderApiReferenceText(servicesCatalog));
 write(path.join(root, 'guides', 'indice-de-services.mdx'), renderServicesIndex(servicesCatalog));
+write(path.join(root, 'api-reference', 'services-pessoa-fisica.mdx'), renderApiReferenceServicesPage(
+  servicesCatalog,
+  'Pessoa Física',
+  'Services de pessoa física',
+  'Catálogo explícito dos services de pessoa física disponíveis via API, com campos esperados e exemplos de request.',
+));
+write(path.join(root, 'api-reference', 'services-pessoa-juridica.mdx'), renderApiReferenceServicesPage(
+  servicesCatalog,
+  'Pessoa Jurídica',
+  'Services de pessoa jurídica',
+  'Catálogo explícito dos services de pessoa jurídica disponíveis via API, com campos esperados e exemplos de request.',
+));
 
 const llmsLines = [];
 llmsLines.push('# idCerberus API Docs');
@@ -708,6 +822,8 @@ console.log(`Generated llms-full.txt with ${openApiSummary.services.length} serv
 console.log('Generated llms-api-reference.txt.');
 console.log('Generated services-catalog.json.');
 console.log('Generated guides/indice-de-services.mdx.');
+console.log('Generated api-reference/services-pessoa-fisica.mdx.');
+console.log('Generated api-reference/services-pessoa-juridica.mdx.');
 console.log(`Generated ${exampleFiles.length} curl examples.`);
 
 
