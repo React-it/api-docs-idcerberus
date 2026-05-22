@@ -301,6 +301,111 @@ function buildServicesCatalog(openApiServices) {
     });
 }
 
+const partnerApiServices = [
+  ['SERVICE_ACTIVE_DEBT_PF_BIGDATACORP', 'Débitos ativos PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ACTIVE_DEBT_PF_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_ADDRESS_BIGDATACORP', 'Endereços (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ADDRESS_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP', 'Validação de CPF com endereço (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP', cpf: 'cpf', zipcode: '00000-000', numberAddress: 13 }],
+  ['SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP', 'Validação de CPF com telefone (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP', cpf: 'cpf', phone: '11900000000' }],
+  ['SERVICE_CPF_PHONE_VALIDATION_FACETEC', 'Validação de CPF com telefone (Facetec)', 'Pessoa Física', { service: 'SERVICE_CPF_PHONE_VALIDATION_FACETEC', cpf: 'cpf', phone: '11900000000' }],
+  ['SERVICE_CONFIRM_PHONE_FACETEC', 'Obtenção de dados pelo telefone (Facetec)', 'Pessoa Física', { service: 'SERVICE_CONFIRM_PHONE_FACETEC', phone: '+5561123456789' }],
+  ['SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP', 'Antecedentes criminais civis (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP', cpf: 'cpf', rg: 'rg', uf: 'uf' }],
+  ['SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP', 'Antecedentes criminais federais (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP', 'Score de inadimplência (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX', 'Documentoscopia digital (Acertpix)', 'Pessoa Física', { service: 'SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX', key: '{key}', image1: 'base64', image2: 'base64', selfie1: 'base64' }],
+  ['SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX', 'Consulta da documentoscopia digital (Acertpix)', 'Pessoa Física', { service: 'SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX', key: '{key}' }],
+  ['SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP', 'Relacionamentos econômicos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP', 'Dados eleitorais de candidato PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP', 'Doações eleitorais PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP', 'Prestadores de serviços eleitorais PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_EMAILS_EXTENDED_BIGDATACORP', 'Histórico de e-mails (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_EMAILS_EXTENDED_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_EMAIL_VALIDATION_BIGDATACORP', 'Validação de e-mail (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_EMAIL_VALIDATION_BIGDATACORP', email: 'email@email.com' }],
+  ['SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP', 'Qualificação cadastral no eSocial (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP', cpf: 'cpf', nit: 'nit (opcional)' }],
+  ['SERVICE_FACE_MATCH_AWS', 'FaceMatch (AWS)', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH_AWS', image1: 'base64', image2: 'base64' }],
+  ['SERVICE_FACE_MATCH_BIGDATACORP', 'FaceMatch (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH_BIGDATACORP', image1: 'base64', image2: 'base64' }],
+  ['SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP', 'Histórico político familiar PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_FINANCIAL_INFORMATION_BIGDATACORP', 'Informações financeiras (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FINANCIAL_INFORMATION_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_FRAUD_RISK_SCORE_BIGDATACORP', 'Score de risco de fraude (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FRAUD_RISK_SCORE_BIGDATACORP', cpf: 'cpf', factor: 'minRisk or minattrition' }],
+  ['SERVICE_JURIDICAL_PROCESSES_BIGDATACORP', 'Processos jurídicos e administrativos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_JURIDICAL_PROCESSES_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_LIVENESS_2D_FACETEC', 'Liveness 2D (Facetec)', 'Pessoa Física', { service: 'SERVICE_LIVENESS_2D_FACETEC', image1: 'selfie' }],
+  ['SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP', 'Exposição e perfil na mídia PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_MEI_BIGDATACORP', 'Consulta de MEI (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEI_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP', 'Nada consta de ações judiciais (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP', cpf: 'cpf', court: 'TRF1', uf: 'uf', sphere: 'CIVIL' }],
+  ['SERVICE_OCR_BIGDATACORP', 'OCR de documentos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_OCR_BIGDATACORP', image1: 'base64', image2: 'base64', image1Url: 'url_image', image2Url: 'urlImageMatch' }],
+  ['SERVICE_PEP', 'Pessoa politicamente exposta', 'Pessoa Física', { service: 'SERVICE_PEP', cpf: 'cpf' }],
+  ['SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP', 'Enriquecimento de dados PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_PHONE_HISTORY_BIGDATACORP', 'Histórico de telefones (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PHONE_HISTORY_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_PIS_CONSULTATION_BIGDATACORP', 'Consulta do PIS (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PIS_CONSULTATION_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP', 'Envolvimento político (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP', 'Envolvimento político PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP', 'Histórico profissional (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP', 'Certidão negativa de protesto (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_PROTEST_PF_INFOSIMPLES', 'Certidão negativa de protesto PF (InfoSimples)', 'Pessoa Física', { service: 'SERVICE_PROTEST_PF_INFOSIMPLES', cpf: 'cpf' }],
+  ['SERVICE_PROTEST_PF_NETRIN', 'Certidão negativa de protesto PF (Netrin)', 'Pessoa Física', { service: 'SERVICE_PROTEST_PF_NETRIN', cpf: 'cpf' }],
+  ['SERVICE_PUBLIC_SERVANTS_BIGDATACORP', 'Servidores públicos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PUBLIC_SERVANTS_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_RELATED_PEOPLE_BIGDATACORP', 'Pessoas relacionadas (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_RELATED_PEOPLE_BIGDATACORP', cpf: 'cpf' }],
+  ['SERVICE_RFB_PF_BIGDATACORP', 'CPF na Receita Federal (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_RFB_PF_BIGDATACORP', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' }],
+  ['SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP', 'Débitos ativos PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP', 'Endereços estendidos CNPJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP', 'KYC e compliance dos sócios (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP', 'Relacionamentos de empresa (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP', 'Sócios na Receita Federal (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP', 'Compliance de casas de apostas PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP', 'Enriquecimento de dados PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_DAS_MEI_INFOSIMPLES', 'DAS MEI na Receita (InfoSimples)', 'Pessoa Jurídica', { service: 'SERVICE_DAS_MEI_INFOSIMPLES', cnpj: 'cnpj' }],
+  ['SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP', 'Doações eleitorais PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP', 'Fornecedores eleitorais PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP', 'Sócios de primeiro nível (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP', 'Processos jurídicos dos sócios (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP', 'Exposição e perfil na mídia PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP', 'Doações eleitorais dos sócios (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_PROTEST_PJ_INFOSIMPLES', 'Certidão negativa de protesto PJ (InfoSimples)', 'Pessoa Jurídica', { service: 'SERVICE_PROTEST_PJ_INFOSIMPLES', cnpj: 'cnpj' }],
+  ['SERVICE_PROTEST_PJ_NETRIN', 'Certidão negativa de protesto PJ (Netrin)', 'Pessoa Jurídica', { service: 'SERVICE_PROTEST_PJ_NETRIN', cnpj: 'cnpj' }],
+  ['SERVICE_RFB_PJ_BIGDATACORP', 'CNPJ na Receita Federal (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_RFB_PJ_BIGDATACORP', cnpj: 'cnpj' }],
+  ['SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP', 'Consulta do SINTEGRA (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP', cnpj: 'cnpj', uf: 'uf (opcional)' }],
+];
+
+function requestExampleFromBody(body) {
+  return Object.entries(body).map(([key, value]) => `${key}: ${value}`).join('\n');
+}
+
+function mergePartnerApiServices(catalog) {
+  const seen = new Set(catalog.map((service) => service.service));
+  const extras = [];
+
+  for (const [service, name, category, body] of partnerApiServices) {
+    if (seen.has(service)) continue;
+
+    const item = {
+      summary: `${category === 'Pessoa Jurídica' ? 'PJ' : 'PF'} - ${name}`,
+      service,
+      requestBody: requestExampleFromBody(body),
+    };
+
+    extras.push({
+      service,
+      documentedAlias: service,
+      name,
+      category,
+      documented: true,
+      endpoint: 'POST /api/service-api',
+      method: 'POST',
+      requiresAuth: true,
+      environments: {
+        homologation: 'https://backoffice-hml.idcerberus.com',
+        production: 'https://backoffice.idcerberus.com',
+      },
+      requestFields: Object.keys(body).filter((field) => field !== 'service'),
+      requestExample: item.requestBody,
+      documentationUrl: apiReferenceServiceUrl(item),
+      guideUrl: guideUrlForCategory(category),
+      apiReferenceSection: item.summary,
+      searchTerms: buildSearchTerms(item),
+    });
+  }
+
+  return [...catalog, ...extras].sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+}
+
 function buildSearchTerms(item) {
   const terms = new Set([
     item.service,
@@ -479,20 +584,11 @@ function renderApiReferenceText(servicesCatalog) {
     lines.push(`- Campos do request: ${service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : 'sem campos adicionais mapeados'}`);
     lines.push('');
     lines.push('```bash');
-    lines.push("curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \\");
-    lines.push("--header 'Content-Type: application/json' \\");
-    lines.push("--header 'Authorization: Bearer {jwt_token}' \\");
-    lines.push("--data '{");
-    const requestLines = service.requestExample.split(/\r?\n/).filter(Boolean);
-    const requestFields = requestLines
-      .map((line) => line.match(/^\s*([A-Za-z0-9_]+):\s*(.*)$/))
-      .filter((field) => field && field[1] !== 'service');
-    for (const [index, field] of requestFields.entries()) {
-      if (!field) continue;
-      const comma = index === requestFields.length - 1 ? '' : ',';
-      lines.push(`  "${field[1]}": "${field[2].replace(/^["']|["']$/g, '')}"${comma}`);
-    }
-    lines.push("}'");
+    lines.push(renderCurl({
+      baseUrl: 'https://backoffice-hml.idcerberus.com',
+      path: '/api/service-api',
+      body: jsonBodyFromRequestExample(service.requestExample),
+    }));
     lines.push('```');
     lines.push('');
   }
@@ -550,6 +646,9 @@ function normalizeText(value) {
 function serviceFamily(service) {
   const text = normalizeText(`${service.name} ${service.service} ${service.searchTerms?.join(' ') ?? ''}`);
 
+  if (text.includes('telefone') || text.includes('phone') || text.includes('email') || text.includes('address') || text.includes('endereco') || text.includes('relacion') || text.includes('relationship') || text.includes('socio') || text.includes('qsa') || text.includes('sites') || text.includes('domains')) {
+    return 'Contatos, sites e relacionamentos';
+  }
   if (text.includes('ocr') || text.includes('face') || text.includes('liveness') || text.includes('biometric') || text.includes('documentoscopia') || text.includes('datavalid')) {
     return 'Biometria e documentos';
   }
@@ -568,10 +667,6 @@ function serviceFamily(service) {
   if (text.includes('receita') || text.includes('rfb') || text.includes('enriquecimento') || text.includes('cadastro') || text.includes('registration') || text.includes('demographic') || text.includes('pis') || text.includes('mei') || text.includes('sintegra') || text.includes('das')) {
     return 'Dados cadastrais e Receita Federal';
   }
-  if (text.includes('telefone') || text.includes('phone') || text.includes('email') || text.includes('address') || text.includes('endereco') || text.includes('relacion') || text.includes('relationship') || text.includes('socio') || text.includes('qsa') || text.includes('sites') || text.includes('domains')) {
-    return 'Contatos, sites e relacionamentos';
-  }
-
   return 'Outros services';
 }
 
@@ -583,8 +678,9 @@ function serviceUseCase(service) {
   if (text.includes('enriquecimento')) return `Use para complementar dados cadastrais da ${target} a partir do documento informado.`;
   if (text.includes('demographic')) return `Use para consultar informações sociodemográficas associadas à ${target}.`;
   if (text.includes('ocr')) return 'Use para extrair dados de documentos enviados em base64 ou por URL.';
-  if (text.includes('face')) return 'Use para comparar duas imagens faciais e retornar a similaridade entre elas.';
+  if (text.includes('phone') || text.includes('telefone')) return 'Use para consultar, validar ou enriquecer dados de telefone.';
   if (text.includes('liveness')) return 'Use para validar prova de vida a partir de uma imagem de selfie.';
+  if (text.includes('face')) return 'Use para comparar duas imagens faciais e retornar a similaridade entre elas.';
   if (text.includes('documentoscopia')) return 'Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.';
   if (text.includes('biometric') || text.includes('biometr')) return 'Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.';
   if (text.includes('pep')) return 'Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta.';
@@ -595,7 +691,6 @@ function serviceUseCase(service) {
   if (text.includes('score') || text.includes('risco')) return `Use para avaliar risco, score ou propensão associada à ${target}.`;
   if (text.includes('debt') || text.includes('debito') || text.includes('divida')) return `Use para consultar débitos ou dívidas associadas à ${target}.`;
   if (text.includes('kyc') || text.includes('compliance')) return `Use para executar checagens de KYC e compliance da ${target}.`;
-  if (text.includes('phone') || text.includes('telefone')) return 'Use para consultar, validar ou enriquecer dados de telefone.';
   if (text.includes('email')) return 'Use para validar ou consultar histórico de e-mails relacionados ao documento.';
   if (text.includes('address') || text.includes('endereco')) return 'Use para consultar ou validar endereços associados ao documento.';
   if (text.includes('domains') || text.includes('sites')) return `Use para consultar dados de sites vinculados à ${target}.`;
@@ -952,7 +1047,7 @@ const mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
 }));
 const openApiContent = read(openApiPath);
 const openApiSummary = extractOpenApiSummary(openApiContent);
-const servicesCatalog = buildServicesCatalog(openApiSummary.services);
+const servicesCatalog = mergePartnerApiServices(buildServicesCatalog(openApiSummary.services));
 const exampleFiles = writeExampleFiles(servicesCatalog);
 const llmRules = [
   '## Regras para assistentes de IA',
@@ -1070,8 +1165,8 @@ for (const slug of [
 smallLines.push('');
 smallLines.push('## Services documentados no API Reference');
 smallLines.push('');
-for (const item of openApiSummary.services.sort((a, b) => a.summary.localeCompare(b.summary))) {
-  smallLines.push(`- ${item.summary}: \`${item.service}\``);
+for (const item of servicesCatalog) {
+  smallLines.push(`- ${item.category} - ${item.name}: \`${item.service}\``);
 }
 smallLines.push('');
 smallLines.push('## Arquivos auxiliares');
@@ -1130,7 +1225,7 @@ write(path.join(root, 'llms-full.txt'), fullLines.join('\n'));
 
 console.log(`Generated llms.txt with ${mdxPages.length} pages.`);
 console.log('Generated llms-small.txt.');
-console.log(`Generated llms-full.txt with ${openApiSummary.services.length} service examples.`);
+console.log(`Generated llms-full.txt with ${servicesCatalog.length} service examples.`);
 console.log('Generated llms-api-reference.txt.');
 console.log('Generated services-catalog.json.');
 console.log('Generated guides/indice-de-services.mdx.');
