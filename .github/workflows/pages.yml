@@ -43,13 +43,12 @@ jobs:
 
       - name: Prepare Pages artifact
         env:
-          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          BASE_PATH: /api-docs-idcerberus
+          CUSTOM_DOMAIN: api-docs.idcerberus.com
         run: |
           mkdir dist
           unzip -q export.zip -d dist
-          if [ -n "$BASE_PATH" ]; then
-            node scripts/prepare-pages-export.mjs dist "$BASE_PATH"
-          fi
+          node scripts/prepare-pages-export.mjs dist "$BASE_PATH" "$CUSTOM_DOMAIN"
           touch dist/.nojekyll
 
       - name: Upload artifact

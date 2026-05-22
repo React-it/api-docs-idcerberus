@@ -90,14 +90,22 @@ O script de export também executa a geração antes de publicar:
 npm run export
 ```
 
-No deploy, os arquivos devem ficar disponíveis em:
+No deploy, a URL canônica da documentação fica em:
 
-- `https://react-it.github.io/api-docs-idcerberus/llms.txt`
-- `https://react-it.github.io/api-docs-idcerberus/llms-small.txt`
-- `https://react-it.github.io/api-docs-idcerberus/llms-full.txt`
-- `https://react-it.github.io/api-docs-idcerberus/llms-api-reference.txt`
-- `https://react-it.github.io/api-docs-idcerberus/services-catalog.json`
-- `https://react-it.github.io/api-docs-idcerberus/examples/auth.hml.curl`
+- `https://api-docs.idcerberus.com/api-docs-idcerberus/`
+
+A raiz `https://api-docs.idcerberus.com/` redireciona para
+`/api-docs-idcerberus/`. O arquivo `CNAME` publicado no artifact do GitHub
+Pages aponta para `api-docs.idcerberus.com`.
+
+Os arquivos auxiliares devem ficar disponíveis em:
+
+- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms.txt`
+- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms-small.txt`
+- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms-full.txt`
+- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms-api-reference.txt`
+- `https://api-docs.idcerberus.com/api-docs-idcerberus/services-catalog.json`
+- `https://api-docs.idcerberus.com/api-docs-idcerberus/examples/auth.hml.curl`
 
 Nas páginas públicas, os links para esses arquivos devem usar a URL completa com
 `/api-docs-idcerberus/`. Links absolutos iniciados apenas com `/llms.txt`,
