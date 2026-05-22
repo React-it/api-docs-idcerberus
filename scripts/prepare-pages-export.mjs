@@ -116,7 +116,7 @@ function normalizeHtml(html, route) {
 
   return next.includes('data-api-reference-nav')
     ? next
-    : next.replace('</body>', `${runtimeScript}${stableApiReferenceNavScript}</body>`);
+    : next.replace('</body>', `${runtimeScript}</body>`);
 }
 
 function normalizeJs(js) {
