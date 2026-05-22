@@ -17,142 +17,102 @@ Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produ
 - **Service**: valor exato que deve ser enviado no campo `service`.
 - **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.
 - **Campos**: parâmetros esperados no body além de `service`.
+- **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.
 - **Exemplos**: cada item traz body JSON, curl de homologação, curl de produção e response resumido.
 
 ## Índice por família
 
 ### Biometria e documentos
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Consulta da documentoscopia digital (Acertpix) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `key` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. |
-| Documentoscopia digital | `service_digital_documentoscopy` | `key`, `image1`, `image2`, `selfie1` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. |
-| Documentoscopia digital (Acertpix) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `key`, `image1`, `image2`, `selfie1` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. |
-| FaceMatch | `service_face_match` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. |
-| FaceMatch (AWS) | `SERVICE_FACE_MATCH_AWS` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. |
-| FaceMatch (BigDataCorp) | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. |
-| Liveness 2D | `service_liveness_2d` | `image1` | Use para validar prova de vida a partir de uma imagem de selfie. |
-| Liveness 2D (Facetec) | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | Use para validar prova de vida a partir de uma imagem de selfie. |
-| OCR de documentos | `service_ocr` | `image1`, `image2`, `image1Url`, `image2Url` | Use para extrair dados de documentos enviados em base64 ou por URL. |
-| OCR de documentos (BigDataCorp) | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | Use para extrair dados de documentos enviados em base64 ou por URL. |
-| Resultado da documentoscopia digital | `service_digital_documentoscopy_consult` | `key` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. |
-| Score biométrico | `service_biometric_score` | `cpf`, `image1` | Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade. |
-| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | Use este service quando precisar executar a consulta "Validação de CNH no DataValid" via API. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `key`, `image1`, `image2`, `selfie1` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna status da analise documental, chave da consulta e dados processados de documento, selfie e validacoes associadas. |
+| FaceMatch | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao. |
+| FaceMatch (AWS) | `SERVICE_FACE_MATCH_AWS` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao. |
+| Liveness 2D | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | Use para validar prova de vida a partir de uma imagem de selfie. | Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao. |
+| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraidos do documento enviado, tipo documental identificado, campos oficiais/estimados e status de leitura. |
+| Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `key` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna status da analise documental, chave da consulta e dados processados de documento, selfie e validacoes associadas. |
+| Score biométrico | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade. | Retorna score/status biometrico e dados de validacao conforme a base governamental consultada. |
 
 ### Contatos, sites e relacionamentos
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Dados de sites | `SERVICE_DOMAINS_CPF` | `cpf` | Use para consultar dados de sites vinculados à pessoa. |
-| Dados financeiros e endereços | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. |
-| Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` | Use para consultar, validar ou enriquecer dados de telefone. |
-| Endereços | `service_address` | `cpf` | Use para consultar ou validar endereços associados ao documento. |
-| Endereços (BigDataCorp) | `SERVICE_ADDRESS_BIGDATACORP` | `cpf` | Use para consultar ou validar endereços associados ao documento. |
-| Histórico de e-mails | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | Use para validar ou consultar histórico de e-mails relacionados ao documento. |
-| Histórico de e-mails (BigDataCorp) | `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | `cpf` | Use para validar ou consultar histórico de e-mails relacionados ao documento. |
-| Histórico de telefones | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` | Use para consultar, validar ou enriquecer dados de telefone. |
-| Histórico de telefones (BigDataCorp) | `SERVICE_PHONE_HISTORY_BIGDATACORP` | `cpf` | Use para consultar, validar ou enriquecer dados de telefone. |
-| Informações socio-demográficas | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf` | Use para consultar informações sociodemográficas associadas à pessoa. |
-| Obtenção de dados pelo telefone (Facetec) | `SERVICE_CONFIRM_PHONE_FACETEC` | `phone` | Use para consultar, validar ou enriquecer dados de telefone. |
-| Pessoas relacionadas | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. |
-| Pessoas relacionadas (BigDataCorp) | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. |
-| Relacionamentos econômicos | `economic_relationships` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. |
-| Relacionamentos econômicos (BigDataCorp) | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. |
-| Validação de CPF com endereço | `service_cpf_address_validation` | `cpf`, `zipcode`, `numberAddress` | Use para consultar ou validar endereços associados ao documento. |
-| Validação de CPF com endereço (BigDataCorp) | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` | Use para consultar ou validar endereços associados ao documento. |
-| Validação de CPF com telefone | `service_cpf_phone_validation` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. |
-| Validação de CPF com telefone (BigDataCorp) | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. |
-| Validação de CPF com telefone (Facetec) | `SERVICE_CPF_PHONE_VALIDATION_FACETEC` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. |
-| Validação de e-mail | `service_email_validation` | `email` | Use para validar ou consultar histórico de e-mails relacionados ao documento. |
-| Validação de e-mail (BigDataCorp) | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `email` | Use para validar ou consultar histórico de e-mails relacionados ao documento. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Dados financeiros e endereços | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna indicadores financeiros e de risco do pessoa/CPF, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel. |
+| Dados pelo telefone | `SERVICE_CONFIRM_PHONE_FACETEC` | `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao. |
+| Endereços | `SERVICE_ADDRESS_BIGDATACORP` | `cpf` | Use para consultar ou validar endereços associados ao documento. | Retorna enderecos encontrados ou resultado de validacao de endereco associado ao pessoa/CPF. |
+| Histórico de e-mails (BigDataCorp) | `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | `cpf` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna e-mails, historico de contato ou resultado de validacao de e-mail associado ao pessoa/CPF. |
+| Histórico de telefones (BigDataCorp) | `SERVICE_PHONE_HISTORY_BIGDATACORP` | `cpf` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna telefones, historico de contato ou resultado de validacao de telefone associado ao pessoa/CPF. |
+| Pessoas relacionadas (BigDataCorp) | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna vinculos, socios, relacionamentos economicos ou pessoas/empresas relacionadas ao pessoa/CPF. |
+| Relacionamentos econômicos | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna vinculos, socios, relacionamentos economicos ou pessoas/empresas relacionadas ao pessoa/CPF. |
+| Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` | Use para consultar ou validar endereços associados ao documento. | Retorna enderecos encontrados ou resultado de validacao de endereco associado ao pessoa/CPF. |
+| Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna telefones, historico de contato ou resultado de validacao de telefone associado ao pessoa/CPF. |
+| Validação de CPF com telefone (Facetec) | `SERVICE_CPF_PHONE_VALIDATION_FACETEC` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao. |
+| Validação de e-mail | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `email` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna e-mails, historico de contato ou resultado de validacao de e-mail associado ao pessoa/CPF. |
 
 ### Dados cadastrais e Receita Federal
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Consulta de MEI | `service_mei` | `cpf` | Use este service quando precisar executar a consulta "Consulta de MEI" via API. |
-| Consulta de MEI (BigDataCorp) | `SERVICE_MEI_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Consulta de MEI (BigDataCorp)" via API. |
-| Consulta do PIS (BigDataCorp) | `SERVICE_PIS_CONSULTATION_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Consulta do PIS (BigDataCorp)" via API. |
-| CPF na Receita Federal (BigDataCorp) | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. |
-| CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. |
-| Dados PIS | `service_pis_consultation` | `cpf` | Use este service quando precisar executar a consulta "Dados PIS" via API. |
-| Enriquecimento de dados | `service_person_data_enrichment` | `cpf` | Use para complementar dados cadastrais da pessoa a partir do documento informado. |
-| Enriquecimento de dados PF (BigDataCorp) | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | `cpf` | Use para complementar dados cadastrais da pessoa a partir do documento informado. |
-| Qualificação cadastral no eSocial (BigDataCorp) | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | `cpf`, `nit` | Use este service quando precisar executar a consulta "Qualificação cadastral no eSocial (BigDataCorp)" via API. |
-| Status do CPF na Receita Federal | `service_rfb_pf` | `cpf`, `dataDeNascimento` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. |
-| Validação do E-Social | `service_esocial_registration_qualification` | `cpf`, `nit` | Use este service quando precisar executar a consulta "Validação do E-Social" via API. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Consulta de MEI | `SERVICE_MEI_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Consulta de MEI" via API. | Retorna dados cadastrais ou fiscais especificos do pessoa/CPF, conforme a base consultada pelo service. |
+| CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. | Retorna dados cadastrais do pessoa/CPF, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada. |
+| Dados PIS | `SERVICE_PIS_CONSULTATION_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Dados PIS" via API. | Retorna dados cadastrais ou fiscais especificos do pessoa/CPF, conforme a base consultada pelo service. |
+| Enriquecimento de dados | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | `cpf` | Use para complementar dados cadastrais da pessoa a partir do documento informado. | Retorna dados cadastrais do pessoa/CPF, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada. |
+| Status do CPF na Receita Federal | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. | Retorna dados cadastrais do pessoa/CPF, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada. |
+| Validação do E-Social | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | `cpf`, `nit` | Use este service quando precisar executar a consulta "Validação do E-Social" via API. | Retorna dados cadastrais do pessoa/CPF, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada. |
 
 ### Dados eleitorais e PEP
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. |
-| Dados eleitorais de candidato PF (BigDataCorp) | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. |
-| Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. |
-| Doações eleitorais PF (BigDataCorp) | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. |
-| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político" via API. |
-| Envolvimento político (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político (BigDataCorp)" via API. |
-| Envolvimento político PF (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API. |
-| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` | `cpf` | Use este service quando precisar executar a consulta "Histórico familiar político" via API. |
-| Histórico político familiar PF (BigDataCorp) | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Histórico político familiar PF (BigDataCorp)" via API. |
-| Pessoa politicamente exposta | `service_pep` | `cpf` | Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta. |
-| Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` | Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta. |
-| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. |
-| Prestadores de serviços eleitorais PF (BigDataCorp) | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna dados eleitorais associados ao pessoa/CPF, como candidaturas, doacoes, fornecedores ou historico politico quando disponivel. |
+| Doações eleitorais PF (BigDataCorp) | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna dados eleitorais associados ao pessoa/CPF, como candidaturas, doacoes, fornecedores ou historico politico quando disponivel. |
+| Envolvimento político (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político (BigDataCorp)" via API. | Retorna indicadores de KYC/compliance do pessoa/CPF, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis. |
+| Envolvimento político PF (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API. | Retorna indicadores de KYC/compliance do pessoa/CPF, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis. |
+| Histórico político familiar PF (BigDataCorp) | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Histórico político familiar PF (BigDataCorp)" via API. | Retorna indicadores de KYC/compliance do pessoa/CPF, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis. |
+| Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` | Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta. | Retorna indicadores de KYC/compliance do pessoa/CPF, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis. |
+| Prestadores de serviços eleitorais PF (BigDataCorp) | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna dados eleitorais associados ao pessoa/CPF, como candidaturas, doacoes, fornecedores ou historico politico quando disponivel. |
 
 ### Jurídico, certidões e protestos
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Antecedentes criminais civis | `service_criminal_record_civil` | `cpf`, `rg`, `uf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
-| Antecedentes criminais civis (BigDataCorp) | `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | `cpf`, `rg`, `uf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
-| Antecedentes criminais federais | `service_criminal_record_federal` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
-| Antecedentes criminais federais (BigDataCorp) | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
-| Certidão de Nada Consta | `service_nothing_record_lawsuits` | `cpf`, `court`, `uf`, `sphere` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
-| Certidão negativa de protesto | `service_protest_clearance_certificate` | `cpf` | Use para consultar protestos associados ao documento da pessoa. |
-| Certidão negativa de protesto (BigDataCorp) | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | `cpf` | Use para consultar protestos associados ao documento da pessoa. |
-| Certidão negativa de protesto PF (InfoSimples) | `SERVICE_PROTEST_PF_INFOSIMPLES` | `cpf` | Use para consultar protestos associados ao documento da pessoa. |
-| Certidão negativa de protesto PF (Netrin) | `SERVICE_PROTEST_PF_NETRIN` | `cpf` | Use para consultar protestos associados ao documento da pessoa. |
-| Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | Use este service quando precisar executar a consulta "Mandado de prisão" via API. |
-| Nada consta de ações judiciais (BigDataCorp) | `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | `cpf`, `court`, `uf`, `sphere` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
-| Processos jurídicos e administrativos | `service_juridical_processes` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
-| Processos jurídicos e administrativos (BigDataCorp) | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | `cpf`, `rg`, `uf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
+| Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
+| Certidão de Nada Consta | `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | `cpf`, `court`, `uf`, `sphere` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
+| Certidão negativa de protesto | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
+| Certidão negativa de protesto PF (InfoSimples) | `SERVICE_PROTEST_PF_INFOSIMPLES` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
+| Certidão negativa de protesto PF (Netrin) | `SERVICE_PROTEST_PF_NETRIN` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
+| Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | Use este service quando precisar executar a consulta "Mandado de prisão" via API. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
+| Processos jurídicos e administrativos | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao pessoa/CPF, alem do status da consulta. |
 
 ### KYC, compliance e exposição
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API. |
-| Exposição e perfil na mídia PF (BigDataCorp) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Exposição e perfil na mídia PF (BigDataCorp)" via API. |
-| KYC e compliance | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | Use para executar checagens de KYC e compliance da pessoa. |
-| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Propensão a apostas online" via API. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Exposição e perfil na mídia PF (BigDataCorp) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Exposição e perfil na mídia PF (BigDataCorp)" via API. | Retorna o objeto result do service SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP com os dados disponiveis para a consulta, alem do status de processamento. |
+| KYC e compliance | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | Use para executar checagens de KYC e compliance da pessoa. | Retorna indicadores de KYC/compliance do pessoa/CPF, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis. |
+| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Propensão a apostas online" via API. | Retorna o objeto result do service SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP com os dados disponiveis para a consulta, alem do status de processamento. |
 
 ### Outros services
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Histórico profissional | `service_professional_history` | `cpf` | Use este service quando precisar executar a consulta "Histórico profissional" via API. |
-| Histórico profissional (BigDataCorp) | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Histórico profissional (BigDataCorp)" via API. |
-| Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` | Use este service quando precisar executar a consulta "Histórico profissional do titular" via API. |
-| Modelagem de dados | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Modelagem de dados" via API. |
-| Prompt de IA para pessoa | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API. |
-| Servidores públicos | `service_public_servants` | `cpf` | Use este service quando precisar executar a consulta "Servidores públicos" via API. |
-| Servidores públicos (BigDataCorp) | `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Servidores públicos (BigDataCorp)" via API. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Histórico profissional" via API. | Retorna o objeto result do service SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP com os dados disponiveis para a consulta, alem do status de processamento. |
+| Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` | Use este service quando precisar executar a consulta "Histórico profissional do titular" via API. | Retorna vinculos, socios, relacionamentos economicos ou pessoas/empresas relacionadas ao pessoa/CPF. |
+| Modelagem de dados | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Modelagem de dados" via API. | Retorna o objeto result do service SERVICE_PERSON_DATA_MODELING_BIGDATACORP com os dados disponiveis para a consulta, alem do status de processamento. |
+| Prompt de IA para pessoa | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API. | Retorna a resposta consolidada pela IA a partir dos dados consultados e do prompt configurado para o service. |
+| Servidores públicos | `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Servidores públicos" via API. | Retorna o objeto result do service SERVICE_PUBLIC_SERVANTS_BIGDATACORP com os dados disponiveis para a consulta, alem do status de processamento. |
 
 ### Risco, crédito e dívidas
 
-| Nome | Service | Campos | Quando usar |
-| --- | --- | --- | --- |
-| Débitos ativos | `SERVICE_ACTIVE_DEBT_PF` | `cpf` | Use para consultar débitos ou dívidas associadas à pessoa. |
-| Débitos ativos PF (BigDataCorp) | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` | Use para consultar débitos ou dívidas associadas à pessoa. |
-| Dívida ativa | `service_active_debt` | `cpf` | Use para consultar débitos ou dívidas associadas à pessoa. |
-| Informações financeiras | `service_financial_information` | `cpf` | Use para consultar informações financeiras associadas à pessoa. |
-| Informações financeiras (BigDataCorp) | `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | `cpf` | Use para consultar informações financeiras associadas à pessoa. |
-| Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. |
-| Score de inadimplência | `service_default_risk_score` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. |
-| Score de inadimplência (BigDataCorp) | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. |
-| Score de risco de fraude | `service_fraud_risk_score` | `cpf`, `factor` | Use para avaliar risco, score ou propensão associada à pessoa. |
-| Score de risco de fraude (BigDataCorp) | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` | Use para avaliar risco, score ou propensão associada à pessoa. |
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| Dívida ativa | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` | Use para consultar débitos ou dívidas associadas à pessoa. | Retorna indicadores financeiros e de risco do pessoa/CPF, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel. |
+| Informações financeiras | `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | `cpf` | Use para consultar informações financeiras associadas à pessoa. | Retorna indicadores financeiros e de risco do pessoa/CPF, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel. |
+| Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna indicadores financeiros e de risco do pessoa/CPF, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel. |
+| Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna indicadores financeiros e de risco do pessoa/CPF, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel. |
+| Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna indicadores financeiros e de risco do pessoa/CPF, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel. |
 
 
 ## Requests completos
@@ -160,161 +120,7 @@ Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produ
 ### Biometria e documentos
 
 <AccordionGroup>
-<Accordion title="Consulta da documentoscopia digital (Acertpix)">
-
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
-
-**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `key`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
-  "key": "{key}"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
-  "key": "{key}"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
-  "key": "{key}"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `key` | Sim | Parâmetro usado pelo service SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Documentoscopia digital">
-
-**Service:** `service_digital_documentoscopy`
-
-**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `key`, `image1`, `image2`, `selfie1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_digital_documentoscopy",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_digital_documentoscopy",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_digital_documentoscopy",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `key` | Sim | Parâmetro usado pelo service service_digital_documentoscopy. |
-| `image1` | Sim | Parâmetro usado pelo service service_digital_documentoscopy. |
-| `image2` | Sim | Parâmetro usado pelo service service_digital_documentoscopy. |
-| `selfie1` | Sim | Parâmetro usado pelo service service_digital_documentoscopy. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_digital_documentoscopy."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Documentoscopia digital (Acertpix)">
 
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX`
 
@@ -331,7 +137,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 ```json
 {
   "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
-  "key": "{key}",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
   "image1": "base64",
   "image2": "base64",
   "selfie1": "base64"
@@ -346,7 +152,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
-  "key": "{key}",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
   "image1": "base64",
   "image2": "base64",
   "selfie1": "base64"
@@ -361,7 +167,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
-  "key": "{key}",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
   "image1": "base64",
   "image2": "base64",
   "selfie1": "base64"
@@ -399,7 +205,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="FaceMatch">
 
-**Service:** `service_face_match`
+**Service:** `SERVICE_FACE_MATCH_BIGDATACORP`
 
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
 
@@ -413,7 +219,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 ```json
 {
-  "service": "service_face_match",
+  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
   "image1": "base64",
   "image2": "base64"
 }
@@ -426,7 +232,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_face_match",
+  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
   "image1": "base64",
   "image2": "base64"
 }'
@@ -439,7 +245,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_face_match",
+  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
   "image1": "base64",
   "image2": "base64"
 }'
@@ -450,15 +256,15 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código do produto que será executado. |
-| `image1` | Sim | Parâmetro usado pelo service service_face_match. |
-| `image2` | Sim | Parâmetro usado pelo service service_face_match. |
+| `image1` | Sim | Parâmetro usado pelo service SERVICE_FACE_MATCH_BIGDATACORP. |
+| `image2` | Sim | Parâmetro usado pelo service SERVICE_FACE_MATCH_BIGDATACORP. |
 
 ### Response resumido
 
 ```json
 {
   "result": {
-    "observacao": "Os campos retornados variam conforme o service service_face_match."
+    "observacao": "Os campos retornados variam conforme o service SERVICE_FACE_MATCH_BIGDATACORP."
   },
   "status": {
     "code": 200,
@@ -547,153 +353,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 </Accordion>
 
-<Accordion title="FaceMatch (BigDataCorp)">
-
-**Service:** `SERVICE_FACE_MATCH_BIGDATACORP`
-
-**Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`, `image2`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `image1` | Sim | Parâmetro usado pelo service SERVICE_FACE_MATCH_BIGDATACORP. |
-| `image2` | Sim | Parâmetro usado pelo service SERVICE_FACE_MATCH_BIGDATACORP. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_FACE_MATCH_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Liveness 2D">
-
-**Service:** `service_liveness_2d`
-
-**Quando usar:** Use para validar prova de vida a partir de uma imagem de selfie.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_liveness_2d",
-  "image1": "selfie"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_liveness_2d",
-  "image1": "selfie"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_liveness_2d",
-  "image1": "selfie"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `image1` | Sim | Parâmetro usado pelo service service_liveness_2d. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_liveness_2d."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Liveness 2D (Facetec)">
 
 **Service:** `SERVICE_LIVENESS_2D_FACETEC`
 
@@ -765,89 +425,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 </Accordion>
 
 <Accordion title="OCR de documentos">
-
-**Service:** `service_ocr`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`, `image2`, `image1Url`, `image2Url`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_ocr",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_ocr",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_ocr",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `image1` | Sim | Parâmetro usado pelo service service_ocr. |
-| `image2` | Sim | Parâmetro usado pelo service service_ocr. |
-| `image1Url` | Sim | Parâmetro usado pelo service service_ocr. |
-| `image2Url` | Sim | Parâmetro usado pelo service service_ocr. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_ocr."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="OCR de documentos (BigDataCorp)">
 
 **Service:** `SERVICE_OCR_BIGDATACORP`
 
@@ -932,7 +509,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Resultado da documentoscopia digital">
 
-**Service:** `service_digital_documentoscopy_consult`
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
 
@@ -946,7 +523,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 ```json
 {
-  "service": "service_digital_documentoscopy_consult",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
   "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
 }
 ```
@@ -958,7 +535,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_digital_documentoscopy_consult",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
   "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
 }'
 ```
@@ -970,7 +547,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_digital_documentoscopy_consult",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
   "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
 }'
 ```
@@ -980,14 +557,14 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código do produto que será executado. |
-| `key` | Sim | Parâmetro usado pelo service service_digital_documentoscopy_consult. |
+| `key` | Sim | Parâmetro usado pelo service SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX. |
 
 ### Response resumido
 
 ```json
 {
   "result": {
-    "observacao": "Os campos retornados variam conforme o service service_digital_documentoscopy_consult."
+    "observacao": "Os campos retornados variam conforme o service SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX."
   },
   "status": {
     "code": 200,
@@ -1003,7 +580,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Score biométrico">
 
-**Service:** `service_biometric_score`
+**Service:** `SERVICE_DATAVALID_CNH_SERPRO`
 
 **Quando usar:** Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.
 
@@ -1017,7 +594,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 ```json
 {
-  "service": "service_biometric_score",
+  "service": "SERVICE_DATAVALID_CNH_SERPRO",
   "cpf": "cpf",
   "image1": "{base64Image}"
 }
@@ -1030,7 +607,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_biometric_score",
+  "service": "SERVICE_DATAVALID_CNH_SERPRO",
   "cpf": "cpf",
   "image1": "{base64Image}"
 }'
@@ -1043,84 +620,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_biometric_score",
+  "service": "SERVICE_DATAVALID_CNH_SERPRO",
   "cpf": "cpf",
   "image1": "{base64Image}"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_biometric_score. |
-| `image1` | Sim | Parâmetro usado pelo service service_biometric_score. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_biometric_score."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Validação de CNH no DataValid">
-
-**Service:** `SERVICE_DATAVALID_CNH_SERPRO`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Validação de CNH no DataValid" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `image1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_DATAVALID_CNH_SERPRO",
-  "cpf": "cpf",
-  "image1": "base64"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DATAVALID_CNH_SERPRO",
-  "cpf": "cpf",
-  "image1": "base64"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DATAVALID_CNH_SERPRO",
-  "cpf": "cpf",
-  "image1": "base64"
 }'
 ```
 
@@ -1156,77 +658,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 ### Contatos, sites e relacionamentos
 
 <AccordionGroup>
-<Accordion title="Dados de sites">
-
-**Service:** `SERVICE_DOMAINS_CPF`
-
-**Quando usar:** Use para consultar dados de sites vinculados à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_DOMAINS_CPF",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DOMAINS_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DOMAINS_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_DOMAINS_CPF. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_DOMAINS_CPF."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Dados financeiros e endereços">
 
 **Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP`
@@ -1304,7 +735,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Dados pelo telefone">
 
-**Service:** `SERVICE_CONFIRM_PHONE`
+**Service:** `SERVICE_CONFIRM_PHONE_FACETEC`
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
@@ -1318,7 +749,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 ```json
 {
-  "service": "SERVICE_CONFIRM_PHONE",
+  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
   "phone": "+5561123456789"
 }
 ```
@@ -1330,7 +761,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CONFIRM_PHONE",
+  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
   "phone": "+5561123456789"
 }'
 ```
@@ -1342,7 +773,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CONFIRM_PHONE",
+  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
   "phone": "+5561123456789"
 }'
 ```
@@ -1352,14 +783,14 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código do produto que será executado. |
-| `phone` | Sim | Parâmetro usado pelo service SERVICE_CONFIRM_PHONE. |
+| `phone` | Sim | Parâmetro usado pelo service SERVICE_CONFIRM_PHONE_FACETEC. |
 
 ### Response resumido
 
 ```json
 {
   "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_CONFIRM_PHONE."
+    "observacao": "Os campos retornados variam conforme o service SERVICE_CONFIRM_PHONE_FACETEC."
   },
   "status": {
     "code": 200,
@@ -1374,77 +805,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 </Accordion>
 
 <Accordion title="Endereços">
-
-**Service:** `service_address`
-
-**Quando usar:** Use para consultar ou validar endereços associados ao documento.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_address",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_address",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_address",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_address. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_address."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Endereços (BigDataCorp)">
 
 **Service:** `SERVICE_ADDRESS_BIGDATACORP`
 
@@ -1502,81 +862,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "observacao": "Os campos retornados variam conforme o service SERVICE_ADDRESS_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Histórico de e-mails">
-
-**Service:** `SERVICE_EMAILS_EXTENDED`
-
-**Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `limit`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_EMAILS_EXTENDED",
-  "cpf": "cpf",
-  "limit": "10"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_EMAILS_EXTENDED",
-  "cpf": "cpf",
-  "limit": "10"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_EMAILS_EXTENDED",
-  "cpf": "cpf",
-  "limit": "10"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_EMAILS_EXTENDED. |
-| `limit` | Sim | Parâmetro usado pelo service SERVICE_EMAILS_EXTENDED. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_EMAILS_EXTENDED."
   },
   "status": {
     "code": 200,
@@ -1661,85 +946,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 </Accordion>
 
-<Accordion title="Histórico de telefones">
-
-**Service:** `SERVICE_PHONE_HISTORY`
-
-**Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `limit`
-
-**Campos opcionais:** `birthDate`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_PHONE_HISTORY",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)",
-  "limit": "10"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PHONE_HISTORY",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)",
-  "limit": "10"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PHONE_HISTORY",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)",
-  "limit": "10"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_PHONE_HISTORY. |
-| `birthDate` | Não | Parâmetro usado pelo service SERVICE_PHONE_HISTORY. |
-| `limit` | Sim | Parâmetro usado pelo service SERVICE_PHONE_HISTORY. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_PHONE_HISTORY."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Histórico de telefones (BigDataCorp)">
 
 **Service:** `SERVICE_PHONE_HISTORY_BIGDATACORP`
@@ -1798,223 +1004,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "observacao": "Os campos retornados variam conforme o service SERVICE_PHONE_HISTORY_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Informações socio-demográficas">
-
-**Service:** `SERVICE_DEMOGRAPHIC_DATA_CPF`
-
-**Quando usar:** Use para consultar informações sociodemográficas associadas à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_DEMOGRAPHIC_DATA_CPF. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_DEMOGRAPHIC_DATA_CPF."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Obtenção de dados pelo telefone (Facetec)">
-
-**Service:** `SERVICE_CONFIRM_PHONE_FACETEC`
-
-**Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `phone`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
-  "phone": "+5561123456789"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
-  "phone": "+5561123456789"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
-  "phone": "+5561123456789"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `phone` | Sim | Parâmetro usado pelo service SERVICE_CONFIRM_PHONE_FACETEC. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_CONFIRM_PHONE_FACETEC."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Pessoas relacionadas">
-
-**Service:** `SERVICE_RELATED_PEOPLE`
-
-**Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** `birthDate`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_RELATED_PEOPLE",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_RELATED_PEOPLE",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_RELATED_PEOPLE",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_RELATED_PEOPLE. |
-| `birthDate` | Não | Parâmetro usado pelo service SERVICE_RELATED_PEOPLE. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_RELATED_PEOPLE."
   },
   "status": {
     "code": 200,
@@ -2101,77 +1090,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Relacionamentos econômicos">
 
-**Service:** `economic_relationships`
-
-**Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "economic_relationships",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "economic_relationships",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "economic_relationships",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service economic_relationships. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service economic_relationships."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Relacionamentos econômicos (BigDataCorp)">
-
 **Service:** `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
@@ -2242,85 +1160,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 </Accordion>
 
 <Accordion title="Validação de CPF com endereço">
-
-**Service:** `service_cpf_address_validation`
-
-**Quando usar:** Use para consultar ou validar endereços associados ao documento.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `zipcode`, `numberAddress`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_cpf_address_validation",
-  "cpf": "cpf",
-  "zipcode": "00000-000",
-  "numberAddress": "13"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_cpf_address_validation",
-  "cpf": "cpf",
-  "zipcode": "00000-000",
-  "numberAddress": "13"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_cpf_address_validation",
-  "cpf": "cpf",
-  "zipcode": "00000-000",
-  "numberAddress": "13"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_cpf_address_validation. |
-| `zipcode` | Sim | Parâmetro usado pelo service service_cpf_address_validation. |
-| `numberAddress` | Sim | Parâmetro usado pelo service service_cpf_address_validation. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_cpf_address_validation."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Validação de CPF com endereço (BigDataCorp)">
 
 **Service:** `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP`
 
@@ -2400,81 +1239,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 </Accordion>
 
 <Accordion title="Validação de CPF com telefone">
-
-**Service:** `service_cpf_phone_validation`
-
-**Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `phone`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_cpf_phone_validation",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_cpf_phone_validation",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_cpf_phone_validation",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_cpf_phone_validation. |
-| `phone` | Sim | Parâmetro usado pelo service service_cpf_phone_validation. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_cpf_phone_validation."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Validação de CPF com telefone (BigDataCorp)">
 
 **Service:** `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP`
 
@@ -2626,77 +1390,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Validação de e-mail">
 
-**Service:** `service_email_validation`
-
-**Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `email`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_email_validation",
-  "email": "email@email.com"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_email_validation",
-  "email": "email@email.com"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_email_validation",
-  "email": "email@email.com"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `email` | Sim | Parâmetro usado pelo service service_email_validation. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_email_validation."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Validação de e-mail (BigDataCorp)">
-
 **Service:** `SERVICE_EMAIL_VALIDATION_BIGDATACORP`
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
@@ -2773,80 +1466,9 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 <AccordionGroup>
 <Accordion title="Consulta de MEI">
 
-**Service:** `service_mei`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Consulta de MEI" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_mei",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_mei",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_mei",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_mei. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_mei."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Consulta de MEI (BigDataCorp)">
-
 **Service:** `SERVICE_MEI_BIGDATACORP`
 
-**Quando usar:** Use este service quando precisar executar a consulta "Consulta de MEI (BigDataCorp)" via API.
+**Quando usar:** Use este service quando precisar executar a consulta "Consulta de MEI" via API.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -2900,152 +1522,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "observacao": "Os campos retornados variam conforme o service SERVICE_MEI_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Consulta do PIS (BigDataCorp)">
-
-**Service:** `SERVICE_PIS_CONSULTATION_BIGDATACORP`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Consulta do PIS (BigDataCorp)" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_PIS_CONSULTATION_BIGDATACORP. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_PIS_CONSULTATION_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="CPF na Receita Federal (BigDataCorp)">
-
-**Service:** `SERVICE_RFB_PF_BIGDATACORP`
-
-**Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** `dataDeNascimento`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_RFB_PF_BIGDATACORP. |
-| `dataDeNascimento` | Não | Parâmetro usado pelo service SERVICE_RFB_PF_BIGDATACORP. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_RFB_PF_BIGDATACORP."
   },
   "status": {
     "code": 200,
@@ -3132,7 +1608,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Dados PIS">
 
-**Service:** `service_pis_consultation`
+**Service:** `SERVICE_PIS_CONSULTATION_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Dados PIS" via API.
 
@@ -3146,7 +1622,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 ```json
 {
-  "service": "service_pis_consultation",
+  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
   "cpf": "cpf"
 }
 ```
@@ -3158,7 +1634,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_pis_consultation",
+  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
   "cpf": "cpf"
 }'
 ```
@@ -3170,7 +1646,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_pis_consultation",
+  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
   "cpf": "cpf"
 }'
 ```
@@ -3180,14 +1656,14 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_pis_consultation. |
+| `cpf` | Sim | Parâmetro usado pelo service SERVICE_PIS_CONSULTATION_BIGDATACORP. |
 
 ### Response resumido
 
 ```json
 {
   "result": {
-    "observacao": "Os campos retornados variam conforme o service service_pis_consultation."
+    "observacao": "Os campos retornados variam conforme o service SERVICE_PIS_CONSULTATION_BIGDATACORP."
   },
   "status": {
     "code": 200,
@@ -3202,77 +1678,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 </Accordion>
 
 <Accordion title="Enriquecimento de dados">
-
-**Service:** `service_person_data_enrichment`
-
-**Quando usar:** Use para complementar dados cadastrais da pessoa a partir do documento informado.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_person_data_enrichment",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_person_data_enrichment",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_person_data_enrichment",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_person_data_enrichment. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_person_data_enrichment."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Enriquecimento de dados PF (BigDataCorp)">
 
 **Service:** `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP`
 
@@ -3343,11 +1748,86 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 </Accordion>
 
-<Accordion title="Qualificação cadastral no eSocial (BigDataCorp)">
+<Accordion title="Status do CPF na Receita Federal">
+
+**Service:** `SERVICE_RFB_PF_BIGDATACORP`
+
+**Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** `dataDeNascimento`
+
+### Body
+
+```json
+{
+  "service": "SERVICE_RFB_PF_BIGDATACORP",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PF_BIGDATACORP",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PF_BIGDATACORP",
+  "cpf": "cpf",
+  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cpf` | Sim | Parâmetro usado pelo service SERVICE_RFB_PF_BIGDATACORP. |
+| `dataDeNascimento` | Não | Parâmetro usado pelo service SERVICE_RFB_PF_BIGDATACORP. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_RFB_PF_BIGDATACORP."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Validação do E-Social">
 
 **Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP`
 
-**Quando usar:** Use este service quando precisar executar a consulta "Qualificação cadastral no eSocial (BigDataCorp)" via API.
+**Quando usar:** Use este service quando precisar executar a consulta "Validação do E-Social" via API.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -3361,7 +1841,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 {
   "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
   "cpf": "cpf",
-  "nit": "nit (opcional)"
+  "nit": "(opcional)"
 }
 ```
 
@@ -3374,7 +1854,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
   "cpf": "cpf",
-  "nit": "nit (opcional)"
+  "nit": "(opcional)"
 }'
 ```
 
@@ -3387,7 +1867,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
   "cpf": "cpf",
-  "nit": "nit (opcional)"
+  "nit": "(opcional)"
 }'
 ```
 
@@ -3418,233 +1898,12 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 </Accordion>
 
-<Accordion title="Status do CPF na Receita Federal">
-
-**Service:** `service_rfb_pf`
-
-**Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** `dataDeNascimento`
-
-### Body
-
-```json
-{
-  "service": "service_rfb_pf",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_rfb_pf",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_rfb_pf",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_rfb_pf. |
-| `dataDeNascimento` | Não | Parâmetro usado pelo service service_rfb_pf. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_rfb_pf."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Validação do E-Social">
-
-**Service:** `service_esocial_registration_qualification`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Validação do E-Social" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** `nit`
-
-### Body
-
-```json
-{
-  "service": "service_esocial_registration_qualification",
-  "cpf": "cpf",
-  "nit": "(opcional)"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_esocial_registration_qualification",
-  "cpf": "cpf",
-  "nit": "(opcional)"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_esocial_registration_qualification",
-  "cpf": "cpf",
-  "nit": "(opcional)"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_esocial_registration_qualification. |
-| `nit` | Não | Parâmetro usado pelo service service_esocial_registration_qualification. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_esocial_registration_qualification."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 </AccordionGroup>
 
 ### Dados eleitorais e PEP
 
 <AccordionGroup>
 <Accordion title="Dados eleitorais de candidato">
-
-**Service:** `SERVICE_ELECTION_CANDIDATE_DATA`
-
-**Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_ELECTION_CANDIDATE_DATA. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_ELECTION_CANDIDATE_DATA."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Dados eleitorais de candidato PF (BigDataCorp)">
 
 **Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP`
 
@@ -3702,77 +1961,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "observacao": "Os campos retornados variam conforme o service SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Doações eleitorais">
-
-**Service:** `SERVICE_ELECTORAL_DONORS_CPF`
-
-**Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_DONORS_CPF",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTORAL_DONORS_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTORAL_DONORS_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_ELECTORAL_DONORS_CPF. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_ELECTORAL_DONORS_CPF."
   },
   "status": {
     "code": 200,
@@ -3844,77 +2032,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "observacao": "Os campos retornados variam conforme o service SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Envolvimento político">
-
-**Service:** `SERVICE_POLITICAL_INVOLVEMENT`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_POLITICAL_INVOLVEMENT. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_POLITICAL_INVOLVEMENT."
   },
   "status": {
     "code": 200,
@@ -4070,77 +2187,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 </Accordion>
 
-<Accordion title="Histórico familiar político">
-
-**Service:** `SERVICE_FAMILY_POLITICAL_HISTORY`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Histórico familiar político" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_FAMILY_POLITICAL_HISTORY. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_FAMILY_POLITICAL_HISTORY."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Histórico político familiar PF (BigDataCorp)">
 
 **Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP`
@@ -4214,77 +2260,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Pessoa politicamente exposta">
 
-**Service:** `service_pep`
-
-**Quando usar:** Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_pep",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_pep",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_pep",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_pep. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_pep."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Pessoa politicamente exposta">
-
 **Service:** `SERVICE_PEP`
 
 **Quando usar:** Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta.
@@ -4341,77 +2316,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "observacao": "Os campos retornados variam conforme o service SERVICE_PEP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Prestadores de serviço eleitorais">
-
-**Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF`
-
-**Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_ELECTORAL_PROVIDERS_CPF. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_ELECTORAL_PROVIDERS_CPF."
   },
   "status": {
     "code": 200,
@@ -4503,85 +2407,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 <AccordionGroup>
 <Accordion title="Antecedentes criminais civis">
 
-**Service:** `service_criminal_record_civil`
-
-**Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `rg`, `uf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_criminal_record_civil",
-  "cpf": "cpf",
-  "rg": "rg",
-  "uf": "uf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_criminal_record_civil",
-  "cpf": "cpf",
-  "rg": "rg",
-  "uf": "uf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_criminal_record_civil",
-  "cpf": "cpf",
-  "rg": "rg",
-  "uf": "uf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_criminal_record_civil. |
-| `rg` | Sim | Parâmetro usado pelo service service_criminal_record_civil. |
-| `uf` | Sim | Parâmetro usado pelo service service_criminal_record_civil. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_criminal_record_civil."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Antecedentes criminais civis (BigDataCorp)">
-
 **Service:** `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
@@ -4661,77 +2486,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Antecedentes criminais federais">
 
-**Service:** `service_criminal_record_federal`
-
-**Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_criminal_record_federal",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_criminal_record_federal",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_criminal_record_federal",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_criminal_record_federal. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_criminal_record_federal."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Antecedentes criminais federais (BigDataCorp)">
-
 **Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
@@ -4803,7 +2557,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Certidão de Nada Consta">
 
-**Service:** `service_nothing_record_lawsuits`
+**Service:** `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
@@ -4817,7 +2571,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 ```json
 {
-  "service": "service_nothing_record_lawsuits",
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
   "cpf": "cpf",
   "court": "TRF1",
   "uf": "uf",
@@ -4832,7 +2586,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_nothing_record_lawsuits",
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
   "cpf": "cpf",
   "court": "TRF1",
   "uf": "uf",
@@ -4847,7 +2601,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_nothing_record_lawsuits",
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
   "cpf": "cpf",
   "court": "TRF1",
   "uf": "uf",
@@ -4860,17 +2614,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_nothing_record_lawsuits. |
-| `court` | Sim | Parâmetro usado pelo service service_nothing_record_lawsuits. |
-| `uf` | Sim | Parâmetro usado pelo service service_nothing_record_lawsuits. |
-| `sphere` | Sim | Parâmetro usado pelo service service_nothing_record_lawsuits. |
+| `cpf` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
+| `court` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
+| `uf` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
+| `sphere` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
 
 ### Response resumido
 
 ```json
 {
   "result": {
-    "observacao": "Os campos retornados variam conforme o service service_nothing_record_lawsuits."
+    "observacao": "Os campos retornados variam conforme o service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP."
   },
   "status": {
     "code": 200,
@@ -4885,77 +2639,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 </Accordion>
 
 <Accordion title="Certidão negativa de protesto">
-
-**Service:** `service_protest_clearance_certificate`
-
-**Quando usar:** Use para consultar protestos associados ao documento da pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_protest_clearance_certificate",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_protest_clearance_certificate",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_protest_clearance_certificate",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_protest_clearance_certificate. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_protest_clearance_certificate."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Certidão negativa de protesto (BigDataCorp)">
 
 **Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`
 
@@ -5255,161 +2938,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 </Accordion>
 
-<Accordion title="Nada consta de ações judiciais (BigDataCorp)">
-
-**Service:** `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
-
-**Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `court`, `uf`, `sphere`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
-  "cpf": "cpf",
-  "court": "TRF1",
-  "uf": "uf",
-  "sphere": "CIVIL"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
-  "cpf": "cpf",
-  "court": "TRF1",
-  "uf": "uf",
-  "sphere": "CIVIL"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
-  "cpf": "cpf",
-  "court": "TRF1",
-  "uf": "uf",
-  "sphere": "CIVIL"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
-| `court` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
-| `uf` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
-| `sphere` | Sim | Parâmetro usado pelo service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Processos jurídicos e administrativos">
-
-**Service:** `service_juridical_processes`
-
-**Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_juridical_processes",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_juridical_processes",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_juridical_processes",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_juridical_processes. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_juridical_processes."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Processos jurídicos e administrativos (BigDataCorp)">
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP`
 
@@ -5485,77 +3014,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 ### KYC, compliance e exposição
 
 <AccordionGroup>
-<Accordion title="Exposição e perfil na mídia">
-
-**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_MEDIA_PROFILE_EXPOSURE_PF. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_MEDIA_PROFILE_EXPOSURE_PF."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Exposição e perfil na mídia PF (BigDataCorp)">
 
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP`
@@ -5780,80 +3238,9 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 <AccordionGroup>
 <Accordion title="Histórico profissional">
 
-**Service:** `service_professional_history`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_professional_history",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_professional_history",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_professional_history",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_professional_history. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_professional_history."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Histórico profissional (BigDataCorp)">
-
 **Service:** `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP`
 
-**Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional (BigDataCorp)" via API.
+**Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional" via API.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -6139,80 +3526,9 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Servidores públicos">
 
-**Service:** `service_public_servants`
-
-**Quando usar:** Use este service quando precisar executar a consulta "Servidores públicos" via API.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_public_servants",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_public_servants",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_public_servants",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_public_servants. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_public_servants."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Servidores públicos (BigDataCorp)">
-
 **Service:** `SERVICE_PUBLIC_SERVANTS_BIGDATACORP`
 
-**Quando usar:** Use este service quando precisar executar a consulta "Servidores públicos (BigDataCorp)" via API.
+**Quando usar:** Use este service quando precisar executar a consulta "Servidores públicos" via API.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -6284,78 +3600,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 ### Risco, crédito e dívidas
 
 <AccordionGroup>
-<Accordion title="Débitos ativos">
-
-**Service:** `SERVICE_ACTIVE_DEBT_PF`
-
-**Quando usar:** Use para consultar débitos ou dívidas associadas à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ACTIVE_DEBT_PF",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ACTIVE_DEBT_PF",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ACTIVE_DEBT_PF",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service SERVICE_ACTIVE_DEBT_PF. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service SERVICE_ACTIVE_DEBT_PF."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Débitos ativos PF (BigDataCorp)">
+<Accordion title="Dívida ativa">
 
 **Service:** `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP`
 
@@ -6426,149 +3671,7 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 </Accordion>
 
-<Accordion title="Dívida ativa">
-
-**Service:** `service_active_debt`
-
-**Quando usar:** Use para consultar débitos ou dívidas associadas à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_active_debt",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_active_debt",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_active_debt",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_active_debt. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_active_debt."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
 <Accordion title="Informações financeiras">
-
-**Service:** `service_financial_information`
-
-**Quando usar:** Use para consultar informações financeiras associadas à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_financial_information",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_financial_information",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_financial_information",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_financial_information. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_financial_information."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Informações financeiras (BigDataCorp)">
 
 **Service:** `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP`
 
@@ -6716,77 +3819,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 
 <Accordion title="Score de inadimplência">
 
-**Service:** `service_default_risk_score`
-
-**Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_default_risk_score",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_default_risk_score",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_default_risk_score",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_default_risk_score. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_default_risk_score."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Score de inadimplência (BigDataCorp)">
-
 **Service:** `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
@@ -6857,81 +3889,6 @@ O objeto `result` muda de acordo com o produto. Para exemplos completos de retor
 </Accordion>
 
 <Accordion title="Score de risco de fraude">
-
-**Service:** `service_fraud_risk_score`
-
-**Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `factor`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Body
-
-```json
-{
-  "service": "service_fraud_risk_score",
-  "cpf": "cpf",
-  "factor": "minRisk or minattrition"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_fraud_risk_score",
-  "cpf": "cpf",
-  "factor": "minRisk or minattrition"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_fraud_risk_score",
-  "cpf": "cpf",
-  "factor": "minRisk or minattrition"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código do produto que será executado. |
-| `cpf` | Sim | Parâmetro usado pelo service service_fraud_risk_score. |
-| `factor` | Sim | Parâmetro usado pelo service service_fraud_risk_score. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "observacao": "Os campos retornados variam conforme o service service_fraud_risk_score."
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
-
-</Accordion>
-
-<Accordion title="Score de risco de fraude (BigDataCorp)">
 
 **Service:** `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP`
 

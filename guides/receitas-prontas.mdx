@@ -16,14 +16,14 @@ onboarding.
 
 | Etapa | Serviço | Por que usar |
 | --- | --- | --- |
-| 1 | `service_rfb_pf` | Confirma situação cadastral, nome, nascimento e óbito quando disponível |
-| 2 | `service_person_data_enrichment` | Complementa dados cadastrais e indicadores do CPF |
+| 1 | `SERVICE_RFB_PF_BIGDATACORP` | Confirma situação cadastral, nome, nascimento e óbito quando disponível |
+| 2 | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | Complementa dados cadastrais e indicadores do CPF |
 
 Exemplo:
 
 ```json
 {
-  "service": "service_rfb_pf",
+  "service": "SERVICE_RFB_PF_BIGDATACORP",
   "cpf": "cpf",
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
 }
@@ -35,16 +35,16 @@ Objetivo: ler documento, comparar rosto e reduzir fraude de identidade.
 
 | Etapa | Serviço | Por que usar |
 | --- | --- | --- |
-| 1 | `service_ocr` | Extrai dados do documento enviado |
-| 2 | `service_face_match` | Compara selfie e documento |
-| 3 | `service_liveness_2d` | Verifica se a selfie aparenta ser de pessoa real |
-| 4 | `service_digital_documentoscopy` | Quando o fluxo exigir análise documental mais completa |
+| 1 | `SERVICE_OCR_BIGDATACORP` | Extrai dados do documento enviado |
+| 2 | `SERVICE_FACE_MATCH_BIGDATACORP` | Compara selfie e documento |
+| 3 | `SERVICE_LIVENESS_2D_FACETEC` | Verifica se a selfie aparenta ser de pessoa real |
+| 4 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | Quando o fluxo exigir análise documental mais completa |
 
 Exemplo de FaceMatch:
 
 ```json
 {
-  "service": "service_face_match",
+  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
   "image1": "base64",
   "image2": "base64"
 }
@@ -58,11 +58,11 @@ pessoa.
 | Etapa | Serviço | Por que usar |
 | --- | --- | --- |
 | 1 | `SERVICE_PERSON_KYC_BIGDATACORP` | Consolida PEP, sanções e histórico de compliance |
-| 2 | `service_pep` | Consulta PEP de forma direta |
-| 3 | `service_juridical_processes` | Consulta processos jurídicos e administrativos |
-| 4 | `service_criminal_record_federal` | Consulta antecedentes criminais federais |
-| 5 | `service_protest_clearance_certificate` | Consulta protestos |
-| 6 | `SERVICE_ACTIVE_DEBT_PF` | Consulta débitos ativos |
+| 2 | `SERVICE_PEP` | Consulta PEP de forma direta |
+| 3 | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | Consulta processos jurídicos e administrativos |
+| 4 | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | Consulta antecedentes criminais federais |
+| 5 | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | Consulta protestos |
+| 6 | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | Consulta débitos ativos |
 
 ## KYC de pessoa jurídica
 
@@ -70,14 +70,14 @@ Objetivo: avaliar empresa, sócios, vínculos, débitos e compliance.
 
 | Etapa | Serviço | Por que usar |
 | --- | --- | --- |
-| 1 | `service_corporate_data_enrichment` | Consulta dados cadastrais completos da empresa |
-| 2 | `service_rfb_pj` | Confirma status do CNPJ na Receita Federal |
-| 3 | `service_company_relationship` | Mapeia relacionamentos da empresa |
-| 4 | `SERVICE_COMPANY_RFB_OWNERS` | Consulta sócios na Receita Federal |
-| 5 | `service_company_kyc_owners` | Avalia KYC e compliance dos sócios |
-| 6 | `service_juridical_processes_pj_owners` | Consulta processos dos sócios |
-| 7 | `SERVICE_ACTIVE_DEBT_PJ` | Consulta débitos ativos da empresa |
-| 8 | `service_protest_clearance_certificate_pj` | Consulta protestos PJ |
+| 1 | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | Consulta dados cadastrais completos da empresa |
+| 2 | `SERVICE_RFB_PJ_BIGDATACORP` | Confirma status do CNPJ na Receita Federal |
+| 3 | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | Mapeia relacionamentos da empresa |
+| 4 | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | Consulta sócios na Receita Federal |
+| 5 | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | Avalia KYC e compliance dos sócios |
+| 6 | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | Consulta processos dos sócios |
+| 7 | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | Consulta débitos ativos da empresa |
+| 8 | `SERVICE_PROTEST_PJ_INFOSIMPLES` | Consulta protestos PJ |
 
 ## Análise eleitoral
 
@@ -86,7 +86,7 @@ familiares.
 
 | Etapa | Serviço | Por que usar |
 | --- | --- | --- |
-| 1 | `SERVICE_ELECTION_CANDIDATE_DATA` | Consulta dados eleitorais de candidato |
+| 1 | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | Consulta dados eleitorais de candidato |
 | 2 | `SERVICE_ELECTORAL_DONORS_CPF` | Consulta doações eleitorais PF |
 | 3 | `SERVICE_ELECTORAL_PROVIDERS_CPF` | Consulta prestação de serviços eleitorais PF |
 | 4 | `SERVICE_POLITICAL_INVOLVEMENT` | Consolida envolvimento político |
@@ -99,11 +99,11 @@ e-mail e endereço.
 
 | Etapa | Serviço | Por que usar |
 | --- | --- | --- |
-| 1 | `service_email_validation` | Valida e normaliza e-mail |
-| 2 | `service_cpf_phone_validation` | Confirma associação entre CPF e telefone |
-| 3 | `SERVICE_CONFIRM_PHONE` | Busca dados pelo telefone |
-| 4 | `service_cpf_address_validation` | Confirma associação entre CPF e endereço |
-| 5 | `service_address` | Lista endereços associados ao CPF |
+| 1 | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | Valida e normaliza e-mail |
+| 2 | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | Confirma associação entre CPF e telefone |
+| 3 | `SERVICE_CONFIRM_PHONE_FACETEC` | Busca dados pelo telefone |
+| 4 | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | Confirma associação entre CPF e endereço |
+| 5 | `SERVICE_ADDRESS_BIGDATACORP` | Lista endereços associados ao CPF |
 
 ## Como adaptar
 
