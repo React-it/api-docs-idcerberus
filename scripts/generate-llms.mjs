@@ -297,6 +297,11 @@ function buildServicesCatalog(openApiServices) {
         guideUrl: guideUrlForCategory(serviceCategory(item.summary, item.service)),
         apiReferenceSection: item.summary,
         searchTerms: buildSearchTerms(item),
+        responseSummary: serviceResponseSummary({
+          name: item.summary.replace(/^(PF|PJ)\s+-\s+/i, ''),
+          service: item.service,
+          category: serviceCategory(item.summary, item.service),
+        }),
       };
     });
 }
@@ -400,10 +405,89 @@ function mergePartnerApiServices(catalog) {
       guideUrl: guideUrlForCategory(category),
       apiReferenceSection: item.summary,
       searchTerms: buildSearchTerms(item),
+      responseSummary: serviceResponseSummary({ name, service, category }),
     });
   }
 
   return [...catalog, ...extras].sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+}
+
+const activeServiceApiAliases = new Set([
+  'SERVICE_ACTIVE_DEBT_PF_BIGDATACORP',
+  'SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP',
+  'SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP',
+  'SERVICE_ADDRESS_BIGDATACORP',
+  'SERVICE_ARREST_WARRANT',
+  'SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP',
+  'SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP',
+  'SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP',
+  'SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP',
+  'SERVICE_CONFIRM_PHONE_FACETEC',
+  'SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP',
+  'SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP',
+  'SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP',
+  'SERVICE_CPF_PHONE_VALIDATION_FACETEC',
+  'SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP',
+  'SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP',
+  'SERVICE_DAS_MEI_INFOSIMPLES',
+  'SERVICE_DATAVALID_CNH_SERPRO',
+  'SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP',
+  'SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX',
+  'SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX',
+  'SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP',
+  'SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP',
+  'SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP',
+  'SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP',
+  'SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP',
+  'SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP',
+  'SERVICE_EMAILS_EXTENDED_BIGDATACORP',
+  'SERVICE_EMAIL_VALIDATION_BIGDATACORP',
+  'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP',
+  'SERVICE_FACE_MATCH_AWS',
+  'SERVICE_FACE_MATCH_BIGDATACORP',
+  'SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP',
+  'SERVICE_FINANCIAL_INFORMATION_BIGDATACORP',
+  'SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP',
+  'SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP',
+  'SERVICE_FRAUD_RISK_SCORE_BIGDATACORP',
+  'SERVICE_JURIDICAL_PROCESSES_BIGDATACORP',
+  'SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP',
+  'SERVICE_LIVENESS_2D_FACETEC',
+  'SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP',
+  'SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP',
+  'SERVICE_MEI_BIGDATACORP',
+  'SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP',
+  'SERVICE_OCR_BIGDATACORP',
+  'SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP',
+  'SERVICE_PEP',
+  'SERVICE_PERSON_AI_PROMPT_OPENAI',
+  'SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP',
+  'SERVICE_PERSON_DATA_MODELING_BIGDATACORP',
+  'SERVICE_PERSON_KYC_BIGDATACORP',
+  'SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP',
+  'SERVICE_PHONE_HISTORY_BIGDATACORP',
+  'SERVICE_PIS_CONSULTATION_BIGDATACORP',
+  'SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP',
+  'SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP',
+  'SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP',
+  'SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP',
+  'SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP',
+  'SERVICE_PROTEST_PF_INFOSIMPLES',
+  'SERVICE_PROTEST_PF_NETRIN',
+  'SERVICE_PROTEST_PJ_INFOSIMPLES',
+  'SERVICE_PROTEST_PJ_NETRIN',
+  'SERVICE_PUBLIC_SERVANTS_BIGDATACORP',
+  'SERVICE_RELATED_PEOPLE_BIGDATACORP',
+  'SERVICE_RFB_PF_BIGDATACORP',
+  'SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP',
+  'SERVICE_RFB_PJ_BIGDATACORP',
+  'SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP',
+  'SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP',
+  'SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP',
+]);
+
+function filterActiveServiceApiServices(catalog) {
+  return catalog.filter((service) => activeServiceApiAliases.has(service.service));
 }
 
 function buildSearchTerms(item) {
@@ -489,7 +573,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'service_rfb_pf', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
+        body: { service: 'SERVICE_RFB_PF_BIGDATACORP', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
       }),
     },
     {
@@ -497,7 +581,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'service_rfb_pf', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
+        body: { service: 'SERVICE_RFB_PF_BIGDATACORP', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
       }),
     },
     {
@@ -505,7 +589,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'service_rfb_pj', cnpj: 'cnpj' },
+        body: { service: 'SERVICE_RFB_PJ_BIGDATACORP', cnpj: 'cnpj' },
       }),
     },
     {
@@ -513,7 +597,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'service_rfb_pj', cnpj: 'cnpj' },
+        body: { service: 'SERVICE_RFB_PJ_BIGDATACORP', cnpj: 'cnpj' },
       }),
     },
     {
@@ -521,7 +605,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'service_face_match', image1: 'base64', image2: 'base64' },
+        body: { service: 'SERVICE_FACE_MATCH_BIGDATACORP', image1: 'base64', image2: 'base64' },
       }),
     },
     {
@@ -529,7 +613,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'service_digital_documentoscopy', key: '{key}', image1: 'base64', image2: 'base64', selfie1: 'base64' },
+        body: { service: 'SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX', key: '{key}', image1: 'base64', image2: 'base64', selfie1: 'base64' },
       }),
     },
   ];
@@ -582,6 +666,7 @@ function renderApiReferenceText(servicesCatalog) {
     lines.push(`- Service: \`${service.service}\``);
     lines.push(`- Endpoint: \`${service.endpoint}\``);
     lines.push(`- Campos do request: ${service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : 'sem campos adicionais mapeados'}`);
+    lines.push(`- Retorno principal: ${service.responseSummary}`);
     lines.push('');
     lines.push('```bash');
     lines.push(renderCurl({
@@ -618,11 +703,11 @@ function renderServicesIndex(catalog) {
       currentCategory = service.category;
       lines.push(`## ${currentCategory}`);
       lines.push('');
-  lines.push('| Nome | Service | Campos principais |');
-      lines.push('| --- | --- | --- |');
+      lines.push('| Nome | Service | Campos principais | Retorno principal |');
+      lines.push('| --- | --- | --- | --- |');
     }
     const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
-    lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} |`);
+    lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} | ${escapeTable(service.responseSummary)} |`);
   }
 
   return lines.join('\n');
@@ -699,6 +784,41 @@ function serviceUseCase(service) {
   return `Use este service quando precisar executar a consulta "${service.name}" via API.`;
 }
 
+function serviceResponseSummary(service) {
+  const text = normalizeText(`${service.name} ${service.service}`);
+  const target = service.category === 'Pessoa Juridica' ? 'empresa/CNPJ' : 'pessoa/CPF';
+
+  if (text.includes('rfb') || text.includes('receita') || text.includes('enriquecimento') || text.includes('registration')) {
+    return `Retorna dados cadastrais do ${target}, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada.`;
+  }
+  if (text.includes('ocr')) return 'Retorna dados extraidos do documento enviado, tipo documental identificado, campos oficiais/estimados e status de leitura.';
+  if (text.includes('face')) return 'Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao.';
+  if (text.includes('liveness')) return 'Retorna status da prova de vida e sinais de validacao da selfie enviada.';
+  if (text.includes('documentoscopia')) return 'Retorna status da analise documental, chave da consulta e dados processados de documento, selfie e validacoes associadas.';
+  if (text.includes('datavalid') || text.includes('biometric')) return 'Retorna score/status biometrico e dados de validacao conforme a base governamental consultada.';
+  if (text.includes('pep') || text.includes('politic') || text.includes('kyc') || text.includes('compliance') || text.includes('sanction')) {
+    return `Retorna indicadores de KYC/compliance do ${target}, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis.`;
+  }
+  if (text.includes('juridic') || text.includes('lawsuit') || text.includes('criminal') || text.includes('protest') || text.includes('nada consta') || text.includes('mandado')) {
+    return `Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao ${target}, alem do status da consulta.`;
+  }
+  if (text.includes('financial') || text.includes('financeir') || text.includes('score') || text.includes('risco') || text.includes('debt') || text.includes('debito') || text.includes('divida') || text.includes('inadimplencia') || text.includes('credito')) {
+    return `Retorna indicadores financeiros e de risco do ${target}, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel.`;
+  }
+  if (text.includes('phone') || text.includes('telefone')) return `Retorna telefones, historico de contato ou resultado de validacao de telefone associado ao ${target}.`;
+  if (text.includes('email')) return `Retorna e-mails, historico de contato ou resultado de validacao de e-mail associado ao ${target}.`;
+  if (text.includes('address') || text.includes('endereco')) return `Retorna enderecos encontrados ou resultado de validacao de endereco associado ao ${target}.`;
+  if (text.includes('relationship') || text.includes('relacion') || text.includes('socio') || text.includes('partner') || text.includes('owner')) {
+    return `Retorna vinculos, socios, relacionamentos economicos ou pessoas/empresas relacionadas ao ${target}.`;
+  }
+  if (text.includes('eleitoral') || text.includes('election') || text.includes('electoral')) {
+    return `Retorna dados eleitorais associados ao ${target}, como candidaturas, doacoes, fornecedores ou historico politico quando disponivel.`;
+  }
+  if (text.includes('mei') || text.includes('pis') || text.includes('sintegra') || text.includes('das')) return `Retorna dados cadastrais ou fiscais especificos do ${target}, conforme a base consultada pelo service.`;
+  if (text.includes('ai') || text.includes('prompt')) return 'Retorna a resposta consolidada pela IA a partir dos dados consultados e do prompt configurado para o service.';
+
+  return `Retorna o objeto result do service ${service.service} com os dados disponiveis para a consulta, alem do status de processamento.`;
+}
 function fieldRowsFromService(service) {
   const body = jsonBodyFromRequestExample(service.requestExample);
   return Object.entries(body).map(([name, value]) => {
@@ -874,7 +994,7 @@ function renderServiceQuickstartPage() {
   lines.push('O body sempre precisa ter `service`. Os outros campos dependem do produto escolhido.');
   lines.push('');
   lines.push('```json');
-  lines.push(JSON.stringify({ service: 'service_rfb_pf', cpf: 'cpf' }, null, 2));
+  lines.push(JSON.stringify({ service: 'SERVICE_RFB_PF_BIGDATACORP', cpf: 'cpf' }, null, 2));
   lines.push('```');
   lines.push('');
   lines.push('</Step>');
@@ -884,7 +1004,7 @@ function renderServiceQuickstartPage() {
   lines.push(renderCurl({
     baseUrl: 'https://backoffice-hml.idcerberus.com',
     path: '/api/service-api',
-    body: { service: 'service_rfb_pf', cpf: 'cpf' },
+    body: { service: 'SERVICE_RFB_PF_BIGDATACORP', cpf: 'cpf' },
   }));
   lines.push('```');
   lines.push('');
@@ -987,6 +1107,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push('- **Service**: valor exato que deve ser enviado no campo `service`.');
   lines.push('- **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.');
   lines.push('- **Campos**: parâmetros esperados no body além de `service`.');
+  lines.push('- **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.');
   lines.push('- **Exemplos**: cada item traz body JSON, curl de homologação, curl de produção e response resumido.');
   lines.push('');
   lines.push('## Índice por família');
@@ -995,11 +1116,11 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   for (const [family, services] of [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
     lines.push(`### ${family}`);
     lines.push('');
-    lines.push('| Nome | Service | Campos | Quando usar |');
-    lines.push('| --- | --- | --- | --- |');
+    lines.push('| Nome | Service | Campos | Quando usar | Retorno principal |');
+    lines.push('| --- | --- | --- | --- | --- |');
     for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
       const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
-      lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${fields} | ${escapeTable(serviceUseCase(service))} |`);
+      lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${fields} | ${escapeTable(serviceUseCase(service))} | ${escapeTable(service.responseSummary)} |`);
     }
     lines.push('');
   }
@@ -1047,7 +1168,7 @@ const mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
 }));
 const openApiContent = read(openApiPath);
 const openApiSummary = extractOpenApiSummary(openApiContent);
-const servicesCatalog = mergePartnerApiServices(buildServicesCatalog(openApiSummary.services));
+const servicesCatalog = filterActiveServiceApiServices(mergePartnerApiServices(buildServicesCatalog(openApiSummary.services)));
 const exampleFiles = writeExampleFiles(servicesCatalog);
 const llmRules = [
   '## Regras para assistentes de IA',

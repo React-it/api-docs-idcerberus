@@ -30,11 +30,11 @@ Use esta categoria quando precisar:
 
 | Serviço | Código `service` | Uso principal |
 | --- | --- | --- |
-| Relacionamentos de uma empresa | `service_company_relationship` | Retorna vínculos da empresa, incluindo proprietários, empregados, empresas possuídas e relacionamentos com pessoas |
-| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | Retorna dados cadastrais dos sócios identificados na Receita Federal |
-| Sócios de primeiro nível | `service_first_level_partner` | Resume círculos de pessoas físicas relacionadas ao CNPJ, com métricas de idade, renda, localização, processos e distribuições |
-| Processos jurídicos dos sócios | `service_juridical_processes_pj_owners` | Consulta processos associados aos sócios e agrupa indicadores por documento |
-| KYC e compliance dos sócios | `service_company_kyc_owners` | Consulta exposição a PEP, sanções atuais e históricas, e ocorrências relevantes no quadro societário |
+| Relacionamentos de uma empresa | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | Retorna vínculos da empresa, incluindo proprietários, empregados, empresas possuídas e relacionamentos com pessoas |
+| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | Retorna dados cadastrais dos sócios identificados na Receita Federal |
+| Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | Resume círculos de pessoas físicas relacionadas ao CNPJ, com métricas de idade, renda, localização, processos e distribuições |
+| Processos jurídicos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | Consulta processos associados aos sócios e agrupa indicadores por documento |
+| KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | Consulta exposição a PEP, sanções atuais e históricas, e ocorrências relevantes no quadro societário |
 | Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | Consulta doações eleitorais realizadas por sócios vinculados ao CNPJ |
 
 ## Exemplo rápido
@@ -46,7 +46,7 @@ curl --location '{base_url}/api/service-api' \
   --header 'Authorization: Bearer {jwt_token}' \
   --header 'Content-Type: application/json' \
   --data '{
-    "service": "service_company_relationship",
+    "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
     "cnpj": "cnpj"
   }'
 ```
@@ -55,7 +55,7 @@ Payload:
 
 ```json
 {
-  "service": "service_company_relationship",
+  "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
   "cnpj": "cnpj"
 }
 ```
@@ -87,10 +87,10 @@ Resposta esperada:
 
 ## Como combinar os serviços
 
-Uma análise PJ costuma começar com `service_company_relationship` para entender a
-estrutura da empresa. Em seguida, `service_first_level_partner` ajuda a resumir o
+Uma análise PJ costuma começar com `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` para entender a
+estrutura da empresa. Em seguida, `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` ajuda a resumir o
 entorno societário. Quando houver necessidade de aprofundar risco, use
-`service_juridical_processes_pj_owners` e `service_company_kyc_owners`.
+`SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` e `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP`.
 
 Para campos, exemplos completos e responses, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api) ou o
