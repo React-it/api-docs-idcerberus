@@ -540,8 +540,337 @@ function escapeAttribute(value) {
   return String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
 
+function normalizeText(value) {
+  return `${value ?? ''}`
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+function serviceFamily(service) {
+  const text = normalizeText(`${service.name} ${service.service} ${service.searchTerms?.join(' ') ?? ''}`);
+
+  if (text.includes('ocr') || text.includes('face') || text.includes('liveness') || text.includes('biometric') || text.includes('documentoscopia') || text.includes('datavalid')) {
+    return 'Biometria e documentos';
+  }
+  if (text.includes('eleitoral') || text.includes('election') || text.includes('electoral') || text.includes('politic') || text.includes('pep')) {
+    return 'Dados eleitorais e PEP';
+  }
+  if (text.includes('juridic') || text.includes('criminal') || text.includes('lawsuit') || text.includes('protest') || text.includes('mandado') || text.includes('nada consta')) {
+    return 'Jurídico, certidões e protestos';
+  }
+  if (text.includes('risco') || text.includes('score') || text.includes('debt') || text.includes('debito') || text.includes('divida') || text.includes('credito') || text.includes('financial') || text.includes('inadimplencia')) {
+    return 'Risco, crédito e dívidas';
+  }
+  if (text.includes('kyc') || text.includes('compliance') || text.includes('bet') || text.includes('media')) {
+    return 'KYC, compliance e exposição';
+  }
+  if (text.includes('receita') || text.includes('rfb') || text.includes('enriquecimento') || text.includes('cadastro') || text.includes('registration') || text.includes('demographic') || text.includes('pis') || text.includes('mei') || text.includes('sintegra') || text.includes('das')) {
+    return 'Dados cadastrais e Receita Federal';
+  }
+  if (text.includes('telefone') || text.includes('phone') || text.includes('email') || text.includes('address') || text.includes('endereco') || text.includes('relacion') || text.includes('relationship') || text.includes('socio') || text.includes('qsa') || text.includes('sites') || text.includes('domains')) {
+    return 'Contatos, sites e relacionamentos';
+  }
+
+  return 'Outros services';
+}
+
+function serviceUseCase(service) {
+  const text = normalizeText(`${service.name} ${service.service}`);
+  const target = service.category === 'Pessoa Jurídica' ? 'empresa' : 'pessoa';
+
+  if (text.includes('rfb') || text.includes('receita')) return `Use para consultar ou validar dados cadastrais da ${target} em bases da Receita Federal.`;
+  if (text.includes('enriquecimento')) return `Use para complementar dados cadastrais da ${target} a partir do documento informado.`;
+  if (text.includes('demographic')) return `Use para consultar informações sociodemográficas associadas à ${target}.`;
+  if (text.includes('ocr')) return 'Use para extrair dados de documentos enviados em base64 ou por URL.';
+  if (text.includes('face')) return 'Use para comparar duas imagens faciais e retornar a similaridade entre elas.';
+  if (text.includes('liveness')) return 'Use para validar prova de vida a partir de uma imagem de selfie.';
+  if (text.includes('documentoscopia')) return 'Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.';
+  if (text.includes('biometric') || text.includes('biometr')) return 'Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.';
+  if (text.includes('pep')) return 'Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta.';
+  if (text.includes('eleitoral') || text.includes('election') || text.includes('electoral')) return `Use para consultar informações eleitorais relacionadas à ${target}.`;
+  if (text.includes('juridic') || text.includes('lawsuit') || text.includes('criminal')) return `Use para consultar certidões, processos ou informações jurídicas da ${target}.`;
+  if (text.includes('protest')) return `Use para consultar protestos associados ao documento da ${target}.`;
+  if (text.includes('financial') || text.includes('financeir')) return `Use para consultar informações financeiras associadas à ${target}.`;
+  if (text.includes('score') || text.includes('risco')) return `Use para avaliar risco, score ou propensão associada à ${target}.`;
+  if (text.includes('debt') || text.includes('debito') || text.includes('divida')) return `Use para consultar débitos ou dívidas associadas à ${target}.`;
+  if (text.includes('kyc') || text.includes('compliance')) return `Use para executar checagens de KYC e compliance da ${target}.`;
+  if (text.includes('phone') || text.includes('telefone')) return 'Use para consultar, validar ou enriquecer dados de telefone.';
+  if (text.includes('email')) return 'Use para validar ou consultar histórico de e-mails relacionados ao documento.';
+  if (text.includes('address') || text.includes('endereco')) return 'Use para consultar ou validar endereços associados ao documento.';
+  if (text.includes('domains') || text.includes('sites')) return `Use para consultar dados de sites vinculados à ${target}.`;
+  if (text.includes('relationship') || text.includes('relacion') || text.includes('socio')) return `Use para consultar vínculos, sócios ou relacionamentos associados à ${target}.`;
+
+  return `Use este service quando precisar executar a consulta "${service.name}" via API.`;
+}
+
+function fieldRowsFromService(service) {
+  const body = jsonBodyFromRequestExample(service.requestExample);
+  return Object.entries(body).map(([name, value]) => {
+    const raw = `${value ?? ''}`;
+    return {
+      name,
+      value,
+      required: name === 'service' || !normalizeText(raw).includes('opcional'),
+      description: name === 'service'
+        ? 'Código do produto que será executado.'
+        : `Parâmetro usado pelo service ${service.service}.`,
+    };
+  });
+}
+
+function serviceResponseExample(service) {
+  return {
+    result: {
+      observacao: `Os campos retornados variam conforme o service ${service.service}.`,
+    },
+    status: {
+      code: 200,
+      message: 'Success',
+    },
+    externalId: '{externalId}',
+  };
+}
+
+function serviceErrorExamples() {
+  return [
+    {
+      title: 'Token ausente ou inválido',
+      body: {
+        status: {
+          code: 401,
+          message: 'Unauthorized',
+        },
+      },
+    },
+    {
+      title: 'Parâmetro obrigatório ausente',
+      body: {
+        status: {
+          code: 400,
+          message: 'Required field is missing or invalid',
+        },
+      },
+    },
+    {
+      title: 'Service não liberado ou indisponível',
+      body: {
+        status: {
+          code: 403,
+          message: 'Service unavailable or not enabled for this client',
+        },
+      },
+    },
+  ];
+}
+
+function renderServiceRequestBlock(service) {
+  const body = jsonBodyFromRequestExample(service.requestExample);
+  const fieldRows = fieldRowsFromService(service);
+  const required = fieldRows.filter((field) => field.required).map((field) => `\`${field.name}\``).join(', ');
+  const optional = fieldRows.filter((field) => !field.required).map((field) => `\`${field.name}\``).join(', ') || 'Nenhum campo opcional mapeado neste exemplo.';
+  const hmlCurl = renderCurl({ baseUrl: 'https://backoffice-hml.idcerberus.com', path: '/api/service-api', body });
+  const prodCurl = renderCurl({ baseUrl: 'https://backoffice.idcerberus.com', path: '/api/service-api', body });
+  const lines = [];
+
+  lines.push(`<Accordion title="${escapeAttribute(service.name)}">`);
+  lines.push('');
+  lines.push(`**Service:** \`${service.service}\``);
+  lines.push('');
+  lines.push(`**Quando usar:** ${serviceUseCase(service)}`);
+  lines.push('');
+  lines.push('**Endpoint:** `POST /api/service-api`');
+  lines.push('');
+  lines.push(`**Campos obrigatórios:** ${required}`);
+  lines.push('');
+  lines.push(`**Campos opcionais:** ${optional}`);
+  lines.push('');
+  lines.push('### Body');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(body, null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('### Homologação');
+  lines.push('');
+  lines.push('```bash');
+  lines.push(hmlCurl);
+  lines.push('```');
+  lines.push('');
+  lines.push('### Produção');
+  lines.push('');
+  lines.push('```bash');
+  lines.push(prodCurl);
+  lines.push('```');
+  lines.push('');
+  lines.push('### Campos do body');
+  lines.push('');
+  lines.push('| Campo | Obrigatório | Descrição |');
+  lines.push('| --- | --- | --- |');
+  for (const field of fieldRows) {
+    lines.push(`| \`${field.name}\` | ${field.required ? 'Sim' : 'Não'} | ${field.description} |`);
+  }
+  lines.push('');
+  lines.push('### Response resumido');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(serviceResponseExample(service), null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.');
+  lines.push('');
+  lines.push('</Accordion>');
+
+  return lines.join('\n');
+}
+
+function renderServiceQuickstartPage() {
+  const lines = [];
+
+  lines.push('---');
+  lines.push('title: Como executar um service');
+  lines.push('description: Passo a passo para autenticar, escolher ambiente, montar o body e chamar um service da API idCerberus.');
+  lines.push('---');
+  lines.push('');
+  lines.push('# Como executar um service');
+  lines.push('');
+  lines.push('Esta página explica o fluxo padrão para executar qualquer produto documentado no API Reference.');
+  lines.push('');
+  lines.push('<Info>');
+  lines.push('A maior parte das consultas usa o endpoint `POST /api/service-api`. O campo `service` define qual produto será executado.');
+  lines.push('</Info>');
+  lines.push('');
+  lines.push('## Passo a passo');
+  lines.push('');
+  lines.push('<Steps>');
+  lines.push('<Step title="Escolha o ambiente">');
+  lines.push('');
+  lines.push('| Ambiente | Base URL | Quando usar |');
+  lines.push('| --- | --- | --- |');
+  lines.push('| Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validações e desenvolvimento. |');
+  lines.push('| Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação do cliente. |');
+  lines.push('');
+  lines.push('</Step>');
+  lines.push('<Step title="Gere o token">');
+  lines.push('');
+  lines.push('```bash');
+  lines.push(renderCurl({
+    baseUrl: 'https://backoffice-hml.idcerberus.com',
+    path: '/api/token-generate',
+    bearer: false,
+    body: { client: '{client}', secret: '{secret}' },
+  }));
+  lines.push('```');
+  lines.push('');
+  lines.push('Use o valor retornado em `access_token` no header `Authorization` das próximas chamadas.');
+  lines.push('');
+  lines.push('</Step>');
+  lines.push('<Step title="Escolha o service">');
+  lines.push('');
+  lines.push('Use os catálogos de pessoa física e pessoa jurídica para copiar o valor exato do campo `service`.');
+  lines.push('');
+  lines.push('- [Services de pessoa física](/api-reference/services-pessoa-fisica)');
+  lines.push('- [Services de pessoa jurídica](/api-reference/services-pessoa-juridica)');
+  lines.push('- [Services por caso de uso](/api-reference/services-por-caso-de-uso)');
+  lines.push('');
+  lines.push('</Step>');
+  lines.push('<Step title="Monte o body">');
+  lines.push('');
+  lines.push('O body sempre precisa ter `service`. Os outros campos dependem do produto escolhido.');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify({ service: 'service_rfb_pf', cpf: 'cpf' }, null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('</Step>');
+  lines.push('<Step title="Execute a consulta">');
+  lines.push('');
+  lines.push('```bash');
+  lines.push(renderCurl({
+    baseUrl: 'https://backoffice-hml.idcerberus.com',
+    path: '/api/service-api',
+    body: { service: 'service_rfb_pf', cpf: 'cpf' },
+  }));
+  lines.push('```');
+  lines.push('');
+  lines.push('</Step>');
+  lines.push('<Step title="Interprete o retorno">');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify({
+    result: {},
+    status: { code: 200, message: 'Success' },
+    externalId: '{externalId}',
+  }, null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('- `result`: dados retornados pelo produto.');
+  lines.push('- `status.code`: código do processamento.');
+  lines.push('- `status.message`: mensagem resumida do processamento.');
+  lines.push('- `externalId`: identificador externo da consulta, quando retornado.');
+  lines.push('');
+  lines.push('</Step>');
+  lines.push('</Steps>');
+  lines.push('');
+  lines.push('## Erros comuns');
+  lines.push('');
+  lines.push('| Situação | Como corrigir |');
+  lines.push('| --- | --- |');
+  lines.push('| Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |');
+  lines.push('| Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |');
+  lines.push('| CPF, CNPJ, imagem ou parâmetro obrigatório ausente | Confira a seção de campos do service escolhido. |');
+  lines.push('| Produto não liberado para o cliente | Confirme a liberação comercial/técnica antes de executar em produção. |');
+  lines.push('| Retorno sem dados no `result` | Confirme se o documento consultado possui informação disponível para aquele produto. |');
+
+  return lines.join('\n');
+}
+
+function renderUseCasePage(catalog) {
+  const groups = new Map();
+  for (const service of catalog) {
+    const family = serviceFamily(service);
+    if (!groups.has(family)) groups.set(family, []);
+    groups.get(family).push(service);
+  }
+
+  const lines = [];
+  lines.push('---');
+  lines.push('title: Services por caso de uso');
+  lines.push('description: Mapa rápido para encontrar o service certo a partir do objetivo da integração.');
+  lines.push('---');
+  lines.push('');
+  lines.push('# Services por caso de uso');
+  lines.push('');
+  lines.push('Use esta página quando souber o objetivo da integração, mas ainda não souber qual `service` chamar.');
+  lines.push('');
+  lines.push('<Info>');
+  lines.push('Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurídica para copiar o request completo.');
+  lines.push('</Info>');
+  lines.push('');
+
+  for (const [family, services] of [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    lines.push(`## ${family}`);
+    lines.push('');
+    lines.push('| Objetivo | Service | Documento |');
+    lines.push('| --- | --- | --- |');
+    for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
+      const doc = service.category === 'Pessoa Jurídica' ? 'CNPJ' : service.category === 'Pessoa Física' ? 'CPF' : '-';
+      lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${doc} |`);
+    }
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
 function renderApiReferenceServicesPage(catalog, category, title, description) {
   const items = catalog.filter((service) => service.category === category);
+  const grouped = new Map();
+  for (const service of items) {
+    const family = serviceFamily(service);
+    if (!grouped.has(family)) grouped.set(family, []);
+    grouped.get(family).push(service);
+  }
   const lines = [];
 
   lines.push('---');
@@ -561,75 +890,56 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push('');
   lines.push('- **Nome**: nome funcional do produto.');
   lines.push('- **Service**: valor exato que deve ser enviado no campo `service`.');
-  lines.push('- **Campos principais**: campos esperados no body além de `service`.');
-  lines.push('- **Exemplo**: cada item traz JSON e curl de homologação prontos para copiar e adaptar.');
+  lines.push('- **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.');
+  lines.push('- **Campos**: parâmetros esperados no body além de `service`.');
+  lines.push('- **Exemplos**: cada item traz body JSON, curl de homologação, curl de produção e response resumido.');
   lines.push('');
-  lines.push('## Services');
+  lines.push('## Índice por família');
   lines.push('');
-  lines.push('| Nome | Service | Campos principais |');
-  lines.push('| --- | --- | --- |');
 
-  for (const service of items) {
-    const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
-    lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${fields} |`);
+  for (const [family, services] of [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    lines.push(`### ${family}`);
+    lines.push('');
+    lines.push('| Nome | Service | Campos | Quando usar |');
+    lines.push('| --- | --- | --- | --- |');
+    for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
+      const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
+      lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${fields} | ${escapeTable(serviceUseCase(service))} |`);
+    }
+    lines.push('');
   }
 
   lines.push('');
-  lines.push('## Requests');
+  lines.push('## Requests completos');
+  lines.push('');
+
+  for (const [family, services] of [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+    lines.push(`### ${family}`);
+    lines.push('');
+    lines.push('<AccordionGroup>');
+    for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
+      lines.push(renderServiceRequestBlock(service));
+      lines.push('');
+    }
+    lines.push('</AccordionGroup>');
+    lines.push('');
+  }
+  lines.push('');
+  lines.push('## Padrões de erro');
+  lines.push('');
+  lines.push('Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme validação, produto e ambiente.');
   lines.push('');
   lines.push('<AccordionGroup>');
-
-  for (const service of items) {
-    const body = jsonBodyFromRequestExample(service.requestExample);
-    const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : 'nenhum campo adicional mapeado';
-    lines.push(`<Accordion title="${escapeAttribute(service.name)}">`);
-    lines.push('');
-    lines.push(`**Service:** \`${service.service}\``);
-    lines.push('');
-    lines.push('**Endpoint:** `POST /api/service-api`');
-    lines.push('');
-    lines.push(`**Campos principais:** ${fields}`);
-    lines.push('');
-    lines.push('### Body');
+  for (const example of serviceErrorExamples()) {
+    lines.push(`<Accordion title="${escapeAttribute(example.title)}">`);
     lines.push('');
     lines.push('```json');
-    lines.push(JSON.stringify(body, null, 2));
+    lines.push(JSON.stringify(example.body, null, 2));
     lines.push('```');
-    lines.push('');
-    lines.push('### curl de homologação');
-    lines.push('');
-    lines.push('```bash');
-    lines.push(renderCurl({
-      baseUrl: 'https://backoffice-hml.idcerberus.com',
-      path: '/api/service-api',
-      body,
-    }));
-    lines.push('```');
-    lines.push('');
-    lines.push('### Retorno');
-    lines.push('');
-    lines.push('O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.');
-    lines.push('');
-    lines.push('```json');
-    lines.push(JSON.stringify({
-      result: {},
-      status: {
-        code: 200,
-        message: 'Success',
-      },
-    }, null, 2));
-    lines.push('```');
-    lines.push('');
-    lines.push(`[Ver endpoint geral no API Reference](${siteUrl}/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)`);
     lines.push('');
     lines.push('</Accordion>');
   }
-
   lines.push('</AccordionGroup>');
-  lines.push('');
-  lines.push('## Produção');
-  lines.push('');
-  lines.push('Para executar em produção, mantenha o mesmo body e troque a base URL para `https://backoffice.idcerberus.com`.');
 
   return lines.join('\n');
 }
@@ -659,6 +969,8 @@ const llmRules = [
 write(path.join(root, 'services-catalog.json'), `${JSON.stringify(servicesCatalog, null, 2)}\n`);
 write(path.join(root, 'llms-api-reference.txt'), renderApiReferenceText(servicesCatalog));
 write(path.join(root, 'guides', 'indice-de-services.mdx'), renderServicesIndex(servicesCatalog));
+write(path.join(root, 'api-reference', 'como-executar-service.mdx'), renderServiceQuickstartPage());
+write(path.join(root, 'api-reference', 'services-por-caso-de-uso.mdx'), renderUseCasePage(servicesCatalog));
 write(path.join(root, 'api-reference', 'services-pessoa-fisica.mdx'), renderApiReferenceServicesPage(
   servicesCatalog,
   'Pessoa Física',
@@ -822,6 +1134,8 @@ console.log(`Generated llms-full.txt with ${openApiSummary.services.length} serv
 console.log('Generated llms-api-reference.txt.');
 console.log('Generated services-catalog.json.');
 console.log('Generated guides/indice-de-services.mdx.');
+console.log('Generated api-reference/como-executar-service.mdx.');
+console.log('Generated api-reference/services-por-caso-de-uso.mdx.');
 console.log('Generated api-reference/services-pessoa-fisica.mdx.');
 console.log('Generated api-reference/services-pessoa-juridica.mdx.');
 console.log(`Generated ${exampleFiles.length} curl examples.`);

@@ -1,0 +1,102 @@
+---
+title: Como executar um service
+description: Passo a passo para autenticar, escolher ambiente, montar o body e chamar um service da API idCerberus.
+---
+
+# Como executar um service
+
+Esta página explica o fluxo padrão para executar qualquer produto documentado no API Reference.
+
+<Info>
+A maior parte das consultas usa o endpoint `POST /api/service-api`. O campo `service` define qual produto será executado.
+</Info>
+
+## Passo a passo
+
+<Steps>
+<Step title="Escolha o ambiente">
+
+| Ambiente | Base URL | Quando usar |
+| --- | --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validações e desenvolvimento. |
+| Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação do cliente. |
+
+</Step>
+<Step title="Gere o token">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+Use o valor retornado em `access_token` no header `Authorization` das próximas chamadas.
+
+</Step>
+<Step title="Escolha o service">
+
+Use os catálogos de pessoa física e pessoa jurídica para copiar o valor exato do campo `service`.
+
+- [Services de pessoa física](/api-reference/services-pessoa-fisica)
+- [Services de pessoa jurídica](/api-reference/services-pessoa-juridica)
+- [Services por caso de uso](/api-reference/services-por-caso-de-uso)
+
+</Step>
+<Step title="Monte o body">
+
+O body sempre precisa ter `service`. Os outros campos dependem do produto escolhido.
+
+```json
+{
+  "service": "service_rfb_pf",
+  "cpf": "cpf"
+}
+```
+
+</Step>
+<Step title="Execute a consulta">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pf",
+  "cpf": "cpf"
+}'
+```
+
+</Step>
+<Step title="Interprete o retorno">
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+- `result`: dados retornados pelo produto.
+- `status.code`: código do processamento.
+- `status.message`: mensagem resumida do processamento.
+- `externalId`: identificador externo da consulta, quando retornado.
+
+</Step>
+</Steps>
+
+## Erros comuns
+
+| Situação | Como corrigir |
+| --- | --- |
+| Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |
+| Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |
+| CPF, CNPJ, imagem ou parâmetro obrigatório ausente | Confira a seção de campos do service escolhido. |
+| Produto não liberado para o cliente | Confirme a liberação comercial/técnica antes de executar em produção. |
+| Retorno sem dados no `result` | Confirme se o documento consultado possui informação disponível para aquele produto. |

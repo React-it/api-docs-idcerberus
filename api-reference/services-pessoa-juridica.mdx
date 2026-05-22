@@ -15,43 +15,1020 @@ Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produ
 
 - **Nome**: nome funcional do produto.
 - **Service**: valor exato que deve ser enviado no campo `service`.
-- **Campos principais**: campos esperados no body além de `service`.
-- **Exemplo**: cada item traz JSON e curl de homologação prontos para copiar e adaptar.
+- **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.
+- **Campos**: parâmetros esperados no body além de `service`.
+- **Exemplos**: cada item traz body JSON, curl de homologação, curl de produção e response resumido.
 
-## Services
+## Índice por família
 
-| Nome | Service | Campos principais |
+### Contatos, sites e relacionamentos
+
+| Nome | Service | Campos | Quando usar |
+| --- | --- | --- | --- |
+| Relacionamentos da empresa | `service_company_relationship` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. |
+
+### Dados cadastrais e Receita Federal
+
+| Nome | Service | Campos | Quando usar |
+| --- | --- | --- | --- |
+| CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. |
+| Dados de sites | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Use para consultar dados de sites vinculados à empresa. |
+| DAS MEI na Receita | `service_das_mei` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. |
+| Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | Use para consultar ou validar endereços associados ao documento. |
+| Enriquecimento de dados | `service_corporate_data_enrichment` | `cnpj` | Use para complementar dados cadastrais da empresa a partir do documento informado. |
+| SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` | Use este service quando precisar executar a consulta "SINTEGRA" via API. |
+| Sócios de primeiro nível | `service_first_level_partner` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. |
+| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. |
+| Status do CNPJ na Receita Federal | `service_rfb_pj` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. |
+
+### Dados eleitorais e PEP
+
+| Nome | Service | Campos | Quando usar |
+| --- | --- | --- | --- |
+| Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. |
+| Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. |
+| Fornecedores eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. |
+
+### Jurídico, certidões e protestos
+
+| Nome | Service | Campos | Quando usar |
+| --- | --- | --- | --- |
+| Certidão negativa de protesto | `service_protest_clearance_certificate_pj` | `cnpj` | Use para consultar protestos associados ao documento da empresa. |
+| Processos jurídicos dos sócios | `service_juridical_processes_pj_owners` | `cnpj` | Use para consultar certidões, processos ou informações jurídicas da empresa. |
+
+### KYC, compliance e exposição
+
+| Nome | Service | Campos | Quando usar |
+| --- | --- | --- | --- |
+| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. |
+| Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. |
+| KYC e compliance dos sócios | `service_company_kyc_owners` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. |
+
+### Risco, crédito e dívidas
+
+| Nome | Service | Campos | Quando usar |
+| --- | --- | --- | --- |
+| Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | Use para consultar débitos ou dívidas associadas à empresa. |
+
+
+## Requests completos
+
+### Contatos, sites e relacionamentos
+
+<AccordionGroup>
+<Accordion title="Relacionamentos da empresa">
+
+**Service:** `service_company_relationship`
+
+**Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "service_company_relationship",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_company_relationship",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_company_relationship",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
 | --- | --- | --- |
-| Certidão negativa de protesto | `service_protest_clearance_certificate_pj` | `cnpj` |
-| CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` |
-| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
-| Dados de sites | `SERVICE_DOMAINS_CNPJ` | `cnpj` |
-| DAS MEI na Receita | `service_das_mei` | `cnpj` |
-| Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
-| Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` |
-| Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` |
-| Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
-| Enriquecimento de dados | `service_corporate_data_enrichment` | `cnpj` |
-| Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` |
-| Fornecedores eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` |
-| KYC e compliance dos sócios | `service_company_kyc_owners` | `cnpj` |
-| Processos jurídicos dos sócios | `service_juridical_processes_pj_owners` | `cnpj` |
-| Relacionamentos da empresa | `service_company_relationship` | `cnpj` |
-| SINTEGRA | `service_sintegra_consultation` | `cnpj`, `uf` |
-| Sócios de primeiro nível | `service_first_level_partner` | `cnpj` |
-| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
-| Status do CNPJ na Receita Federal | `service_rfb_pj` | `cnpj` |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_company_relationship. |
 
-## Requests
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_company_relationship."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+</AccordionGroup>
+
+### Dados cadastrais e Receita Federal
+
+<AccordionGroup>
+<Accordion title="CNPJ na Receita Federal on-demand">
+
+**Service:** `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
+
+**Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Dados de sites">
+
+**Service:** `SERVICE_DOMAINS_CNPJ`
+
+**Quando usar:** Use para consultar dados de sites vinculados à empresa.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_DOMAINS_CNPJ. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_DOMAINS_CNPJ."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="DAS MEI na Receita">
+
+**Service:** `service_das_mei`
+
+**Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "service_das_mei",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_das_mei",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_das_mei",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_das_mei. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_das_mei."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Endereços estendidos">
+
+**Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ`
+
+**Quando usar:** Use para consultar ou validar endereços associados ao documento.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_ADDRESSES_EXTENDED_CNPJ. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_ADDRESSES_EXTENDED_CNPJ."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Enriquecimento de dados">
+
+**Service:** `service_corporate_data_enrichment`
+
+**Quando usar:** Use para complementar dados cadastrais da empresa a partir do documento informado.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_corporate_data_enrichment",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_corporate_data_enrichment. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_corporate_data_enrichment."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="SINTEGRA">
+
+**Service:** `service_sintegra_consultation`
+
+**Quando usar:** Use este service quando precisar executar a consulta "SINTEGRA" via API.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** `uf`
+
+### Body
+
+```json
+{
+  "service": "service_sintegra_consultation",
+  "cnpj": "cnpj",
+  "uf": "uf (opcional)"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_sintegra_consultation",
+  "cnpj": "cnpj",
+  "uf": "uf (opcional)"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_sintegra_consultation",
+  "cnpj": "cnpj",
+  "uf": "uf (opcional)"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_sintegra_consultation. |
+| `uf` | Não | Parâmetro usado pelo service service_sintegra_consultation. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_sintegra_consultation."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Sócios de primeiro nível">
+
+**Service:** `service_first_level_partner`
+
+**Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "service_first_level_partner",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_first_level_partner",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_first_level_partner",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_first_level_partner. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_first_level_partner."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Sócios na Receita Federal">
+
+**Service:** `SERVICE_COMPANY_RFB_OWNERS`
+
+**Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_COMPANY_RFB_OWNERS. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_COMPANY_RFB_OWNERS."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Status do CNPJ na Receita Federal">
+
+**Service:** `service_rfb_pj`
+
+**Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_rfb_pj",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_rfb_pj. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_rfb_pj."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+</AccordionGroup>
+
+### Dados eleitorais e PEP
+
+<AccordionGroup>
+<Accordion title="Doações eleitorais">
+
+**Service:** `SERVICE_ELECTORAL_DONORS_CNPJ`
+
+**Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_ELECTORAL_DONORS_CNPJ. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_ELECTORAL_DONORS_CNPJ."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Doações eleitorais dos sócios">
+
+**Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
+
+**Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+<Accordion title="Fornecedores eleitorais">
+
+**Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
+
+**Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_ELECTORAL_PROVIDERS_CNPJ. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_ELECTORAL_PROVIDERS_CNPJ."
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+</AccordionGroup>
+
+### Jurídico, certidões e protestos
 
 <AccordionGroup>
 <Accordion title="Certidão negativa de protesto">
 
 **Service:** `service_protest_clearance_certificate_pj`
 
+**Quando usar:** Use para consultar protestos associados ao documento da empresa.
+
 **Endpoint:** `POST /api/service-api`
 
-**Campos principais:** `cnpj`
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
 ### Body
 
@@ -62,7 +1039,7 @@ Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produ
 }
 ```
 
-### curl de homologação
+### Homologação
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -74,582 +1051,55 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="CNPJ na Receita Federal on-demand">
-
-**Service:** `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
+### Produção
 
 ```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "service": "service_protest_clearance_certificate_pj",
   "cnpj": "cnpj"
 }'
 ```
 
-### Retorno
+### Campos do body
 
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_protest_clearance_certificate_pj. |
+
+### Response resumido
 
 ```json
 {
-  "result": {},
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_protest_clearance_certificate_pj."
+  },
   "status": {
     "code": 200,
     "message": "Success"
-  }
+  },
+  "externalId": "{externalId}"
 }
 ```
 
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
 
 </Accordion>
-<Accordion title="Compliance de casas de apostas">
 
-**Service:** `SERVICE_COMPLIANCE_BET_PJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_COMPLIANCE_BET_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_COMPLIANCE_BET_PJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Dados de sites">
-
-**Service:** `SERVICE_DOMAINS_CNPJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_DOMAINS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DOMAINS_CNPJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="DAS MEI na Receita">
-
-**Service:** `service_das_mei`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "service_das_mei",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_das_mei",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Débitos ativos">
-
-**Service:** `SERVICE_ACTIVE_DEBT_PJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ACTIVE_DEBT_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ACTIVE_DEBT_PJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Doações eleitorais">
-
-**Service:** `SERVICE_ELECTORAL_DONORS_CNPJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Doações eleitorais dos sócios">
-
-**Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Endereços estendidos">
-
-**Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Enriquecimento de dados">
-
-**Service:** `service_corporate_data_enrichment`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "service_corporate_data_enrichment",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_corporate_data_enrichment",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Exposição e perfil na mídia dos sócios">
-
-**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Fornecedores eleitorais">
-
-**Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="KYC e compliance dos sócios">
-
-**Service:** `service_company_kyc_owners`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "service_company_kyc_owners",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "service_company_kyc_owners",
-  "cnpj": "cnpj"
-}'
-```
-
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
 <Accordion title="Processos jurídicos dos sócios">
 
 **Service:** `service_juridical_processes_pj_owners`
 
+**Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
+
 **Endpoint:** `POST /api/service-api`
 
-**Campos principais:** `cnpj`
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
 ### Body
 
@@ -660,7 +1110,7 @@ O retorno segue o padrão abaixo. Os campos de `result` variam conforme o servic
 }
 ```
 
-### curl de homologação
+### Homologação
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -672,257 +1122,380 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### Retorno
+### Produção
 
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_juridical_processes_pj_owners",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_juridical_processes_pj_owners. |
+
+### Response resumido
 
 ```json
 {
-  "result": {},
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_juridical_processes_pj_owners."
+  },
   "status": {
     "code": 200,
     "message": "Success"
-  }
+  },
+  "externalId": "{externalId}"
 }
 ```
 
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
 
 </Accordion>
-<Accordion title="Relacionamentos da empresa">
 
-**Service:** `service_company_relationship`
+</AccordionGroup>
+
+### KYC, compliance e exposição
+
+<AccordionGroup>
+<Accordion title="Compliance de casas de apostas">
+
+**Service:** `SERVICE_COMPLIANCE_BET_PJ`
+
+**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos principais:** `cnpj`
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
 ### Body
 
 ```json
 {
-  "service": "service_company_relationship",
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
   "cnpj": "cnpj"
 }
 ```
 
-### curl de homologação
+### Homologação
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_company_relationship",
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
   "cnpj": "cnpj"
 }'
 ```
 
-### Retorno
+### Produção
 
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_COMPLIANCE_BET_PJ. |
+
+### Response resumido
 
 ```json
 {
-  "result": {},
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_COMPLIANCE_BET_PJ."
+  },
   "status": {
     "code": 200,
     "message": "Success"
-  }
+  },
+  "externalId": "{externalId}"
 }
 ```
 
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
 
 </Accordion>
-<Accordion title="SINTEGRA">
 
-**Service:** `service_sintegra_consultation`
+<Accordion title="Exposição e perfil na mídia dos sócios">
+
+**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
+
+**Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos principais:** `cnpj`, `uf`
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
 ### Body
 
 ```json
 {
-  "service": "service_sintegra_consultation",
-  "cnpj": "cnpj",
-  "uf": "uf (opcional)"
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+  "cnpj": "cnpj"
 }
 ```
 
-### curl de homologação
+### Homologação
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_sintegra_consultation",
-  "cnpj": "cnpj",
-  "uf": "uf (opcional)"
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+  "cnpj": "cnpj"
 }'
 ```
 
-### Retorno
+### Produção
 
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_MEDIA_PROFILE_EXPOSURE_PJ. |
+
+### Response resumido
 
 ```json
 {
-  "result": {},
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_MEDIA_PROFILE_EXPOSURE_PJ."
+  },
   "status": {
     "code": 200,
     "message": "Success"
-  }
+  },
+  "externalId": "{externalId}"
 }
 ```
 
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
 
 </Accordion>
-<Accordion title="Sócios de primeiro nível">
 
-**Service:** `service_first_level_partner`
+<Accordion title="KYC e compliance dos sócios">
+
+**Service:** `service_company_kyc_owners`
+
+**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos principais:** `cnpj`
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
 ### Body
 
 ```json
 {
-  "service": "service_first_level_partner",
+  "service": "service_company_kyc_owners",
   "cnpj": "cnpj"
 }
 ```
 
-### curl de homologação
+### Homologação
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_first_level_partner",
+  "service": "service_company_kyc_owners",
   "cnpj": "cnpj"
 }'
 ```
 
-### Retorno
+### Produção
 
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "service_company_kyc_owners",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service service_company_kyc_owners. |
+
+### Response resumido
 
 ```json
 {
-  "result": {},
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service service_company_kyc_owners."
+  },
   "status": {
     "code": 200,
     "message": "Success"
-  }
+  },
+  "externalId": "{externalId}"
 }
 ```
 
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
 
 </Accordion>
-<Accordion title="Sócios na Receita Federal">
 
-**Service:** `SERVICE_COMPANY_RFB_OWNERS`
+</AccordionGroup>
+
+### Risco, crédito e dívidas
+
+<AccordionGroup>
+<Accordion title="Débitos ativos">
+
+**Service:** `SERVICE_ACTIVE_DEBT_PJ`
+
+**Quando usar:** Use para consultar débitos ou dívidas associadas à empresa.
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos principais:** `cnpj`
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
 ### Body
 
 ```json
 {
-  "service": "SERVICE_COMPANY_RFB_OWNERS",
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
   "cnpj": "cnpj"
 }
 ```
 
-### curl de homologação
+### Homologação
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPANY_RFB_OWNERS",
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
   "cnpj": "cnpj"
 }'
 ```
 
-### Retorno
-
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
-
-</Accordion>
-<Accordion title="Status do CNPJ na Receita Federal">
-
-**Service:** `service_rfb_pj`
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos principais:** `cnpj`
-
-### Body
-
-```json
-{
-  "service": "service_rfb_pj",
-  "cnpj": "cnpj"
-}
-```
-
-### curl de homologação
+### Produção
 
 ```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "service_rfb_pj",
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
   "cnpj": "cnpj"
 }'
 ```
 
-### Retorno
+### Campos do body
 
-O retorno segue o padrão abaixo. Os campos de `result` variam conforme o service executado.
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código do produto que será executado. |
+| `cnpj` | Sim | Parâmetro usado pelo service SERVICE_ACTIVE_DEBT_PJ. |
+
+### Response resumido
 
 ```json
 {
-  "result": {},
+  "result": {
+    "observacao": "Os campos retornados variam conforme o service SERVICE_ACTIVE_DEBT_PJ."
+  },
   "status": {
     "code": 200,
     "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.
+
+</Accordion>
+
+</AccordionGroup>
+
+
+## Padrões de erro
+
+Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme validação, produto e ambiente.
+
+<AccordionGroup>
+<Accordion title="Token ausente ou inválido">
+
+```json
+{
+  "status": {
+    "code": 401,
+    "message": "Unauthorized"
   }
 }
 ```
 
-[Ver endpoint geral no API Reference](https://react-it.github.io/api-docs-idcerberus/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
+</Accordion>
+<Accordion title="Parâmetro obrigatório ausente">
+
+```json
+{
+  "status": {
+    "code": 400,
+    "message": "Required field is missing or invalid"
+  }
+}
+```
+
+</Accordion>
+<Accordion title="Service não liberado ou indisponível">
+
+```json
+{
+  "status": {
+    "code": 403,
+    "message": "Service unavailable or not enabled for this client"
+  }
+}
+```
 
 </Accordion>
 </AccordionGroup>
-
-## Produção
-
-Para executar em produção, mantenha o mesmo body e troque a base URL para `https://backoffice.idcerberus.com`.

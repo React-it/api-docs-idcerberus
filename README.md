@@ -109,6 +109,8 @@ organização no GitHub Pages e retornar 404.
 ```txt
 api-docs-idcerberus/
 |-- api-reference/
+|   |-- como-executar-service.mdx
+|   |-- services-por-caso-de-uso.mdx
 |   |-- services-pessoa-fisica.mdx
 |   |-- services-pessoa-juridica.mdx
 |   |-- boas-vindas.mdx
@@ -149,6 +151,8 @@ api-docs-idcerberus/
 - `docs.json`: configuração do Mintlify, tema, logo, navegação e OpenAPI.
 - `api-reference/openapi.json`: definição OpenAPI usada pela aba API Reference.
 - `api-reference/boas-vindas.mdx`: introdução da API Reference.
+- `api-reference/como-executar-service.mdx`: passo a passo para autenticar, escolher ambiente e executar um service.
+- `api-reference/services-por-caso-de-uso.mdx`: mapa de services por objetivo de integração.
 - `api-reference/services-pessoa-fisica.mdx`: catálogo explícito dos services de pessoa física no API Reference.
 - `api-reference/services-pessoa-juridica.mdx`: catálogo explícito dos services de pessoa jurídica no API Reference.
 - `guides/`: guias por fluxo, categoria de serviço e catálogo técnico.
