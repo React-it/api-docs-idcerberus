@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const [distDir, rawBasePath, customDomain] = process.argv.slice(2);
 
-if (!distDir || !rawBasePath) {
+if (!distDir || rawBasePath === undefined) {
   console.error('Usage: node scripts/prepare-pages-export.mjs <dist-dir> <base-path>');
   process.exit(1);
 }

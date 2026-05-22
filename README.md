@@ -92,25 +92,23 @@ npm run export
 
 No deploy, a URL canônica da documentação fica em:
 
-- `https://api-docs.idcerberus.com/api-docs-idcerberus/`
+- `https://api-docs.idcerberus.com/`
 
-A raiz `https://api-docs.idcerberus.com/` redireciona para
-`/api-docs-idcerberus/`. O arquivo `CNAME` publicado no artifact do GitHub
-Pages aponta para `api-docs.idcerberus.com`.
+O arquivo `CNAME` publicado no artifact do GitHub Pages aponta para
+`api-docs.idcerberus.com`.
 
 Os arquivos auxiliares devem ficar disponíveis em:
 
-- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms.txt`
-- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms-small.txt`
-- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms-full.txt`
-- `https://api-docs.idcerberus.com/api-docs-idcerberus/llms-api-reference.txt`
-- `https://api-docs.idcerberus.com/api-docs-idcerberus/services-catalog.json`
-- `https://api-docs.idcerberus.com/api-docs-idcerberus/examples/auth.hml.curl`
+- `https://api-docs.idcerberus.com/llms.txt`
+- `https://api-docs.idcerberus.com/llms-small.txt`
+- `https://api-docs.idcerberus.com/llms-full.txt`
+- `https://api-docs.idcerberus.com/llms-api-reference.txt`
+- `https://api-docs.idcerberus.com/services-catalog.json`
+- `https://api-docs.idcerberus.com/examples/auth.hml.curl`
 
-Nas páginas públicas, os links para esses arquivos devem usar a URL completa com
-`/api-docs-idcerberus/`. Links absolutos iniciados apenas com `/llms.txt`,
-`/services-catalog.json` ou `/examples/...` podem apontar para a raiz da
-organização no GitHub Pages e retornar 404.
+Nas páginas públicas, os links para esses arquivos podem usar caminhos absolutos
+da raiz do domínio customizado, como `/llms.txt`, `/services-catalog.json` e
+`/examples/...`.
 
 ## Estrutura
 
