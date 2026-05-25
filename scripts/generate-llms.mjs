@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const siteUrl = 'https://react-it.github.io/api-docs-idcerberus';
+const siteUrl = 'https://api-docs.idcerberus.com';
 const docsJsonPath = path.join(root, 'docs.json');
 const openApiPath = path.join(root, 'api-reference', 'openapi.json');
 
@@ -710,6 +710,33 @@ function renderServicesIndex(catalog) {
     lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} | ${escapeTable(service.responseSummary)} |`);
   }
 
+  lines.push('');
+  lines.push('## Passo a passo por service');
+  lines.push('');
+  lines.push('Use esta parte quando precisar explicar para o cliente exatamente o que enviar e o que esperar de volta em cada produto.');
+  lines.push('');
+
+  currentCategory = '';
+  for (const service of catalog) {
+    if (service.category !== currentCategory) {
+      if (currentCategory) {
+        lines.push('</AccordionGroup>');
+        lines.push('');
+      }
+      currentCategory = service.category;
+      lines.push(`### ${currentCategory}`);
+      lines.push('');
+      lines.push('<AccordionGroup>');
+    }
+
+    lines.push(renderServiceGuideBlock(service));
+    lines.push('');
+  }
+
+  if (currentCategory) {
+    lines.push('</AccordionGroup>');
+  }
+
   return lines.join('\n');
 }
 
@@ -784,9 +811,299 @@ function serviceUseCase(service) {
   return `Use este service quando precisar executar a consulta "${service.name}" via API.`;
 }
 
+const serviceReturnDetails = {
+  SERVICE_ACTIVE_DEBT_PF_BIGDATACORP: {
+    summary: 'Retorna dividas ativas vinculadas ao CPF, com origem do debito, valores, situacao, orgao credor e status da consulta.',
+    result: { cpf: 'cpf', totalDebts: 2, totalValue: '1234.56', debts: [{ source: 'PGFN', value: '1234.56', status: 'ACTIVE' }] },
+  },
+  SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP: {
+    summary: 'Retorna dividas ativas vinculadas ao CNPJ, com origem do debito, valores, situacao, orgao credor e status da consulta.',
+    result: { cnpj: 'cnpj', totalDebts: 1, totalValue: '9800.00', debts: [{ source: 'PGFN', value: '9800.00', status: 'ACTIVE' }] },
+  },
+  SERVICE_ADDRESS_BIGDATACORP: {
+    summary: 'Retorna enderecos associados ao CPF, incluindo logradouro, numero, bairro, cidade, UF, CEP, pais, tipo e indicadores de atualidade quando disponiveis.',
+    result: { cpf: 'cpf', totalAddresses: 2, addresses: [{ address: 'Rua Exemplo', number: '100', neighborhood: 'Centro', city: 'Sao Paulo', state: 'SP', zipcode: '01001000' }] },
+  },
+  SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP: {
+    summary: 'Retorna enderecos associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, pais, tipo de endereco e dados complementares quando disponiveis.',
+    result: { cnpj: 'cnpj', totalAddresses: 1, addresses: [{ address: 'Av Exemplo', city: 'Sao Paulo', state: 'SP', zipcode: '01001000', addressType: 'COMMERCIAL' }] },
+  },
+  SERVICE_ARREST_WARRANT: {
+    summary: 'Retorna indicativos de mandado de prisao para os dados informados, com situacao, orgao, processo e detalhes encontrados quando houver ocorrencia.',
+    result: { cpf: 'cpf', hasArrestWarrant: false, warrants: [] },
+  },
+  SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP: {
+    summary: 'Retorna checagens de KYC e compliance dos socios da empresa, incluindo PEP, sancoes, midia, risco e alertas encontrados por socio.',
+    result: { cnpj: 'cnpj', ownersChecked: 2, owners: [{ name: 'Nome do socio', isPep: false, sanctions: [], riskAlerts: [] }] },
+  },
+  SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP: {
+    summary: 'Retorna relacionamentos da empresa, como socios, proprietarios, empresas relacionadas, participacoes e vinculos societarios identificados.',
+    result: { cnpj: 'cnpj', owners: [{ name: 'Nome do socio', document: 'cpf', share: '50%' }], relatedCompanies: [] },
+  },
+  SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP: {
+    summary: 'Retorna o quadro societario na Receita Federal, com nome dos socios, documentos mascarados, qualificacao, participacao e data de entrada quando disponivel.',
+    result: { cnpj: 'cnpj', owners: [{ name: 'Nome do socio', qualification: 'SOCIO-ADMINISTRADOR', entryDate: 'yyyy-MM-dd' }] },
+  },
+  SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP: {
+    summary: 'Retorna indicadores de exposicao da empresa a apostas, bets e compliance regulatorio, incluindo sinais de operacao, dominio, atividade e alertas.',
+    result: { cnpj: 'cnpj', hasBettingExposure: true, indicators: ['atividade relacionada'], riskLevel: 'MEDIUM' },
+  },
+  SERVICE_CONFIRM_PHONE_FACETEC: {
+    summary: 'Retorna dados associados ao telefone informado, como possivel titular, documento relacionado, status de confirmacao e atributos disponiveis.',
+    result: { phone: '+5561123456789', matched: true, person: { name: 'Nome encontrado', document: 'cpf' } },
+  },
+  SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP: {
+    summary: 'Retorna cadastro completo da empresa, incluindo razao social, nome fantasia, situacao cadastral, CNAEs, natureza juridica, porte, capital e endereco.',
+    result: { cnpj: 'cnpj', officialName: 'EMPRESA EXEMPLO LTDA', tradeName: 'EMPRESA EXEMPLO', status: 'ATIVA', mainActivity: 'CNAE principal' },
+  },
+  SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP: {
+    summary: 'Retorna se o endereco informado tem associacao com o CPF, incluindo nivel de match, endereco normalizado e sinais usados na validacao.',
+    result: { cpf: 'cpf', zipcode: '01001000', match: true, confidence: 'HIGH', normalizedAddress: 'Rua Exemplo, 100' },
+  },
+  SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP: {
+    summary: 'Retorna se o telefone informado tem associacao com o CPF, incluindo nivel de match, tipo de linha, status e sinais de validacao.',
+    result: { cpf: 'cpf', phone: '11900000000', match: true, confidence: 'HIGH', lineType: 'MOBILE' },
+  },
+  SERVICE_CPF_PHONE_VALIDATION_FACETEC: {
+    summary: 'Retorna validacao da associacao entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.',
+    result: { cpf: 'cpf', phone: '11900000000', match: true, statusMessage: 'Telefone associado ao documento' },
+  },
+  SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP: {
+    summary: 'Retorna resultado de antecedentes criminais civis, com status da certidao, ocorrencias encontradas, UF, RG e mensagens da consulta.',
+    result: { cpf: 'cpf', rg: 'rg', state: 'SP', hasRecords: false, records: [] },
+  },
+  SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP: {
+    summary: 'Retorna resultado de antecedentes criminais federais, com status da certidao, ocorrencias encontradas e mensagens da consulta.',
+    result: { cpf: 'cpf', hasFederalCriminalRecord: false, records: [] },
+  },
+  SERVICE_DAS_MEI_INFOSIMPLES: {
+    summary: 'Retorna informacoes de DAS MEI e situacao fiscal relacionada ao CNPJ, incluindo periodos, pagamentos, pendencias e status quando disponiveis.',
+    result: { cnpj: 'cnpj', meiStatus: 'ACTIVE', periods: [{ period: '2026-01', paid: true }] },
+  },
+  SERVICE_DATAVALID_CNH_SERPRO: {
+    summary: 'Retorna validacao DataValid/Serpro da CNH, incluindo score biometrico, similaridade facial, status de validacao e campos conferidos.',
+    result: { cpf: 'cpf', biometricScore: 0.98, validated: true, validationStatus: 'APPROVED' },
+  },
+  SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP: {
+    summary: 'Retorna score de inadimplencia do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliacao.',
+    result: { cpf: 'cpf', score: 742, riskLevel: 'LOW', defaultProbability: '3%' },
+  },
+  SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX: {
+    summary: 'Retorna status da documentoscopia, chave da consulta, dados extraidos do documento, validacoes de documento/selfie e resultado de aprovacao.',
+    result: { key: '{key}', status: 'APPROVED', documentData: { name: 'Nome extraido', cpf: 'cpf' }, validations: [{ name: 'faceMatch', status: 'APPROVED' }] },
+  },
+  SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX: {
+    summary: 'Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraidos, regras avaliadas e evidencias.',
+    result: { key: '{key}', status: 'APPROVED', fields: [{ name: 'cpf', value: 'cpf' }], rules: [{ name: 'document', status: 'APPROVED' }] },
+  },
+  SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP: {
+    summary: 'Retorna vinculos economicos associados ao CPF, como empresas relacionadas, participacoes, relacoes profissionais e indicadores de relacionamento.',
+    result: { cpf: 'cpf', relationships: [{ type: 'OWNER', relatedDocument: 'cnpj', relatedName: 'Empresa relacionada' }] },
+  },
+  SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP: {
+    summary: 'Retorna historico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situacao quando disponivel.',
+    result: { cpf: 'cpf', candidacies: [{ year: 2024, role: 'VEREADOR', party: 'PARTIDO', status: 'DEFERIDO' }] },
+  },
+  SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP: {
+    summary: 'Retorna doacoes eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.',
+    result: { cnpj: 'cnpj', donations: [{ year: 2024, recipient: 'Candidato', amount: '1000.00' }] },
+  },
+  SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP: {
+    summary: 'Retorna doacoes eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.',
+    result: { cpf: 'cpf', donations: [{ year: 2024, recipient: 'Candidato', amount: '500.00' }] },
+  },
+  SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP: {
+    summary: 'Retorna prestacoes de servico eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do servico.',
+    result: { cnpj: 'cnpj', providers: [{ year: 2024, campaign: 'Campanha', amount: '2500.00', serviceType: 'Servico' }] },
+  },
+  SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP: {
+    summary: 'Retorna prestacoes de servico eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do servico.',
+    result: { cpf: 'cpf', providers: [{ year: 2024, campaign: 'Campanha', amount: '800.00', serviceType: 'Servico' }] },
+  },
+  SERVICE_EMAILS_EXTENDED_BIGDATACORP: {
+    summary: 'Retorna e-mails associados ao CPF, incluindo prioridade, status de validacao, origem, data de atualizacao e sinais de uso quando disponiveis.',
+    result: { cpf: 'cpf', emails: [{ email: 'email@exemplo.com', priority: 1, isValid: true, lastUpdate: 'yyyy-MM-dd' }] },
+  },
+  SERVICE_EMAIL_VALIDATION_BIGDATACORP: {
+    summary: 'Retorna validacao do e-mail informado, incluindo formato, existencia provavel, dominio, entregabilidade e indicadores de risco.',
+    result: { email: 'email@email.com', validFormat: true, deliverable: true, domain: 'email.com', riskLevel: 'LOW' },
+  },
+  SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP: {
+    summary: 'Retorna qualificacao cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados.',
+    result: { cpf: 'cpf', nit: 'nit', qualified: true, inconsistencies: [] },
+  },
+  SERVICE_FACE_MATCH_AWS: {
+    summary: 'Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.',
+    result: { match: true, similarity: 98.2, status: 'APPROVED' },
+  },
+  SERVICE_FACE_MATCH_BIGDATACORP: {
+    summary: 'Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.',
+    result: { match: true, similarity: 98.2, status: 'APPROVED' },
+  },
+  SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP: {
+    summary: 'Retorna historico politico familiar do CPF, incluindo familiares com candidaturas, doacoes, cargos, partidos e vinculos eleitorais quando encontrados.',
+    result: { cpf: 'cpf', familyPoliticalHistory: [{ relativeName: 'Nome relacionado', relationship: 'PARENTE', role: 'Candidato' }] },
+  },
+  SERVICE_FINANCIAL_INFORMATION_BIGDATACORP: {
+    summary: 'Retorna informacoes financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe economica e indicadores financeiros disponiveis.',
+    result: { cpf: 'cpf', estimatedIncome: '5000-10000', purchasingPower: 'MEDIUM', financialIndicators: [] },
+  },
+  SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP: {
+    summary: 'Retorna score de risco financeiro do CPF, faixa de risco, recomendacao resumida e fatores que influenciam a avaliacao.',
+    result: { cpf: 'cpf', score: 681, riskLevel: 'MEDIUM', recommendation: 'REVIEW' },
+  },
+  SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP: {
+    summary: 'Retorna socios de primeiro nivel da empresa, com nome, documento, participacao, qualificacao e vinculos diretos ao CNPJ.',
+    result: { cnpj: 'cnpj', partners: [{ name: 'Nome do socio', document: 'cpf', level: 1, qualification: 'SOCIO' }] },
+  },
+  SERVICE_FRAUD_RISK_SCORE_BIGDATACORP: {
+    summary: 'Retorna score de risco de fraude do CPF, fator analisado, nivel de risco, score numerico e sinais que suportam a decisao.',
+    result: { cpf: 'cpf', factor: 'minRisk', score: 720, riskLevel: 'LOW', indicators: [] },
+  },
+  SERVICE_JURIDICAL_PROCESSES_BIGDATACORP: {
+    summary: 'Retorna processos juridicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponiveis.',
+    result: { cpf: 'cpf', totalProcesses: 1, processes: [{ court: 'TJSP', processNumber: '0000000-00.0000.0.00.0000', status: 'ACTIVE' }] },
+  },
+  SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP: {
+    summary: 'Retorna processos juridicos associados aos socios da empresa, com socio relacionado, tribunal, classe, assunto, status e datas.',
+    result: { cnpj: 'cnpj', ownersProcesses: [{ ownerName: 'Nome do socio', totalProcesses: 1, processes: [] }] },
+  },
+  SERVICE_LIVENESS_2D_FACETEC: {
+    summary: 'Retorna resultado da prova de vida 2D, com status, score ou confianca da selfie e sinais de validacao contra fraude simples.',
+    result: { liveness: true, confidence: 0.97, status: 'APPROVED' },
+  },
+  SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP: {
+    summary: 'Retorna exposicao e perfil de midia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.',
+    result: { cpf: 'cpf', mediaMentions: [{ title: 'Noticia encontrada', source: 'Fonte', sentiment: 'NEUTRAL' }], exposureLevel: 'LOW' },
+  },
+  SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP: {
+    summary: 'Retorna exposicao e perfil de midia da empresa e socios, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.',
+    result: { cnpj: 'cnpj', mediaMentions: [{ title: 'Noticia encontrada', source: 'Fonte', sentiment: 'NEUTRAL' }], exposureLevel: 'LOW' },
+  },
+  SERVICE_MEI_BIGDATACORP: {
+    summary: 'Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razao social, situacao, atividades, endereco e datas cadastrais quando disponiveis.',
+    result: { cpf: 'cpf', meiCompanies: [{ cnpj: 'cnpj', officialName: 'MEI EXEMPLO', status: 'ATIVA' }] },
+  },
+  SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP: {
+    summary: 'Retorna certidao de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrencias e dados usados na consulta.',
+    result: { cpf: 'cpf', court: 'TRF1', sphere: 'CIVIL', nothingFound: true, records: [] },
+  },
+  SERVICE_OCR_BIGDATACORP: {
+    summary: 'Retorna dados extraidos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiacao, numero do documento e campos especificos.',
+    result: { documentType: 'CNH', fields: { name: 'Nome extraido', cpf: 'cpf', birthDate: 'yyyy-MM-dd' }, extractionStatus: 'SUCCESS' },
+  },
+  SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP: {
+    summary: 'Retorna doacoes eleitorais feitas pelos socios da empresa, com socio relacionado, ano, candidato/partido, valor e detalhes eleitorais.',
+    result: { cnpj: 'cnpj', ownersDonations: [{ ownerName: 'Nome do socio', year: 2024, recipient: 'Candidato', amount: '300.00' }] },
+  },
+  SERVICE_PEP: {
+    summary: 'Retorna se o CPF e PEP ou relacionado a PEP, com cargo, orgao, nivel de exposicao, periodo e vinculos encontrados quando disponiveis.',
+    result: { cpf: 'cpf', isPep: false, pepLevel: null, positions: [] },
+  },
+  SERVICE_PERSON_AI_PROMPT_OPENAI: {
+    summary: 'Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atencao e leitura operacional.',
+    result: { cpf: 'cpf', answer: 'Resumo analitico gerado pela IA', highlights: ['ponto relevante'] },
+  },
+  SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP: {
+    summary: 'Retorna dados cadastrais do CPF, incluindo nome, nascimento, situacao cadastral, filiacao, obito, idade, genero e atributos disponiveis.',
+    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', registrationStatus: 'REGULAR', motherName: 'Nome da mae' },
+  },
+  SERVICE_PERSON_DATA_MODELING_BIGDATACORP: {
+    summary: 'Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, enderecos, vinculos, indicadores e resumos derivados.',
+    result: { cpf: 'cpf', profileSummary: 'Resumo consolidado', contacts: [], addresses: [], relationships: [] },
+  },
+  SERVICE_PERSON_KYC_BIGDATACORP: {
+    summary: 'Retorna checagem de KYC da pessoa, incluindo PEP, sancoes, midia, processos, alertas de compliance e sinais de risco.',
+    result: { cpf: 'cpf', isPep: false, sanctions: [], mediaExposure: [], riskAlerts: [] },
+  },
+  SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP: {
+    summary: 'Retorna dados financeiros e enderecos do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e enderecos encontrados.',
+    result: { cpf: 'cpf', estimatedIncome: '5000-10000', addresses: [{ city: 'Sao Paulo', state: 'SP' }], financialIndicators: [] },
+  },
+  SERVICE_PHONE_HISTORY_BIGDATACORP: {
+    summary: 'Retorna historico de telefones associados ao CPF, incluindo numero, tipo de linha, operadora, prioridade, status e recencia quando disponiveis.',
+    result: { cpf: 'cpf', phones: [{ phone: '11900000000', lineType: 'MOBILE', priority: 1, lastUpdate: 'yyyy-MM-dd' }] },
+  },
+  SERVICE_PIS_CONSULTATION_BIGDATACORP: {
+    summary: 'Retorna dados de PIS/NIS associados ao CPF, incluindo numero encontrado, status, dados cadastrais relacionados e mensagens da consulta.',
+    result: { cpf: 'cpf', pis: '00000000000', status: 'FOUND' },
+  },
+  SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP: {
+    summary: 'Retorna envolvimento politico do CPF, incluindo candidaturas, cargos, doacoes, prestacoes de servico, partidos e vinculos politicos.',
+    result: { cpf: 'cpf', politicalInvolvement: [{ type: 'CANDIDACY', year: 2024, details: 'Candidatura encontrada' }] },
+  },
+  SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP: {
+    summary: 'Retorna envolvimento politico do CPF, incluindo candidaturas, cargos, doacoes, prestacoes de servico, partidos e vinculos politicos.',
+    result: { cpf: 'cpf', politicalInvolvement: [{ type: 'DONATION', year: 2024, details: 'Doacao encontrada' }] },
+  },
+  SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP: {
+    summary: 'Retorna historico profissional do CPF, incluindo empresas, cargos, datas, vinculos empregaticios ou societarios e indicadores profissionais.',
+    result: { cpf: 'cpf', professionalHistory: [{ companyName: 'Empresa Exemplo', role: 'Analista', startDate: 'yyyy-MM-dd' }] },
+  },
+  SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP: {
+    summary: 'Retorna historico profissional em que a pessoa aparece como titular, socio ou proprietario, com empresas, cargos e datas de vinculo.',
+    result: { cpf: 'cpf', ownerHistory: [{ companyName: 'Empresa Exemplo', cnpj: 'cnpj', qualification: 'SOCIO' }] },
+  },
+  SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP: {
+    summary: 'Retorna certidao/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartorio, valor e datas.',
+    result: { cpf: 'cpf', hasProtests: false, protests: [] },
+  },
+  SERVICE_PROTEST_PF_INFOSIMPLES: {
+    summary: 'Retorna certidao/consulta de protestos para CPF via InfoSimples, com status, cartorios consultados, protestos e mensagens.',
+    result: { cpf: 'cpf', hasProtests: false, notaryOffices: [], protests: [] },
+  },
+  SERVICE_PROTEST_PF_NETRIN: {
+    summary: 'Retorna certidao/consulta de protestos para CPF via Netrin, com status, cartorios consultados, protestos e mensagens.',
+    result: { cpf: 'cpf', hasProtests: false, notaryOffices: [], protests: [] },
+  },
+  SERVICE_PROTEST_PJ_INFOSIMPLES: {
+    summary: 'Retorna certidao/consulta de protestos para CNPJ via InfoSimples, com status, cartorios consultados, protestos, valores e datas.',
+    result: { cnpj: 'cnpj', hasProtests: false, notaryOffices: [], protests: [] },
+  },
+  SERVICE_PROTEST_PJ_NETRIN: {
+    summary: 'Retorna certidao/consulta de protestos para CNPJ via Netrin, com status, cartorios consultados, protestos, valores e datas.',
+    result: { cnpj: 'cnpj', hasProtests: false, notaryOffices: [], protests: [] },
+  },
+  SERVICE_PUBLIC_SERVANTS_BIGDATACORP: {
+    summary: 'Retorna registros de servidor publico associados ao CPF, incluindo orgao, cargo, vinculo, remuneracao/faixa e periodo quando disponiveis.',
+    result: { cpf: 'cpf', publicServantRecords: [{ agency: 'Orgao publico', role: 'Cargo', status: 'ACTIVE' }] },
+  },
+  SERVICE_RELATED_PEOPLE_BIGDATACORP: {
+    summary: 'Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relacao, nivel de proximidade e origem do vinculo.',
+    result: { cpf: 'cpf', relatedPeople: [{ name: 'Pessoa relacionada', relationshipType: 'FAMILIAR', confidence: 'HIGH' }] },
+  },
+  SERVICE_RFB_PF_BIGDATACORP: {
+    summary: 'Retorna situacao do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponiveis.',
+    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', registrationStatus: 'REGULAR', protocol: 'protocolo' },
+  },
+  SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP: {
+    summary: 'Retorna situacao atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo.',
+    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', registrationStatus: 'REGULAR', protocol: 'protocolo' },
+  },
+  SERVICE_RFB_PJ_BIGDATACORP: {
+    summary: 'Retorna situacao do CNPJ na Receita Federal, incluindo razao social, nome fantasia, situacao cadastral, abertura, CNAEs e endereco.',
+    result: { cnpj: 'cnpj', officialName: 'EMPRESA EXEMPLO LTDA', status: 'ATIVA', openingDate: 'yyyy-MM-dd', mainActivity: 'CNAE principal' },
+  },
+  SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP: {
+    summary: 'Retorna situacao atualizada do CNPJ consultada sob demanda na Receita Federal, com razao social, status cadastral, CNAEs e endereco.',
+    result: { cnpj: 'cnpj', officialName: 'EMPRESA EXEMPLO LTDA', status: 'ATIVA', openingDate: 'yyyy-MM-dd', mainActivity: 'CNAE principal' },
+  },
+  SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP: {
+    summary: 'Retorna dados do SINTEGRA, incluindo inscricao estadual, UF, situacao, regime, atividades, endereco e mensagens da consulta.',
+    result: { cnpj: 'cnpj', stateRegistration: '000000000', state: 'SP', status: 'HABILITADO', regime: 'NORMAL' },
+  },
+  SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP: {
+    summary: 'Retorna propensao do CPF a apostas online, com score, faixa de propensao, indicadores comportamentais e sinais associados quando disponiveis.',
+    result: { cpf: 'cpf', propensityScore: 78, propensityLevel: 'HIGH', indicators: ['sinal encontrado'] },
+  },
+};
+
 function serviceResponseSummary(service) {
+  const exact = serviceReturnDetails[service.service];
+  if (exact) return exact.summary;
+
   const text = normalizeText(`${service.name} ${service.service}`);
-  const target = service.category === 'Pessoa Juridica' ? 'empresa/CNPJ' : 'pessoa/CPF';
+  const target = normalizeText(service.category) === 'pessoa juridica' ? 'empresa/CNPJ' : 'pessoa/CPF';
 
   if (text.includes('rfb') || text.includes('receita') || text.includes('enriquecimento') || text.includes('registration')) {
     return `Retorna dados cadastrais do ${target}, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada.`;
@@ -827,17 +1144,17 @@ function fieldRowsFromService(service) {
       name,
       value,
       required: name === 'service' || !normalizeText(raw).includes('opcional'),
-      description: name === 'service'
-        ? 'Código do produto que será executado.'
-        : `Parâmetro usado pelo service ${service.service}.`,
+      description: serviceFieldDescription(service, name),
     };
   });
 }
 
 function serviceResponseExample(service) {
+  const exact = serviceReturnDetails[service.service];
   return {
-    result: {
-      observacao: `Os campos retornados variam conforme o service ${service.service}.`,
+    result: exact?.result ?? {
+      summary: serviceResponseSummary(service),
+      observation: `Os campos retornados variam conforme o service ${service.service}.`,
     },
     status: {
       code: 200,
@@ -845,6 +1162,77 @@ function serviceResponseExample(service) {
     },
     externalId: '{externalId}',
   };
+}
+
+function serviceFieldDescription(service, fieldName) {
+  const field = normalizeText(fieldName);
+  const serviceText = normalizeText(`${service.name} ${service.service}`);
+
+  if (field === 'service') return 'Codigo exato do produto que sera executado pelo endpoint central.';
+  if (field === 'cpf') return 'CPF da pessoa fisica consultada.';
+  if (field === 'cnpj') return 'CNPJ da empresa consultada.';
+  if (field === 'phone') return 'Telefone usado para consulta ou validacao, de preferencia com DDD.';
+  if (field === 'email') return 'E-mail que sera validado ou consultado.';
+  if (field === 'birthdate' || field === 'datadenascimento') return 'Data de nascimento usada para aumentar a precisao da consulta quando exigida.';
+  if (field === 'zipcode') return 'CEP usado na validacao de endereco.';
+  if (field === 'numberaddress') return 'Numero do endereco usado na validacao.';
+  if (field === 'uf') return 'UF usada para limitar a consulta estadual ou juridica.';
+  if (field === 'rg') return 'Numero do RG usado em certidoes ou validacoes documentais.';
+  if (field === 'court') return 'Tribunal ou orgao usado na consulta de certidao/processo.';
+  if (field === 'sphere') return 'Esfera da consulta, como civil, criminal ou federal.';
+  if (field === 'nit') return 'NIT/PIS/PASEP usado na qualificacao cadastral.';
+  if (field === 'factor') return 'Fator de risco solicitado pelo parceiro, como risco minimo ou atrito minimo.';
+  if (field === 'key') return serviceText.includes('documentoscopia') ? 'Chave da documentoscopia usada para iniciar ou consultar o processamento.' : 'Chave de identificacao usada pelo produto.';
+  if (field === 'image1') return 'Primeira imagem enviada em base64 ou referencia equivalente, conforme o produto.';
+  if (field === 'image2') return 'Segunda imagem enviada em base64 ou referencia equivalente, quando o produto compara duas imagens.';
+  if (field === 'selfie1') return 'Selfie enviada para validacoes de documentoscopia e biometria.';
+  if (field === 'image1url') return 'URL da primeira imagem, alternativa ao envio em base64 quando suportado.';
+  if (field === 'image2url') return 'URL da segunda imagem, alternativa ao envio em base64 quando suportado.';
+  if (field === 'nome') return 'Nome completo usado na consulta quando nao ha documento suficiente.';
+  if (field === 'mothername') return 'Nome da mae usado para aumentar a assertividade da consulta.';
+  if (field === 'fathername') return 'Nome do pai usado para aumentar a assertividade da consulta.';
+  if (field === 'limit') return 'Quantidade maxima de registros que devem ser retornados quando o produto suporta limite.';
+
+  return `Parametro usado pelo service ${service.service}.`;
+}
+
+function renderServiceGuideBlock(service) {
+  const body = jsonBodyFromRequestExample(service.requestExample);
+  const fields = fieldRowsFromService(service);
+  const requiredFields = fields.filter((field) => field.required && field.name !== 'service').map((field) => `\`${field.name}\``);
+  const resultKeys = Object.keys(serviceResponseExample(service).result);
+  const lines = [];
+
+  lines.push(`<Accordion title="${escapeAttribute(service.name)}">`);
+  lines.push('');
+  lines.push(`**Service:** \`${service.service}\``);
+  lines.push('');
+  lines.push(`**Quando usar:** ${serviceUseCase(service)}`);
+  lines.push('');
+  lines.push(`**O que retorna:** ${service.responseSummary}`);
+  lines.push('');
+  lines.push('**Passo a passo:**');
+  lines.push('');
+  lines.push('1. Gere um token em `POST /api/token-generate`.');
+  lines.push(`2. Envie ${requiredFields.length ? requiredFields.join(', ') : 'os campos exigidos'} junto com \`service: ${service.service}\` em \`POST /api/service-api\`.`);
+  lines.push('3. Confira `status.code` e `status.message` para saber se a consulta processou.');
+  lines.push(`4. Leia \`result\`, que neste service costuma trazer: ${resultKeys.map((key) => `\`${key}\``).join(', ')}.`);
+  lines.push('');
+  lines.push('**Body exemplo:**');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(body, null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('**Response resumido:**');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(serviceResponseExample(service), null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('</Accordion>');
+
+  return lines.join('\n');
 }
 
 function serviceErrorExamples() {
@@ -894,11 +1282,21 @@ function renderServiceRequestBlock(service) {
   lines.push('');
   lines.push(`**Quando usar:** ${serviceUseCase(service)}`);
   lines.push('');
+  lines.push(`**O que retorna:** ${service.responseSummary}`);
+  lines.push('');
   lines.push('**Endpoint:** `POST /api/service-api`');
   lines.push('');
   lines.push(`**Campos obrigatórios:** ${required}`);
   lines.push('');
   lines.push(`**Campos opcionais:** ${optional}`);
+  lines.push('');
+  lines.push('### Passo a passo');
+  lines.push('');
+  lines.push('1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.');
+  lines.push('2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.');
+  lines.push('3. Execute `POST /api/service-api` no ambiente escolhido.');
+  lines.push('4. Confira `status.code` e `status.message` para validar o processamento técnico.');
+  lines.push('5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.');
   lines.push('');
   lines.push('### Body');
   lines.push('');
@@ -932,7 +1330,7 @@ function renderServiceRequestBlock(service) {
   lines.push(JSON.stringify(serviceResponseExample(service), null, 2));
   lines.push('```');
   lines.push('');
-  lines.push('O objeto `result` muda de acordo com o produto. Para exemplos completos de retorno, consulte também o endpoint geral `POST /api/service-api` no OpenAPI.');
+  lines.push(`Neste service, o objeto \`result\` representa: ${service.responseSummary}`);
   lines.push('');
   lines.push('</Accordion>');
 
@@ -1209,7 +1607,7 @@ llmsLines.push('Base URLs:');
 llmsLines.push('');
 llmsLines.push('- Homologação: `https://backoffice-hml.idcerberus.com`');
 llmsLines.push('- Produção: `https://backoffice.idcerberus.com`');
-llmsLines.push('- Documentação publicada: `https://react-it.github.io/api-docs-idcerberus/`');
+llmsLines.push('- Documentação publicada: `https://api-docs.idcerberus.com/`');
 llmsLines.push('');
 llmsLines.push(llmRules);
 llmsLines.push('## Conteúdo principal');

@@ -72,11 +72,9 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Consulta de MEI | `SERVICE_MEI_BIGDATACORP` | `cpf` |
 | Dados pelo telefone | `SERVICE_CONFIRM_PHONE_FACETEC` | `phone` |
 | Endereços | `SERVICE_ADDRESS_BIGDATACORP` | `cpf` |
-| Dados de sites da pessoa | `SERVICE_DOMAINS_CPF` | `cpf` |
-| Informações socio-demográficas | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf` |
-| Histórico de telefones | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` |
-| Pessoas relacionadas | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` |
-| Histórico de e-mails | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` |
+| Histórico de telefones | `SERVICE_PHONE_HISTORY_BIGDATACORP` | `cpf`, `birthDate`, `limit` |
+| Pessoas relacionadas | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf`, `birthDate` |
+| Histórico de e-mails | `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | `cpf`, `limit` |
 | Relacionamentos econômicos | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `cpf` |
 | Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` |
 | Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` |
@@ -100,7 +98,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | --- | --- | --- |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` |
-| Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
+| Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` |
 | Dívida ativa PF | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` |
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` |
@@ -121,10 +119,10 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` |
 | Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | `cpf` |
-| Doações eleitorais PF | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` |
-| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
-| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY` | `cpf` |
-| Prestadores de serviço eleitorais PF | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` |
+| Doações eleitorais PF | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | `cpf` |
+| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` |
+| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` |
+| Prestadores de serviço eleitorais PF | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` |
 
 ## Consultas avançadas adicionadas
 
@@ -147,8 +145,8 @@ disponibilidade dos dados no parceiro.
 <Warning>
   O alias `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` está documentado sem a
   letra `R` em `SERVICE` porque essa é a grafia implementada no backend. Não
-  corrija para `SERVICE_ONLINE...` sem validação técnica, pois a chamada pode
-  deixar de ser reconhecida.
+  altere essa grafia sem validação técnica, pois a chamada pode deixar de ser
+  reconhecida.
 </Warning>
 
 ## Exemplos
@@ -834,7 +832,7 @@ relacionadas quando disponíveis.
 
 ```json
 {
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP",
   "cpf": "cpf"
 }
 ```
@@ -2195,131 +2193,6 @@ Exemplo de resposta:
 }
 ```
 
-### Dados de sites da pessoa
-
-Consulta dados de presença digital associados ao CPF, com total de domínios,
-domínios ativos e lista de domínios relacionados quando encontrados.
-
-Use este serviço quando a análise precisar considerar presença online,
-portfólios, sites próprios ou outros domínios associados à pessoa consultada.
-
-```json
-{
-  "service": "SERVICE_DOMAINS_CPF",
-  "cpf": "cpf"
-}
-```
-
-Campos principais do retorno:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF consultado |
-| `result.total_domains` | Quantidade total de domínios encontrados |
-| `result.total_active_domains` | Quantidade de domínios ativos |
-| `result.domains_list` | Lista de domínios encontrados |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Exemplo com `curl`:
-
-```bash
-curl --location '{base_url}/api/service-api' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --data '{
-    "service": "SERVICE_DOMAINS_CPF",
-    "cpf": "cpf"
-  }'
-```
-
-Exemplo de resposta:
-
-```json
-{
-  "result": {
-    "cpf": "80246074507",
-    "total_domains": "3",
-    "total_active_domains": "2",
-    "domains_list": "pessoa.com.br | perfilprofissional.com.br | portfolio.com.br"
-  },
-  "status": {
-    "code": 200,
-    "message": "Consulta de API Realizada com Sucesso"
-  }
-}
-```
-
-### Informações socio-demográficas
-
-Consulta estimativas socio-demográficas associadas ao CPF a partir de bases
-estatísticas públicas e levantamentos populacionais. O retorno ajuda a compor
-análises cadastrais, de segmentação e de contexto da pessoa consultada.
-
-Use este serviço quando a análise precisar considerar faixa de renda estimada,
-classe social, escolaridade estimada, origem e nível de agregação dos dados.
-
-```json
-{
-  "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
-  "cpf": "cpf"
-}
-```
-
-Campos principais do retorno:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF consultado |
-| `result.estimated_income_range` | Faixa de renda estimada |
-| `result.estimated_instruction_level` | Nível de escolaridade estimado |
-| `result.social_class` | Classe social estimada |
-| `result.total_demographic_records` | Quantidade de registros socio-demográficos encontrados |
-| `result.has_demographic_data` | Indica se houve retorno de dados socio-demográficos |
-| `result.data_origin` | Origem usada para a estimativa |
-| `result.data_aggregation_level` | Nível de agregação da estimativa |
-| `result.data_country` | País dos dados retornados |
-| `result.primary_demographic_record` | Resumo do registro principal |
-| `result.demographic_records` | Resumo dos registros encontrados |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Exemplo com `curl`:
-
-```bash
-curl --location '{base_url}/api/service-api' \
-  --header 'Content-Type: application/json' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --data '{
-    "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
-    "cpf": "cpf"
-  }'
-```
-
-Exemplo de resposta:
-
-```json
-{
-  "result": {
-    "cpf": "80246074507",
-    "estimated_income_range": "4 A 10 SM",
-    "estimated_instruction_level": "MEDIO COMPL",
-    "social_class": "B",
-    "total_demographic_records": "1",
-    "has_demographic_data": "Sim",
-    "data_origin": "IBGE",
-    "data_aggregation_level": "CENSUS SECTOR",
-    "data_country": "BRAZIL",
-    "primary_demographic_record": "Classe: B, Renda: 4 A 10 SM, Escolaridade: MEDIO COMPL, Origem: IBGE, Nível: CENSUS SECTOR, País: BRAZIL",
-    "demographic_records": "Classe: B, Renda: 4 A 10 SM, Escolaridade: MEDIO COMPL, Origem: IBGE, Nível: CENSUS SECTOR, País: BRAZIL"
-  },
-  "status": {
-    "code": 200,
-    "message": "Consulta de API Realizada com Sucesso"
-  }
-}
-```
-
 ### Consulta de relacionamentos econômicos
 
 Consulta relacionamentos econômicos associados ao CPF informado.
@@ -2581,7 +2454,7 @@ Consulta doações eleitorais realizadas por uma pessoa.
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_DONORS_CPF",
+  "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
   "cpf": "cpf"
 }
 ```
@@ -2620,7 +2493,7 @@ Exemplo com `curl`:
 curl --location '{base_url}/api/service-api' \
   --header 'Content-Type: application/json' \
   --data '{
-    "service": "SERVICE_ELECTORAL_DONORS_CPF",
+    "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
     "cpf": "cpf"
   }'
 ```
@@ -2676,7 +2549,7 @@ Consulta indicadores de envolvimento político de uma pessoa.
 
 ```json
 {
-  "service": "SERVICE_POLITICAL_INVOLVEMENT",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
   "cpf": "cpf"
 }
 ```
@@ -2697,7 +2570,7 @@ Exemplo com `curl`:
 curl --location '{base_url}/api/service-api' \
   --header 'Content-Type: application/json' \
   --data '{
-    "service": "SERVICE_POLITICAL_INVOLVEMENT",
+    "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
     "cpf": "cpf"
   }'
 ```
@@ -2728,7 +2601,7 @@ Consulta histórico político familiar de uma pessoa.
 
 ```json
 {
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY",
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
   "cpf": "cpf"
 }
 ```
@@ -2818,7 +2691,7 @@ Consulta prestadores de serviço eleitorais associados à pessoa.
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
   "cpf": "cpf"
 }
 ```
