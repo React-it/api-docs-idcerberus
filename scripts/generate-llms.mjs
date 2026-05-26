@@ -755,6 +755,97 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
+function pt(value) {
+  return `${value ?? ''}`
+    .replaceAll('dividas', 'dívidas')
+    .replaceAll('Dividas', 'Dívidas')
+    .replaceAll('debito', 'débito')
+    .replaceAll('debitos', 'débitos')
+    .replaceAll('situacao', 'situação')
+    .replaceAll('Situacao', 'Situação')
+    .replaceAll('orgao', 'órgão')
+    .replaceAll('orgaos', 'órgãos')
+    .replaceAll('enderecos', 'endereços')
+    .replaceAll('Endereco', 'Endereço')
+    .replaceAll('endereco', 'endereço')
+    .replaceAll('disponiveis', 'disponíveis')
+    .replaceAll('disponivel', 'disponível')
+    .replaceAll('historico', 'histórico')
+    .replaceAll('Historico', 'Histórico')
+    .replaceAll('politico', 'político')
+    .replaceAll('politicos', 'políticos')
+    .replaceAll('doacoes', 'doações')
+    .replaceAll('prestacoes', 'prestações')
+    .replaceAll('servico', 'serviço')
+    .replaceAll('servicos', 'serviços')
+    .replaceAll('validacao', 'validação')
+    .replaceAll('Validacao', 'Validação')
+    .replaceAll('validacoes', 'validações')
+    .replaceAll('associacao', 'associação')
+    .replaceAll('associados', 'associados')
+    .replaceAll('numero', 'número')
+    .replaceAll('confianca', 'confiança')
+    .replaceAll('prisao', 'prisão')
+    .replaceAll('ocorrencia', 'ocorrência')
+    .replaceAll('ocorrencias', 'ocorrências')
+    .replaceAll('filiacao', 'filiação')
+    .replaceAll('obito', 'óbito')
+    .replaceAll('genero', 'gênero')
+    .replaceAll('informacoes', 'informações')
+    .replaceAll('Informacoes', 'Informações')
+    .replaceAll('economica', 'econômica')
+    .replaceAll('economicos', 'econômicos')
+    .replaceAll('biometrico', 'biométrico')
+    .replaceAll('biometricos', 'biométricos')
+    .replaceAll('certidao', 'certidão')
+    .replaceAll('certidoes', 'certidões')
+    .replaceAll('juridicos', 'jurídicos')
+    .replaceAll('juridicas', 'jurídicas')
+    .replaceAll('midia', 'mídia')
+    .replaceAll('socios', 'sócios')
+    .replaceAll('socio', 'sócio')
+    .replaceAll('societarios', 'societários')
+    .replaceAll('razao', 'razão')
+    .replaceAll('atualizacao', 'atualização')
+    .replaceAll('participacao', 'participação')
+    .replaceAll('qualificacao', 'qualificação')
+    .replaceAll('inscricao', 'inscrição')
+    .replaceAll('operacao', 'operação')
+    .replaceAll('regulatorio', 'regulatório')
+    .replaceAll('campanha', 'campanha')
+    .replaceAll('campanhas', 'campanhas')
+    .replaceAll('vinculos', 'vínculos')
+    .replaceAll('vinculadas', 'vinculadas')
+    .replaceAll('vinculados', 'vinculados')
+    .replaceAll('producao', 'produção')
+    .replaceAll('produçao', 'produção')
+    .replaceAll('sera', 'será')
+    .replaceAll('Codigo', 'Código')
+    .replaceAll('codigo', 'código')
+    .replaceAll('nao', 'não')
+    .replaceAll('precisao', 'precisão')
+    .replaceAll('decisao', 'decisão')
+    .replaceAll('analise', 'análise')
+    .replaceAll('Analise', 'Análise')
+    .replaceAll('atencao', 'atenção')
+    .replaceAll('propensao', 'propensão')
+    .replaceAll('recomendacao', 'recomendação')
+    .replaceAll('consolidada', 'consolidada')
+    .replaceAll('extraidos', 'extraídos')
+    .replaceAll('especificos', 'específicos')
+    .replaceAll('possivel', 'possível')
+    .replaceAll('provavel', 'provável')
+    .replaceAll('cadastrais', 'cadastrais');
+}
+
+function localizeExample(value) {
+  if (Array.isArray(value)) return value.map(localizeExample);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, localizeExample(entry)]));
+  }
+  return typeof value === 'string' ? pt(value) : value;
+}
+
 function serviceFamily(service) {
   const text = normalizeText(`${service.name} ${service.service} ${service.searchTerms?.join(' ') ?? ''}`);
 
@@ -1100,41 +1191,41 @@ const serviceReturnDetails = {
 
 function serviceResponseSummary(service) {
   const exact = serviceReturnDetails[service.service];
-  if (exact) return exact.summary;
+  if (exact) return pt(exact.summary);
 
   const text = normalizeText(`${service.name} ${service.service}`);
   const target = normalizeText(service.category) === 'pessoa juridica' ? 'empresa/CNPJ' : 'pessoa/CPF';
 
   if (text.includes('rfb') || text.includes('receita') || text.includes('enriquecimento') || text.includes('registration')) {
-    return `Retorna dados cadastrais do ${target}, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada.`;
+    return pt(`Retorna dados cadastrais do ${target}, incluindo status cadastral, identificacao, datas e atributos disponiveis na base consultada.`);
   }
-  if (text.includes('ocr')) return 'Retorna dados extraidos do documento enviado, tipo documental identificado, campos oficiais/estimados e status de leitura.';
-  if (text.includes('face')) return 'Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao.';
-  if (text.includes('liveness')) return 'Retorna status da prova de vida e sinais de validacao da selfie enviada.';
-  if (text.includes('documentoscopia')) return 'Retorna status da analise documental, chave da consulta e dados processados de documento, selfie e validacoes associadas.';
-  if (text.includes('datavalid') || text.includes('biometric')) return 'Retorna score/status biometrico e dados de validacao conforme a base governamental consultada.';
+  if (text.includes('ocr')) return pt('Retorna dados extraidos do documento enviado, tipo documental identificado, campos oficiais/estimados e status de leitura.');
+  if (text.includes('face')) return pt('Retorna status da comparacao facial, percentual/score de similaridade e indicadores usados para aprovar ou reprovar a comparacao.');
+  if (text.includes('liveness')) return pt('Retorna status da prova de vida e sinais de validacao da selfie enviada.');
+  if (text.includes('documentoscopia')) return pt('Retorna status da analise documental, chave da consulta e dados processados de documento, selfie e validacoes associadas.');
+  if (text.includes('datavalid') || text.includes('biometric')) return pt('Retorna score/status biometrico e dados de validacao conforme a base governamental consultada.');
   if (text.includes('pep') || text.includes('politic') || text.includes('kyc') || text.includes('compliance') || text.includes('sanction')) {
-    return `Retorna indicadores de KYC/compliance do ${target}, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis.`;
+    return pt(`Retorna indicadores de KYC/compliance do ${target}, como PEP, sancoes, exposicao, historicos e sinais de risco quando disponiveis.`);
   }
   if (text.includes('juridic') || text.includes('lawsuit') || text.includes('criminal') || text.includes('protest') || text.includes('nada consta') || text.includes('mandado')) {
-    return `Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao ${target}, alem do status da consulta.`;
+    return pt(`Retorna ocorrencias juridicas, certidoes, protestos, antecedentes ou mandados associados ao ${target}, alem do status da consulta.`);
   }
   if (text.includes('financial') || text.includes('financeir') || text.includes('score') || text.includes('risco') || text.includes('debt') || text.includes('debito') || text.includes('divida') || text.includes('inadimplencia') || text.includes('credito')) {
-    return `Retorna indicadores financeiros e de risco do ${target}, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel.`;
+    return pt(`Retorna indicadores financeiros e de risco do ${target}, como scores, debitos, renda/ativos estimados e sinais de inadimplencia quando aplicavel.`);
   }
-  if (text.includes('phone') || text.includes('telefone')) return `Retorna telefones, historico de contato ou resultado de validacao de telefone associado ao ${target}.`;
-  if (text.includes('email')) return `Retorna e-mails, historico de contato ou resultado de validacao de e-mail associado ao ${target}.`;
-  if (text.includes('address') || text.includes('endereco')) return `Retorna enderecos encontrados ou resultado de validacao de endereco associado ao ${target}.`;
+  if (text.includes('phone') || text.includes('telefone')) return pt(`Retorna telefones, historico de contato ou resultado de validacao de telefone associado ao ${target}.`);
+  if (text.includes('email')) return pt(`Retorna e-mails, historico de contato ou resultado de validacao de e-mail associado ao ${target}.`);
+  if (text.includes('address') || text.includes('endereco')) return pt(`Retorna enderecos encontrados ou resultado de validacao de endereco associado ao ${target}.`);
   if (text.includes('relationship') || text.includes('relacion') || text.includes('socio') || text.includes('partner') || text.includes('owner')) {
-    return `Retorna vinculos, socios, relacionamentos economicos ou pessoas/empresas relacionadas ao ${target}.`;
+    return pt(`Retorna vinculos, socios, relacionamentos economicos ou pessoas/empresas relacionadas ao ${target}.`);
   }
   if (text.includes('eleitoral') || text.includes('election') || text.includes('electoral')) {
-    return `Retorna dados eleitorais associados ao ${target}, como candidaturas, doacoes, fornecedores ou historico politico quando disponivel.`;
+    return pt(`Retorna dados eleitorais associados ao ${target}, como candidaturas, doacoes, fornecedores ou historico politico quando disponivel.`);
   }
-  if (text.includes('mei') || text.includes('pis') || text.includes('sintegra') || text.includes('das')) return `Retorna dados cadastrais ou fiscais especificos do ${target}, conforme a base consultada pelo service.`;
-  if (text.includes('ai') || text.includes('prompt')) return 'Retorna a resposta consolidada pela IA a partir dos dados consultados e do prompt configurado para o service.';
+  if (text.includes('mei') || text.includes('pis') || text.includes('sintegra') || text.includes('das')) return pt(`Retorna dados cadastrais ou fiscais especificos do ${target}, conforme a base consultada pelo service.`);
+  if (text.includes('ai') || text.includes('prompt')) return pt('Retorna a resposta consolidada pela IA a partir dos dados consultados e do prompt configurado para o service.');
 
-  return `Retorna o objeto result do service ${service.service} com os dados disponiveis para a consulta, alem do status de processamento.`;
+  return pt(`Retorna o objeto result do service ${service.service} com os dados disponiveis para a consulta, alem do status de processamento.`);
 }
 function fieldRowsFromService(service) {
   const body = jsonBodyFromRequestExample(service.requestExample);
@@ -1144,7 +1235,7 @@ function fieldRowsFromService(service) {
       name,
       value,
       required: name === 'service' || !normalizeText(raw).includes('opcional'),
-      description: serviceFieldDescription(service, name),
+      description: pt(serviceFieldDescription(service, name)),
     };
   });
 }
@@ -1152,9 +1243,9 @@ function fieldRowsFromService(service) {
 function serviceResponseExample(service) {
   const exact = serviceReturnDetails[service.service];
   return {
-    result: exact?.result ?? {
+    result: exact ? localizeExample(exact.result) : {
       summary: serviceResponseSummary(service),
-      observation: `Os campos retornados variam conforme o service ${service.service}.`,
+      observation: pt(`Os campos retornados variam conforme o service ${service.service}.`),
     },
     status: {
       code: 200,
