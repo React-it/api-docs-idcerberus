@@ -21,6 +21,11 @@ info:
     o método, a URL e os headers são iguais; o que muda é o valor de `service`
     e os campos obrigatórios do produto escolhido.
 
+    O valor enviado em `service` precisa existir no produto liberado para o
+    cliente. Em alguns produtos, o alias de chamada configurado no produto é
+    mais curto que o alias do parceiro exibido no catálogo. Nesses casos, envie
+    o alias de chamada no body.
+
     - Serviços de pessoa física normalmente usam `cpf`.
     - Serviços de pessoa jurídica normalmente usam `cnpj`.
     - Serviços de biometria e documentos usam imagens em base64 ou URLs.
@@ -270,6 +275,22 @@ paths:
         pelo campo `service` enviado no body. Os demais campos variam conforme o
         serviço escolhido.
 
+        O valor de `service` é validado contra os services liberados no produto
+        do cliente. Se o produto estiver configurado com alias curto, use esse
+        alias no body, mesmo que o catálogo mostre o alias completo do parceiro.
+
+        Exemplos comuns de alias de chamada:
+
+        | Alias documentado/parceiro | Alias de chamada |
+        | --- | --- |
+        | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `SERVICE_DOCUMENTOSCOPY` |
+        | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+        | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `economic_relationships` |
+        | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `SERVICE_EMAIL_VALIDATION1` |
+        | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`, `SERVICE_PROTEST_PF_INFOSIMPLES`, `SERVICE_PROTEST_PF_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+        | `SERVICE_PROTEST_PJ_INFOSIMPLES`, `SERVICE_PROTEST_PJ_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+        | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `SERVICE_PERSON_AI_PROMPT` |
+
         Este endpoint atende serviços de pessoa física e pessoa jurídica. Nos
         exemplos, use os itens com prefixo `PF -` para consultas por CPF e os
         itens com prefixo `PJ -` para consultas por CNPJ.
@@ -292,6 +313,9 @@ paths:
         - consulta de CNPJ normalmente usa `cnpj`;
         - OCR, FaceMatch e documentoscopia usam imagens em base64 ou URL;
         - serviços assíncronos usam `key` para consultar o resultado depois.
+        - payloads curtos ajudam a validar acesso ao produto, mas services de
+          documento, OCR e biometria precisam de massa real para retornar dados
+          completos.
 
         A maioria das respostas retorna:
 

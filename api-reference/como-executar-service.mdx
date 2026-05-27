@@ -11,6 +11,26 @@ Esta página explica o fluxo padrão para executar qualquer produto documentado 
 A maior parte das consultas usa o endpoint `POST /api/service-api`. O campo `service` define qual produto será executado.
 </Info>
 
+<Warning>
+  Antes de executar a chamada, confirme qual alias está liberado no produto
+  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
+  casos, ele é mais curto que o alias técnico do parceiro exibido no catálogo.
+</Warning>
+
+Na prática: se o alias configurado no produto for diferente do alias abaixo,
+use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
+quando o produto está ativo.
+
+| Alias documentado/parceiro | Alias de chamada quando configurado no produto |
+| --- | --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `economic_relationships` |
+| `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`, `SERVICE_PROTEST_PF_INFOSIMPLES`, `SERVICE_PROTEST_PF_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_PJ_INFOSIMPLES`, `SERVICE_PROTEST_PJ_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| `SERVICE_PERSON_AI_PROMPT_OPENAI` | `SERVICE_PERSON_AI_PROMPT` |
+
 ## Passo a passo
 
 <Steps>
@@ -97,6 +117,8 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 | --- | --- |
 | Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |
 | Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |
+| Produto usa alias curto | Confirme no produto qual alias está liberado e envie esse valor no campo `service`. |
 | CPF, CNPJ, imagem ou parâmetro obrigatório ausente | Confira a seção de campos do service escolhido. |
+| Serviço de documento, OCR ou biometria retornou erro de parâmetro | Envie imagem/base64, URL ou `key` real. Payloads curtos servem apenas para testar autenticação e liberação do produto. |
 | Produto não liberado para o cliente | Confirme a liberação comercial/técnica antes de executar em produção. |
 | Retorno sem dados no `result` | Confirme se o documento consultado possui informação disponível para aquele produto. |

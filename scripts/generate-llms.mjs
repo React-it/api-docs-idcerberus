@@ -6,6 +6,49 @@ const siteUrl = 'https://api-docs.idcerberus.com';
 const docsJsonPath = path.join(root, 'docs.json');
 const openApiPath = path.join(root, 'api-reference', 'openapi.json');
 
+const serviceAliasRows = [
+  ['SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX', 'SERVICE_DOCUMENTOSCOPY'],
+  ['SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX', 'SERVICE_DIGITAL_DOCUMENTOSCOPY'],
+  ['SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP', 'economic_relationships'],
+  ['SERVICE_EMAIL_VALIDATION_BIGDATACORP', 'SERVICE_EMAIL_VALIDATION1'],
+  ['SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP, SERVICE_PROTEST_PF_INFOSIMPLES, SERVICE_PROTEST_PF_NETRIN', 'SERVICE_PROTEST_CLEARANCE_CERTIFICATE'],
+  ['SERVICE_PROTEST_PJ_INFOSIMPLES, SERVICE_PROTEST_PJ_NETRIN', 'SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ'],
+  ['SERVICE_PERSON_AI_PROMPT_OPENAI', 'SERVICE_PERSON_AI_PROMPT'],
+];
+
+const serviceAliasRowsPessoaFisica = serviceAliasRows.filter(([documentedAlias]) => !documentedAlias.includes('SERVICE_PROTEST_PJ'));
+const serviceAliasRowsPessoaJuridica = serviceAliasRows.filter(([documentedAlias]) => documentedAlias.includes('SERVICE_PROTEST_PJ'));
+
+function pushServiceAliasNote(lines, { includeDocumentPayloadNote = false, rows = serviceAliasRows } = {}) {
+  lines.push('<Warning>');
+  lines.push('  Antes de executar a chamada, confirme qual alias está liberado no produto');
+  lines.push('  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns');
+  lines.push('  casos, ele é mais curto que o alias técnico do parceiro exibido no catálogo.');
+  lines.push('</Warning>');
+  lines.push('');
+  lines.push('Na prática: se o alias configurado no produto for diferente do alias abaixo,');
+  lines.push('use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo');
+  lines.push('quando o produto está ativo.');
+  lines.push('');
+  lines.push('| Alias documentado/parceiro | Alias de chamada quando configurado no produto |');
+  lines.push('| --- | --- |');
+  for (const [documentedAlias, callAlias] of rows) {
+    const documented = documentedAlias.split(', ').map((alias) => `\`${alias}\``).join(', ');
+    lines.push(`| ${documented} | \`${callAlias}\` |`);
+  }
+  lines.push('');
+
+  if (includeDocumentPayloadNote) {
+    lines.push('<Info>');
+    lines.push('  OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64,');
+    lines.push('  URL ou `key` real para retornar dados completos. Payload curto ajuda a');
+    lines.push('  validar autenticação, acesso ao produto e formato básico da chamada, mas');
+    lines.push('  não valida o retorno completo do parceiro.');
+    lines.push('</Info>');
+    lines.push('');
+  }
+}
+
 function read(filePath) {
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
 }
@@ -120,7 +163,7 @@ function cleanMdx(content) {
     .replace(/<\/Step>/g, '')
     .replace(/<Tip>/g, '> Nota: ')
     .replace(/<\/Tip>/g, '')
-    .replace(/<Warning>/g, '> Atencao: ')
+    .replace(/<Warning>/g, '> Atencao:')
     .replace(/<\/Warning>/g, '')
     .replace(/<Info>/g, '> Info:')
     .replace(/<\/Info>/g, '')
@@ -696,6 +739,7 @@ function renderServicesIndex(catalog) {
   lines.push('Todas as consultas abaixo usam `POST /api/service-api`. O produto executado é definido pelo campo `service` no body.');
   lines.push('</Info>');
   lines.push('');
+  pushServiceAliasNote(lines);
 
   let currentCategory = '';
   for (const service of catalog) {
@@ -799,8 +843,11 @@ function pt(value) {
     .replaceAll('biometricos', 'biométricos')
     .replaceAll('certidao', 'certidão')
     .replaceAll('certidoes', 'certidões')
+    .replaceAll('juridica', 'jurídica')
     .replaceAll('juridicos', 'jurídicos')
     .replaceAll('juridicas', 'jurídicas')
+    .replaceAll('fisica', 'física')
+    .replaceAll('fisicas', 'físicas')
     .replaceAll('midia', 'mídia')
     .replaceAll('socios', 'sócios')
     .replaceAll('socio', 'sócio')
@@ -812,6 +859,29 @@ function pt(value) {
     .replaceAll('inscricao', 'inscrição')
     .replaceAll('operacao', 'operação')
     .replaceAll('regulatorio', 'regulatório')
+    .replaceAll('dominio', 'domínio')
+    .replaceAll('exposicao', 'exposição')
+    .replaceAll('nivel', 'nível')
+    .replaceAll('periodo', 'período')
+    .replaceAll('periodos', 'períodos')
+    .replaceAll('pendencias', 'pendências')
+    .replaceAll('avaliacao', 'avaliação')
+    .replaceAll('inadimplencia', 'inadimplência')
+    .replaceAll('numerico', 'numérico')
+    .replaceAll('recencia', 'recência')
+    .replaceAll('relacao', 'relação')
+    .replaceAll('cartorio', 'cartório')
+    .replaceAll('cartorios', 'cartórios')
+    .replaceAll('proprietarios', 'proprietários')
+    .replaceAll('sancoes', 'sanções')
+    .replaceAll('pais', 'país')
+    .replaceAll('mae', 'mãe')
+    .replaceAll('maxima', 'máxima')
+    .replaceAll('parametro', 'parâmetro')
+    .replaceAll('referencia', 'referência')
+    .replaceAll('identificacao', 'identificação')
+    .replaceAll('minimo', 'mínimo')
+    .replaceAll('pratica', 'prática')
     .replaceAll('campanha', 'campanha')
     .replaceAll('campanhas', 'campanhas')
     .replaceAll('vinculos', 'vínculos')
@@ -1444,6 +1514,7 @@ function renderServiceQuickstartPage() {
   lines.push('A maior parte das consultas usa o endpoint `POST /api/service-api`. O campo `service` define qual produto será executado.');
   lines.push('</Info>');
   lines.push('');
+  pushServiceAliasNote(lines);
   lines.push('## Passo a passo');
   lines.push('');
   lines.push('<Steps>');
@@ -1522,7 +1593,9 @@ function renderServiceQuickstartPage() {
   lines.push('| --- | --- |');
   lines.push('| Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |');
   lines.push('| Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |');
+  lines.push('| Produto usa alias curto | Confirme no produto qual alias está liberado e envie esse valor no campo `service`. |');
   lines.push('| CPF, CNPJ, imagem ou parâmetro obrigatório ausente | Confira a seção de campos do service escolhido. |');
+  lines.push('| Serviço de documento, OCR ou biometria retornou erro de parâmetro | Envie imagem/base64, URL ou `key` real. Payloads curtos servem apenas para testar autenticação e liberação do produto. |');
   lines.push('| Produto não liberado para o cliente | Confirme a liberação comercial/técnica antes de executar em produção. |');
   lines.push('| Retorno sem dados no `result` | Confirme se o documento consultado possui informação disponível para aquele produto. |');
 
@@ -1590,10 +1663,15 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push('Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produto executado é definido pelo campo `service` no body da requisição.');
   lines.push('</Info>');
   lines.push('');
+  pushServiceAliasNote(lines, {
+    includeDocumentPayloadNote: category === 'Pessoa Física',
+    rows: category === 'Pessoa Jurídica' ? serviceAliasRowsPessoaJuridica : serviceAliasRowsPessoaFisica,
+  });
   lines.push('## Como ler esta referência');
   lines.push('');
   lines.push('- **Nome**: nome funcional do produto.');
   lines.push('- **Service**: valor exato que deve ser enviado no campo `service`.');
+  lines.push('- **Alias de chamada**: quando o produto estiver configurado com alias curto, envie esse alias no body, mesmo que o nome documentado do parceiro seja outro.');
   lines.push('- **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.');
   lines.push('- **Campos**: parâmetros esperados no body além de `service`.');
   lines.push('- **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.');

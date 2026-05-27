@@ -12,6 +12,9 @@ sócios, regularidade fiscal, débitos, protestos e compliance.
 Assim como nos serviços de pessoa física, todos são executados pelo endpoint
 central de serviços. O campo `service` define qual produto será processado.
 
+Antes de montar o body, confira no produto do cliente qual alias está liberado.
+Esse é o valor que deve ir no campo `service`.
+
 ```http
 POST /api/service-api
 ```
@@ -40,6 +43,20 @@ response.
 
 Para navegar por famílias de produto, veja [Famílias de serviços](/guides/service-api/familias-de-servicos).
 Para implementação endpoint a endpoint, use a [API Reference](/api-reference/autorização/gerar-token-de-api).
+
+<Warning>
+  Para protestos PJ, alguns produtos usam alias curto no body. Se
+  `SERVICE_PROTEST_PJ_INFOSIMPLES` ou `SERVICE_PROTEST_PJ_NETRIN` estiverem
+  documentados, mas o produto estiver configurado com alias curto, envie
+  `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` no campo `service`.
+</Warning>
+
+Passo rápido para evitar erro:
+
+1. Abra o produto do cliente no Backoffice.
+2. Confirme o alias liberado para o serviço.
+3. Envie esse alias no campo `service`.
+4. Use os demais campos da tabela como entrada principal da consulta.
 
 ## Serviços disponíveis
 

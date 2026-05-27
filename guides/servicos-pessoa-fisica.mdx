@@ -13,6 +13,9 @@ Todos são executados pelo endpoint central de serviços. O campo `service`
 define qual produto será processado, e os demais campos variam conforme a
 consulta escolhida.
 
+Antes de montar o body, confira no produto do cliente qual alias está liberado.
+Esse é o valor que deve ir no campo `service`.
+
 ```http
 POST /api/service-api
 ```
@@ -37,6 +40,36 @@ Exemplo de requisição:
 
 Use esta página para consultar a lista completa de serviços de CPF, seus códigos
 `service`, campos principais e exemplos mais extensos de request e response.
+
+<Warning>
+  O catálogo mostra o nome funcional e o alias documentado do service. Se o
+  produto do cliente tiver sido configurado com alias curto, use o alias do
+  produto no campo `service`. Isso evita erro de acesso mesmo quando o produto
+  está ativo.
+</Warning>
+
+Passo rápido para evitar erro:
+
+1. Abra o produto do cliente no Backoffice.
+2. Confirme o alias liberado para o serviço.
+3. Envie esse alias no campo `service`.
+4. Use os demais campos da tabela como entrada principal da consulta.
+
+| Alias documentado/parceiro | Alias de chamada quando configurado no produto |
+| --- | --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `economic_relationships` |
+| `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`, `SERVICE_PROTEST_PF_INFOSIMPLES`, `SERVICE_PROTEST_PF_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PERSON_AI_PROMPT_OPENAI` | `SERVICE_PERSON_AI_PROMPT` |
+
+<Info>
+  OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64, URL ou
+  `key` real para retornar dados completos. Payload curto ajuda a validar
+  autenticação, acesso ao produto e formato básico da chamada, mas não valida o
+  retorno completo do parceiro.
+</Info>
 
 Para uma visão orientada por caso de uso, veja [Escolha o serviço certo](/guides/escolha-o-servico-certo).
 Para implementação endpoint a endpoint, use a [API Reference](/api-reference/autorização/gerar-token-de-api).

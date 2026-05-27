@@ -12,7 +12,7 @@ como uma lista única e extensa.
 ## Como usar esta página
 
 1. Escolha a família de serviço.
-2. Copie o código `service`.
+2. Copie o código `service` ou confirme o alias de chamada configurado no produto.
 3. Abra `POST /api/service-api` na API Reference.
 4. Selecione o exemplo correspondente.
 5. Mapeie o response esperado.
@@ -32,6 +32,25 @@ O campo `service` escolhe o produto. Os demais campos variam conforme a
 consulta: documentos usam imagens ou URLs, serviços PF usam `cpf`, serviços PJ
 usam `cnpj` e algumas certidões exigem dados complementares como `uf`, `rg` ou
 `court`.
+
+<Warning>
+  A API valida o `service` contra os services liberados no produto do cliente.
+  Por isso, em alguns casos o valor enviado na chamada pode ser um alias curto
+  do produto, e não o alias completo do parceiro.
+</Warning>
+
+Antes de testar com o cliente, confirme o alias no produto, copie esse valor
+para o body e depois complete os campos obrigatórios da família escolhida.
+
+| Alias documentado/parceiro | Alias de chamada quando configurado no produto |
+| --- | --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `economic_relationships` |
+| `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`, `SERVICE_PROTEST_PF_INFOSIMPLES`, `SERVICE_PROTEST_PF_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_PJ_INFOSIMPLES`, `SERVICE_PROTEST_PJ_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| `SERVICE_PERSON_AI_PROMPT_OPENAI` | `SERVICE_PERSON_AI_PROMPT` |
 
 Pense no `POST /api/service-api` como um executor. A rota é sempre a mesma, mas
 o serviço executado muda de acordo com o valor enviado em `service`.
