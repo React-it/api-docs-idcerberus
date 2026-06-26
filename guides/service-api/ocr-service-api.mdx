@@ -1,0 +1,492 @@
+---
+title: OCR via Service API
+description: Guia pratico para escolher, configurar, testar e interpretar os services de OCR no POST /api/service-api.
+---
+
+# OCR via Service API
+
+Use esta pagina para integrar services de OCR pelo `POST /api/service-api`.
+Ela mostra qual service usar, como montar o payload, como deve ser o retorno e
+o que conferir antes de abrir chamado ou mexer na implementacao.
+
+> Requisito basico: o token precisa ser do produto correto e o produto precisa
+> ter o service ativo com API habilitada. Se a configuracao do produto estiver
+> incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
+
+## Escolha rapida
+
+| Preciso ler | Service | Enviar | Retorno principal |
+| --- | --- | --- | --- |
+| CNH | `SERVICE_OCR` | `documentType: CNH` + `image1` | CPF, nome, nascimento, dados da CNH |
+| RG | `SERVICE_OCR` | `documentType: RG` + `image1` + `image2` | CPF, nome, filiacao, nascimento, dados do RG |
+| Cartao CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ, tipo do documento, texto OCR |
+| Documento de emancipacao | `SERVICE_OCR_EMANCIPATION` | `image1` | Texto OCR, campos extraidos e analise estruturada |
+| Comprovante de endereco | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Nome, endereco, tipo do documento, datas e valores |
+
+O campo `image1` deve receber base64 puro da imagem. Nao envie prefixo como
+`data:image/jpeg;base64,`.
+
+## Fluxo completo
+
+1. Gere o token em `/api/token-generate`.
+2. Confirme se o produto tem o service ativo e habilitado para API.
+3. Escolha o `service` correto na tabela acima.
+4. Converta a imagem para base64 puro.
+5. Envie o payload para `POST /api/service-api`.
+6. Valide `status.code`, `onboardingStatus`, `externalId` e os campos dentro de
+   `result`.
+
+## Gerar base64 no PowerShell
+
+Para copiar apenas o base64 da imagem:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
+```
+
+Para montar o JSON completo no clipboard:
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+Para RG com frente e verso:
+
+```powershell
+$front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
+$back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "RG"
+  image1 = $front
+  image2 = $back
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+Cole o conteudo do clipboard no body raw JSON do Postman.
+
+## Qualidade da imagem
+
+Para reduzir recusa por leitura ruim:
+
+| Item | Recomendacao |
+| --- | --- |
+| Enquadramento | Documento inteiro visivel, sem cortar bordas. |
+| Nitidez | Texto legivel ao abrir a imagem manualmente. |
+| Iluminacao | Evitar reflexo, sombra forte e blur. |
+| Orientacao | Preferir documento reto, sem rotacao exagerada. |
+| Arquivo | Usar imagem real em JPG/PNG convertida para base64. |
+
+Foto de documento nao serve para service de face. Selfie nao serve para OCR de
+documento.
+
+## Configuracao do produto
+
+Antes de testar em HML ou PROD, confira:
+
+| Configuracao | O que verificar |
+| --- | --- |
+| Token | `client` e `secret` pertencem ao produto que sera testado. |
+| Service | O service esta cadastrado e ativo no produto. |
+| API | O service esta liberado para chamada via API. |
+| Alias | O valor enviado em `service` e o alias de chamada do produto. |
+| Campos | O service tem os campos de entrada e saida esperados. |
+
+Se o retorno for `"Don't have access to the service"`, o primeiro ponto a olhar
+e configuracao do produto, nao a imagem.
+
+## Padrao de retorno
+
+O retorno publico deve ficar limpo, com os dados uteis dentro de `result`.
+
+Exemplo de sucesso:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "NOME EXTRAIDO"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+O cliente nao deve depender de campos internos como:
+
+- `fieldsOutput`
+- `required`
+- `enabled`
+- `valid`
+- `callService`
+- `nextStep`
+- `fields`
+- `visible`
+
+## Nao use assim
+
+| Evite | Motivo |
+| --- | --- |
+| Enviar `data:image/jpeg;base64,...` | A API espera base64 puro. |
+| Usar foto de RG/CNH em service de face | Face e OCR usam fluxos diferentes. |
+| Usar selfie em OCR de documento | OCR precisa da imagem do documento. |
+| Testar RG enviando so a frente | O verso pode conter campos importantes. |
+| Testar cartao CNPJ no service de comprovante | Cada OCR tem parser e criterio proprio. |
+| Colocar CPF, CNPJ ou nomes reais na documentacao | Exemplos publicos devem usar dados ficticios. |
+| Assumir que campo ausente sempre e bug | O campo pode nao existir no documento ou nao ter sido lido. |
+
+## OCR React: RG e CNH
+
+Use `SERVICE_OCR` para RG e CNH.
+
+### CNH
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "NOME EXTRAIDO",
+    "fatherName": "NOME DO PAI",
+    "motherName": "NOME DA MAE",
+    "birthDate": "2000-01-01",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000",
+    "rg": "000000000",
+    "rgIssuer": "SSP/UF",
+    "validDate": "2030-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+### RG
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RG",
+  "image1": "BASE64_DA_FRENTE",
+  "image2": "BASE64_DO_VERSO"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "RG",
+    "name": "NOME EXTRAIDO",
+    "fatherName": "NOME DO PAI",
+    "motherName": "NOME DA MAE",
+    "birthDate": "2000-01-01",
+    "rgIssuer": "SSP/UF",
+    "rgIssueDate": "2024-01-01",
+    "nationality": "BRA",
+    "naturality": "CIDADE/UF"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Por enquanto, esta pagina cobre RG e CNH. Outros documentos devem ser validados
+quando o suporte do OCR estiver fechado para cada tipo.
+
+## OCR de cartao CNPJ
+
+Use `SERVICE_OCR_CNPJ_CARD` para imagem de cartao CNPJ.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraido do cartao CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Cartao CNPJ processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Se o CNPJ nao for encontrado ou for invalido, o esperado e recusa com mensagem
+clara. Se a imagem, armazenamento ou leitura do provedor falhar, pode retornar
+erro.
+
+## OCR de emancipacao
+
+Use `SERVICE_OCR_EMANCIPATION` para documentos de emancipacao.
+
+Esse documento nao tem layout unico. Pode ser declaracao, escritura, certidao ou
+documento de cartorio. Por isso, o service deve priorizar texto OCR e extrair o
+que for possivel, sem reprovar apenas porque CPF, RG ou codigo nao apareceram.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraido do documento",
+    "extractedFields": {
+      "cpf": "00000000000",
+      "rg": "000000000",
+      "authenticationCode": "ABC123456",
+      "dates": ["2026-01-01"]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "summary": "Resumo do documento",
+      "confidence": "MEDIUM",
+      "evidence": ["Texto menciona emancipacao"],
+      "warnings": ["Codigo de autenticacao nao encontrado"]
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Documento de emancipacao processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+## OCR de comprovante de endereco
+
+Use `SERVICE_OCR_PROOF_OF_ADDRESS` para comprovantes de endereco.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "BASE64_DO_COMPROVANTE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraido",
+    "fullName": "NOME EXTRAIDO",
+    "fullAddress": "ENDERECO EXTRAIDO",
+    "docType": "Conta de consumo",
+    "issueDate": "2026-01-01",
+    "dueDate": "2026-01-10",
+    "invoiceAmount": "R$ 100,00",
+    "barcode": "00000000000000000000000000000000000000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Comprovante de endereco obtido com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Nem todo comprovante tera todos os campos. A API deve retornar os campos
+extraidos sem preencher dado falso.
+
+## Respostas comuns
+
+| Cenario | Status esperado | Como agir |
+| --- | --- | --- |
+| OCR leu e extraiu dados | `APPROVED` | Usar os dados de `result`. |
+| Documento legivel, mas campo principal nao apareceu | `REFUSED` | Conferir se a imagem corresponde ao service correto. |
+| Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuracao do produto. |
+| Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte tecnico se persistir. |
+
+Exemplo de recusa por documento nao lido:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Nao foi possivel ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+## Exemplos de erro
+
+### Produto sem acesso ao service
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Acao: conferir se o service esta ativo no produto e se esta habilitado para API.
+
+### Imagem ausente
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento nao encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Acao: conferir se `image1`, `image2`, `image1Url` ou `key` foram enviados conforme
+o service escolhido.
+
+### RG sem verso
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento nao encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Acao: enviar `image1` com a frente e `image2` com o verso.
+
+### Documento nao lido
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Nao foi possivel ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Acao: conferir qualidade da imagem e se o documento corresponde ao service usado.
+
+### Erro interno
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Falha ao realizar OCR"
+  },
+  "onboardingStatus": "ERROR",
+  "externalId": "..."
+}
+```
+
+Acao: guardar o `externalId`, repetir com uma imagem valida e acionar suporte
+tecnico se persistir.
+
+## Checklist antes de passar para o cliente
+
+1. Testou em HML com token do produto correto.
+2. Confirmou que o service esta ativo e com API habilitada.
+3. Usou base64 puro, sem prefixo `data:image`.
+4. Validou um caso de sucesso.
+5. Validou um caso de recusa esperado.
+6. Conferiu se o retorno veio sem `fieldsOutput` e sem metadados internos.
+7. Conferiu se `externalId` voltou para rastreio.
+8. Conferiu se os dados retornados vieram dentro de `result`.
+
+## Resumo para suporte e CS
+
+Quando um cliente disser que o OCR nao funcionou, confira nesta ordem:
+
+1. Produto e service liberados para API.
+2. Alias correto no campo `service`.
+3. Tipo de documento correto para o service escolhido.
+4. Imagem legivel e completa.
+5. Retorno de `status.message`.
+6. `externalId` para rastrear a execucao.
+
+Isso evita tratar problema de configuracao como problema de OCR, e tambem evita
+trocar payload quando o erro real esta no produto.
+
+## Quando acionar cada time
+
+| Situacao | Quem acionar | O que enviar |
+| --- | --- | --- |
+| Falta de acesso ao service | Produto/configuracao | Produto, cliente, alias enviado e print da configuracao. |
+| OCR retorna vazio com imagem boa | Time tecnico | Payload sem base64, imagem usada e `externalId`. |
+| Erro 500 | Backend/logs | `externalId`, ambiente, horario aproximado e service usado. |
+| Campo extraido errado | Time tecnico/OCR | Imagem, retorno recebido, campo esperado e `externalId`. |
+| Duvida de qual service usar | Produto/CS | Tipo de documento e objetivo da consulta. |
+| Divergencia entre HML e PROD | Produto + tecnico | Produto dos dois ambientes, alias configurado e retorno de cada ambiente. |

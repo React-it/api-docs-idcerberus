@@ -60,6 +60,57 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Benefícios sociais estendidos
+
+- Service: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Retorno principal: Retorna beneficios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+  "cpf": "cpf"
+}'
+```
+
+### Benefícios sociais familiares
+
+- Service: `SERVICE_FAMILY_SOCIAL_BENEFITS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Retorno principal: Retorna beneficios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+  "cpf": "cpf"
+}'
+```
+
+### Busca de face na base
+
+- Service: `SERVICE_FACE_INDEX`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `image1`
+- Retorno principal: Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_INDEX",
+  "image1": "base64"
+}'
+```
+
 ### Certidão de Nada Consta
 
 - Service: `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
@@ -162,6 +213,24 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
   "cpf": "cpf"
+}'
+```
+
+### Dados demográficos
+
+- Service: `SERVICE_DEMOGRAPHIC_DATA_CPF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `birthDate`
+- Retorno principal: Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)"
 }'
 ```
 
@@ -285,6 +354,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "image1": "base64",
   "image2": "base64",
   "selfie1": "base64"
+}'
+```
+
+### Domínios
+
+- Service: `SERVICE_DOMAINS_CPF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Retorno principal: Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CPF",
+  "cpf": "cpf"
 }'
 ```
 
@@ -498,6 +584,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Indicadores de atividades
+
+- Service: `SERVICE_ACTIVITIES_INDICATORS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Retorno principal: Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ACTIVITIES_INDICATORS",
+  "cpf": "cpf"
+}'
+```
+
 ### Informações financeiras
 
 - Service: `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP`
@@ -588,6 +691,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### OCR de comprovante de endereço
+
+- Service: `SERVICE_OCR_PROOF_OF_ADDRESS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `image1`
+- Retorno principal: Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "base64"
+}'
+```
+
 ### OCR de documentos
 
 - Service: `SERVICE_OCR_BIGDATACORP`
@@ -605,6 +725,42 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "image2": "base64",
   "image1Url": "url_image",
   "image2Url": "urlImageMatch"
+}'
+```
+
+### OCR de emancipação
+
+- Service: `SERVICE_OCR_EMANCIPATION`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `image1`
+- Retorno principal: Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+### OCR React RG/CNH
+
+- Service: `SERVICE_OCR`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `documentType`, `image1`, `image2`
+- Retorno principal: Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "base64",
+  "image2": "base64 (obrigatorio para RG)"
 }'
 ```
 
@@ -640,6 +796,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Prêmios e certificações
+
+- Service: `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Retorno principal: Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+  "cpf": "cpf"
 }'
 ```
 
@@ -781,6 +954,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Score de crédito
+
+- Service: `SERVICE_CREDIT_SCORE`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Retorno principal: Retorna score de credito associado ao CPF via Assertiva, com pontuacao, faixa de risco e mensagem da consulta quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_SCORE",
+  "cpf": "cpf"
+}'
+```
+
 ### Score de inadimplência
 
 - Service: `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP`
@@ -813,6 +1003,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
   "cpf": "cpf",
   "factor": "minRisk or minattrition"
+}'
+```
+
+### Score de risco Quantum
+
+- Service: `SERVICE_DEFAULT_RISK_SCORE_QUANTUM`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Retorno principal: Retorna score de risco de inadimplência Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponível.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
+  "cpf": "cpf"
 }'
 ```
 
@@ -996,6 +1203,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 ### Compliance de casas de apostas
 
+- Service: `SERVICE_COMPLIANCE_BET`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Retorno principal: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}'
+```
+
+### Compliance de casas de apostas
+
 - Service: `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
@@ -1007,6 +1231,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+  "cnpj": "cnpj"
+}'
+```
+
+### Dados cadastrais de CNPJ
+
+- Service: `SERVICE_REGISTRATION_DATA_CNPJ`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Retorno principal: Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1075,6 +1316,23 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "cnpj": "cnpj"
+}'
+```
+
+### Domínios CNPJ
+
+- Service: `SERVICE_DOMAINS_CNPJ`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Retorno principal: Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1164,6 +1422,40 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### OCR de cartão CNPJ
+
+- Service: `SERVICE_OCR_CNPJ_CARD`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `image1`
+- Retorno principal: Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+### Processos jurídicos
+
+- Service: `SERVICE_JURIDICAL_PROCESSES_PJ`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Retorno principal: Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
 ### Processos jurídicos dos sócios
 
 - Service: `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP`
@@ -1194,6 +1486,40 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+  "cnpj": "cnpj"
+}'
+```
+
+### Risco de crédito
+
+- Service: `SERVICE_CREDIT_RISK_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Retorno principal: Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Risco de crédito Murabei
+
+- Service: `SERVICE_CREDIT_RISK_COMPANY_MURABEI`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Retorno principal: Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
   "cnpj": "cnpj"
 }'
 ```

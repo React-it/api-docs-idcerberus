@@ -37,11 +37,18 @@ quando o produto está ativo.
 
 ## Índice por família
 
+### Biometria e documentos
+
+| Nome | Service | Campos | Quando usar | Retorno principal |
+| --- | --- | --- | --- | --- |
+| OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível. |
+
 ### Contatos, sites e relacionamentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
 | Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
+| Domínios CNPJ | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Use para consultar dados de sites vinculados à empresa. | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
 | Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | `cnpj` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
 | Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. | Retorna exposição e perfil de mídia da empresa e sócios, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados. |
 | KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
@@ -55,6 +62,7 @@ quando o produto está ativo.
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
+| Dados cadastrais de CNPJ | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API. | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
 | DAS MEI na Receita | `SERVICE_DAS_MEI_INFOSIMPLES` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
 | Enriquecimento de dados | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | `cnpj` | Use para complementar dados cadastrais da empresa a partir do documento informado. | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
 | SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` | Use este service quando precisar executar a consulta "SINTEGRA" via API. | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
@@ -73,11 +81,13 @@ quando o produto está ativo.
 | --- | --- | --- | --- | --- |
 | Certidão negativa de protesto | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas. |
 | Certidão negativa de protesto PJ (Netrin) | `SERVICE_PROTEST_PJ_NETRIN` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
+| Processos jurídicos | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | Use para consultar certidões, processos ou informações jurídicas da empresa. | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
 
 ### KYC, compliance e exposição
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
+| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 
 ### Risco, crédito e dívidas
@@ -85,9 +95,99 @@ quando o produto está ativo.
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
 | Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` | Use para consultar débitos ou dívidas associadas à empresa. | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
+| Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis. |
+| Risco de crédito Murabei | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
 
 
 ## Requests completos
+
+### Biometria e documentos
+
+<AccordionGroup>
+<Accordion title="OCR de cartão CNPJ">
+
+**Service:** `SERVICE_OCR_CNPJ_CARD`
+
+**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
+
+**O que retorna:** Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `image1`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraido do cartao CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
+
+</Accordion>
+
+</AccordionGroup>
 
 ### Contatos, sites e relacionamentos
 
@@ -178,6 +278,94 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais.
+
+</Accordion>
+
+<Accordion title="Domínios CNPJ">
+
+**Service:** `SERVICE_DOMAINS_CNPJ`
+
+**Quando usar:** Use para consultar dados de sites vinculados à empresa.
+
+**O que retorna:** Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalDomains": 1,
+    "domains": [
+      {
+        "domain": "empresa.com.br",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
 
 </Accordion>
 
@@ -895,6 +1083,91 @@ Neste service, o objeto `result` representa: Retorna situação atualizada do CN
 
 </Accordion>
 
+<Accordion title="Dados cadastrais de CNPJ">
+
+**Service:** `SERVICE_REGISTRATION_DATA_CNPJ`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API.
+
+**O que retorna:** Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "tradeName": "EMPRESA EXEMPLO",
+    "status": "ATIVA",
+    "openingDate": "yyyy-MM-dd"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
+
+</Accordion>
+
 <Accordion title="DAS MEI na Receita">
 
 **Service:** `SERVICE_DAS_MEI_INFOSIMPLES`
@@ -1597,11 +1870,186 @@ Neste service, o objeto `result` representa: Retorna certidão/consulta de prote
 
 </Accordion>
 
+<Accordion title="Processos jurídicos">
+
+**Service:** `SERVICE_JURIDICAL_PROCESSES_PJ`
+
+**Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
+
+**O que retorna:** Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalProcesses": 1,
+    "processes": [
+      {
+        "court": "TJSP",
+        "processNumber": "0000000-00.0000.0.00.0000",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
+
+</Accordion>
+
 </AccordionGroup>
 
 ### KYC, compliance e exposição
 
 <AccordionGroup>
+<Accordion title="Compliance de casas de apostas">
+
+**Service:** `SERVICE_COMPLIANCE_BET`
+
+**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
+
+**O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+</Accordion>
+
 <Accordion title="Compliance de casas de apostas">
 
 **Service:** `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP`
@@ -1780,6 +2228,182 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta.
+
+</Accordion>
+
+<Accordion title="Risco de crédito">
+
+**Service:** `SERVICE_CREDIT_RISK_COMPANY`
+
+**Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
+
+**O que retorna:** Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "creditRisk": {
+      "status": "APPROVED",
+      "score": "750",
+      "rating": "A",
+      "expectedDefault": "LOW",
+      "legalProcess": false
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
+
+</Accordion>
+
+<Accordion title="Risco de crédito Murabei">
+
+**Service:** `SERVICE_CREDIT_RISK_COMPANY_MURABEI`
+
+**Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
+
+**O que retorna:** Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+  "cnpj": "cnpj"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+  "cnpj": "cnpj"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "creditRisk": {
+      "status": "APPROVED",
+      "score": "720",
+      "rating": "B",
+      "expectedDefault": "MEDIUM",
+      "legalProcess": false
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 </Accordion>
 
