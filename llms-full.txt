@@ -7302,6 +7302,19 @@ o que conferir antes de abrir chamado ou mexer na implementacao.
 > ter o service ativo com API habilitada. Se a configuracao do produto estiver
 > incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
 
+## O que esta pagina resolve
+
+| Publico | Como usar |
+| --- | --- |
+| Desenvolvimento | Copiar payload, entender campos obrigatorios e validar o retorno esperado. |
+| Produto | Conferir se o service certo esta configurado para o documento certo. |
+| Suporte | Separar problema de configuracao, imagem ruim, payload errado e falha tecnica. |
+| CS/Operacao | Explicar para o cliente o que enviar e o que esperar da resposta. |
+
+O objetivo e evitar tentativa e erro. Antes de abrir chamado, a pessoa deve
+conseguir responder: qual service foi chamado, qual imagem foi enviada, qual
+produto autorizou a chamada e qual `externalId` voltou.
+
 ## Escolha rapida
 
 | Preciso ler | Service | Enviar | Retorno principal |
@@ -7314,6 +7327,20 @@ o que conferir antes de abrir chamado ou mexer na implementacao.
 
 O campo `image1` deve receber base64 puro da imagem. Nao envie prefixo como
 `data:image/jpeg;base64,`.
+
+## Criterio de sucesso por service
+
+| Service | Sucesso minimo esperado | Quando recusar |
+| --- | --- | --- |
+| `SERVICE_OCR` com CNH | Documento lido e campos principais da CNH retornados. | Imagem ausente, documento nao lido ou tipo documental inconsistente. |
+| `SERVICE_OCR` com RG | Frente e verso enviados, documento lido e dados principais retornados. | Verso ausente, imagem ilegivel ou dados centrais nao extraidos. |
+| `SERVICE_OCR_CNPJ_CARD` | CNPJ valido extraido e `docType` coerente com cartao CNPJ. | CNPJ nao encontrado ou CNPJ invalido. |
+| `SERVICE_OCR_EMANCIPATION` | OCR retornou texto e a API retornou os campos encontrados, sem exigir layout fixo. | OCR vazio ou imagem que nao permite leitura. |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | OCR retornou texto util e dados possiveis do comprovante. | Imagem nao lida ou documento fora do esperado para comprovante. |
+
+Nem todo service tem os mesmos campos obrigatorios. Em documentos variaveis,
+como emancipacao e comprovante de endereco, o retorno deve trazer o que foi
+extraido sem inventar dado.
 
 ## Fluxo completo
 
@@ -7357,6 +7384,23 @@ $back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.j
 ```
 
 Cole o conteudo do clipboard no body raw JSON do Postman.
+
+## Testar no Postman
+
+1. Gere token em `POST /api/token-generate`.
+2. Copie o `access_token`.
+3. Abra `POST https://backoffice-hml.idcerberus.com/api/service-api`.
+4. Adicione o header `Authorization: Bearer {access_token}`.
+5. Adicione `Content-Type: application/json`.
+6. Cole o JSON gerado pelo PowerShell no body raw.
+7. Execute e confira `status`, `onboardingStatus`, `externalId` e `result`.
+
+Exemplo de headers:
+
+```http
+Authorization: Bearer {access_token}
+Content-Type: application/json
+```
 
 ## Qualidade da imagem
 
@@ -7432,6 +7476,17 @@ O cliente nao deve depender de campos internos como:
 | Testar cartao CNPJ no service de comprovante | Cada OCR tem parser e criterio proprio. |
 | Colocar CPF, CNPJ ou nomes reais na documentacao | Exemplos publicos devem usar dados ficticios. |
 | Assumir que campo ausente sempre e bug | O campo pode nao existir no documento ou nao ter sido lido. |
+
+## Limites conhecidos
+
+| Ponto | Como tratar |
+| --- | --- |
+| OCR nao garante leitura perfeita em imagem ruim | Valide nitidez, enquadramento e documento completo antes de acionar suporte. |
+| Alguns campos podem nao existir no documento | A API deve retornar apenas o que foi extraido com seguranca. |
+| Produto sem API habilitada parece erro de acesso | Corrija configuracao do produto antes de mexer no payload. |
+| RG pode variar por estado/modelo | Sempre enviar frente e verso quando o service exigir RG. |
+| Emancipacao nao tem layout unico | O sucesso depende de texto OCR, nao de todos os campos opcionais. |
+| Comprovantes variam muito | `fullAddress`, valores, datas e codigo de barras dependem do tipo de documento enviado. |
 
 ## OCR React: RG e CNH
 
@@ -7636,6 +7691,19 @@ Retorno esperado:
 
 Nem todo comprovante tera todos os campos. A API deve retornar os campos
 extraidos sem preencher dado falso.
+
+## Campos esperados por retorno
+
+| Service | Campos mais comuns em `result` |
+| --- | --- |
+| `SERVICE_OCR` CNH | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `cnhCategory`, `cnhNumber`, `validDate` |
+| `SERVICE_OCR` RG | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rgIssuer`, `rgIssueDate`, `nationality`, `naturality` |
+| `SERVICE_OCR_CNPJ_CARD` | `cnpj`, `docType`, `genericOcr` |
+| `SERVICE_OCR_EMANCIPATION` | `docType`, `genericOcr`, `extractedFields`, `analysis` |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | `genericOcr`, `fullName`, `fullAddress`, `docType`, `issueDate`, `dueDate`, `invoiceAmount`, `barcode` |
+
+Campos ausentes nao devem aparecer como `null` so para preencher contrato. O
+padrao publico da Service API e retornar apenas dados uteis.
 
 ## Respostas comuns
 
