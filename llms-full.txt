@@ -3180,12 +3180,24 @@ payload completo no API Reference.
 | Consolidar modelagem de dados PF | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | Reunir sinais cadastrais, contatos, vínculos e risco em texto consolidado |
 | Gerar resumo analítico de pessoa | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | Apoiar leitura de dados consolidados com uma resposta textual |
 | Extrair dados de documento | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2` ou URLs | Ler CNH, RG, RNE, CPF, CRLV e outros documentos |
+| Extrair RG ou CNH via OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Ler RG ou CNH e retornar dados limpos no `result` |
+| Ler documento de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Extrair texto e dados possíveis de documento variável |
+| Ler comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Extrair nome, endereço, datas e valores quando disponíveis |
+| Buscar face na base | `SERVICE_FACE_INDEX` | `image1` | Procurar rosto em base indexada e retornar CPF/similaridade quando houver |
 | Comparar faces | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | Comparar selfie com documento ou outra imagem |
 | Validar presença real | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | Verificar se a selfie aparenta ser de pessoa real |
 | Validar CNH no DataValid | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | Validar dados de CNH com apoio do DataValid/Serpro |
 | Consultar PEP | `SERVICE_PEP` | `cpf` | Avaliar exposição política |
 | Consultar KYC/compliance PF | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf` | Análise mais ampla de compliance |
 | Consultar risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` | Obter score e leitura resumida de risco financeiro |
+| Consultar score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` | Obter score de crédito via Assertiva |
+| Consultar score Quantum | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` | Avaliar risco de inadimplência |
+| Consultar dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | Obter indicadores demográficos do CPF |
+| Consultar indicadores de atividades | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | Obter sinais profissionais e de atividade |
+| Consultar domínios PF | `SERVICE_DOMAINS_CPF` | `cpf` | Buscar domínios e sinais digitais associados ao CPF |
+| Consultar prêmios e certificações | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | Obter prêmios/certificações encontrados |
+| Consultar benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | Verificar benefícios sociais familiares |
+| Consultar benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | Verificar benefícios sociais estendidos |
 | Consultar processos | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` | Levantar processos jurídicos e administrativos |
 | Consultar histórico profissional | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` | Recuperar vínculos profissionais |
 | Consultar histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` | Recuperar vínculos em que a pessoa aparece como titular ou sócia |
@@ -3204,18 +3216,25 @@ payload completo no API Reference.
 | Enriquecer dados cadastrais | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | `cnpj` | Obter dados da empresa na Receita Federal |
 | Consultar status do CNPJ | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` | Validar situação cadastral da empresa |
 | Consultar CNPJ na Receita on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` | Buscar dados cadastrais da empresa no momento da consulta |
+| Consultar dados cadastrais de CNPJ | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | Obter cadastro empresarial retornado pela base |
+| Ler cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | Extrair CNPJ e texto OCR do cartão CNPJ |
 | Consultar SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` | Verificar inscrição e situação estadual |
+| Consultar domínios CNPJ | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Buscar domínios e sinais digitais associados à empresa |
 | Consultar relacionamentos | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | `cnpj` | Entender vínculos societários e de empresa |
 | Consultar sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | `cnpj` | Recuperar dados cadastrais dos sócios na Receita |
 | Consultar sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | `cnpj` | Avaliar círculo de pessoas relacionadas |
 | Consultar KYC dos sócios | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` | Avaliar PEP, sanções e compliance dos sócios |
+| Consultar processos PJ | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | Levantar processos jurídicos da empresa |
 | Consultar processos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | `cnpj` | Levantar processos relacionados aos sócios |
 | Consultar doações eleitorais PJ | `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | Avaliar doações eleitorais associadas à empresa |
 | Consultar doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | Avaliar doações eleitorais associadas aos sócios |
 | Consultar fornecedores eleitorais PJ | `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | `cnpj` | Avaliar prestação de serviços eleitorais associada ao CNPJ |
 | Consultar débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` | Verificar débitos com o governo |
 | Consultar protestos PJ | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` | Emitir ou consultar certidão/protestos |
+| Consultar compliance de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` | Avaliar exposição relacionada a apostas |
 | Consultar compliance de apostas | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` | Avaliar exposição relacionada a apostas |
+| Consultar risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Obter score, rating e risco esperado |
+| Consultar risco de crédito PJ Murabei | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` | Obter risco de crédito no fluxo Murabei |
 
 ## Fluxos fora do service-api
 
@@ -7862,12 +7881,19 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 | Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` |
 | Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` |
 | Dados financeiros e endereços PF | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` |
+| Dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` |
+| Indicadores de atividades | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` |
+| Domínios PF | `SERVICE_DOMAINS_CPF` | `cpf` |
 
 ## Documentos e biometria
 
 | Produto | Código `service` | Entrada principal |
 | --- | --- | --- |
 | OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` |
+| OCR React RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
+| OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
+| OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
+| Busca de face na base | `SERVICE_FACE_INDEX` | `image1` |
 | FaceMatch | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` |
 | Liveness 2D | `SERVICE_LIVENESS_2D_FACETEC` | `image1` |
 | Score biométrico | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` |
@@ -7885,11 +7911,16 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 | Score de fraude | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` |
+| Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` |
+| Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
 | Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP`, `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` |
 | Validação de e-mail | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `email` |
 | Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | `cpf`, `phone` |
 | Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` |
 | Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` |
+| Prêmios e certificações | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` |
+| Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` |
+| Benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` |
 
 ## Certidões e judicial PF
 
@@ -7920,6 +7951,8 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 | Status do CNPJ na Receita Federal | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` |
 | SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` |
+| Dados cadastrais de CNPJ | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` |
+| Domínios CNPJ | `SERVICE_DOMAINS_CNPJ` | `cnpj` |
 | Endereços estendidos de empresa | `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | `cnpj` |
 | Doações eleitorais PJ | `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` |
 | Fornecedores eleitorais PJ | `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | `cnpj` |
@@ -7932,13 +7965,18 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 | Relacionamentos de empresa | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | `cnpj` |
 | Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | `cnpj` |
 | Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | `cnpj` |
+| Processos jurídicos PJ | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` |
 | Processos jurídicos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | `cnpj` |
 | KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` |
 | Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | `cnpj` |
 | Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` |
 | Débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` |
 | Protesto PJ | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` |
+| Compliance de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` |
 | Compliance de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` |
+| Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+| Risco de crédito PJ Murabei | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` |
+| OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` |
 
 ---
 
@@ -8774,12 +8812,19 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` |
 | Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` |
 | Dados financeiros e endereços PF | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` |
+| Dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` |
+| Indicadores de atividades | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` |
+| Domínios PF | `SERVICE_DOMAINS_CPF` | `cpf` |
 
 ### Biometria e documentos
 
 | Serviço | Código `service` | Campos principais |
 | --- | --- | --- |
 | OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` |
+| OCR React RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
+| OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
+| OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
+| Busca de face na base | `SERVICE_FACE_INDEX` | `image1` |
 | FaceMatch | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` |
 | Liveness 2D | `SERVICE_LIVENESS_2D_FACETEC` | `image1` |
 | Score biométrico | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` |
@@ -8798,6 +8843,8 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` |
+| Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` |
+| Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | `cpf` |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | `cpf`, `rg`, `uf` |
@@ -8807,6 +8854,9 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` |
 | Informações financeiras | `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | `cpf` |
 | Dados PIS | `SERVICE_PIS_CONSULTATION_BIGDATACORP` | `cpf` |
+| Prêmios e certificações | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` |
+| Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` |
+| Benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` |
 | Validação E-Social | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | `cpf`, `nit` |
 | Processos jurídicos | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` |
 | Servidores públicos | `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | `cpf` |
@@ -11483,8 +11533,10 @@ Passo rápido para evitar erro:
 | Enriquecimento de dados de PJ | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | `cnpj` |
 | Status do CNPJ na Receita Federal | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` |
+| Dados cadastrais de CNPJ | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` |
 | SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` |
 | Endereços estendidos de empresa | `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | `cnpj` |
+| Domínios CNPJ | `SERVICE_DOMAINS_CNPJ` | `cnpj` |
 | Doações eleitorais PJ | `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` |
 | Fornecedores eleitorais PJ | `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | `cnpj` |
 | DAS MEI na Receita | `SERVICE_DAS_MEI_INFOSIMPLES` | `cnpj` |
@@ -11496,13 +11548,18 @@ Passo rápido para evitar erro:
 | Relacionamentos de uma empresa | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | `cnpj` |
 | Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | `cnpj` |
 | Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | `cnpj` |
+| Processos jurídicos PJ | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` |
 | Processos jurídicos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | `cnpj` |
 | KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` |
 | Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | `cnpj` |
 | Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` |
 | Débitos ativos PJ | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` |
 | Certidão negativa de protesto PJ | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` |
+| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` |
 | Compliance de casas de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` |
+| Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+| Risco de crédito PJ Murabei | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` |
+| OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` |
 
 ## Consulta on-demand de CNPJ
 
