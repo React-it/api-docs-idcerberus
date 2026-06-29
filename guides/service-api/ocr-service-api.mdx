@@ -28,6 +28,29 @@ o que conferir antes de abrir chamado ou mexer na implementação.
   </Card>
 </CardGroup>
 
+## Teste mais rápido
+
+Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
+
+<CardGroup cols={2}>
+  <Card title="CNH" href="/examples/service-api-ocr-cnh.hml.curl">
+    Curl pronto com `SERVICE_OCR`, `documentType: CNH` e `image1`.
+  </Card>
+  <Card title="RG frente e verso" href="/examples/service-api-ocr-rg.hml.curl">
+    Curl pronto com `SERVICE_OCR`, `documentType: RG`, `image1` e `image2`.
+  </Card>
+  <Card title="Cartão CNPJ" href="/examples/service-api-ocr-cnpj-card.hml.curl">
+    Curl pronto para `SERVICE_OCR_CNPJ_CARD` com imagem do cartão CNPJ.
+  </Card>
+  <Card title="Comprovante de endereço" href="/examples/service-api-ocr-proof-of-address.hml.curl">
+    Curl pronto para `SERVICE_OCR_PROOF_OF_ADDRESS` com comprovante em base64.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Para teste manual no Postman, use a seção [Copiar e testar](#copiar-e-testar). Ela monta o JSON completo no clipboard.
+</Tip>
+
 ## Caminho recomendado
 
 Se você precisa testar agora, siga esta ordem:
@@ -65,6 +88,16 @@ produto autorizou a chamada e qual `externalId` voltou.
 
 O campo `image1` deve receber base64 puro da imagem. Não envie prefixo como
 `data:image/jpeg;base64,`.
+
+## Qual imagem usar
+
+| Service | Imagem certa | Não usar |
+| --- | --- | --- |
+| `SERVICE_OCR` com CNH | Foto ou imagem nítida da CNH inteira | Selfie, print cortado, documento de outro tipo |
+| `SERVICE_OCR` com RG | Frente em `image1` e verso em `image2` | Só frente quando o verso for obrigatório |
+| `SERVICE_OCR_CNPJ_CARD` | Cartão CNPJ completo e legível | Contrato social, nota fiscal ou comprovante |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | Conta, fatura ou comprovante aceito com endereço visível | Documento pessoal ou selfie |
+| `SERVICE_OCR_EMANCIPATION` | Documento de cartório, declaração, escritura ou certidão legível | Documento sem relação com emancipação |
 
 ## Critério de sucesso por service
 

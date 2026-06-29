@@ -1,20 +1,31 @@
 ---
 title: Postman do zero
-description: Configure o Postman para testar a API idCerberus sem escrever código
+description: Configure o Postman para testar token, service-api e OCR sem escrever código
 ---
 
 # Postman do zero
 
-Este guia mostra como testar a API idCerberus no Postman, sem precisar usar
-terminal ou escrever código.
+Use este guia para montar uma collection simples e testar a API idCerberus em homologação.
 
-## O que você vai configurar
+O objetivo é sair com dois requests funcionando:
 
-1. Uma collection.
-2. Um environment de homologação.
-3. Variáveis `base_url` e `jwt_token`.
-4. Um request para gerar token.
-5. Um request para executar `POST /api/service-api`.
+- `POST /api/token-generate`
+- `POST /api/service-api`
+
+<CardGroup cols={2}>
+  <Card title="Token primeiro" href="#3-crie-o-request-de-token">
+    Sem token válido, nenhum service protegido deve ser testado.
+  </Card>
+  <Card title="Service API depois" href="#4-crie-o-request-de-service-api">
+    Troque apenas o campo `service` e os campos obrigatórios de cada consulta.
+  </Card>
+  <Card title="OCR com base64" href="#7-testar-ocr-com-imagem">
+    Use PowerShell para copiar imagem em base64 e colar no body do Postman.
+  </Card>
+  <Card title="Diagnóstico rápido" href="#9-se-der-erro">
+    Veja o que olhar quando vier falta de acesso, imagem ausente, `{}` ou `ERROR`.
+  </Card>
+</CardGroup>
 
 ## 1. Crie uma collection
 
@@ -70,10 +81,19 @@ https://backoffice-hml.idcerberus.com
 ```
 
 9. Clique em **Send**.
-10. Copie o valor de `access_token` retornado.
+10. Copie o valor de `access_token`.
 11. Cole esse valor na variável `jwt_token` do environment.
 
-## 4. Crie o request de serviço
+<Tip>
+  Se preferir, configure um script de teste no request de token para salvar o token automaticamente:
+</Tip>
+
+```js
+const data = pm.response.json();
+pm.environment.set("jwt_token", data.access_token || data.token);
+```
+
+## 4. Crie o request de service-api
 
 1. Dentro da collection, clique em **Add request**.
 2. Nomeie como `Executar service-api`.
@@ -93,20 +113,29 @@ https://backoffice-hml.idcerberus.com
 
 6. Na aba **Body**, escolha **raw**.
 7. Selecione **JSON**.
-8. Cole:
+8. Cole um payload de teste.
+
+Exemplo CPF:
 
 ```json
 {
   "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
-  "cpf": "cpf"
+  "cpf": "00000000000"
 }
 ```
 
-9. Clique em **Send**.
+Exemplo CNPJ:
+
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "00000000000000"
+}
+```
 
 ## 5. Leia a resposta
 
-Uma resposta bem-sucedida costuma retornar:
+Uma resposta de negócio costuma seguir este formato:
 
 ```json
 {
@@ -114,19 +143,92 @@ Uma resposta bem-sucedida costuma retornar:
   "status": {
     "code": 200,
     "message": "Success"
-  }
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
 }
 ```
 
-Leia:
+Leia assim:
 
 | Campo | O que significa |
 | --- | --- |
-| `result` | Dados retornados pelo serviço |
+| `result` | Dados úteis retornados pelo service |
 | `status.code` | Código técnico do processamento |
 | `status.message` | Mensagem técnica do processamento |
+| `onboardingStatus` | Resultado operacional do service, quando existir |
+| `externalId` | Identificador para rastrear a chamada em suporte/logs |
 
-## 6. Troque para produção
+<Warning>
+  Não use apenas o HTTP status para decidir se deu certo. A API pode responder HTTP 200 e o body indicar `REFUSED` ou `ERROR`.
+</Warning>
+
+## 6. Exemplos prontos
+
+Se quiser copiar um curl já montado, use:
+
+| Caso | Exemplo |
+| --- | --- |
+| Token HML | [`auth.hml.curl`](/examples/auth.hml.curl) |
+| CPF HML | [`service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) |
+| CNPJ HML | [`service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) |
+| OCR CNH | [`service-api-ocr-cnh.hml.curl`](/examples/service-api-ocr-cnh.hml.curl) |
+| OCR RG | [`service-api-ocr-rg.hml.curl`](/examples/service-api-ocr-rg.hml.curl) |
+| OCR cartão CNPJ | [`service-api-ocr-cnpj-card.hml.curl`](/examples/service-api-ocr-cnpj-card.hml.curl) |
+| OCR comprovante | [`service-api-ocr-proof-of-address.hml.curl`](/examples/service-api-ocr-proof-of-address.hml.curl) |
+| Face Index | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
+
+## 7. Testar OCR com imagem
+
+Para OCR, o campo `image1` deve receber base64 puro. Não envie prefixo `data:image/jpeg;base64,`.
+
+### CNH
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cnh.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "CNH"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### RG frente e verso
+
+```powershell
+$front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
+$back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "RG"
+  image1 = $front
+  image2 = $back
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Cartão CNPJ
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cartao-cnpj.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Comprovante de endereço
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\comprovante.jpg"))
+@{
+  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+Depois de rodar o comando, cole no **Body > raw > JSON** do Postman.
+
+## 8. Troque para produção
 
 Para criar um environment de produção, repita o processo e use:
 
@@ -134,5 +236,17 @@ Para criar um environment de produção, repita o processo e use:
 https://backoffice.idcerberus.com
 ```
 
-Use credenciais de produção e gere um novo token. Não reutilize token de HML em
-produção.
+Use credenciais de produção e gere um novo token. Não reutilize token de HML em produção.
+
+## 9. Se der erro
+
+| Sintoma | O que olhar primeiro | Ação |
+| --- | --- | --- |
+| `401` ou `403` | Token vencido, ausente ou de outro ambiente | Gere novo token no mesmo ambiente da chamada |
+| `Don't have access to the service` | Produto sem o service liberado para API | Conferir cadastro do produto antes de mexer no payload |
+| `Imagem ... não encontrada` | Campo de imagem não chegou no body | Conferir `image1`, `image2`, `image1Url`, `image2Url` ou `key` |
+| Retornou `{}` | Service sem dado para a massa ou imagem não lida | Testar massa/imagem válida e conferir `status.message` |
+| Veio `ERROR` | Falha técnica no processamento | Guardar `externalId`, horário e service chamado |
+| Campo esperado não veio | Campo não existe no documento ou não foi extraído | Validar imagem, tipo de documento e contrato do service |
+
+Para diagnóstico mais completo, veja [Erros comuns de integração](/guides/erros-comuns-integracao).

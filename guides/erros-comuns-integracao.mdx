@@ -1,62 +1,192 @@
 ---
 title: Erros comuns de integração
-description: Checklist prático para diagnosticar falhas de token, ambiente, payload, base64 e service
+description: Diagnóstico prático para token, acesso, payload, base64, OCR, retorno vazio e falhas externas
 ---
 
 # Erros comuns de integração
 
-Use este checklist quando uma chamada falhar ou quando o resultado parecer
-diferente do esperado.
+Use esta página quando uma chamada falhar, retornar vazio ou parecer diferente do esperado.
+
+A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, não só o HTTP status. Uma chamada pode retornar HTTP 200 e mesmo assim o processamento vir como `REFUSED` ou `ERROR`.
+
+<CardGroup cols={2}>
+  <Card title="Token ou acesso" href="#token-ou-acesso">
+    `401`, `403`, token vencido ou produto sem permissão para o service.
+  </Card>
+  <Card title="Payload" href="#payload">
+    Campo obrigatório ausente, alias errado, CPF/CNPJ inválido ou JSON malformado.
+  </Card>
+  <Card title="Imagem e OCR" href="#imagem-e-ocr">
+    Base64, `image1`, `image2`, documento ilegível ou OCR sem campo esperado.
+  </Card>
+  <Card title="Erro técnico" href="#erro-tecnico">
+    `ERROR`, `500`, falha externa, timeout ou investigação por `externalId`.
+  </Card>
+</CardGroup>
 
 ## Diagnóstico rápido
 
 | Sintoma | Causa comum | Como corrigir |
 | --- | --- | --- |
 | `401` ou `403` | Token ausente, expirado, inválido ou de outro ambiente | Gere um novo token no mesmo ambiente da chamada |
-| `status.code` diferente de `200` | Payload incompleto, permissão ausente ou fonte externa falhou | Leia `status.message` e revise os campos obrigatórios |
-| API retorna erro mesmo com HTTP 200 | O processamento técnico falhou dentro do body | Use `status.code` e `status.message`, não apenas o HTTP status |
-| Service não executa | Campo `service` escrito errado ou produto não liberado | Copie o nome pelo [Índice de services](/guides/indice-de-services) |
-| Resultado vazio | Documento sem dados na fonte ou retorno negativo de negócio | Trate como resposta válida quando `status.code` for 200 |
-| Token funciona em uma rota e falha em outra | Credencial sem permissão para o produto | Confirme liberação do service para o cliente |
-| Base64 rejeitado | Prefixo, encoding ou arquivo inválido | Envie apenas a string esperada pelo service ou use URL quando suportado |
-| CNPJ/CPF não encontrado | Documento mascarado, incompleto ou ambiente errado | Teste sem máscara e confira a base URL |
-| PDF não abre | Endpoint retorna binário, não JSON | Trate a resposta como `application/pdf` |
+| `Don't have access to the service` | Produto sem o service ativo ou sem API habilitada | Confira configuração do produto antes de mexer no payload |
+| `Unable to convert http message` | JSON inválido, base64 quebrado ou body malformado | Valide o JSON e gere o base64 novamente |
+| API retorna HTTP 200 com `REFUSED` | Chamada autenticou, mas a regra de negócio recusou | Leia `status.message` e trate como recusa válida |
+| API retorna HTTP 200 com `ERROR` | Falha técnica aconteceu dentro do processamento | Guarde `externalId`, horário e service chamado |
+| Resultado vazio `{}` | Massa sem dados, imagem não lida ou service sem retorno para aquele caso | Teste massa válida e confira `status.message` |
+| Campo esperado não veio | Campo não existe na fonte ou não foi extraído com segurança | Não invente dado; trate campo ausente como opcional quando o contrato permitir |
+| Base64 rejeitado | Prefixo, encoding, quebra de linha ou arquivo inválido | Envie base64 puro, sem `data:image/...;base64,` |
+| CPF/CNPJ não encontrado | Documento mascarado, incompleto, massa ruim ou ambiente errado | Teste sem máscara e confira a base URL |
 | Timeout | Fonte externa demorou ou ficou indisponível | Aplique retry controlado e registre o `externalId`, quando houver |
 
-## Antes de chamar a API
+## Token ou acesso
 
-1. Confirme a base URL: homologação ou produção.
-2. Gere token no mesmo ambiente.
-3. Envie `Authorization: Bearer {jwt_token}`.
-4. Envie `Content-Type: application/json`.
-5. Copie o `service` exatamente como está na documentação.
-6. Valide campos obrigatórios antes da chamada.
-7. Use dados de teste em homologação.
-8. Nunca registre `client`, `secret`, JWT, CPF, CNPJ ou imagem sensível em log público.
+Antes de investigar código, confirme:
 
-## Campos que mais geram erro
+1. A chamada está indo para o ambiente certo.
+2. O token foi gerado no mesmo ambiente.
+3. O header está como `Authorization: Bearer {jwt_token}`.
+4. O produto ligado ao token tem o service ativo.
+5. O service está habilitado para API.
+6. O alias enviado em `service` é o alias de chamada configurado no produto.
+
+Exemplo típico:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Nesse caso, o primeiro ponto é configuração do produto. Não adianta trocar CPF, CNPJ ou imagem antes de confirmar acesso.
+
+## Payload
+
+Campos que mais geram erro:
 
 | Campo | Cuidado |
 | --- | --- |
-| `service` | Deve bater exatamente com o nome documentado |
-| `cpf` | Envie o valor esperado pelo contrato do cliente, de preferência sem máscara |
-| `cnpj` | Envie o CNPJ completo, de preferência sem máscara |
-| `phone` | Verifique DDI/DDD e formato aceito pelo service |
-| `image1`, `image2`, `selfie1` | Confirme se o service espera base64 puro, data URI ou URL |
-| `key` | Use a chave retornada pelo fluxo que iniciou a consulta |
-| `dataDeNascimento` | Use o formato documentado, normalmente `yyyy-MM-dd` |
+| `service` | Deve bater com o alias liberado no produto |
+| `cpf` | Envie sem máscara quando o service não documentar outro formato |
+| `cnpj` | Envie CNPJ completo, preferencialmente sem máscara |
+| `birthDate` | Use o formato documentado para o service |
+| `documentType` | Para OCR React, use `CNH` ou `RG` conforme o documento |
+| `image1`, `image2`, `selfie1` | Confirme se o service espera imagem, selfie, frente, verso ou comparação |
+| `key` | Use apenas quando o fluxo suportar chave de arquivo já armazenado |
+
+Exemplo de JSON mínimo válido:
+
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "00000000000000"
+}
+```
+
+## Imagem e OCR
+
+Para services de OCR:
+
+1. Use imagem real, nítida e completa.
+2. Envie base64 puro.
+3. Não envie `data:image/jpeg;base64,`.
+4. Para RG, envie frente e verso quando o service exigir.
+5. Para face, use selfie real, não foto de documento.
+6. Confira se o documento enviado combina com o service.
+
+Exemplo de erro por imagem ausente:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: revisar o payload. Para RG, envie `image1` com a frente e `image2` com o verso.
+
+Se o retorno for:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: testar uma imagem mais nítida e confirmar se o tipo de documento bate com o service.
+
+## Erro técnico
+
+Erro técnico normalmente aparece como `ERROR` ou mensagem de falha no body:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Falha ao realizar OCR"
+  },
+  "onboardingStatus": "ERROR",
+  "externalId": "..."
+}
+```
+
+Nessa situação, guarde:
+
+- ambiente;
+- endpoint;
+- service enviado;
+- horário aproximado;
+- `externalId`;
+- `status.code`;
+- `status.message`;
+- payload sem dados sensíveis.
+
+Não envie token JWT, `client`, `secret`, CPF, CNPJ, imagem real ou base64 completo em canais abertos.
+
+## Checklist antes de chamar suporte
+
+1. Confirmei o ambiente da chamada.
+2. Gerei token novo no mesmo ambiente.
+3. Conferi o alias do service no produto.
+4. Validei que o service está ativo e com API habilitada.
+5. Validei o JSON antes de enviar.
+6. Removi máscara quando o contrato não exigia máscara.
+7. Para OCR, conferi se o base64 é puro.
+8. Para OCR, abri a imagem e confirmei que está legível.
+9. Guardei `externalId`, horário e `status.message`.
 
 ## Como solicitar suporte
 
-Ao reportar um problema, envie:
+Envie um resumo nesse formato:
 
-- ambiente usado;
-- endpoint chamado;
-- `service` enviado;
-- horário aproximado da chamada;
-- `externalId`, quando retornado;
-- `status.code` e `status.message`;
-- payload sem dados sensíveis.
+```txt
+Ambiente: HML ou PROD
+Endpoint: POST /api/service-api
+Service: SERVICE_EXEMPLO
+Horário aproximado: 2026-01-01 10:30
+ExternalId: ...
+Status code: ...
+Status message: ...
+O que era esperado: ...
+O que retornou: ...
+```
 
-Não envie token JWT, `client`, `secret`, documento real ou imagem real em canais
-abertos.
+Não inclua credenciais, token, documento real, imagem real ou base64 completo.

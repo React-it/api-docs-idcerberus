@@ -1,86 +1,86 @@
 ---
 title: Boas-vindas
-description: Integre onboarding, KYC, biometria, risco e compliance com a API idCerberus
+description: Integre onboarding, KYC, biometria, OCR, risco e compliance com a API idCerberus
 ---
 
-# Boas-vindas
+# API idCerberus
 
-Comece sua jornada de integração com a idCerberus. Aqui você encontra os guias,
-referências técnicas e exemplos necessários para conectar sua aplicação aos
-produtos de onboarding digital, KYC, biometria, prevenção à fraude, compliance e
-enriquecimento cadastral.
+Integre consultas de CPF, CNPJ, OCR, biometria, risco, compliance e onboarding digital em um fluxo único de API.
 
-Esta documentação foi organizada para dois momentos: entender qual produto usar
-e implementar a chamada correta no código.
+Esta documentação foi organizada para dois momentos: testar rápido em homologação e implementar com segurança em produção.
 
-<CardGroup cols={2}>
-  <Card title="Quickstart" href="/guides/quickstart">
-    Gere um token, execute sua primeira consulta e entenda o padrão de resposta
-    da API.
+<CardGroup cols={3}>
+  <Card title="Testar em 5 minutos" href="/guides/postman-do-zero">
+    Configure token, ambiente e primeira chamada no Postman sem escrever código.
   </Card>
-  <Card title="Guias de integração" href="/guides/visao-geral">
-    Entenda ambientes, autenticação, fluxo de onboarding, uso por domínio e
-    melhores caminhos para montar a integração.
+  <Card title="Executar um service" href="/api-reference/como-executar-service">
+    Entenda o contrato do `POST /api/service-api` e copie payloads prontos.
   </Card>
-  <Card title="Escolha o serviço certo" href="/guides/escolha-o-servico-certo">
-    Saia de uma necessidade de negócio e encontre os códigos `service`
-    indicados para o seu fluxo.
+  <Card title="OCR e imagem" href="/guides/service-api/ocr-service-api">
+    Veja como testar CNH, RG, cartão CNPJ, comprovante de endereço e documentos com base64.
   </Card>
-  <Card title="API Reference" href="/api-reference/autorização/gerar-token-de-api">
-    Consulte endpoints, parâmetros, bodies, exemplos de request, responses e
-    schemas retornados pela API.
+  <Card title="Catálogo de services" href="/guides/indice-de-services">
+    Pesquise por alias, documento, categoria, provider ou objetivo de negócio.
   </Card>
-  <Card title="Serviços de pessoas" href="/guides/pessoas/enriquecimento-cadastral">
-    Valide CPF, dados cadastrais, documentos, biometria, risco, compliance,
-    contatos e informações eleitorais.
+  <Card title="Services por caso de uso" href="/api-reference/services-por-caso-de-uso">
+    Escolha o service certo a partir do que você precisa validar ou consultar.
   </Card>
-  <Card title="Serviços de empresas" href="/guides/empresas/dados-cadastrais">
-    Consulte CNPJ, Receita Federal, SINTEGRA, sócios, relacionamentos, débitos,
-    protestos e compliance PJ.
+  <Card title="Erros comuns" href="/guides/erros-comuns-integracao">
+    Diagnóstico rápido para token, acesso, payload, imagem, retorno vazio e falha externa.
   </Card>
 </CardGroup>
 
-## Comece por aqui
+## Caminho mais curto
 
 <Steps>
-  <Step title="Entenda a estrutura da plataforma">
-    Leia o [Quickstart](/guides/quickstart) e a [visão geral](/guides/visao-geral) para conhecer os modelos de
-    integração, ambientes, endpoints principais e padrão de
-    resposta.
+  <Step title="Gere um token">
+    Use `POST /api/token-generate` com `client` e `secret` do produto.
   </Step>
-  <Step title="Gere um token JWT">
-    Use `POST /api/token-generate` com `client` e `secret`. O token retornado deve
-    ser enviado no header `Authorization`.
+  <Step title="Escolha o service">
+    Abra o [índice de services](/guides/indice-de-services) ou a [API Reference](/api-reference/services-por-caso-de-uso) e copie o alias correto.
   </Step>
-  <Step title="Escolha o fluxo de uso">
-    Para cadastro completo, use onboarding via SDK. Para consultas avulsas,
-    chame diretamente `POST /api/service-api` e consulte [Escolha o serviço certo](/guides/escolha-o-servico-certo).
+  <Step title="Monte o payload">
+    Envie `service` e os campos obrigatórios do produto, como `cpf`, `cnpj`, `image1`, `image2`, `documentType` ou `key`.
   </Step>
-  <Step title="Implemente pelo API Reference">
-    Abra a [API Reference](/api-reference/autorização/gerar-token-de-api), escolha o endpoint e
-    copie o exemplo de request correspondente ao produto desejado.
+  <Step title="Execute em HML">
+    Chame `POST https://backoffice-hml.idcerberus.com/api/service-api` com `Authorization: Bearer {jwt_token}`.
+  </Step>
+  <Step title="Leia o resultado">
+    Use `result` como retorno de negócio e `status.message`, `onboardingStatus` e `externalId` para diagnóstico.
   </Step>
 </Steps>
+
+## Mais usados
+
+| Preciso testar | Onde ir | Exemplo pronto |
+| --- | --- | --- |
+| Gerar token | [Autenticação](/guides/autenticacao) | [`auth.hml.curl`](/examples/auth.hml.curl) |
+| Consultar CPF | [Services de pessoa física](/api-reference/services-pessoa-fisica) | [`service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) |
+| Consultar CNPJ | [Services de pessoa jurídica](/api-reference/services-pessoa-juridica) | [`service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) |
+| OCR CNH | [OCR via Service API](/guides/service-api/ocr-service-api) | [`service-api-ocr-cnh.hml.curl`](/examples/service-api-ocr-cnh.hml.curl) |
+| OCR RG | [OCR via Service API](/guides/service-api/ocr-service-api) | [`service-api-ocr-rg.hml.curl`](/examples/service-api-ocr-rg.hml.curl) |
+| OCR cartão CNPJ | [OCR via Service API](/guides/service-api/ocr-service-api) | [`service-api-ocr-cnpj-card.hml.curl`](/examples/service-api-ocr-cnpj-card.hml.curl) |
+| OCR comprovante | [OCR via Service API](/guides/service-api/ocr-service-api) | [`service-api-ocr-proof-of-address.hml.curl`](/examples/service-api-ocr-proof-of-address.hml.curl) |
+| Face Index | [Services de pessoa física](/api-reference/services-pessoa-fisica) | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
+| Risco de crédito PJ | [Services de pessoa jurídica](/api-reference/services-pessoa-juridica) | [`service-api-credit-risk-company.hml.curl`](/examples/service-api-credit-risk-company.hml.curl) |
 
 ## Modelos de integração
 
 | Modelo | Quando usar | O que você implementa |
 | --- | --- | --- |
-| API direta | Consultas server-to-server por CPF ou CNPJ | Autenticação, payloads, chamada HTTP e tratamento do response |
-| SDK | Captura de documentos, selfie e dados em aplicativo mobile | Geração do `tokenOnboarding` e consulta do resultado |
-| Cliente Web | Fluxos em WebView, navegador ou QR Code | Redirecionamento do usuário e leitura do resultado processado |
+| API direta | Consultas server-to-server por CPF, CNPJ, imagem ou chave | Token, payload, chamada HTTP e leitura do `result` |
+| SDK | Captura guiada de documento, selfie e dados no aplicativo | Geração do `tokenOnboarding` e consulta do resultado |
+| Cliente Web | Fluxos em WebView, navegador ou QR Code | Redirecionamento do usuário e leitura do processamento |
 
 ## Endpoints essenciais
 
 | Operação | Endpoint | Uso |
 | --- | --- | --- |
 | Gerar token | `POST /api/token-generate` | Autenticar chamadas protegidas |
+| Executar service | `POST /api/service-api` | Rodar CPF, CNPJ, OCR, biometria, risco e compliance |
 | Gerar TokenOnboarding | `POST /api/token-history-onboarding` | Iniciar fluxo via SDK |
 | Consultar onboarding | `GET /api/onboarding/report/{tokenOnboarding}` | Obter status, campos e regras processadas |
 | Baixar relatório PDF | `GET /api/history-onboarding-report/{tokenOnboarding}` | Armazenar ou auditar o resultado final |
-| Executar serviço | `POST /api/service-api` | Rodar consultas de CPF, CNPJ, biometria, risco e compliance |
-| Consultar cliente | `GET /api/customer?documentKey={documentKey}` | Buscar cliente por CPF ou CNPJ |
-| Alterar status | `POST /api/changeStatusOfCustomer` | Ativar ou inativar clientes |
 
 ## Ambientes
 
@@ -89,15 +89,12 @@ e implementar a chamada correta no código.
 | Homologação | `https://backoffice-hml.idcerberus.com` |
 | Produção | `https://backoffice.idcerberus.com` |
 
-Os endpoints são os mesmos nos dois ambientes. Nos exemplos, substitua
-`{base_url}` pela URL do ambiente escolhido.
-
 ## Exemplo rápido
 
 Gere um token:
 
 ```bash
-curl --location '{base_url}/api/token-generate' \
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
   --header 'Content-Type: application/json' \
   --data '{
     "client": "{client}",
@@ -108,19 +105,18 @@ curl --location '{base_url}/api/token-generate' \
 Use o token para executar uma consulta:
 
 ```bash
-curl --location '{base_url}/api/service-api' \
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   --header 'Authorization: Bearer {jwt_token}' \
   --header 'Content-Type: application/json' \
   --data '{
-    "service": "service_person_data_enrichment",
-    "cpf": "cpf"
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+    "cpf": "00000000000"
   }'
 ```
 
 ## Padrão de resposta
 
-A maior parte dos serviços retorna um objeto com os dados da consulta em
-`result` e o status técnico em `status`.
+A maior parte dos services retorna os dados úteis em `result` e o status técnico em `status`.
 
 ```json
 {
@@ -128,18 +124,19 @@ A maior parte dos serviços retorna um objeto com os dados da consulta em
   "status": {
     "code": 200,
     "message": "Success"
-  }
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
 }
 ```
 
 <Note>
-  O campo `service` define qual produto será executado dentro de
-  `POST /api/service-api`. Os demais campos mudam conforme a consulta escolhida.
+  O campo `service` define qual produto será executado dentro de `POST /api/service-api`. Os demais campos mudam conforme a consulta escolhida.
 </Note>
 
 ## Próximos passos
 
-- Para entender a organização da documentação, veja [Mapa da documentação](/guides/mapa-da-documentacao) e [Como usar esta documentação](/guides/como-usar-a-documentacao).
-- Para autenticar a aplicação, veja [Autenticação](/guides/autenticacao).
-- Para onboarding via aplicativo, veja [Onboarding via SDK](/guides/onboarding-sdk).
-- Para implementar endpoint a endpoint, use a [API Reference](/api-reference/autorização/gerar-token-de-api).
+- Para testar no Postman, veja [Postman do zero](/guides/postman-do-zero).
+- Para OCR, base64 e imagens, veja [OCR via Service API](/guides/service-api/ocr-service-api).
+- Para escolher o service certo, veja [Services por caso de uso](/api-reference/services-por-caso-de-uso).
+- Para diagnosticar falhas, veja [Erros comuns de integração](/guides/erros-comuns-integracao).
