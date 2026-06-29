@@ -1,114 +1,450 @@
 ---
 title: Receitas prontas
-description: Combinações recomendadas de serviços para fluxos comuns de integração
+description: Fluxos práticos para testar CPF, CNPJ, OCR, Face Index, risco e score pela Service API
 ---
 
 # Receitas prontas
 
-Use estas receitas quando precisar montar um fluxo completo sem escolher serviço
-por serviço do zero. Todas as chamadas de consulta usam `POST /api/service-api`
-e exigem `Authorization: Bearer {jwt_token}`.
+Use esta página quando quiser testar um fluxo comum sem procurar service por service.
 
-## Validar CPF simples
+Todas as consultas abaixo usam:
 
-Objetivo: confirmar dados cadastrais básicos antes de seguir com cadastro ou
-onboarding.
+```txt
+POST /api/service-api
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
 
-| Etapa | Serviço | Por que usar |
-| --- | --- | --- |
-| 1 | `SERVICE_RFB_PF_BIGDATACORP` | Confirma situação cadastral, nome, nascimento e óbito quando disponível |
-| 2 | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | Complementa dados cadastrais e indicadores do CPF |
+<CardGroup cols={3}>
+  <Card title="CPF" href="#testar-cpf">
+    Dados cadastrais e enriquecimento de pessoa física.
+  </Card>
+  <Card title="CNPJ" href="#testar-cnpj">
+    Dados cadastrais e status de empresa.
+  </Card>
+  <Card title="OCR" href="#testar-ocr-cnh">
+    CNH, RG, cartão CNPJ e comprovante.
+  </Card>
+  <Card title="Face Index" href="#testar-face-index">
+    Busca de uma selfie na base facial.
+  </Card>
+  <Card title="Risco PJ" href="#testar-risco-de-credito-pj">
+    Score, rating e sinais de risco de empresa.
+  </Card>
+  <Card title="Score PF" href="#testar-score-de-credito-pf">
+    Consulta de score de crédito para CPF.
+  </Card>
+</CardGroup>
 
-Exemplo:
+## Antes de testar
+
+1. Gere token no mesmo ambiente da chamada.
+2. Confirme se o produto tem o service ativo e habilitado para API.
+3. Use massa válida de HML.
+4. Para OCR, use base64 puro, sem prefixo `data:image/...;base64,`.
+5. Leia `result`, `status.message`, `onboardingStatus` e `externalId`.
+
+## Testar CPF
+
+Use quando quiser validar uma consulta simples de pessoa física.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` |
+| Campo obrigatório | `cpf` |
+| Exemplo curl | [`service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) |
+
+Payload:
 
 ```json
 {
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+  "cpf": "00000000000"
 }
 ```
 
-## Onboarding com documento e selfie
-
-Objetivo: ler documento, comparar rosto e reduzir fraude de identidade.
-
-| Etapa | Serviço | Por que usar |
-| --- | --- | --- |
-| 1 | `SERVICE_OCR_BIGDATACORP` | Extrai dados do documento enviado |
-| 2 | `SERVICE_FACE_MATCH_BIGDATACORP` | Compara selfie e documento |
-| 3 | `SERVICE_LIVENESS_2D_FACETEC` | Verifica se a selfie aparenta ser de pessoa real |
-| 4 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | Quando o fluxo exigir análise documental mais completa |
-
-Exemplo de FaceMatch:
+Retorno esperado:
 
 ```json
 {
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64"
+  "result": {
+    "cpf": "00000000000",
+    "name": "NOME FICTICIO",
+    "birthDate": "2000-01-01",
+    "status": "REGULAR"
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "externalId": "..."
 }
 ```
 
-## KYC de pessoa física
+Erro comum:
 
-Objetivo: avaliar exposição, restrições e sinais de risco associados a uma
-pessoa.
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
 
-| Etapa | Serviço | Por que usar |
-| --- | --- | --- |
-| 1 | `SERVICE_PERSON_KYC_BIGDATACORP` | Consolida PEP, sanções e histórico de compliance |
-| 2 | `SERVICE_PEP` | Consulta PEP de forma direta |
-| 3 | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | Consulta processos jurídicos e administrativos |
-| 4 | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | Consulta antecedentes criminais federais |
-| 5 | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | Consulta protestos |
-| 6 | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | Consulta débitos ativos |
+## Testar CNPJ
 
-## KYC de pessoa jurídica
+Use quando quiser validar dados cadastrais de uma empresa.
 
-Objetivo: avaliar empresa, sócios, vínculos, débitos e compliance.
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_REGISTRATION_DATA_CNPJ` |
+| Campo obrigatório | `cnpj` |
+| Exemplo curl | [`service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) |
 
-| Etapa | Serviço | Por que usar |
-| --- | --- | --- |
-| 1 | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | Consulta dados cadastrais completos da empresa |
-| 2 | `SERVICE_RFB_PJ_BIGDATACORP` | Confirma status do CNPJ na Receita Federal |
-| 3 | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | Mapeia relacionamentos da empresa |
-| 4 | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | Consulta sócios na Receita Federal |
-| 5 | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | Avalia KYC e compliance dos sócios |
-| 6 | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | Consulta processos dos sócios |
-| 7 | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | Consulta débitos ativos da empresa |
-| 8 | `SERVICE_PROTEST_PJ_INFOSIMPLES` | Consulta protestos PJ |
+Payload:
 
-## Análise eleitoral
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "00000000000000"
+}
+```
 
-Objetivo: entender envolvimento político, candidaturas, doações e vínculos
-familiares.
+Retorno esperado:
 
-| Etapa | Serviço | Por que usar |
-| --- | --- | --- |
-| 1 | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | Consulta dados eleitorais de candidato |
-| 2 | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | Consulta doações eleitorais PF |
-| 3 | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | Consulta prestação de serviços eleitorais PF |
-| 4 | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | Consolida envolvimento político |
-| 5 | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | Consulta histórico político familiar |
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "companyName": "EMPRESA FICTICIA LTDA",
+    "tradeName": "EMPRESA FICTICIA",
+    "registrationStatus": "ATIVA",
+    "openingDate": "2020-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "externalId": "..."
+}
+```
 
-## Validação de contato e residência
+Erro comum: CNPJ sem dados na massa de HML pode retornar `result` vazio ou mensagem de documento não encontrado.
 
-Objetivo: reduzir erro cadastral e confirmar associação entre pessoa, telefone,
-e-mail e endereço.
+## Testar OCR CNH
 
-| Etapa | Serviço | Por que usar |
-| --- | --- | --- |
-| 1 | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | Valida e normaliza e-mail |
-| 2 | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | Confirma associação entre CPF e telefone |
-| 3 | `SERVICE_CONFIRM_PHONE_FACETEC` | Busca dados pelo telefone |
-| 4 | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | Confirma associação entre CPF e endereço |
-| 5 | `SERVICE_ADDRESS_BIGDATACORP` | Lista endereços associados ao CPF |
+Use quando tiver uma imagem nítida da CNH inteira.
 
-## Como adaptar
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_OCR` |
+| Campos obrigatórios | `documentType`, `image1` |
+| Exemplo curl | [`service-api-ocr-cnh.hml.curl`](/examples/service-api-ocr-cnh.hml.curl) |
 
-1. Comece pela receita mais próxima do seu caso.
-2. Remova etapas que não sejam necessárias para sua regra de negócio.
-3. Confirme permissões dos serviços antes de usar em produção.
-4. Leia `status.code`, `status.message` e `result` em cada chamada.
-5. Registre `externalId` quando ele vier no retorno.
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "NOME FICTICIO",
+    "birthDate": "2000-01-01",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000",
+    "validDate": "2030-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Erro comum: imagem ilegível, documento cortado ou `documentType` diferente do documento enviado.
+
+## Testar OCR RG
+
+Use quando tiver frente e verso do RG.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_OCR` |
+| Campos obrigatórios | `documentType`, `image1`, `image2` |
+| Exemplo curl | [`service-api-ocr-rg.hml.curl`](/examples/service-api-ocr-rg.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RG",
+  "image1": "BASE64_DA_FRENTE",
+  "image2": "BASE64_DO_VERSO"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "RG",
+    "name": "NOME FICTICIO",
+    "birthDate": "2000-01-01",
+    "fatherName": "NOME DO PAI",
+    "motherName": "NOME DA MAE",
+    "rgIssuer": "SSP/UF",
+    "rgIssueDate": "2024-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Erro comum:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+## Testar OCR cartão CNPJ
+
+Use quando tiver uma imagem legível do cartão CNPJ.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_OCR_CNPJ_CARD` |
+| Campo obrigatório | `image1` |
+| Exemplo curl | [`service-api-ocr-cnpj-card.hml.curl`](/examples/service-api-ocr-cnpj-card.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraido do cartao CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Cartão CNPJ processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Erro comum: imagem não contém CNPJ válido ou não é cartão CNPJ.
+
+## Testar OCR comprovante
+
+Use quando tiver conta, fatura ou comprovante aceito com endereço visível.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_OCR_PROOF_OF_ADDRESS` |
+| Campo obrigatório | `image1` |
+| Exemplo curl | [`service-api-ocr-proof-of-address.hml.curl`](/examples/service-api-ocr-proof-of-address.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "BASE64_DO_COMPROVANTE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraido do comprovante",
+    "fullName": "NOME FICTICIO",
+    "fullAddress": "RUA EXEMPLO, 100, CENTRO, CIDADE - UF",
+    "docType": "Conta de consumo",
+    "dueDate": "2026-01-10",
+    "invoiceAmount": "R$ 100,00"
+  },
+  "status": {
+    "code": 200,
+    "message": "Comprovante de endereço obtido com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Erro comum: imagem de documento pessoal, nota fiscal sem endereço de residência ou comprovante com baixa qualidade.
+
+## Testar Face Index
+
+Use quando quiser buscar uma selfie na base facial.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_FACE_INDEX` |
+| Campos obrigatórios | `image1` |
+| Exemplo curl | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_FACE_INDEX",
+  "image1": "BASE64_DA_SELFIE"
+}
+```
+
+Retorno esperado quando a face é encontrada:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "similarity": 99.9,
+    "faceFound": true
+  },
+  "status": {
+    "code": 200,
+    "message": "Face encontrada na base"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Erro comum: usar foto de RG, CNH ou print de documento em vez de selfie real.
+
+## Testar risco de crédito PJ
+
+Use quando quiser consultar score, rating e sinais de risco da empresa.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_CREDIT_RISK_COMPANY` |
+| Campo obrigatório | `cnpj` |
+| Exemplo curl | [`service-api-credit-risk-company.hml.curl`](/examples/service-api-credit-risk-company.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "00000000000000"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "creditRisk": {
+      "status": "ACTIVE",
+      "score": "750",
+      "rating": "A",
+      "expectedDefault": "LOW",
+      "legalProcess": "NOT_FOUND"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Erro comum: massa de HML sem score/rating disponível pode retornar menos campos dentro de `result`.
+
+## Testar score de crédito PF
+
+Use quando quiser consultar score de crédito por CPF.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_CREDIT_SCORE` |
+| Campo obrigatório | `cpf` |
+| Exemplo curl | [`service-api-credit-score.hml.curl`](/examples/service-api-credit-score.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_CREDIT_SCORE",
+  "cpf": "00000000000"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "score": "650",
+    "riskLevel": "MEDIUM",
+    "message": "Score consultado com sucesso"
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Erro comum: falha de conexão com o parceiro ou CPF sem retorno na massa de teste.
+
+## Como adaptar uma receita
+
+1. Troque apenas o `service` e os campos obrigatórios.
+2. Mantenha o header `Authorization: Bearer {jwt_token}`.
+3. Use HML para validar payload e massa.
+4. Não trate campo ausente como erro automaticamente.
+5. Guarde `externalId` quando precisar investigar.
