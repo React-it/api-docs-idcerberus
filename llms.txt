@@ -15,7 +15,57 @@ Base URLs:
 - Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
 - Use homologação para testes e produção somente quando o usuário pedir explicitamente.
 - Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
+- Para OCR, use base64 puro em `image1`/`image2` e não inclua prefixo `data:image/...;base64,`.
+- Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.
 - Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
+
+## Como escolher o arquivo certo
+
+| Necessidade | Use |
+| --- | --- |
+| Entender a estrutura da documentação | https://api-docs.idcerberus.com/llms.txt |
+| Gerar integração, curl ou escolher service | https://api-docs.idcerberus.com/llms-small.txt |
+| Consultar payloads e responses por service | https://api-docs.idcerberus.com/llms-api-reference.txt |
+| Fazer busca estruturada por automação | https://api-docs.idcerberus.com/services-catalog.json |
+| Responder com todo o contexto da documentação | https://api-docs.idcerberus.com/llms-full.txt |
+
+## Contrato base do POST /api/service-api
+
+- Endpoint de homologação: `POST https://backoffice-hml.idcerberus.com/api/service-api`.
+- Endpoint de produção: `POST https://backoffice.idcerberus.com/api/service-api`.
+- Header obrigatório: `Authorization: Bearer {jwt_token}`.
+- Header recomendado: `Content-Type: application/json`.
+- Campo obrigatório no body: `service`.
+- O alias enviado em `service` deve ser o alias configurado no produto do cliente.
+- Leia dados públicos em `result`; não trate `fieldsOutput` ou metadados internos como contrato público.
+- Preserve `status`, `onboardingStatus` e `externalId` ao explicar respostas.
+
+## Atalhos de services mais usados
+
+| Caso | Service | Campos principais | Guia/API |
+| --- | --- | --- | --- |
+| CPF na Receita Federal | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| CNPJ na Receita Federal | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| OCR RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| OCR cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| OCR comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| Face Index | `SERVICE_FACE_INDEX` | `image1` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| Score de crédito PF | `SERVICE_CREDIT_SCORE` | `cpf` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| Processos jurídicos PJ | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+
+## Notas rápidas para OCR e imagem
+
+- OCR usa imagem do documento, não selfie.
+- Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
+- `image1` deve receber base64 puro, sem prefixo `data:image/...;base64,`.
+- RG normalmente usa frente e verso: `image1` e `image2`.
+- CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
+- Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
+- Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.
+- Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.
+- Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.
 
 ## Conteúdo principal
 
@@ -90,11 +140,18 @@ Base URLs:
 
 ## Exemplos curl
 
-- [auth.hml.curl](https://api-docs.idcerberus.com/examples/auth.hml.curl)
-- [auth.prod.curl](https://api-docs.idcerberus.com/examples/auth.prod.curl)
-- [service-api-cpf.hml.curl](https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl)
-- [service-api-cpf.prod.curl](https://api-docs.idcerberus.com/examples/service-api-cpf.prod.curl)
-- [service-api-cnpj.hml.curl](https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl)
-- [service-api-cnpj.prod.curl](https://api-docs.idcerberus.com/examples/service-api-cnpj.prod.curl)
-- [facematch.hml.curl](https://api-docs.idcerberus.com/examples/facematch.hml.curl)
-- [documentoscopia.hml.curl](https://api-docs.idcerberus.com/examples/documentoscopia.hml.curl)
+- [auth.hml.curl](https://api-docs.idcerberus.com/examples/auth.hml.curl): Gerar token em homologação. Use antes de chamar endpoints protegidos em HML.
+- [auth.prod.curl](https://api-docs.idcerberus.com/examples/auth.prod.curl): Gerar token em produção. Use somente quando o cliente já estiver liberado em produção.
+- [service-api-cpf.hml.curl](https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl): Consulta simples de CPF em HML. Exemplo base para validar token, produto e resposta de pessoa física.
+- [service-api-cpf.prod.curl](https://api-docs.idcerberus.com/examples/service-api-cpf.prod.curl): Consulta simples de CPF em produção. Mesmo payload da consulta de CPF, apontando para produção.
+- [service-api-cnpj.hml.curl](https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl): Consulta simples de CNPJ em HML. Exemplo base para validar token, produto e resposta de pessoa jurídica.
+- [service-api-cnpj.prod.curl](https://api-docs.idcerberus.com/examples/service-api-cnpj.prod.curl): Consulta simples de CNPJ em produção. Mesmo payload da consulta de CNPJ, apontando para produção.
+- [service-api-ocr-cnh.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-cnh.hml.curl): OCR de CNH em HML. Use base64 puro da imagem da CNH em image1.
+- [service-api-ocr-rg.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-rg.hml.curl): OCR de RG em HML. Use frente em image1 e verso em image2.
+- [service-api-ocr-cnpj-card.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-cnpj-card.hml.curl): OCR de cartão CNPJ em HML. Use imagem legível do cartão CNPJ em image1.
+- [service-api-ocr-proof-of-address.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-proof-of-address.hml.curl): OCR de comprovante de endereço em HML. Use conta, fatura ou comprovante aceito em image1.
+- [service-api-face-index.hml.curl](https://api-docs.idcerberus.com/examples/service-api-face-index.hml.curl): Face Index em HML. Use selfie real em image1. Não use foto de documento.
+- [service-api-credit-risk-company.hml.curl](https://api-docs.idcerberus.com/examples/service-api-credit-risk-company.hml.curl): Risco de crédito PJ em HML. Exemplo para consultar risco de crédito de empresa.
+- [service-api-credit-score.hml.curl](https://api-docs.idcerberus.com/examples/service-api-credit-score.hml.curl): Score de crédito PF em HML. Exemplo para consultar score de crédito de pessoa física.
+- [facematch.hml.curl](https://api-docs.idcerberus.com/examples/facematch.hml.curl): FaceMatch em HML. Compara duas imagens faciais. Use selfie/rosto, não OCR de documento.
+- [documentoscopia.hml.curl](https://api-docs.idcerberus.com/examples/documentoscopia.hml.curl): Documentoscopia em HML. Fluxo com documento e selfie para análise documental.

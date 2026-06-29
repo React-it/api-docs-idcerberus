@@ -1,11 +1,24 @@
 # idCerberus Docs
 
-Documentação da API idCerberus construída com Mintlify.
+Documentação oficial da API idCerberus, construída com Mintlify.
 
-O projeto organiza guias de integração, catálogo técnico, API Reference e
-arquivos auxiliares para LLMs. A documentação cobre produtos de onboarding,
-KYC, biometria, risco, compliance, enriquecimento cadastral e consultas de
-pessoa física e pessoa jurídica.
+O projeto organiza guias de integração, catálogo técnico, API Reference, exemplos de chamadas e arquivos auxiliares para LLMs. A documentação cobre os principais fluxos de onboarding, KYC, biometria, OCR, risco, compliance, enriquecimento cadastral e consultas de pessoa física e pessoa jurídica.
+
+## Para Que Serve
+
+Esta documentação foi pensada para três usos principais:
+
+- Ajudar clientes e parceiros a entenderem como autenticar e executar services pela API.
+- Ajudar suporte, QA e desenvolvimento a testarem chamadas reais com exemplos prontos.
+- Gerar arquivos de contexto para assistentes de IA consultarem a documentação com menos ambiguidade.
+
+O endpoint central das consultas é:
+
+```txt
+POST /api/service-api
+```
+
+O service executado é definido pelo campo `service` no payload.
 
 ## Requisitos
 
@@ -26,7 +39,7 @@ Instale as dependências:
 npm install
 ```
 
-## Rodando localmente
+## Rodando Localmente
 
 Inicie o servidor de desenvolvimento:
 
@@ -46,42 +59,87 @@ No Windows, se o PowerShell bloquear `npm.ps1`, use:
 npm.cmd run dev
 ```
 
-## Arquivos para LLMs
+## Ambientes
 
-O projeto gera arquivos em texto simples e JSON para uso por ChatGPT, Claude,
-Cursor, Windsurf e outros assistentes:
+- Homologação: `https://backoffice-hml.idcerberus.com`
+- Produção: `https://backoffice.idcerberus.com`
+- Documentação publicada: `https://api-docs.idcerberus.com/`
 
-- `llms.txt`: índice curto da documentação.
-- `llms-small.txt`: resumo operacional com ambientes, autenticação, service-api,
-  fluxos principais e services documentados.
+## Como Usar a Documentação
+
+Para começar uma integração, siga este caminho:
+
+1. Leia o quickstart em `guides/quickstart.mdx`.
+2. Gere um token em `POST /api/token-generate`.
+3. Escolha o service no índice técnico ou no API Reference.
+4. Teste o payload mínimo em HML.
+5. Ajuste produto, permissões e massa de teste quando o retorno indicar falta de acesso ou dado insuficiente.
+
+Para OCR e chamadas com imagem, veja também os exemplos em `examples/` e os guias específicos em `guides/service-api/`.
+
+## Exemplos Prontos
+
+A pasta `examples/` contém exemplos curl prontos para copiar, ajustar token e testar.
+
+Exemplos principais:
+
+- `examples/auth.hml.curl`: geração de token em HML.
+- `examples/auth.prod.curl`: geração de token em produção.
+- `examples/service-api-cpf.hml.curl`: consulta de CPF em HML.
+- `examples/service-api-cnpj.hml.curl`: consulta de CNPJ em HML.
+- `examples/service-api-ocr-cnh.hml.curl`: OCR de CNH.
+- `examples/service-api-ocr-rg.hml.curl`: OCR de RG com frente e verso.
+- `examples/service-api-ocr-cnpj-card.hml.curl`: OCR de cartão CNPJ.
+- `examples/service-api-ocr-proof-of-address.hml.curl`: OCR de comprovante de endereço.
+- `examples/service-api-face-index.hml.curl`: busca facial por selfie.
+- `examples/service-api-credit-risk-company.hml.curl`: risco de crédito PJ.
+- `examples/service-api-credit-score.hml.curl`: score de crédito PF.
+- `examples/facematch.hml.curl`: comparação facial.
+- `examples/documentoscopia.hml.curl`: documentoscopia.
+
+Na versão publicada, os exemplos ficam disponíveis em:
+
+```txt
+https://api-docs.idcerberus.com/examples/NOME_DO_ARQUIVO.curl
+```
+
+## Arquivos Para LLMs
+
+O projeto gera arquivos em texto simples e JSON para ChatGPT, Claude, Cursor, Windsurf e outros assistentes.
+
+- `llms.txt`: índice curto da documentação, com links principais e exemplos curl.
+- `llms-small.txt`: resumo operacional com ambientes, autenticação, service-api, erros comuns e services documentados.
 - `llms-full.txt`: conteúdo completo dos guias, API Reference e OpenAPI.
-- `llms-api-reference.txt`: resumo operacional do API Reference com services e
-  exemplos de curl.
+- `llms-api-reference.txt`: resumo operacional do API Reference com payloads, responses e exemplos de curl.
 - `services-catalog.json`: catálogo estruturado dos services documentados.
-- `examples/*.curl`: exemplos prontos para homologação e produção.
+- `examples/*.curl`: chamadas prontas para homologação e produção.
 
-Para gerar manualmente:
+Arquivos publicados:
 
-```bash
-node scripts/generate-llms.mjs
-```
+- `https://api-docs.idcerberus.com/llms.txt`
+- `https://api-docs.idcerberus.com/llms-small.txt`
+- `https://api-docs.idcerberus.com/llms-full.txt`
+- `https://api-docs.idcerberus.com/llms-api-reference.txt`
+- `https://api-docs.idcerberus.com/services-catalog.json`
 
-Ou via npm:
+## Geração de Artifacts
 
-```bash
-npm run generate:llms
-```
-
-O mesmo gerador também atualiza catálogo, páginas explícitas do API Reference e exemplos `.curl`:
+Para regenerar catálogo, páginas do API Reference, arquivos LLM e exemplos curl:
 
 ```bash
 npm run generate:artifacts
 ```
 
-No Windows, caso o PowerShell bloqueie o npm:
+No Windows:
 
 ```powershell
-npm.cmd run generate:llms
+npm.cmd run generate:artifacts
+```
+
+Para gerar apenas os arquivos de LLM:
+
+```bash
+npm run generate:llms
 ```
 
 O script de export também executa a geração antes de publicar:
@@ -89,26 +147,6 @@ O script de export também executa a geração antes de publicar:
 ```bash
 npm run export
 ```
-
-No deploy, a URL canônica da documentação fica em:
-
-- `https://api-docs.idcerberus.com/`
-
-O arquivo `CNAME` publicado no artifact do GitHub Pages aponta para
-`api-docs.idcerberus.com`.
-
-Os arquivos auxiliares devem ficar disponíveis em:
-
-- `https://api-docs.idcerberus.com/llms.txt`
-- `https://api-docs.idcerberus.com/llms-small.txt`
-- `https://api-docs.idcerberus.com/llms-full.txt`
-- `https://api-docs.idcerberus.com/llms-api-reference.txt`
-- `https://api-docs.idcerberus.com/services-catalog.json`
-- `https://api-docs.idcerberus.com/examples/auth.hml.curl`
-
-Nas páginas públicas, os links para esses arquivos podem usar caminhos absolutos
-da raiz do domínio customizado, como `/llms.txt`, `/services-catalog.json` e
-`/examples/...`.
 
 ## Estrutura
 
@@ -123,11 +161,16 @@ api-docs-idcerberus/
 |   `-- openapi.json
 |-- assets/
 |   `-- idcerberus-logo-transparent.png
+|-- examples/
+|   |-- auth.hml.curl
+|   |-- service-api-ocr-cnh.hml.curl
+|   `-- ...
 |-- guides/
 |   |-- pessoas/
 |   |-- empresas/
 |   |-- service-api/
 |   |-- autenticacao.mdx
+|   |-- indice-de-services.mdx
 |   |-- llms.mdx
 |   |-- onboarding-sdk.mdx
 |   |-- quickstart.mdx
@@ -137,10 +180,6 @@ api-docs-idcerberus/
 |   |-- generate-llms.mjs
 |   `-- prepare-pages-export.mjs
 |-- docs.json
-|-- examples/
-|   |-- auth.hml.curl
-|   |-- auth.prod.curl
-|   `-- ...
 |-- index.mdx
 |-- llms.txt
 |-- llms-small.txt
@@ -151,7 +190,7 @@ api-docs-idcerberus/
 `-- README.md
 ```
 
-## Conteúdo principal
+## Conteúdo Principal
 
 - `index.mdx`: página inicial da documentação.
 - `docs.json`: configuração do Mintlify, tema, logo, navegação e OpenAPI.
@@ -161,19 +200,17 @@ api-docs-idcerberus/
 - `api-reference/services-por-caso-de-uso.mdx`: mapa de services por objetivo de integração.
 - `api-reference/services-pessoa-fisica.mdx`: catálogo explícito dos services de pessoa física no API Reference.
 - `api-reference/services-pessoa-juridica.mdx`: catálogo explícito dos services de pessoa jurídica no API Reference.
-- `guides/`: guias por fluxo, categoria de serviço e catálogo técnico.
-- `guides/llms.mdx`: página pública com links diretos para arquivos de contexto.
 - `guides/indice-de-services.mdx`: índice navegável dos services documentados.
 - `guides/exemplos-por-ambiente.mdx`: chamadas equivalentes de HML e produção.
 - `guides/erros-comuns-integracao.mdx`: diagnóstico de falhas comuns.
-- `assets/`: imagens e logo usadas pela documentação.
+- `guides/llms.mdx`: página pública com links diretos para arquivos de contexto.
 
-## Organização da navegação
+## Organização da Navegação
 
 A documentação está dividida em duas áreas principais:
 
-- Guias: explicam fluxos, categorias, casos de uso e como escolher services.
-- API Reference: concentra endpoints, exemplos de request/response e schemas.
+- Guias: explicam fluxos, categorias, casos de uso, OCR, autenticação e como escolher services.
+- API Reference: concentra endpoints, exemplos de request/response, schemas e services.
 
 Dentro dos guias, os conteúdos estão organizados por:
 
@@ -184,10 +221,9 @@ Dentro dos guias, os conteúdos estão organizados por:
 - Empresas
 - Catálogo técnico
 
-## Qualidade de texto
+## Qualidade de Texto
 
-Antes de publicar, rode o check de texto para capturar caracteres quebrados,
-mojibake, frases duplicadas comuns e placeholders inseguros:
+Antes de publicar, rode o check de texto para capturar caracteres quebrados, mojibake, frases duplicadas comuns e placeholders inseguros:
 
 ```bash
 npm run check:text
@@ -199,32 +235,29 @@ Para checar texto e regenerar os arquivos de LLM:
 npm run check
 ```
 
-## Validação rápida
+## Validação Rápida
 
-Para validar `docs.json`:
+Validar `docs.json`:
 
 ```bash
 node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('docs.json','utf8')); console.log('docs.json ok');"
 ```
 
-Para regenerar e validar arquivos de LLM:
+Regenerar artifacts principais:
 
 ```bash
-node scripts/generate-llms.mjs
-node -e "const fs=require('fs'); for (const f of ['llms.txt','llms-small.txt','llms-full.txt']) { const s=fs.readFileSync(f,'utf8'); console.log(f, s.includes('\\uFFFD') ? 'encoding ruim' : 'ok'); }"
+npm run generate:artifacts
 ```
 
-## Ambientes
+Verificar se os arquivos de LLM não têm caractere quebrado:
 
-- Homologação: `https://backoffice-hml.idcerberus.com`
-- Produção: `https://backoffice.idcerberus.com`
-
-O endpoint central de consultas é `POST /api/service-api`. O produto executado é
-definido pelo campo `service`.
+```bash
+node -e "const fs=require('fs'); for (const f of ['llms.txt','llms-small.txt','llms-full.txt','llms-api-reference.txt']) { const s=fs.readFileSync(f,'utf8'); console.log(f, s.includes('\uFFFD') ? 'encoding ruim' : 'ok'); }"
+```
 
 ## Deploy
 
-O export deve gerar os arquivos de LLM antes da publicação:
+O export deve gerar os arquivos auxiliares antes da publicação:
 
 ```bash
 npm run export
@@ -235,3 +268,26 @@ No Windows:
 ```powershell
 npm.cmd run export
 ```
+
+O arquivo `CNAME` publicado no artifact do GitHub Pages aponta para:
+
+```txt
+api-docs.idcerberus.com
+```
+
+## Cuidados Antes de Commitar
+
+Antes de commitar alterações na documentação:
+
+```bash
+npm run check:text
+git diff --check
+git status --short
+```
+
+Não commitar:
+
+- arquivos locais de análise temporária;
+- `node_modules/`;
+- exports zipados locais;
+- credenciais, tokens, secrets ou exemplos com dados reais de cliente.

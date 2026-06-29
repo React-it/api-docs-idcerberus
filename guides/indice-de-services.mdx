@@ -11,6 +11,37 @@ Use este índice quando já souber qual produto precisa executar e quiser confir
 Todas as consultas abaixo usam `POST /api/service-api`. O produto executado é definido pelo campo `service` no body.
 </Info>
 
+## Como pesquisar melhor
+
+A busca funciona melhor quando o termo aparece como título, alias ou texto da página. Se não souber o alias exato, pesquise pelo tipo de documento, dado ou problema que quer resolver.
+
+<CardGroup cols={2}>
+  <Card title="Tenho um CPF" href="#pessoa-fisica">
+    Pesquise por `cpf`, `receita`, `score`, `risco`, `telefone`, `email`, `ocr`, `face` ou `processos`.
+  </Card>
+  <Card title="Tenho um CNPJ" href="#pessoa-juridica">
+    Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.
+  </Card>
+  <Card title="Tenho uma imagem" href="/guides/service-api/ocr-service-api">
+    Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.
+  </Card>
+  <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">
+    Vá para o API Reference quando precisar de body, curl, response resumido e erro comum.
+  </Card>
+</CardGroup>
+
+### Atalhos de busca
+
+| Digite na busca | O que deve aparecer |
+| --- | --- |
+| `SERVICE_OCR` ou `OCR CNH` | OCR React para RG/CNH e guia de OCR. |
+| `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |
+| `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |
+| `face index` | Busca facial por selfie na base de faces. |
+| `risco de crédito` | Services de score, rating, risco e crédito PF/PJ. |
+| `processos` | Consultas jurídicas, certidões e antecedentes. |
+| `telefone` ou `email` | Validações e histórico de contato. |
+
 <Warning>
   Antes de executar a chamada, confirme qual alias está liberado no produto
   do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
@@ -51,102 +82,102 @@ quando o produto está ativo.
 
 ## Pessoa Física
 
-| Nome | Service | Campos principais | Retorno principal |
-| --- | --- | --- | --- |
-| [Antecedentes criminais civis](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | `cpf`, `rg`, `uf` | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
-| [Antecedentes criminais federais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | `cpf` | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
-| [Benefícios sociais estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | Retorna beneficios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis. |
-| [Benefícios sociais familiares](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | Retorna beneficios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis. |
-| [Busca de face na base](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_INDEX` | `image1` | Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis. |
-| [Certidão de Nada Consta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | `cpf`, `court`, `uf`, `sphere` | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
-| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | `cpf` | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
-| [Certidão negativa de protesto PF (InfoSimples)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF_INFOSIMPLES` | `cpf` | Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens. |
-| [Certidão negativa de protesto PF (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF_NETRIN` | `cpf` | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
-| [Consulta de MEI](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEI_BIGDATACORP` | `cpf` | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
-| [CPF na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
-| [Dados demográficos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada. |
-| [Dados eleitorais de candidato](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | `cpf` | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
-| [Dados financeiros e endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
-| [Dados pelo telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CONFIRM_PHONE_FACETEC` | `phone` | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
-| [Dados PIS](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PIS_CONSULTATION_BIGDATACORP` | `cpf` | Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta. |
-| [Dívida ativa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | `cpf` | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| [Documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `key`, `image1`, `image2`, `selfie1` | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
-| [Domínios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CPF` | `cpf` | Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis. |
-| [Endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESS_BIGDATACORP` | `cpf` | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
-| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | `cpf` | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
-| [Envolvimento político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| [Envolvimento político PF (BigDataCorp)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | `cpf` | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| [Exposição e perfil na mídia](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` | Retorna exposição e perfil de mídia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados. |
-| [FaceMatch](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
-| [FaceMatch (AWS)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH_AWS` | `image1`, `image2` | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
-| [Histórico de e-mails](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | `cpf`, `limit` | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
-| [Histórico de telefones](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PHONE_HISTORY_BIGDATACORP` | `cpf`, `birthDate`, `limit` | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
-| [Histórico familiar político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
-| [Histórico profissional](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
-| [Histórico profissional do titular](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` | Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo. |
-| [Indicadores de atividades](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis. |
-| [Informações financeiras](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | `cpf` | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
-| [KYC e compliance](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
-| [Liveness 2D](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
-| [Mandado de prisão](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
-| [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
-| [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
-| [OCR de documentos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos. |
-| [OCR de emancipação](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_EMANCIPATION` | `image1` | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
-| [OCR React RG/CNH](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento. |
-| [Pessoa politicamente exposta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PEP` | `cpf` | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
-| [Pessoas relacionadas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf`, `birthDate` | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
-| [Prêmios e certificações](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados. |
-| [Prestadores de serviço eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
-| [Processos jurídicos e administrativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
-| [Prompt de IA para pessoa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional. |
-| [Propensão a apostas online](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
-| [Relacionamentos econômicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `cpf` | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participacoes, relacoes profissionais e indicadores de relacionamento. |
-| [Resultado da documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `key` | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
-| [Risco financeiro](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
-| [Score biométrico](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
-| [Score de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_SCORE` | `cpf` | Retorna score de credito associado ao CPF via Assertiva, com pontuacao, faixa de risco e mensagem da consulta quando disponíveis. |
-| [Score de inadimplência](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` | Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação. |
-| [Score de risco de fraude](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
-| [Score de risco Quantum](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` | Retorna score de risco de inadimplência Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponível. |
-| [Servidores públicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | `cpf` | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
-| [Status do CPF na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
-| [Validação de CPF com endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
-| [Validação de CPF com telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | `cpf`, `phone` | Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação. |
-| [Validação de CPF com telefone (Facetec)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION_FACETEC` | `cpf`, `phone` | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
-| [Validação de e-mail](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `email` | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
-| [Validação do E-Social](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | `cpf`, `nit` | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
+| Nome | Service | Campos principais | Termos de busca | Retorno principal |
+| --- | --- | --- | --- | --- |
+| [Antecedentes criminais civis](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | `cpf`, `rg`, `uf` | PF - Antecedentes criminais civis | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
+| [Antecedentes criminais federais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | `cpf` | PF - Antecedentes criminais federais | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
+| [Benefícios sociais estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | PF - Benefícios sociais estendidos | Retorna beneficios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis. |
+| [Benefícios sociais familiares](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | PF - Benefícios sociais familiares | Retorna beneficios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis. |
+| [Busca de face na base](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_INDEX` | `image1` | PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces | Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis. |
+| [Certidão de Nada Consta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | `cpf`, `court`, `uf`, `sphere` | PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
+| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | `cpf` | PF - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
+| [Certidão negativa de protesto PF (InfoSimples)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF_INFOSIMPLES` | `cpf` | PF - Certidão negativa de protesto PF (InfoSimples) | Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens. |
+| [Certidão negativa de protesto PF (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF_NETRIN` | `cpf` | PF - Certidão negativa de protesto PF (Netrin) | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
+| [Consulta de MEI](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEI_BIGDATACORP` | `cpf` | PF - Consulta de MEI | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
+| [CPF na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - CPF na Receita Federal on-demand | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
+| [Dados demográficos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | CPF Receita Federal, PF - Dados demográficos | Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada. |
+| [Dados eleitorais de candidato](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Dados eleitorais de candidato | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
+| [Dados financeiros e endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` | PF - Dados financeiros e endereços | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
+| [Dados pelo telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CONFIRM_PHONE_FACETEC` | `phone` | PF - Dados pelo telefone, telefone celular validação contato | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
+| [Dados PIS](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PIS_CONSULTATION_BIGDATACORP` | `cpf` | PF - Dados PIS | Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta. |
+| [Dívida ativa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` | PF - Dívida ativa, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
+| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
+| [Documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `key`, `image1`, `image2`, `selfie1` | PF - Documentoscopia digital, documentoscopia documento selfie validação | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
+| [Domínios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CPF` | `cpf` | CPF Receita Federal, PF - Domínios, domínios sites presença digital | Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis. |
+| [Endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESS_BIGDATACORP` | `cpf` | PF - Endereços | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
+| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | `cpf` | PF - Enriquecimento de dados | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
+| [Envolvimento político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` | PF - Envolvimento político | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| [Envolvimento político PF (BigDataCorp)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp) | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| [Exposição e perfil na mídia](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` | PF - Exposição e perfil na mídia | Retorna exposição e perfil de mídia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados. |
+| [FaceMatch](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | PF - FaceMatch, comparação facial biometria selfie rosto | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
+| [FaceMatch (AWS)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH_AWS` | `image1`, `image2` | PF - FaceMatch (AWS), comparação facial biometria selfie rosto | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
+| [Histórico de e-mails](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | `cpf`, `limit` | PF - Histórico de e-mails, email validação contato | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
+| [Histórico de telefones](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PHONE_HISTORY_BIGDATACORP` | `cpf`, `birthDate`, `limit` | PF - Histórico de telefones, telefone celular validação contato | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
+| [Histórico familiar político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Histórico familiar político | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
+| [Histórico profissional](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` | PF - Histórico profissional | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
+| [Histórico profissional do titular](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` | PF - Histórico profissional do titular | Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo. |
+| [Indicadores de atividades](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | PF - Indicadores de atividades | Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis. |
+| [Informações financeiras](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | `cpf` | PF - Informações financeiras | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
+| [KYC e compliance](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | PF - KYC e compliance, compliance KYC sanções PEP mídia | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
+| [Liveness 2D](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | PF - Liveness 2D, prova de vida selfie liveness | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
+| [Mandado de prisão](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | PF - Mandado de prisão | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
+| [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | PF - Modelagem de dados | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
+| [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
+| [OCR de documentos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | OCR documento imagem base64 leitura extração, PF - OCR de documentos | Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos. |
+| [OCR de emancipação](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_EMANCIPATION` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
+| [OCR React RG/CNH](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH | Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento. |
+| [Pessoa politicamente exposta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PEP` | `cpf` | PF - Pessoa politicamente exposta | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
+| [Pessoas relacionadas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf`, `birthDate` | PF - Pessoas relacionadas | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
+| [Prêmios e certificações](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | CPF Receita Federal, PF - Prêmios e certificações | Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados. |
+| [Prestadores de serviço eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
+| [Processos jurídicos e administrativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` | PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
+| [Prompt de IA para pessoa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | PF - Prompt de IA para pessoa | Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional. |
+| [Propensão a apostas online](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` | PF - Propensão a apostas online, apostas bets compliance bet | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
+| [Relacionamentos econômicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `cpf` | PF - Relacionamentos econômicos | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participacoes, relacoes profissionais e indicadores de relacionamento. |
+| [Resultado da documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `key` | PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
+| [Risco financeiro](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` | PF - Risco financeiro, score risco crédito rating inadimplência | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
+| [Score biométrico](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | PF - Score biométrico, score risco crédito rating inadimplência | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
+| [Score de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_SCORE` | `cpf` | PF - Score de crédito, score risco crédito rating inadimplência | Retorna score de credito associado ao CPF via Assertiva, com pontuacao, faixa de risco e mensagem da consulta quando disponíveis. |
+| [Score de inadimplência](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` | PF - Score de inadimplência, score risco crédito rating inadimplência | Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação. |
+| [Score de risco de fraude](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` | PF - Score de risco de fraude, score risco crédito rating inadimplência | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
+| [Score de risco Quantum](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` | PF - Score de risco Quantum, score risco crédito rating inadimplência | Retorna score de risco de inadimplência Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponível. |
+| [Servidores públicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | `cpf` | PF - Servidores públicos | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
+| [Status do CPF na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | CPF Receita Federal, PF - Status do CPF na Receita Federal | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
+| [Validação de CPF com endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` | CPF Receita Federal, PF - Validação de CPF com endereço | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
+| [Validação de CPF com telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato | Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação. |
+| [Validação de CPF com telefone (Facetec)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION_FACETEC` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone (Facetec), telefone celular validação contato | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
+| [Validação de e-mail](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `email` | PF - Validação de e-mail, email validação contato | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
+| [Validação do E-Social](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | `cpf`, `nit` | PF - Validação do E-Social | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
 ## Pessoa Jurídica
 
-| Nome | Service | Campos principais | Retorno principal |
-| --- | --- | --- | --- |
-| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` | Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas. |
-| [Certidão negativa de protesto PJ (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ_NETRIN` | `cnpj` | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
-| [CNPJ na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
-| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET` | `cnpj` | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
-| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
-| [Dados cadastrais de CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
-| [DAS MEI na Receita](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DAS_MEI_INFOSIMPLES` | `cnpj` | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
-| [Débitos ativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| [Doações eleitorais dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
-| [Domínios CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
-| [Endereços estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | `cnpj` | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
-| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | `cnpj` | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
-| [Exposição e perfil na mídia dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | `cnpj` | Retorna exposição e perfil de mídia da empresa e sócios, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados. |
-| [Fornecedores eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | `cnpj` | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
-| [KYC e compliance dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
-| [OCR de cartão CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_CNPJ_CARD` | `image1` | Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível. |
-| [Processos jurídicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
-| [Processos jurídicos dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | `cnpj` | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
-| [Relacionamentos da empresa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | `cnpj` | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participacoes e vínculos societários identificados. |
-| [Risco de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis. |
-| [Risco de crédito Murabei](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` | Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
-| [SINTEGRA](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
-| [Sócios de primeiro nível](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | `cnpj` | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
-| [Sócios na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | `cnpj` | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
-| [Status do CNPJ na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` | Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço. |
+| Nome | Service | Campos principais | Termos de busca | Retorno principal |
+| --- | --- | --- | --- | --- |
+| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` | PJ - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas. |
+| [Certidão negativa de protesto PJ (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ_NETRIN` | `cnpj` | PJ - Certidão negativa de protesto PJ (Netrin) | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
+| [CNPJ na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
+| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
+| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
+| [Dados cadastrais de CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
+| [DAS MEI na Receita](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DAS_MEI_INFOSIMPLES` | `cnpj` | CPF Receita Federal, PJ - DAS MEI na Receita | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
+| [Débitos ativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` | PJ - Débitos ativos, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
+| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
+| [Doações eleitorais dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
+| [Domínios CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
+| [Endereços estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Endereços estendidos | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
+| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Enriquecimento de dados | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
+| [Exposição e perfil na mídia dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | `cnpj` | PJ - Exposição e perfil na mídia dos sócios | Retorna exposição e perfil de mídia da empresa e sócios, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados. |
+| [Fornecedores eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
+| [KYC e compliance dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` | PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
+| [OCR de cartão CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ | Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível. |
+| [Processos jurídicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
+| [Processos jurídicos dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | `cnpj` | PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
+| [Relacionamentos da empresa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | `cnpj` | PJ - Relacionamentos da empresa | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participacoes e vínculos societários identificados. |
+| [Risco de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | PJ - Risco de crédito, score risco crédito rating inadimplência | Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis. |
+| [Risco de crédito Murabei](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` | PJ - Risco de crédito Murabei, score risco crédito rating inadimplência | Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
+| [SINTEGRA](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` | PJ - SINTEGRA | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
+| [Sócios de primeiro nível](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | `cnpj` | PJ - Sócios de primeiro nível | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
+| [Sócios na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | `cnpj` | CPF Receita Federal, PJ - Sócios na Receita Federal | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
+| [Status do CNPJ na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal | Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço. |
 
 ## Passo a passo por service
 
@@ -158,6 +189,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Antecedentes criminais civis">
 
 **Service:** `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP`
+
+**Termos de busca:** PF - Antecedentes criminais civis
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
@@ -206,6 +239,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP`
 
+**Termos de busca:** PF - Antecedentes criminais federais
+
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
 **O que retorna:** Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta.
@@ -248,6 +283,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Benefícios sociais estendidos">
 
 **Service:** `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
+
+**Termos de busca:** PF - Benefícios sociais estendidos
 
 **Quando usar:** Use este service quando precisar executar a consulta "Benefícios sociais estendidos" via API.
 
@@ -298,6 +335,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_FAMILY_SOCIAL_BENEFITS`
 
+**Termos de busca:** PF - Benefícios sociais familiares
+
 **Quando usar:** Use este service quando precisar executar a consulta "Benefícios sociais familiares" via API.
 
 **O que retorna:** Retorna beneficios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis.
@@ -346,6 +385,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_FACE_INDEX`
 
+**Termos de busca:** PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces
+
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
 
 **O que retorna:** Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
@@ -388,6 +429,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Certidão de Nada Consta">
 
 **Service:** `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
+
+**Termos de busca:** PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
@@ -437,6 +480,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`
 
+**Termos de busca:** PF - Certidão negativa de protesto
+
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
 **O que retorna:** Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas.
@@ -479,6 +524,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Certidão negativa de protesto PF (InfoSimples)">
 
 **Service:** `SERVICE_PROTEST_PF_INFOSIMPLES`
+
+**Termos de busca:** PF - Certidão negativa de protesto PF (InfoSimples)
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
@@ -524,6 +571,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PROTEST_PF_NETRIN`
 
+**Termos de busca:** PF - Certidão negativa de protesto PF (Netrin)
+
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
 **O que retorna:** Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
@@ -567,6 +616,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Consulta de MEI">
 
 **Service:** `SERVICE_MEI_BIGDATACORP`
+
+**Termos de busca:** PF - Consulta de MEI
 
 **Quando usar:** Use este service quando precisar executar a consulta "Consulta de MEI" via API.
 
@@ -616,6 +667,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PF - CPF na Receita Federal on-demand
+
 **Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
 
 **O que retorna:** Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo.
@@ -660,6 +713,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Dados demográficos">
 
 **Service:** `SERVICE_DEMOGRAPHIC_DATA_CPF`
+
+**Termos de busca:** CPF Receita Federal, PF - Dados demográficos
 
 **Quando usar:** Use para consultar dados demograficos associados à pessoa.
 
@@ -710,6 +765,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PF - Dados eleitorais de candidato
+
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
 **O que retorna:** Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível.
@@ -758,6 +815,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Dados financeiros e endereços">
 
 **Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP`
+
+**Termos de busca:** PF - Dados financeiros e endereços
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
@@ -809,6 +868,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_CONFIRM_PHONE_FACETEC`
 
+**Termos de busca:** PF - Dados pelo telefone, telefone celular validação contato
+
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
 **O que retorna:** Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis.
@@ -855,6 +916,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PIS_CONSULTATION_BIGDATACORP`
 
+**Termos de busca:** PF - Dados PIS
+
 **Quando usar:** Use este service quando precisar executar a consulta "Dados PIS" via API.
 
 **O que retorna:** Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta.
@@ -897,6 +960,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Dívida ativa">
 
 **Service:** `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP`
+
+**Termos de busca:** PF - Dívida ativa, dívida ativa débito cobrança inadimplência
 
 **Quando usar:** Use para consultar débitos ou dívidas associadas à pessoa.
 
@@ -948,6 +1013,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato
+
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
 **O que retorna:** Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
@@ -995,6 +1062,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Documentoscopia digital">
 
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX`
+
+**Termos de busca:** PF - Documentoscopia digital, documentoscopia documento selfie validação
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
 
@@ -1051,6 +1120,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_DOMAINS_CPF`
 
+**Termos de busca:** CPF Receita Federal, PF - Domínios, domínios sites presença digital
+
 **Quando usar:** Use para consultar dados de sites vinculados à pessoa.
 
 **O que retorna:** Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis.
@@ -1098,6 +1169,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Endereços">
 
 **Service:** `SERVICE_ADDRESS_BIGDATACORP`
+
+**Termos de busca:** PF - Endereços
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
@@ -1151,6 +1224,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP`
 
+**Termos de busca:** PF - Enriquecimento de dados
+
 **Quando usar:** Use para complementar dados cadastrais da pessoa a partir do documento informado.
 
 **O que retorna:** Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis.
@@ -1195,6 +1270,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Envolvimento político">
 
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP`
+
+**Termos de busca:** PF - Envolvimento político
 
 **Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político" via API.
 
@@ -1244,6 +1321,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp)
+
 **Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API.
 
 **O que retorna:** Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
@@ -1291,6 +1370,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Exposição e perfil na mídia">
 
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP`
+
+**Termos de busca:** PF - Exposição e perfil na mídia
 
 **Quando usar:** Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API.
 
@@ -1341,6 +1422,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_FACE_MATCH_BIGDATACORP`
 
+**Termos de busca:** PF - FaceMatch, comparação facial biometria selfie rosto
+
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
 
 **O que retorna:** Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
@@ -1385,6 +1468,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_FACE_MATCH_AWS`
 
+**Termos de busca:** PF - FaceMatch (AWS), comparação facial biometria selfie rosto
+
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
 
 **O que retorna:** Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
@@ -1428,6 +1513,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Histórico de e-mails">
 
 **Service:** `SERVICE_EMAILS_EXTENDED_BIGDATACORP`
+
+**Termos de busca:** PF - Histórico de e-mails, email validação contato
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
 
@@ -1478,6 +1565,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Histórico de telefones">
 
 **Service:** `SERVICE_PHONE_HISTORY_BIGDATACORP`
+
+**Termos de busca:** PF - Histórico de telefones, telefone celular validação contato
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
@@ -1530,6 +1619,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PF - Histórico familiar político
+
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico familiar político" via API.
 
 **O que retorna:** Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados.
@@ -1578,6 +1669,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP`
 
+**Termos de busca:** PF - Histórico profissional
+
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional" via API.
 
 **O que retorna:** Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais.
@@ -1625,6 +1718,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Histórico profissional do titular">
 
 **Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP`
+
+**Termos de busca:** PF - Histórico profissional do titular
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional do titular" via API.
 
@@ -1675,6 +1770,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_ACTIVITIES_INDICATORS`
 
+**Termos de busca:** PF - Indicadores de atividades
+
 **Quando usar:** Use este service quando precisar executar a consulta "Indicadores de atividades" via API.
 
 **O que retorna:** Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis.
@@ -1723,6 +1820,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP`
 
+**Termos de busca:** PF - Informações financeiras
+
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
 **O que retorna:** Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis.
@@ -1766,6 +1865,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="KYC e compliance">
 
 **Service:** `SERVICE_PERSON_KYC_BIGDATACORP`
+
+**Termos de busca:** PF - KYC e compliance, compliance KYC sanções PEP mídia
 
 **Quando usar:** Use para executar checagens de KYC e compliance da pessoa.
 
@@ -1813,6 +1914,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_LIVENESS_2D_FACETEC`
 
+**Termos de busca:** PF - Liveness 2D, prova de vida selfie liveness
+
 **Quando usar:** Use para validar prova de vida a partir de uma imagem de selfie.
 
 **O que retorna:** Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
@@ -1855,6 +1958,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Mandado de prisão">
 
 **Service:** `SERVICE_ARREST_WARRANT`
+
+**Termos de busca:** PF - Mandado de prisão
 
 **Quando usar:** Use este service quando precisar executar a consulta "Mandado de prisão" via API.
 
@@ -1903,6 +2008,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PERSON_DATA_MODELING_BIGDATACORP`
 
+**Termos de busca:** PF - Modelagem de dados
+
 **Quando usar:** Use este service quando precisar executar a consulta "Modelagem de dados" via API.
 
 **O que retorna:** Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados.
@@ -1947,6 +2054,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="OCR de comprovante de endereço">
 
 **Service:** `SERVICE_OCR_PROOF_OF_ADDRESS`
+
+**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
@@ -1993,6 +2102,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="OCR de documentos">
 
 **Service:** `SERVICE_OCR_BIGDATACORP`
+
+**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de documentos
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
@@ -2043,6 +2154,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="OCR de emancipação">
 
 **Service:** `SERVICE_OCR_EMANCIPATION`
+
+**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
@@ -2096,6 +2209,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_OCR`
 
+**Termos de busca:** OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH
+
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
 **O que retorna:** Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
@@ -2144,6 +2259,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PEP`
 
+**Termos de busca:** PF - Pessoa politicamente exposta
+
 **Quando usar:** Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta.
 
 **O que retorna:** Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis.
@@ -2187,6 +2304,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Pessoas relacionadas">
 
 **Service:** `SERVICE_RELATED_PEOPLE_BIGDATACORP`
+
+**Termos de busca:** PF - Pessoas relacionadas
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
 
@@ -2237,6 +2356,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
 
+**Termos de busca:** CPF Receita Federal, PF - Prêmios e certificações
+
 **Quando usar:** Use este service quando precisar executar a consulta "Prêmios e certificações" via API.
 
 **O que retorna:** Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados.
@@ -2281,6 +2402,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Prestadores de serviço eleitorais">
 
 **Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP`
+
+**Termos de busca:** CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
@@ -2331,6 +2454,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP`
 
+**Termos de busca:** PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão
+
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
 **O que retorna:** Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis.
@@ -2380,6 +2505,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PERSON_AI_PROMPT_OPENAI`
 
+**Termos de busca:** PF - Prompt de IA para pessoa
+
 **Quando usar:** Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API.
 
 **O que retorna:** Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional.
@@ -2424,6 +2551,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Propensão a apostas online">
 
 **Service:** `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP`
+
+**Termos de busca:** PF - Propensão a apostas online, apostas bets compliance bet
 
 **Quando usar:** Use este service quando precisar executar a consulta "Propensão a apostas online" via API.
 
@@ -2470,6 +2599,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Relacionamentos econômicos">
 
 **Service:** `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP`
+
+**Termos de busca:** PF - Relacionamentos econômicos
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
 
@@ -2518,6 +2649,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Resultado da documentoscopia digital">
 
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
+
+**Termos de busca:** PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
 
@@ -2573,6 +2706,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP`
 
+**Termos de busca:** PF - Risco financeiro, score risco crédito rating inadimplência
+
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
 **O que retorna:** Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação.
@@ -2617,6 +2752,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Score biométrico">
 
 **Service:** `SERVICE_DATAVALID_CNH_SERPRO`
+
+**Termos de busca:** PF - Score biométrico, score risco crédito rating inadimplência
 
 **Quando usar:** Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.
 
@@ -2663,6 +2800,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_CREDIT_SCORE`
 
+**Termos de busca:** PF - Score de crédito, score risco crédito rating inadimplência
+
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
 **O que retorna:** Retorna score de credito associado ao CPF via Assertiva, com pontuacao, faixa de risco e mensagem da consulta quando disponíveis.
@@ -2707,6 +2846,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP`
 
+**Termos de busca:** PF - Score de inadimplência, score risco crédito rating inadimplência
+
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
 **O que retorna:** Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação.
@@ -2750,6 +2891,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Score de risco de fraude">
 
 **Service:** `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP`
+
+**Termos de busca:** PF - Score de risco de fraude, score risco crédito rating inadimplência
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
@@ -2797,6 +2940,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_DEFAULT_RISK_SCORE_QUANTUM`
 
+**Termos de busca:** PF - Score de risco Quantum, score risco crédito rating inadimplência
+
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
 **O que retorna:** Retorna score de risco de inadimplência Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponível.
@@ -2840,6 +2985,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Servidores públicos">
 
 **Service:** `SERVICE_PUBLIC_SERVANTS_BIGDATACORP`
+
+**Termos de busca:** PF - Servidores públicos
 
 **Quando usar:** Use este service quando precisar executar a consulta "Servidores públicos" via API.
 
@@ -2889,6 +3036,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_RFB_PF_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PF - Status do CPF na Receita Federal
+
 **Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
 
 **O que retorna:** Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis.
@@ -2934,6 +3083,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Validação de CPF com endereço">
 
 **Service:** `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP`
+
+**Termos de busca:** CPF Receita Federal, PF - Validação de CPF com endereço
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
@@ -2982,6 +3133,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato
+
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
 **O que retorna:** Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação.
@@ -3028,6 +3181,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_CPF_PHONE_VALIDATION_FACETEC`
 
+**Termos de busca:** CPF Receita Federal, PF - Validação de CPF com telefone (Facetec), telefone celular validação contato
+
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
 **O que retorna:** Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.
@@ -3073,6 +3228,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_EMAIL_VALIDATION_BIGDATACORP`
 
+**Termos de busca:** PF - Validação de e-mail, email validação contato
+
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
 
 **O que retorna:** Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco.
@@ -3117,6 +3274,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Validação do E-Social">
 
 **Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP`
+
+**Termos de busca:** PF - Validação do E-Social
 
 **Quando usar:** Use este service quando precisar executar a consulta "Validação do E-Social" via API.
 
@@ -3168,6 +3327,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PROTEST_PJ_INFOSIMPLES`
 
+**Termos de busca:** PJ - Certidão negativa de protesto
+
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
 **O que retorna:** Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas.
@@ -3211,6 +3372,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Certidão negativa de protesto PJ (Netrin)">
 
 **Service:** `SERVICE_PROTEST_PJ_NETRIN`
+
+**Termos de busca:** PJ - Certidão negativa de protesto PJ (Netrin)
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
@@ -3256,6 +3419,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
 
+**Termos de busca:** CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand
+
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
 **O que retorna:** Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço.
@@ -3300,6 +3465,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Compliance de casas de apostas">
 
 **Service:** `SERVICE_COMPLIANCE_BET`
+
+**Termos de busca:** PJ - Compliance de casas de apostas, apostas bets compliance bet
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
@@ -3347,6 +3514,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP`
 
+**Termos de busca:** PJ - Compliance de casas de apostas, apostas bets compliance bet
+
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
 **O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
@@ -3393,6 +3562,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_REGISTRATION_DATA_CNPJ`
 
+**Termos de busca:** CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ
+
 **Quando usar:** Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API.
 
 **O que retorna:** Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
@@ -3437,6 +3608,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="DAS MEI na Receita">
 
 **Service:** `SERVICE_DAS_MEI_INFOSIMPLES`
+
+**Termos de busca:** CPF Receita Federal, PJ - DAS MEI na Receita
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
@@ -3485,6 +3658,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Débitos ativos">
 
 **Service:** `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP`
+
+**Termos de busca:** PJ - Débitos ativos, dívida ativa débito cobrança inadimplência
 
 **Quando usar:** Use para consultar débitos ou dívidas associadas à empresa.
 
@@ -3536,6 +3711,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
 
+**Termos de busca:** CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato
+
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
 **O que retorna:** Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
@@ -3583,6 +3760,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Doações eleitorais dos sócios">
 
 **Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
+
+**Termos de busca:** CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
@@ -3633,6 +3812,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_DOMAINS_CNPJ`
 
+**Termos de busca:** CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital
+
 **Quando usar:** Use para consultar dados de sites vinculados à empresa.
 
 **O que retorna:** Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
@@ -3680,6 +3861,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Endereços estendidos">
 
 **Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP`
+
+**Termos de busca:** CNPJ Receita Federal, PJ - Endereços estendidos
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
@@ -3732,6 +3915,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP`
 
+**Termos de busca:** CNPJ Receita Federal, PJ - Enriquecimento de dados
+
 **Quando usar:** Use para complementar dados cadastrais da empresa a partir do documento informado.
 
 **O que retorna:** Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço.
@@ -3776,6 +3961,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Exposição e perfil na mídia dos sócios">
 
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP`
+
+**Termos de busca:** PJ - Exposição e perfil na mídia dos sócios
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
@@ -3826,6 +4013,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP`
 
+**Termos de busca:** CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato
+
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
 **O que retorna:** Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço.
@@ -3874,6 +4063,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="KYC e compliance dos sócios">
 
 **Service:** `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP`
+
+**Termos de busca:** PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
@@ -3925,6 +4116,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_OCR_CNPJ_CARD`
 
+**Termos de busca:** CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ
+
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
 **O que retorna:** Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
@@ -3967,6 +4160,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Processos jurídicos">
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_PJ`
+
+**Termos de busca:** PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
 
@@ -4017,6 +4212,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP`
 
+**Termos de busca:** PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão
+
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
 
 **O que retorna:** Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas.
@@ -4064,6 +4261,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Relacionamentos da empresa">
 
 **Service:** `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP`
+
+**Termos de busca:** PJ - Relacionamentos da empresa
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
@@ -4114,6 +4313,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_CREDIT_RISK_COMPANY`
 
+**Termos de busca:** PJ - Risco de crédito, score risco crédito rating inadimplência
+
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
 **O que retorna:** Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
@@ -4161,6 +4362,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Risco de crédito Murabei">
 
 **Service:** `SERVICE_CREDIT_RISK_COMPANY_MURABEI`
+
+**Termos de busca:** PJ - Risco de crédito Murabei, score risco crédito rating inadimplência
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
@@ -4210,6 +4413,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP`
 
+**Termos de busca:** PJ - SINTEGRA
+
 **Quando usar:** Use este service quando precisar executar a consulta "SINTEGRA" via API.
 
 **O que retorna:** Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta.
@@ -4255,6 +4460,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Sócios de primeiro nível">
 
 **Service:** `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP`
+
+**Termos de busca:** PJ - Sócios de primeiro nível
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
@@ -4305,6 +4512,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP`
 
+**Termos de busca:** CPF Receita Federal, PJ - Sócios na Receita Federal
+
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
 **O que retorna:** Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível.
@@ -4352,6 +4561,8 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <Accordion title="Status do CNPJ na Receita Federal">
 
 **Service:** `SERVICE_RFB_PJ_BIGDATACORP`
+
+**Termos de busca:** CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 

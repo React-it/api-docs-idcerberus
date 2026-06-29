@@ -122,6 +122,7 @@ quando o produto está ativo.
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
 | Envolvimento político PF (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
 | Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Histórico familiar político" via API. | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
+| KYC e compliance | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | Use para executar checagens de KYC e compliance da pessoa. | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` | Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta. | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
 | Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
 
@@ -143,7 +144,6 @@ quando o produto está ativo.
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
 | Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API. | Retorna exposição e perfil de mídia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados. |
-| KYC e compliance | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | Use para executar checagens de KYC e compliance da pessoa. | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
 | Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Propensão a apostas online" via API. | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
 
 ### Outros services
@@ -3605,6 +3605,95 @@ Neste service, o objeto `result` representa: Retorna histórico político famili
 
 </Accordion>
 
+<Accordion title="KYC e compliance">
+
+**Service:** `SERVICE_PERSON_KYC_BIGDATACORP`
+
+**Quando usar:** Use para executar checagens de KYC e compliance da pessoa.
+
+**O que retorna:** Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** `birthDate`
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Body
+
+```json
+{
+  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)"
+}
+```
+
+### Homologação
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Produção
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+| `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "isPep": false,
+    "sanctions": [],
+    "mediaExposure": [],
+    "riskAlerts": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
+
+</Accordion>
+
 <Accordion title="Pessoa politicamente exposta">
 
 **Service:** `SERVICE_PEP`
@@ -4586,95 +4675,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna exposição e perfil de mídia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.
-
-</Accordion>
-
-<Accordion title="KYC e compliance">
-
-**Service:** `SERVICE_PERSON_KYC_BIGDATACORP`
-
-**Quando usar:** Use para executar checagens de KYC e compliance da pessoa.
-
-**O que retorna:** Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** `birthDate`
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cpf` | Sim | CPF da pessoa física consultada. |
-| `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "isPep": false,
-    "sanctions": [],
-    "mediaExposure": [],
-    "riskAlerts": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
 
 </Accordion>
 

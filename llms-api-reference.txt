@@ -5,7 +5,6 @@ Use este arquivo para gerar exemplos de request, explicar chamadas da API e esco
 ## Regras obrigatórias
 
 - Não invente endpoints, parâmetros ou services.
-- Para consultas externas, use `POST /api/service-api` e envie o campo `service` no body.
 - Use homologação para testes: `https://backoffice-hml.idcerberus.com`.
 - Use produção somente quando o usuário pedir explicitamente: `https://backoffice.idcerberus.com`.
 - Nunca exponha `client`, `secret`, JWT real, CPF real, CNPJ real ou imagens reais em exemplos.
@@ -29,7 +28,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
 - Service: `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `rg`, `uf`
+- Termos de busca: PF - Antecedentes criminais civis
 - Retorno principal: Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "rg": "rg",
+    "state": "SP",
+    "hasRecords": false,
+    "records": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -48,7 +69,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Antecedentes criminais federais
 - Retorno principal: Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasFederalCriminalRecord": false,
+    "records": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -65,7 +106,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Benefícios sociais estendidos
 - Retorno principal: Retorna beneficios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalBenefits": 1,
+    "benefits": [
+      {
+        "program": "Programa social",
+        "status": "ACTIVE"
+      }
+    ],
+    "indicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -82,7 +149,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FAMILY_SOCIAL_BENEFITS`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Benefícios sociais familiares
 - Retorno principal: Retorna beneficios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalBenefits": 1,
+    "benefits": [
+      {
+        "program": "Programa social",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -99,7 +191,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FACE_INDEX`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`
+- Termos de busca: PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces
 - Retorno principal: Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "faceFound": true,
+    "similarity": 98.42
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -116,7 +228,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `court`, `uf`, `sphere`
+- Termos de busca: PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão
 - Retorno principal: Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "court": "TRF1",
+    "sphere": "CIVIL",
+    "nothingFound": true,
+    "records": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -136,7 +270,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Certidão negativa de protesto
 - Retorno principal: Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasProtests": false,
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -153,7 +307,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PROTEST_PF_INFOSIMPLES`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Certidão negativa de protesto PF (InfoSimples)
 - Retorno principal: Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasProtests": false,
+    "notaryOffices": [],
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -170,7 +345,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PROTEST_PF_NETRIN`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Certidão negativa de protesto PF (Netrin)
 - Retorno principal: Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasProtests": false,
+    "notaryOffices": [],
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -187,7 +383,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_MEI_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Consulta de MEI
 - Retorno principal: Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "meiCompanies": [
+      {
+        "cnpj": "cnpj",
+        "officialName": "MEI EXEMPLO",
+        "status": "ATIVA"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -204,7 +425,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - CPF na Receita Federal on-demand
 - Retorno principal: Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "name": "Nome completo",
+    "birthDate": "yyyy-MM-dd",
+    "registrationStatus": "REGULAR",
+    "protocol": "protocolo"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -221,7 +464,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DEMOGRAPHIC_DATA_CPF`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `birthDate`
+- Termos de busca: CPF Receita Federal, PF - Dados demográficos
 - Retorno principal: Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "demographicData": [
+      {
+        "indicator": "Faixa de renda",
+        "value": "Media"
+      }
+    ],
+    "totalIndicators": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -239,7 +507,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Dados eleitorais de candidato
 - Retorno principal: Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "candidacies": [
+      {
+        "year": 2024,
+        "role": "VEREADOR",
+        "party": "PARTIDO",
+        "status": "DEFERIDO"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -256,7 +550,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `birthDate`
+- Termos de busca: PF - Dados financeiros e endereços
 - Retorno principal: Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "estimatedIncome": "5000-10000",
+    "addresses": [
+      {
+        "city": "Sao Paulo",
+        "state": "SP"
+      }
+    ],
+    "financialIndicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -274,7 +594,30 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CONFIRM_PHONE_FACETEC`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `phone`
+- Termos de busca: PF - Dados pelo telefone, telefone celular validação contato
 - Retorno principal: Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "phone": "+5561123456789",
+    "matched": true,
+    "person": {
+      "name": "Nome encontrado",
+      "document": "cpf"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -291,7 +634,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PIS_CONSULTATION_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Dados PIS
 - Retorno principal: Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "pis": "00000000000",
+    "status": "FOUND"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -308,7 +671,34 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Dívida ativa, dívida ativa débito cobrança inadimplência
 - Retorno principal: Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalDebts": 2,
+    "totalValue": "1234.56",
+    "debts": [
+      {
+        "source": "PGFN",
+        "value": "1234.56",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -325,7 +715,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato
 - Retorno principal: Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "donations": [
+      {
+        "year": 2024,
+        "recipient": "Candidato",
+        "amount": "500.00"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -342,7 +757,36 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `key`, `image1`, `image2`, `selfie1`
+- Termos de busca: PF - Documentoscopia digital, documentoscopia documento selfie validação
 - Retorno principal: Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "documentData": {
+      "name": "Nome extraido",
+      "cpf": "cpf"
+    },
+    "validations": [
+      {
+        "name": "faceMatch",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -362,7 +806,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DOMAINS_CPF`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Domínios, domínios sites presença digital
 - Retorno principal: Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalDomains": 1,
+    "domains": [
+      {
+        "domain": "exemplo.com.br",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -379,7 +848,36 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ADDRESS_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Endereços
 - Retorno principal: Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalAddresses": 2,
+    "addresses": [
+      {
+        "address": "Rua Exemplo",
+        "number": "100",
+        "neighborhood": "Centro",
+        "city": "Sao Paulo",
+        "state": "SP",
+        "zipcode": "01001000"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -396,7 +894,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Enriquecimento de dados
 - Retorno principal: Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "name": "Nome completo",
+    "birthDate": "yyyy-MM-dd",
+    "registrationStatus": "REGULAR",
+    "motherName": "Nome da mãe"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -413,7 +933,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Envolvimento político
 - Retorno principal: Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "politicalInvolvement": [
+      {
+        "type": "CANDIDACY",
+        "year": 2024,
+        "details": "Candidatura encontrada"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -430,7 +975,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp)
 - Retorno principal: Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "politicalInvolvement": [
+      {
+        "type": "DONATION",
+        "year": 2024,
+        "details": "Doacao encontrada"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -447,7 +1017,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Exposição e perfil na mídia
 - Retorno principal: Retorna exposição e perfil de mídia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "mediaMentions": [
+      {
+        "title": "Noticia encontrada",
+        "source": "Fonte",
+        "sentiment": "NEUTRAL"
+      }
+    ],
+    "exposureLevel": "LOW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -464,7 +1060,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FACE_MATCH_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`, `image2`
+- Termos de busca: PF - FaceMatch, comparação facial biometria selfie rosto
 - Retorno principal: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "match": true,
+    "similarity": 98.2,
+    "status": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -482,7 +1098,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FACE_MATCH_AWS`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`, `image2`
+- Termos de busca: PF - FaceMatch (AWS), comparação facial biometria selfie rosto
 - Retorno principal: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "match": true,
+    "similarity": 98.2,
+    "status": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -500,7 +1136,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_EMAILS_EXTENDED_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `limit`
+- Termos de busca: PF - Histórico de e-mails, email validação contato
 - Retorno principal: Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "emails": [
+      {
+        "email": "email@exemplo.com",
+        "priority": 1,
+        "isValid": true,
+        "lastUpdate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -518,7 +1180,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PHONE_HISTORY_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `birthDate`, `limit`
+- Termos de busca: PF - Histórico de telefones, telefone celular validação contato
 - Retorno principal: Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "phones": [
+      {
+        "phone": "11900000000",
+        "lineType": "MOBILE",
+        "priority": 1,
+        "lastUpdate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -537,7 +1225,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Histórico familiar político
 - Retorno principal: Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "familyPoliticalHistory": [
+      {
+        "relativeName": "Nome relacionado",
+        "relationship": "PARENTE",
+        "role": "Candidato"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -554,7 +1267,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Histórico profissional
 - Retorno principal: Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "professionalHistory": [
+      {
+        "companyName": "Empresa Exemplo",
+        "role": "Analista",
+        "startDate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -571,7 +1309,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `birthDate`
+- Termos de busca: PF - Histórico profissional do titular
 - Retorno principal: Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "ownerHistory": [
+      {
+        "companyName": "Empresa Exemplo",
+        "cnpj": "cnpj",
+        "qualification": "SOCIO"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -589,7 +1352,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ACTIVITIES_INDICATORS`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Indicadores de atividades
 - Retorno principal: Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "activityIndicators": [
+      {
+        "type": "PROFESSIONAL",
+        "description": "Indicador encontrado"
+      }
+    ],
+    "hasActivityIndicators": true
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -606,7 +1394,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Informações financeiras
 - Retorno principal: Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "estimatedIncome": "5000-10000",
+    "purchasingPower": "MEDIUM",
+    "financialIndicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -623,7 +1432,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PERSON_KYC_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `birthDate`
+- Termos de busca: PF - KYC e compliance, compliance KYC sanções PEP mídia
 - Retorno principal: Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "isPep": false,
+    "sanctions": [],
+    "mediaExposure": [],
+    "riskAlerts": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -641,7 +1472,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_LIVENESS_2D_FACETEC`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`
+- Termos de busca: PF - Liveness 2D, prova de vida selfie liveness
 - Retorno principal: Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "liveness": true,
+    "confidence": 0.97,
+    "status": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -658,7 +1509,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ARREST_WARRANT`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `nome`, `motherName`, `fatherName`, `birthDate`, `cpf`
+- Termos de busca: PF - Mandado de prisão
 - Retorno principal: Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasArrestWarrant": false,
+    "warrants": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -679,7 +1550,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PERSON_DATA_MODELING_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Modelagem de dados
 - Retorno principal: Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "profileSummary": "Resumo consolidado",
+    "contacts": [],
+    "addresses": [],
+    "relationships": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -696,7 +1589,30 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_OCR_PROOF_OF_ADDRESS`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`
+- Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço
 - Retorno principal: Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraido",
+    "fullName": "Nome extraido",
+    "fullAddress": "Endereço extraido",
+    "docType": "Conta de consumo",
+    "dueDate": "yyyy-MM-dd",
+    "invoiceAmount": "R$ 100,00"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -713,7 +1629,31 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_OCR_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`, `image2`, `image1Url`, `image2Url`
+- Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR de documentos
 - Retorno principal: Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "documentType": "CNH",
+    "fields": {
+      "name": "Nome extraido",
+      "cpf": "cpf",
+      "birthDate": "yyyy-MM-dd"
+    },
+    "extractionStatus": "SUCCESS"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -733,7 +1673,36 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_OCR_EMANCIPATION`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`
+- Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração
 - Retorno principal: Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraido",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -750,7 +1719,30 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_OCR`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `documentType`, `image1`, `image2`
+- Termos de busca: OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH
 - Retorno principal: Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraido",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "validDate": "yyyy-MM-dd"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -769,7 +1761,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PEP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Pessoa politicamente exposta
 - Retorno principal: Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "isPep": false,
+    "pepLevel": null,
+    "positions": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -786,7 +1799,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_RELATED_PEOPLE_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `birthDate`
+- Termos de busca: PF - Pessoas relacionadas
 - Retorno principal: Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "relatedPeople": [
+      {
+        "name": "Pessoa relacionada",
+        "relationshipType": "FAMILIAR",
+        "confidence": "HIGH"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -804,7 +1842,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Prêmios e certificações
 - Retorno principal: Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalAwards": 0,
+    "totalCertifications": 0,
+    "awards": [],
+    "certifications": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -821,7 +1881,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato
 - Retorno principal: Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "providers": [
+      {
+        "year": 2024,
+        "campaign": "Campanha",
+        "amount": "800.00",
+        "serviceType": "Servico"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -838,7 +1924,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão
 - Retorno principal: Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalProcesses": 1,
+    "processes": [
+      {
+        "court": "TJSP",
+        "processNumber": "0000000-00.0000.0.00.0000",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -855,7 +1967,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PERSON_AI_PROMPT_OPENAI`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Prompt de IA para pessoa
 - Retorno principal: Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "answer": "Resumo analitico gerado pela IA",
+    "highlights": [
+      "ponto relevante"
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -872,7 +2006,30 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Propensão a apostas online, apostas bets compliance bet
 - Retorno principal: Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "propensityScore": 78,
+    "propensityLevel": "HIGH",
+    "indicators": [
+      "sinal encontrado"
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -889,7 +2046,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Relacionamentos econômicos
 - Retorno principal: Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participacoes, relacoes profissionais e indicadores de relacionamento.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "relationships": [
+      {
+        "type": "OWNER",
+        "relatedDocument": "cnpj",
+        "relatedName": "Empresa relacionada"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -906,7 +2088,38 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `key`
+- Termos de busca: PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação
 - Retorno principal: Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "fields": [
+      {
+        "name": "cpf",
+        "value": "cpf"
+      }
+    ],
+    "rules": [
+      {
+        "name": "document",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -923,7 +2136,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `birthDate`
+- Termos de busca: PF - Risco financeiro, score risco crédito rating inadimplência
 - Retorno principal: Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 681,
+    "riskLevel": "MEDIUM",
+    "recommendation": "REVIEW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -941,7 +2175,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DATAVALID_CNH_SERPRO`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `image1`
+- Termos de busca: PF - Score biométrico, score risco crédito rating inadimplência
 - Retorno principal: Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": 0.98,
+    "validated": true,
+    "validationStatus": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -959,7 +2214,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CREDIT_SCORE`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Score de crédito, score risco crédito rating inadimplência
 - Retorno principal: Retorna score de credito associado ao CPF via Assertiva, com pontuacao, faixa de risco e mensagem da consulta quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 750,
+    "riskLevel": "LOW",
+    "message": "Score calculado com sucesso"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -976,7 +2252,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Score de inadimplência, score risco crédito rating inadimplência
 - Retorno principal: Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 742,
+    "riskLevel": "LOW",
+    "defaultProbability": "3%"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -993,7 +2290,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `factor`
+- Termos de busca: PF - Score de risco de fraude, score risco crédito rating inadimplência
 - Retorno principal: Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "factor": "minRisk",
+    "score": 720,
+    "riskLevel": "LOW",
+    "indicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1011,7 +2330,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DEFAULT_RISK_SCORE_QUANTUM`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Score de risco Quantum, score risco crédito rating inadimplência
 - Retorno principal: Retorna score de risco de inadimplência Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponível.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 690,
+    "riskLevel": "MEDIUM",
+    "defaultProbability": "8%"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1028,7 +2368,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PUBLIC_SERVANTS_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
+- Termos de busca: PF - Servidores públicos
 - Retorno principal: Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "publicServantRecords": [
+      {
+        "agency": "Orgao publico",
+        "role": "Cargo",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1045,7 +2410,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_RFB_PF_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `dataDeNascimento`
+- Termos de busca: CPF Receita Federal, PF - Status do CPF na Receita Federal
 - Retorno principal: Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "name": "Nome completo",
+    "birthDate": "yyyy-MM-dd",
+    "registrationStatus": "REGULAR",
+    "protocol": "protocolo"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1063,7 +2450,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `zipcode`, `numberAddress`
+- Termos de busca: CPF Receita Federal, PF - Validação de CPF com endereço
 - Retorno principal: Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "zipcode": "01001000",
+    "match": true,
+    "confidence": "HIGH",
+    "normalizedAddress": "Rua Exemplo, 100"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1082,7 +2491,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `phone`
+- Termos de busca: CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato
 - Retorno principal: Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "phone": "11900000000",
+    "match": true,
+    "confidence": "HIGH",
+    "lineType": "MOBILE"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1100,7 +2531,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CPF_PHONE_VALIDATION_FACETEC`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `phone`
+- Termos de busca: CPF Receita Federal, PF - Validação de CPF com telefone (Facetec), telefone celular validação contato
 - Retorno principal: Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "phone": "11900000000",
+    "match": true,
+    "statusMessage": "Telefone associado ao documento"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1118,7 +2570,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_EMAIL_VALIDATION_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `email`
+- Termos de busca: PF - Validação de e-mail, email validação contato
 - Retorno principal: Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "email": "email@email.com",
+    "validFormat": true,
+    "deliverable": true,
+    "domain": "email.com",
+    "riskLevel": "LOW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1135,7 +2609,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `nit`
+- Termos de busca: PF - Validação do E-Social
 - Retorno principal: Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "nit": "nit",
+    "qualified": true,
+    "inconsistencies": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1155,7 +2650,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PROTEST_PJ_INFOSIMPLES`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Certidão negativa de protesto
 - Retorno principal: Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasProtests": false,
+    "notaryOffices": [],
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1172,7 +2688,28 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_PROTEST_PJ_NETRIN`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Certidão negativa de protesto PJ (Netrin)
 - Retorno principal: Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasProtests": false,
+    "notaryOffices": [],
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1189,7 +2726,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand
 - Retorno principal: Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "status": "ATIVA",
+    "openingDate": "yyyy-MM-dd",
+    "mainActivity": "CNAE principal"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1206,7 +2765,30 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_COMPLIANCE_BET`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Compliance de casas de apostas, apostas bets compliance bet
 - Retorno principal: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1223,7 +2805,30 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Compliance de casas de apostas, apostas bets compliance bet
 - Retorno principal: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1240,7 +2845,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_REGISTRATION_DATA_CNPJ`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ
 - Retorno principal: Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "tradeName": "EMPRESA EXEMPLO",
+    "status": "ATIVA",
+    "openingDate": "yyyy-MM-dd"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1257,7 +2884,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DAS_MEI_INFOSIMPLES`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CPF Receita Federal, PJ - DAS MEI na Receita
 - Retorno principal: Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "meiStatus": "ACTIVE",
+    "periods": [
+      {
+        "period": "2026-01",
+        "paid": true
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1274,7 +2926,34 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Débitos ativos, dívida ativa débito cobrança inadimplência
 - Retorno principal: Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalDebts": 1,
+    "totalValue": "9800.00",
+    "debts": [
+      {
+        "source": "PGFN",
+        "value": "9800.00",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1291,7 +2970,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato
 - Retorno principal: Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "donations": [
+      {
+        "year": 2024,
+        "recipient": "Candidato",
+        "amount": "1000.00"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1308,7 +3012,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato
 - Retorno principal: Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "ownersDonations": [
+      {
+        "ownerName": "Nome do sócio",
+        "year": 2024,
+        "recipient": "Candidato",
+        "amount": "300.00"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1325,7 +3055,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_DOMAINS_CNPJ`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital
 - Retorno principal: Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalDomains": 1,
+    "domains": [
+      {
+        "domain": "empresa.com.br",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1342,7 +3097,35 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, PJ - Endereços estendidos
 - Retorno principal: Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalAddresses": 1,
+    "addresses": [
+      {
+        "address": "Av Exemplo",
+        "city": "Sao Paulo",
+        "state": "SP",
+        "zipcode": "01001000",
+        "addressType": "COMMERCIAL"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1359,7 +3142,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, PJ - Enriquecimento de dados
 - Retorno principal: Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "tradeName": "EMPRESA EXEMPLO",
+    "status": "ATIVA",
+    "mainActivity": "CNAE principal"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1376,7 +3181,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Exposição e perfil na mídia dos sócios
 - Retorno principal: Retorna exposição e perfil de mídia da empresa e sócios, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "mediaMentions": [
+      {
+        "title": "Noticia encontrada",
+        "source": "Fonte",
+        "sentiment": "NEUTRAL"
+      }
+    ],
+    "exposureLevel": "LOW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1393,7 +3224,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato
 - Retorno principal: Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "providers": [
+      {
+        "year": 2024,
+        "campaign": "Campanha",
+        "amount": "2500.00",
+        "serviceType": "Servico"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1410,7 +3267,34 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia
 - Retorno principal: Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "ownersChecked": 2,
+    "owners": [
+      {
+        "name": "Nome do sócio",
+        "isPep": false,
+        "sanctions": [],
+        "riskAlerts": []
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1427,7 +3311,27 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_OCR_CNPJ_CARD`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`
+- Termos de busca: CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ
 - Retorno principal: Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraido do cartao CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1444,7 +3348,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_JURIDICAL_PROCESSES_PJ`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão
 - Retorno principal: Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalProcesses": 1,
+    "processes": [
+      {
+        "court": "TJSP",
+        "processNumber": "0000000-00.0000.0.00.0000",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1461,7 +3391,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão
 - Retorno principal: Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "ownersProcesses": [
+      {
+        "ownerName": "Nome do sócio",
+        "totalProcesses": 1,
+        "processes": []
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1478,7 +3433,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Relacionamentos da empresa
 - Retorno principal: Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participacoes e vínculos societários identificados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "owners": [
+      {
+        "name": "Nome do sócio",
+        "document": "cpf",
+        "share": "50%"
+      }
+    ],
+    "relatedCompanies": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1495,7 +3476,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CREDIT_RISK_COMPANY`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Risco de crédito, score risco crédito rating inadimplência
 - Retorno principal: Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "creditRisk": {
+      "status": "APPROVED",
+      "score": "750",
+      "rating": "A",
+      "expectedDefault": "LOW",
+      "legalProcess": false
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1512,7 +3518,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_CREDIT_RISK_COMPANY_MURABEI`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Risco de crédito Murabei, score risco crédito rating inadimplência
 - Retorno principal: Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "creditRisk": {
+      "status": "APPROVED",
+      "score": "720",
+      "rating": "B",
+      "expectedDefault": "MEDIUM",
+      "legalProcess": false
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1529,7 +3560,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`, `uf`
+- Termos de busca: PJ - SINTEGRA
 - Retorno principal: Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "stateRegistration": "000000000",
+    "state": "SP",
+    "status": "HABILITADO",
+    "regime": "NORMAL"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1547,7 +3600,33 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: PJ - Sócios de primeiro nível
 - Retorno principal: Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "partners": [
+      {
+        "name": "Nome do sócio",
+        "document": "cpf",
+        "level": 1,
+        "qualification": "SOCIO"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1564,7 +3643,32 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CPF Receita Federal, PJ - Sócios na Receita Federal
 - Retorno principal: Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "owners": [
+      {
+        "name": "Nome do sócio",
+        "qualification": "SOCIO-ADMINISTRADOR",
+        "entryDate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -1581,7 +3685,29 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_RFB_PJ_BIGDATACORP`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
+- Termos de busca: CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal
 - Retorno principal: Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "status": "ATIVA",
+    "openingDate": "yyyy-MM-dd",
+    "mainActivity": "CNAE principal"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
