@@ -13,6 +13,21 @@ o que conferir antes de abrir chamado ou mexer na implementação.
 > ter o service ativo com API habilitada. Se a configuração do produto estiver
 > incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
 
+<CardGroup cols={2}>
+  <Card title="RG e CNH" href="#ocr-react-rg-e-cnh">
+    Use `SERVICE_OCR` quando o documento for RG ou CNH e o payload tiver `documentType`.
+  </Card>
+  <Card title="Cartão CNPJ" href="#ocr-de-cartao-cnpj">
+    Use `SERVICE_OCR_CNPJ_CARD` para extrair CNPJ e texto OCR do cartão CNPJ.
+  </Card>
+  <Card title="Comprovante de endereço" href="#ocr-de-comprovante-de-endereco">
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS` para contas, faturas e comprovantes aceitos.
+  </Card>
+  <Card title="Documento de emancipação" href="#ocr-de-emancipacao">
+    Use `SERVICE_OCR_EMANCIPATION` para documentos variáveis, sem layout fixo.
+  </Card>
+</CardGroup>
+
 ## Caminho recomendado
 
 Se você precisa testar agora, siga esta ordem:
@@ -83,17 +98,25 @@ Para copiar apenas o base64 da imagem:
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
 ```
 
-Para montar o JSON completo no clipboard:
+O valor copiado deve ser base64 puro. Não envie prefixo como `data:image/jpeg;base64,`.
+
+## Copiar e testar
+
+Use estes blocos quando quiser montar o JSON completo no clipboard e colar direto no body raw JSON do Postman.
+Troque apenas o caminho do arquivo e mantenha o `service` conforme o OCR que será testado.
+
+### CNH
 
 ```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg"))
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cnh.jpg"))
 @{
-  service = "SERVICE_OCR_CNPJ_CARD"
+  service = "SERVICE_OCR"
+  documentType = "CNH"
   image1 = $b64
 } | ConvertTo-Json -Compress | Set-Clipboard
 ```
 
-Para RG com frente e verso:
+### RG com frente e verso
 
 ```powershell
 $front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
@@ -106,7 +129,27 @@ $back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.j
 } | ConvertTo-Json -Compress | Set-Clipboard
 ```
 
-Cole o conteúdo do clipboard no body raw JSON do Postman.
+### Cartão CNPJ
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cartao-cnpj.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Comprovante de endereço
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\comprovante-endereco.jpg"))
+@{
+  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+Depois de executar o comando, cole o conteúdo do clipboard no Postman em `Body > raw > JSON`.
 
 ## Testar no Postman
 
@@ -138,6 +181,15 @@ Content-Type: application/json
 Se esses pontos estiverem corretos e o OCR ainda falhar, o chamado já chega com
 informação suficiente para investigar sem repetir teste básico.
 
+## Diagnóstico rápido
+
+| Sintoma | Conferir primeiro | Próxima ação |
+| --- | --- | --- |
+| Não tem acesso ao service | Token, produto, service ativo e API habilitada. | Corrigir a configuração do produto antes de mexer na imagem. |
+| Deu imagem ausente | `image1`, `image2`, `image1Url`, `image2Url` ou `key`, conforme o OCR. | Gerar novamente o JSON e confirmar se o campo esperado chegou no body. |
+| Retornou `{}` | Se a imagem é do tipo certo e está legível. | Testar com imagem mais nítida e validar se o service escolhido bate com o documento. |
+| Veio `ERROR` | `externalId`, horário, ambiente e mensagem técnica segura. | Repetir uma vez; se persistir, acionar suporte técnico com o `externalId`. |
+| Veio sem campo esperado | Se o campo existe visualmente no documento e se o OCR desse service retorna esse campo. | Comparar com o padrão de retorno abaixo e não tratar campo ausente como contrato obrigatório. |
 ## Qualidade da imagem
 
 Para reduzir recusa por leitura ruim:
@@ -452,6 +504,21 @@ padrão público da Service API é retornar apenas dados úteis.
 | Documento legível, mas campo principal não apareceu | `REFUSED` | Conferir se a imagem corresponde ao service correto. |
 | Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuração do produto. |
 | Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte técnico se persistir. |
+
+<CardGroup cols={2}>
+  <Card title="Falta de acesso" href="#produto-sem-acesso-ao-service">
+    Quando o token é válido, mas o produto não tem o service liberado para API.
+  </Card>
+  <Card title="Imagem ausente" href="#imagem-ausente">
+    Quando `image1`, `image2`, URL ou `key` não foram enviados como o service espera.
+  </Card>
+  <Card title="Documento não lido" href="#documento-nao-lido">
+    Quando a imagem chega, mas o OCR não extrai dados suficientes.
+  </Card>
+  <Card title="Erro interno" href="#erro-interno">
+    Quando a falha precisa ser investigada por `externalId`, logs e ambiente.
+  </Card>
+</CardGroup>
 
 Exemplo de recusa por documento não lido:
 

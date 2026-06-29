@@ -404,8 +404,8 @@ const partnerApiServices = [
   ['SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP', 'Exposição e perfil na mídia PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP', cpf: 'cpf' }],
   ['SERVICE_MEI_BIGDATACORP', 'Consulta de MEI (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEI_BIGDATACORP', cpf: 'cpf' }],
   ['SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP', 'Nada consta de ações judiciais (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP', cpf: 'cpf', court: 'TRF1', uf: 'uf', sphere: 'CIVIL' }],
-  ['SERVICE_OCR', 'OCR React de documentos (RG/CNH)', 'Pessoa Física', { service: 'SERVICE_OCR', documentType: 'CNH ou RG', image1: 'base64', image2: 'base64 (obrigatorio para RG)' }],
-  ['SERVICE_OCR_BIGDATACORP', 'OCR de documentos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_OCR_BIGDATACORP', image1: 'base64', image2: 'base64', image1Url: 'url_image', image2Url: 'urlImageMatch' }],
+  ['SERVICE_OCR', 'OCR React de documentos (RG/CNH)', 'Pessoa Física', { service: 'SERVICE_OCR', documentType: 'CNH ou RG', image1: 'base64', image2: 'base64 (opcional para CNH; obrigatorio para RG)' }],
+  ['SERVICE_OCR_BIGDATACORP', 'OCR de documentos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_OCR_BIGDATACORP', image1: 'base64', image2: 'base64 (opcional conforme documento)', image1Url: 'url_image (opcional, alternativa ao base64)', image2Url: 'urlImageMatch (opcional, alternativa ao base64)' }],
   ['SERVICE_OCR_EMANCIPATION', 'OCR de documento de emancipação', 'Pessoa Física', { service: 'SERVICE_OCR_EMANCIPATION', image1: 'base64' }],
   ['SERVICE_OCR_PROOF_OF_ADDRESS', 'OCR de comprovante de endereço (Textract)', 'Pessoa Física', { service: 'SERVICE_OCR_PROOF_OF_ADDRESS', image1: 'base64' }],
   ['SERVICE_PEP', 'Pessoa politicamente exposta', 'Pessoa Física', { service: 'SERVICE_PEP', cpf: 'cpf' }],
@@ -1429,6 +1429,17 @@ function serviceResponseSummary(service) {
 
   return pt(`Retorna o objeto result do service ${service.service} com os dados disponiveis para a consulta, alem do status de processamento.`);
 }
+function isOptionalServiceField(service, name, raw) {
+  const normalizedName = normalizeText(name);
+  const normalizedValue = normalizeText(raw);
+
+  if (normalizedValue.includes('opcional')) return true;
+  if (service.service === 'SERVICE_OCR' && normalizedName === 'image2') return true;
+  if (service.service === 'SERVICE_OCR_BIGDATACORP' && ['image2', 'image1url', 'image2url'].includes(normalizedName)) return true;
+
+  return false;
+}
+
 function fieldRowsFromService(service) {
   const body = jsonBodyFromRequestExample(service.requestExample);
   return Object.entries(body).map(([name, value]) => {
@@ -1436,12 +1447,11 @@ function fieldRowsFromService(service) {
     return {
       name,
       value,
-      required: name === 'service' || !normalizeText(raw).includes('opcional'),
+      required: name === 'service' || !isOptionalServiceField(service, name, raw),
       description: pt(serviceFieldDescription(service, name)),
     };
   });
 }
-
 function serviceResponseExample(service) {
   const exact = serviceReturnDetails[service.service];
   return {
@@ -1455,6 +1465,61 @@ function serviceResponseExample(service) {
     },
     externalId: '{externalId}',
   };
+}
+
+const ocrServiceApiDetails = {
+  SERVICE_OCR: {
+    minimumPayload: { service: 'SERVICE_OCR', documentType: 'CNH', image1: 'BASE64_DA_CNH' },
+    commonError: { result: {}, status: { code: 400, message: 'Imagem do documento não encontrada' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
+  },
+  SERVICE_OCR_BIGDATACORP: {
+    minimumPayload: { service: 'SERVICE_OCR_BIGDATACORP', image1: 'BASE64_DA_FRENTE_DO_DOCUMENTO' },
+    commonError: { result: {}, status: { code: 400, message: 'Imagem do documento não encontrada' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
+  },
+  SERVICE_OCR_CNPJ_CARD: {
+    minimumPayload: { service: 'SERVICE_OCR_CNPJ_CARD', image1: 'BASE64_DO_CARTAO_CNPJ' },
+    commonError: { result: {}, status: { code: 400, message: 'CNPJ não encontrado no cartão CNPJ' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
+  },
+  SERVICE_OCR_EMANCIPATION: {
+    minimumPayload: { service: 'SERVICE_OCR_EMANCIPATION', image1: 'BASE64_DO_DOCUMENTO' },
+    commonError: { result: {}, status: { code: 400, message: 'Não foi possível ler o documento de emancipação' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
+  },
+  SERVICE_OCR_PROOF_OF_ADDRESS: {
+    minimumPayload: { service: 'SERVICE_OCR_PROOF_OF_ADDRESS', image1: 'BASE64_DO_COMPROVANTE' },
+    commonError: { result: {}, status: { code: 400, message: 'Não foi possível ler o comprovante de endereço' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
+  },
+};
+
+function isOcrService(service) {
+  return Boolean(ocrServiceApiDetails[service.service]);
+}
+
+function pushOcrApiReferenceBlock(lines, service) {
+  const details = ocrServiceApiDetails[service.service];
+  if (!details) return;
+
+  lines.push('### Guia de OCR');
+  lines.push('');
+  lines.push('Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).');
+  lines.push('');
+  lines.push('### Payload mínimo');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(details.minimumPayload, null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('### Retorno limpo esperado');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(serviceResponseExample(service), null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('### Erro comum');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(details.commonError, null, 2));
+  lines.push('```');
+  lines.push('');
 }
 
 function serviceFieldDescription(service, fieldName) {
@@ -1583,6 +1648,9 @@ function renderServiceRequestBlock(service) {
   lines.push('');
   lines.push(`**Campos opcionais:** ${optional}`);
   lines.push('');
+  if (isOcrService(service)) {
+    pushOcrApiReferenceBlock(lines, service);
+  }
   lines.push('### Passo a passo');
   lines.push('');
   lines.push('1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.');

@@ -118,6 +118,50 @@ quando o produto está ativo.
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraido do cartao CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CNPJ não encontrado no cartão CNPJ"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
 ### Passo a passo
 
 1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.

@@ -631,9 +631,57 @@ Neste service, o objeto `result` representa: Retorna resultado da prova de vida 
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos obrigatórios:** `service`, `image1`, `image2`, `image1Url`, `image2Url`
+**Campos obrigatórios:** `service`, `image1`
 
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+**Campos opcionais:** `image2`, `image1Url`, `image2Url`
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_BIGDATACORP",
+  "image1": "BASE64_DA_FRENTE_DO_DOCUMENTO"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "documentType": "CNH",
+    "fields": {
+      "name": "Nome extraido",
+      "cpf": "cpf",
+      "birthDate": "yyyy-MM-dd"
+    },
+    "extractionStatus": "SUCCESS"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
 
 ### Passo a passo
 
@@ -691,9 +739,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-| `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-| `image1Url` | Sim | URL da primeira imagem, alternativa ao envio em base64 quando suportado. |
-| `image2Url` | Sim | URL da segunda imagem, alternativa ao envio em base64 quando suportado. |
+| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
+| `image1Url` | Não | URL da primeira imagem, alternativa ao envio em base64 quando suportado. |
+| `image2Url` | Não | URL da segunda imagem, alternativa ao envio em base64 quando suportado. |
 
 ### Response resumido
 
@@ -733,6 +781,59 @@ Neste service, o objeto `result` representa: Retorna dados extraídos das imagen
 **Campos obrigatórios:** `service`, `image1`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraido",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento de emancipação"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
 
 ### Passo a passo
 
@@ -822,9 +923,57 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos obrigatórios:** `service`, `documentType`, `image1`, `image2`
+**Campos obrigatórios:** `service`, `documentType`, `image1`
 
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+**Campos opcionais:** `image2`
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraido",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "validDate": "yyyy-MM-dd"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
 
 ### Passo a passo
 
@@ -880,7 +1029,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-| `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
+| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
 
 ### Response resumido
 
@@ -1655,6 +1804,53 @@ Neste service, o objeto `result` representa: Retorna histórico de telefones ass
 **Campos obrigatórios:** `service`, `image1`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "BASE64_DO_COMPROVANTE"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraido",
+    "fullName": "Nome extraido",
+    "fullAddress": "Endereço extraido",
+    "docType": "Conta de consumo",
+    "dueDate": "yyyy-MM-dd",
+    "invoiceAmount": "R$ 100,00"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o comprovante de endereço"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
 
 ### Passo a passo
 

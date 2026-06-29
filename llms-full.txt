@@ -29,6 +29,19 @@ Descrição: Encontre rapidamente o melhor caminho dentro da documentação idCe
 Use esta página quando não souber por onde começar. Ela indica o caminho mais
 curto de acordo com o seu objetivo.
 
+
+    Gere token, execute um service e entenda o formato básico da resposta.
+
+
+    Monte payloads com `image1`, `image2`, `documentType` e base64.
+
+
+    Encontre o código `service` certo antes de montar o body.
+
+
+    Copie requests, responses e exemplos por endpoint.
+
+
 ## Por perfil
 
 | Perfil | Comece por | Depois vá para |
@@ -58,20 +71,20 @@ curto de acordo com o seu objetivo.
 
 ## Caminho recomendado
 
-  
+
     Entenda o fluxo básico: gerar token, executar serviço e ler resposta.
-  
-  
+
+
     Escolha CPF ou CNPJ e execute o exemplo completo.
-  
-  
+
+
     Use a página de escolha de serviço para encontrar o código `service`.
     Se o teste envolver documento, imagem ou base64, abra também o guia de OCR.
-  
-  
+
+
     Abra a API Reference para copiar request, response e schemas.
-  
-  
+
+
     Revise boas práticas, ambientes, tratamento de erros e troubleshooting.
 
 ---
@@ -298,6 +311,7 @@ curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
   para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
   de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
 
+
 Substitua:
 
 | Valor | O que colocar |
@@ -305,6 +319,20 @@ Substitua:
 | `{jwt_token}` | Token retornado no passo anterior |
 | `cpf` | CPF usado para teste |
 | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | Código do serviço que deseja executar |
+
+
+
+    Use quando quiser validar o fluxo com um service simples de pessoa física.
+
+
+    Use quando quiser validar o fluxo com um service simples de pessoa jurídica.
+
+
+    Use quando o body precisar de base64, imagem, URL ou `documentType`.
+
+
+    Use para navegar pelos grupos de produtos do `POST /api/service-api`.
+
 
 ## 4. Leia o resultado
 
@@ -821,22 +849,22 @@ coleção grande de requests sem contexto.
 ## O caminho mais comum
 
 
-  
+
     Use o [Quickstart](/guides/quickstart) para validar credenciais, gerar token
     e executar uma primeira chamada com Postman, Windows, macOS ou Linux.
-  
-  
+
+
     Use os guias de Pessoas, Empresas e Fluxos principais para entender quando
     cada produto faz sentido.
-  
-  
+
+
     Use [Escolha o serviço certo](/guides/escolha-o-servico-certo) quando você
     sabe o problema de negócio, mas ainda não sabe quais consultas combinar.
-  
-  
+
+
     Use a [API Reference](/api-reference/autorização/gerar-token-de-api) para copiar payloads,
     conferir parâmetros e mapear responses.
-  
+
 
 ## Se você não sabe por onde executar
 
@@ -1058,6 +1086,19 @@ o que conferir antes de abrir chamado ou mexer na implementação.
 > ter o service ativo com API habilitada. Se a configuração do produto estiver
 > incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
 
+
+    Use `SERVICE_OCR` quando o documento for RG ou CNH e o payload tiver `documentType`.
+
+
+    Use `SERVICE_OCR_CNPJ_CARD` para extrair CNPJ e texto OCR do cartão CNPJ.
+
+
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS` para contas, faturas e comprovantes aceitos.
+
+
+    Use `SERVICE_OCR_EMANCIPATION` para documentos variáveis, sem layout fixo.
+
+
 ## Caminho recomendado
 
 Se você precisa testar agora, siga esta ordem:
@@ -1128,17 +1169,25 @@ Para copiar apenas o base64 da imagem:
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
 ```
 
-Para montar o JSON completo no clipboard:
+O valor copiado deve ser base64 puro. Não envie prefixo como `data:image/jpeg;base64,`.
+
+## Copiar e testar
+
+Use estes blocos quando quiser montar o JSON completo no clipboard e colar direto no body raw JSON do Postman.
+Troque apenas o caminho do arquivo e mantenha o `service` conforme o OCR que será testado.
+
+### CNH
 
 ```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg"))
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cnh.jpg"))
 @{
-  service = "SERVICE_OCR_CNPJ_CARD"
+  service = "SERVICE_OCR"
+  documentType = "CNH"
   image1 = $b64
 } | ConvertTo-Json -Compress | Set-Clipboard
 ```
 
-Para RG com frente e verso:
+### RG com frente e verso
 
 ```powershell
 $front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
@@ -1151,7 +1200,27 @@ $back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.j
 } | ConvertTo-Json -Compress | Set-Clipboard
 ```
 
-Cole o conteúdo do clipboard no body raw JSON do Postman.
+### Cartão CNPJ
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cartao-cnpj.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Comprovante de endereço
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\comprovante-endereco.jpg"))
+@{
+  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+Depois de executar o comando, cole o conteúdo do clipboard no Postman em `Body > raw > JSON`.
 
 ## Testar no Postman
 
@@ -1183,6 +1252,15 @@ Content-Type: application/json
 Se esses pontos estiverem corretos e o OCR ainda falhar, o chamado já chega com
 informação suficiente para investigar sem repetir teste básico.
 
+## Diagnóstico rápido
+
+| Sintoma | Conferir primeiro | Próxima ação |
+| --- | --- | --- |
+| Não tem acesso ao service | Token, produto, service ativo e API habilitada. | Corrigir a configuração do produto antes de mexer na imagem. |
+| Deu imagem ausente | `image1`, `image2`, `image1Url`, `image2Url` ou `key`, conforme o OCR. | Gerar novamente o JSON e confirmar se o campo esperado chegou no body. |
+| Retornou `{}` | Se a imagem é do tipo certo e está legível. | Testar com imagem mais nítida e validar se o service escolhido bate com o documento. |
+| Veio `ERROR` | `externalId`, horário, ambiente e mensagem técnica segura. | Repetir uma vez; se persistir, acionar suporte técnico com o `externalId`. |
+| Veio sem campo esperado | Se o campo existe visualmente no documento e se o OCR desse service retorna esse campo. | Comparar com o padrão de retorno abaixo e não tratar campo ausente como contrato obrigatório. |
 ## Qualidade da imagem
 
 Para reduzir recusa por leitura ruim:
@@ -1497,6 +1575,19 @@ padrão público da Service API é retornar apenas dados úteis.
 | Documento legível, mas campo principal não apareceu | `REFUSED` | Conferir se a imagem corresponde ao service correto. |
 | Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuração do produto. |
 | Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte técnico se persistir. |
+
+
+    Quando o token é válido, mas o produto não tem o service liberado para API.
+
+
+    Quando `image1`, `image2`, URL ou `key` não foram enviados como o service espera.
+
+
+    Quando a imagem chega, mas o OCR não extrai dados suficientes.
+
+
+    Quando a falha precisa ser investigada por `externalId`, logs e ambiente.
+
 
 Exemplo de recusa por documento não lido:
 
@@ -7907,6 +7998,19 @@ o que conferir antes de abrir chamado ou mexer na implementação.
 > ter o service ativo com API habilitada. Se a configuração do produto estiver
 > incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
 
+
+    Use `SERVICE_OCR` quando o documento for RG ou CNH e o payload tiver `documentType`.
+
+
+    Use `SERVICE_OCR_CNPJ_CARD` para extrair CNPJ e texto OCR do cartão CNPJ.
+
+
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS` para contas, faturas e comprovantes aceitos.
+
+
+    Use `SERVICE_OCR_EMANCIPATION` para documentos variáveis, sem layout fixo.
+
+
 ## Caminho recomendado
 
 Se você precisa testar agora, siga esta ordem:
@@ -7977,17 +8081,25 @@ Para copiar apenas o base64 da imagem:
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
 ```
 
-Para montar o JSON completo no clipboard:
+O valor copiado deve ser base64 puro. Não envie prefixo como `data:image/jpeg;base64,`.
+
+## Copiar e testar
+
+Use estes blocos quando quiser montar o JSON completo no clipboard e colar direto no body raw JSON do Postman.
+Troque apenas o caminho do arquivo e mantenha o `service` conforme o OCR que será testado.
+
+### CNH
 
 ```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg"))
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cnh.jpg"))
 @{
-  service = "SERVICE_OCR_CNPJ_CARD"
+  service = "SERVICE_OCR"
+  documentType = "CNH"
   image1 = $b64
 } | ConvertTo-Json -Compress | Set-Clipboard
 ```
 
-Para RG com frente e verso:
+### RG com frente e verso
 
 ```powershell
 $front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
@@ -8000,7 +8112,27 @@ $back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.j
 } | ConvertTo-Json -Compress | Set-Clipboard
 ```
 
-Cole o conteúdo do clipboard no body raw JSON do Postman.
+### Cartão CNPJ
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cartao-cnpj.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Comprovante de endereço
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\comprovante-endereco.jpg"))
+@{
+  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+Depois de executar o comando, cole o conteúdo do clipboard no Postman em `Body > raw > JSON`.
 
 ## Testar no Postman
 
@@ -8032,6 +8164,15 @@ Content-Type: application/json
 Se esses pontos estiverem corretos e o OCR ainda falhar, o chamado já chega com
 informação suficiente para investigar sem repetir teste básico.
 
+## Diagnóstico rápido
+
+| Sintoma | Conferir primeiro | Próxima ação |
+| --- | --- | --- |
+| Não tem acesso ao service | Token, produto, service ativo e API habilitada. | Corrigir a configuração do produto antes de mexer na imagem. |
+| Deu imagem ausente | `image1`, `image2`, `image1Url`, `image2Url` ou `key`, conforme o OCR. | Gerar novamente o JSON e confirmar se o campo esperado chegou no body. |
+| Retornou `{}` | Se a imagem é do tipo certo e está legível. | Testar com imagem mais nítida e validar se o service escolhido bate com o documento. |
+| Veio `ERROR` | `externalId`, horário, ambiente e mensagem técnica segura. | Repetir uma vez; se persistir, acionar suporte técnico com o `externalId`. |
+| Veio sem campo esperado | Se o campo existe visualmente no documento e se o OCR desse service retorna esse campo. | Comparar com o padrão de retorno abaixo e não tratar campo ausente como contrato obrigatório. |
 ## Qualidade da imagem
 
 Para reduzir recusa por leitura ruim:
@@ -8347,6 +8488,19 @@ padrão público da Service API é retornar apenas dados úteis.
 | Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuração do produto. |
 | Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte técnico se persistir. |
 
+
+    Quando o token é válido, mas o produto não tem o service liberado para API.
+
+
+    Quando `image1`, `image2`, URL ou `key` não foram enviados como o service espera.
+
+
+    Quando a imagem chega, mas o OCR não extrai dados suficientes.
+
+
+    Quando a falha precisa ser investigada por `externalId`, logs e ambiente.
+
+
 Exemplo de recusa por documento não lido:
 
 ```json
@@ -8494,6 +8648,20 @@ Descrição: Navegue pelos principais grupos de produtos executados via POST /ap
 O endpoint `POST /api/service-api` concentra diferentes produtos. A separação por
 família ajuda a localizar rapidamente o payload correto sem tratar o endpoint
 como uma lista única e extensa.
+
+
+
+    Services de CPF, cadastro, score, compliance e dados complementares.
+
+
+    Services de CNPJ, cadastro empresarial, sócios, risco e compliance.
+
+
+    OCR, face, liveness, documentoscopia e payloads com imagem.
+
+
+    Scores, validações, compliance, certidões e sinais de risco.
+
 
 ## Como usar esta página
 
@@ -8813,10 +8981,25 @@ Todos os serviços desta categoria são consumidos pelo endpoint:
 ```http
 POST /api/service-api
 ```
+
 > Info:
   Para OCR, comece pelo guia [OCR via Service API](/guides/service-api/ocr-service-api).
   Ele reúne os payloads de RG, CNH, cartão CNPJ, emancipação e comprovante de endereço,
   além do padrão de retorno limpo em `result`.
+
+
+
+
+    Extraia dados de RG, CNH, cartão CNPJ, comprovantes e documentos variáveis.
+
+
+    Compare duas imagens faciais e leia o percentual de similaridade.
+
+
+    Verifique vivacidade em fluxos que exigem prova de presença.
+
+
+    Processe documento, imagem e selfie em fluxos de análise documental.
 
 
 ## Quando usar
@@ -14129,6 +14312,54 @@ Neste service, o objeto `result` representa: Retorna resultado da prova de vida 
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_BIGDATACORP",
+  "image1": "BASE64_DA_FRENTE_DO_DOCUMENTO"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "documentType": "CNH",
+    "fields": {
+      "name": "Nome extraido",
+      "cpf": "cpf",
+      "birthDate": "yyyy-MM-dd"
+    },
+    "extractionStatus": "SUCCESS"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
 ### Passo a passo
 
 1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
@@ -14224,6 +14455,59 @@ Neste service, o objeto `result` representa: Retorna dados extraídos das imagen
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraido",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento de emancipação"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
 ### Passo a passo
 
 1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
@@ -14311,6 +14595,54 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 **Campos obrigatórios:** `service`, `documentType`, `image1`, `image2`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraido",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "validDate": "yyyy-MM-dd"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
 
 ### Passo a passo
 
@@ -15102,6 +15434,53 @@ Neste service, o objeto `result` representa: Retorna histórico de telefones ass
 **Campos obrigatórios:** `service`, `image1`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "BASE64_DO_COMPROVANTE"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraido",
+    "fullName": "Nome extraido",
+    "fullAddress": "Endereço extraido",
+    "docType": "Conta de consumo",
+    "dueDate": "yyyy-MM-dd",
+    "invoiceAmount": "R$ 100,00"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o comprovante de endereço"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
 
 ### Passo a passo
 
@@ -19270,6 +19649,50 @@ quando o produto está ativo.
 **Campos obrigatórios:** `service`, `image1`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraido do cartao CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CNPJ não encontrado no cartão CNPJ"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
 
 ### Passo a passo
 
