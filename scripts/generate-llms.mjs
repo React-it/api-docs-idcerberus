@@ -767,6 +767,21 @@ function enrichServiceForMcp(service, exampleFiles) {
   };
 }
 
+function buildServicesCatalogMin(servicesCatalog) {
+  return servicesCatalog.map((service) => ({
+    service: service.service,
+    name: service.name,
+    callingAlias: service.callingAlias,
+    partnerAliases: service.partnerAliases,
+    category: service.category,
+    tags: service.tags,
+    requiredFields: service.requiredFields,
+    optionalFields: service.optionalFields,
+    documentationUrl: service.documentationUrl,
+    curlExampleUrl: service.curlExampleUrl,
+  }));
+}
+
 const activeServiceApiAliases = new Set([
   'SERVICE_ACTIVITIES_INDICATORS',
   'SERVICE_ACTIVE_DEBT_PF_BIGDATACORP',
@@ -2380,6 +2395,7 @@ function pushLlmFileMap(lines) {
   lines.push(`| Entender a estrutura da documentação | ${siteUrl}/llms.txt |`);
   lines.push(`| Gerar integração, curl ou escolher service | ${siteUrl}/llms-small.txt |`);
   lines.push(`| Consultar payloads e responses por service | ${siteUrl}/llms-api-reference.txt |`);
+  lines.push(`| Buscar service em um índice leve | ${siteUrl}/services-catalog.min.json |`);
   lines.push(`| Fazer busca estruturada por automação | ${siteUrl}/services-catalog.json |`);
   lines.push(`| Configurar MCP ou agente com recursos estruturados | ${siteUrl}/mcp-manifest.json |`);
   lines.push(`| Responder com todo o contexto da documentação | ${siteUrl}/llms-full.txt |`);
@@ -2394,11 +2410,12 @@ function pushMcpUsageNotes(lines) {
   lines.push('### Ordem recomendada de leitura');
   lines.push('');
   lines.push('1. Leia `llms.txt` como manifesto inicial da documentação.');
-  lines.push('2. Use `services-catalog.json` para busca estruturada por `service`, nome, categoria, campos e termos de busca.');
-  lines.push('3. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.');
-  lines.push('4. Use `llms-api-reference.txt` para payloads, responses resumidos e exemplos por service.');
-  lines.push('5. Use `examples/*.curl` quando a resposta precisar de um curl pronto.');
-  lines.push('6. Use `llms-full.txt` apenas quando a pergunta exigir contexto completo dos guias, API Reference e OpenAPI.');
+  lines.push('2. Use `services-catalog.min.json` para busca rápida por service, nome, categoria, campo e tag.');
+  lines.push('3. Use `services-catalog.json` quando precisar do contrato completo do service.');
+  lines.push('4. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.');
+  lines.push('5. Use `llms-api-reference.txt` para payloads, responses resumidos e exemplos por service.');
+  lines.push('6. Use `examples/*.curl` quando a resposta precisar de um curl pronto.');
+  lines.push('7. Use `llms-full.txt` apenas quando a pergunta exigir contexto completo dos guias, API Reference e OpenAPI.');
   lines.push('');
   lines.push('### Recursos que um MCP pode expor');
   lines.push('');
@@ -2408,6 +2425,7 @@ function pushMcpUsageNotes(lines) {
   lines.push(`| ${siteUrl}/llms-small.txt | Contexto curto para gerar integração, curl e explicação. |`);
   lines.push(`| ${siteUrl}/llms-api-reference.txt | Payloads, responses e exemplos por service. |`);
   lines.push(`| ${siteUrl}/llms-full.txt | Contexto completo para perguntas amplas. |`);
+  lines.push(`| ${siteUrl}/services-catalog.min.json | Índice leve para busca rápida por service, categoria, tag e campos. |`);
   lines.push(`| ${siteUrl}/services-catalog.json | Busca estruturada e filtros por service/categoria/campo. |`);
   lines.push(`| ${siteUrl}/mcp-manifest.json | Manifesto com recursos, ferramentas sugeridas, regras e ordem de leitura. |`);
   lines.push(`| ${siteUrl}/examples/*.curl | Exemplos prontos para copiar e testar. |`);
@@ -2512,6 +2530,30 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
   }, {});
 
   const tags = [...new Set(servicesCatalog.flatMap((service) => service.tags || []))].sort();
+  const familyMatches = {
+    ocr: ['ocr', 'imagem', 'rg', 'cnh', 'cartao-cnpj', 'comprovante-endereco'],
+    faceBiometrics: ['face'],
+    cpf: ['cpf'],
+    cnpj: ['cnpj'],
+    creditRisk: ['risco-credito'],
+    legal: ['juridico'],
+    compliance: ['compliance'],
+    contact: ['contato'],
+    socialBenefits: ['beneficios-sociais'],
+    registration: ['cadastral'],
+  };
+  const serviceFamilies = Object.fromEntries(Object.entries(familyMatches).map(([family, familyTags]) => [
+    family,
+    servicesCatalog
+      .filter((service) => service.tags?.some((tag) => familyTags.includes(tag)))
+      .map((service) => ({
+        service: service.service,
+        callingAlias: service.callingAlias,
+        name: service.name,
+        tags: service.tags,
+        documentationUrl: service.documentationUrl,
+      })),
+  ]));
 
   return {
     name: 'idcerberus-docs',
@@ -2525,9 +2567,11 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
       'guides/*.mdx',
       'api-reference/*.mdx',
       'services-catalog.json',
+      'services-catalog.min.json',
     ],
     recommendedReadOrder: [
       `${siteUrl}/llms.txt`,
+      `${siteUrl}/services-catalog.min.json`,
       `${siteUrl}/services-catalog.json`,
       `${siteUrl}/mcp-manifest.json`,
       `${siteUrl}/llms-api-reference.txt`,
@@ -2564,6 +2608,12 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
         url: `${siteUrl}/services-catalog.json`,
         contentType: 'application/json',
         use: 'Catálogo estruturado para buscar services por alias, campo, categoria, tag ou erro comum.',
+      },
+      {
+        name: 'services-catalog.min.json',
+        url: `${siteUrl}/services-catalog.min.json`,
+        contentType: 'application/json',
+        use: 'Catálogo leve para busca rápida antes de abrir o contrato completo do service.',
       },
       {
         name: 'mcp-manifest.json',
@@ -2616,10 +2666,45 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
       'Não inventar service, campo, endpoint ou retorno ausente da documentação.',
       'Usar `result` como contrato público da API e ignorar `fieldsOutput`/metadados internos.',
     ],
+    doNotAnswerAs: [
+      'Não afirmar que Face Index valida identidade definitiva; ele busca correspondência na base de faces.',
+      'Não tratar `fieldsOutput` como contrato público da API.',
+      'Não dizer que OCR garante extração de todos os campos; o retorno depende da imagem e do documento.',
+      'Não inventar retorno de provider quando o campo não aparece na documentação.',
+      'Não pedir CPF, CNPJ, token, client, secret ou imagem real para montar exemplo.',
+      'Não sugerir chamada real em HML/produção; este MCP é fonte de documentação.',
+    ],
+    troubleshootingByStatus: {
+      '401': {
+        meaning: 'Token ausente, expirado ou inválido.',
+        action: 'Gerar novo token em `/api/token-generate` e reenviar com `Authorization: Bearer {jwt_token}`.',
+      },
+      '400': {
+        meaning: 'Payload inválido, service sem acesso, imagem ausente ou campo obrigatório não enviado.',
+        action: 'Conferir `service`, campos obrigatórios, produto configurado e exemplo de payload no catálogo.',
+      },
+      REFUSED: {
+        meaning: 'A chamada foi processada, mas a regra do serviço recusou o resultado.',
+        action: 'Ler `status.message`, conferir imagem/massa e não tratar como falha técnica automaticamente.',
+      },
+      ERROR: {
+        meaning: 'Falha técnica no fluxo, storage, processamento ou provider externo.',
+        action: 'Investigar com `externalId`, horário, ambiente e service chamado.',
+      },
+      'result:{}': {
+        meaning: 'A chamada respondeu, mas não trouxe dado público útil.',
+        action: 'Conferir se o service tem retorno esperado para a massa usada e se a imagem/documento está correto.',
+      },
+      "Don't have access to the service": {
+        meaning: 'Produto sem service ativo/API habilitada ou alias de chamada incorreto.',
+        action: 'Conferir configuração do produto, alias de chamada e flag de API.',
+      },
+    },
     catalogSummary: {
       totalServices: servicesCatalog.length,
       categories: serviceCountByCategory,
       tags,
+      serviceFamilies,
       examples: exampleFiles.map((example) => ({
         title: example.title,
         url: example.url,
@@ -2671,6 +2756,7 @@ const llmRules = [
 ].join('\n');
 
 write(path.join(root, 'services-catalog.json'), `${JSON.stringify(servicesCatalog, null, 2)}\n`);
+write(path.join(root, 'services-catalog.min.json'), `${JSON.stringify(buildServicesCatalogMin(servicesCatalog), null, 2)}\n`);
 write(path.join(root, 'mcp-manifest.json'), `${JSON.stringify(buildMcpManifest(servicesCatalog, exampleFiles), null, 2)}\n`);
 write(path.join(root, 'llms-api-reference.txt'), renderApiReferenceText(servicesCatalog));
 write(path.join(root, 'guides', 'indice-de-services.mdx'), renderServicesIndex(servicesCatalog));
@@ -2733,6 +2819,7 @@ llmsLines.push('');
 llmsLines.push(`- [llms-small.txt](${siteUrl}/llms-small.txt): resumo operacional com fluxos, autenticação, service-api e services documentados.`);
 llmsLines.push(`- [llms-full.txt](${siteUrl}/llms-full.txt): versão consolidada dos guias e da API Reference.`);
 llmsLines.push(`- [llms-api-reference.txt](${siteUrl}/llms-api-reference.txt): referência operacional dos services com exemplos de curl.`);
+llmsLines.push(`- [services-catalog.min.json](${siteUrl}/services-catalog.min.json): índice leve para busca rápida por service, categoria, tag e campos.`);
 llmsLines.push(`- [services-catalog.json](${siteUrl}/services-catalog.json): catálogo estruturado para ferramentas e automações.`);
 llmsLines.push(`- [mcp-manifest.json](${siteUrl}/mcp-manifest.json): manifesto para MCPs e agentes com recursos, regras e ferramentas sugeridas.`);
 llmsLines.push('');
@@ -2795,6 +2882,7 @@ smallLines.push('');
 smallLines.push('## Arquivos auxiliares');
 smallLines.push('');
 smallLines.push(`- Catálogo JSON: ${siteUrl}/services-catalog.json`);
+smallLines.push(`- Catálogo leve: ${siteUrl}/services-catalog.min.json`);
 smallLines.push(`- API Reference para LLM: ${siteUrl}/llms-api-reference.txt`);
 smallLines.push(`- Manifesto MCP: ${siteUrl}/mcp-manifest.json`);
 smallLines.push('- Exemplos curl: ' + siteUrl + '/examples/auth.hml.curl');
@@ -2860,6 +2948,7 @@ console.log('Generated llms-small.txt.');
 console.log(`Generated llms-full.txt with ${servicesCatalog.length} service examples.`);
 console.log('Generated llms-api-reference.txt.');
 console.log('Generated services-catalog.json.');
+console.log('Generated services-catalog.min.json.');
 console.log('Generated mcp-manifest.json.');
 console.log('Generated guides/indice-de-services.mdx.');
 console.log('Generated api-reference/como-executar-service.mdx.');

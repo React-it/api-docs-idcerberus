@@ -25,6 +25,7 @@ Base URLs:
 | Entender a estrutura da documentação | https://api-docs.idcerberus.com/llms.txt |
 | Gerar integração, curl ou escolher service | https://api-docs.idcerberus.com/llms-small.txt |
 | Consultar payloads e responses por service | https://api-docs.idcerberus.com/llms-api-reference.txt |
+| Buscar service em um índice leve | https://api-docs.idcerberus.com/services-catalog.min.json |
 | Fazer busca estruturada por automação | https://api-docs.idcerberus.com/services-catalog.json |
 | Configurar MCP ou agente com recursos estruturados | https://api-docs.idcerberus.com/mcp-manifest.json |
 | Responder com todo o contexto da documentação | https://api-docs.idcerberus.com/llms-full.txt |
@@ -36,11 +37,12 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 ### Ordem recomendada de leitura
 
 1. Leia `llms.txt` como manifesto inicial da documentação.
-2. Use `services-catalog.json` para busca estruturada por `service`, nome, categoria, campos e termos de busca.
-3. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.
-4. Use `llms-api-reference.txt` para payloads, responses resumidos e exemplos por service.
-5. Use `examples/*.curl` quando a resposta precisar de um curl pronto.
-6. Use `llms-full.txt` apenas quando a pergunta exigir contexto completo dos guias, API Reference e OpenAPI.
+2. Use `services-catalog.min.json` para busca rápida por service, nome, categoria, campo e tag.
+3. Use `services-catalog.json` quando precisar do contrato completo do service.
+4. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.
+5. Use `llms-api-reference.txt` para payloads, responses resumidos e exemplos por service.
+6. Use `examples/*.curl` quando a resposta precisar de um curl pronto.
+7. Use `llms-full.txt` apenas quando a pergunta exigir contexto completo dos guias, API Reference e OpenAPI.
 
 ### Recursos que um MCP pode expor
 
@@ -50,6 +52,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 | https://api-docs.idcerberus.com/llms-small.txt | Contexto curto para gerar integração, curl e explicação. |
 | https://api-docs.idcerberus.com/llms-api-reference.txt | Payloads, responses e exemplos por service. |
 | https://api-docs.idcerberus.com/llms-full.txt | Contexto completo para perguntas amplas. |
+| https://api-docs.idcerberus.com/services-catalog.min.json | Índice leve para busca rápida por service, categoria, tag e campos. |
 | https://api-docs.idcerberus.com/services-catalog.json | Busca estruturada e filtros por service/categoria/campo. |
 | https://api-docs.idcerberus.com/mcp-manifest.json | Manifesto com recursos, ferramentas sugeridas, regras e ordem de leitura. |
 | https://api-docs.idcerberus.com/examples/*.curl | Exemplos prontos para copiar e testar. |
@@ -886,6 +889,7 @@ copie a URL completa.
 | [`llms-full.txt`](https://api-docs.idcerberus.com/llms-full.txt) | Conteúdo completo consolidado dos guias, API Reference e OpenAPI. |
 | [`llms-api-reference.txt`](https://api-docs.idcerberus.com/llms-api-reference.txt) | Versão operacional do API Reference, com services e exemplos de curl prontos para consulta por IA. |
 | [`services-catalog.json`](https://api-docs.idcerberus.com/services-catalog.json) | Catálogo estruturado em JSON para automações, validadores e agentes. |
+| [`services-catalog.min.json`](https://api-docs.idcerberus.com/services-catalog.min.json) | Índice leve para busca rápida por service, categoria, tag e campos. |
 | [`mcp-manifest.json`](https://api-docs.idcerberus.com/mcp-manifest.json) | Manifesto para MCPs e agentes, com recursos, ordem de leitura, regras e ferramentas sugeridas. |
 | [`examples/auth.hml.curl`](https://api-docs.idcerberus.com/examples/auth.hml.curl) | Exemplo pronto de autenticação em homologação. |
 
@@ -923,6 +927,12 @@ Para automações que precisam de dados estruturados, use:
 https://api-docs.idcerberus.com/services-catalog.json
 ```
 
+Para busca rápida antes de abrir o contrato completo do service, use:
+
+```txt
+https://api-docs.idcerberus.com/services-catalog.min.json
+```
+
 Para configurar um MCP ou agente com a lista de recursos recomendados, use:
 
 ```txt
@@ -936,34 +946,94 @@ Esses arquivos já servem como base para um MCP da documentação. A ideia é o 
 Ordem recomendada:
 
 1. Use `llms.txt` como manifesto inicial.
-2. Use `services-catalog.json` para busca estruturada por `service`, nome, categoria, campo ou termo de busca.
-3. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.
-4. Use `llms-api-reference.txt` para payload, response resumido e exemplo por service.
-5. Use os arquivos `examples/*.curl` para devolver chamadas prontas.
-6. Use `llms-full.txt` quando precisar de contexto completo dos guias e da API Reference.
+2. Use `services-catalog.min.json` para busca rápida por `service`, nome, categoria, campo ou tag.
+3. Use `services-catalog.json` para abrir o contrato completo do service.
+4. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.
+5. Use `llms-api-reference.txt` para payload, response resumido e exemplo por service.
+6. Use os arquivos `examples/*.curl` para devolver chamadas prontas.
+7. Use `llms-full.txt` quando precisar de contexto completo dos guias e da API Reference.
 
 Um MCP da documentação deve ser somente leitura. Ele não precisa chamar HML, produção, banco ou endpoint real. Também não deve pedir token, `client`, `secret`, CPF, CNPJ ou imagem real.
 
 ### Fluxo prático para usar no MCP
 
 1. Leia `mcp-manifest.json` para descobrir quais arquivos existem, em qual ordem usar e quais regras seguir.
-2. Busque o service em `services-catalog.json`. Esse arquivo traz alias de chamada, campos, tags, erros comuns, exemplo de payload e dicas para agente.
-3. Abra `llms-api-reference.txt` quando precisar explicar o contrato do service com mais texto.
-4. Use `examples/*.curl` quando a resposta precisar de uma chamada pronta para copiar.
-5. Use `llms-full.txt` só quando a pergunta depender do contexto completo dos guias.
+2. Busque primeiro em `services-catalog.min.json` para achar o service certo sem carregar contexto demais.
+3. Abra `services-catalog.json` quando precisar de alias de chamada, campos, tags, erros comuns, exemplo de payload e dicas para agente.
+4. Abra `llms-api-reference.txt` quando precisar explicar o contrato do service com mais texto.
+5. Use `examples/*.curl` quando a resposta precisar de uma chamada pronta para copiar.
+6. Use `llms-full.txt` só quando a pergunta depender do contexto completo dos guias.
 
-Na prática, o MCP não precisa “adivinhar” nada. Primeiro ele encontra o service no catálogo, depois usa o guia certo para explicar payload, retorno e erro comum.
+Na prática, o MCP não precisa "adivinhar" nada. Primeiro ele encontra o service no catálogo, depois usa o guia certo para explicar payload, retorno e erro comum.
 
 ### O que cada arquivo resolve
 
 | Pergunta | Melhor fonte |
 | --- | --- |
-| Qual service devo usar? | `services-catalog.json` |
+| Qual service devo usar? | `services-catalog.min.json` |
 | Qual alias vai no body? | `services-catalog.json` em `callingAlias` |
 | Quais campos mandar? | `services-catalog.json` em `requiredFields`, `optionalFields` e `payloadExample` |
 | Como testar no Postman/curl? | `examples/*.curl` e `llms-api-reference.txt` |
 | O que fazer com erro comum? | `commonErrors` no catálogo e `llms-api-reference.txt` |
 | Preciso de uma explicação completa do fluxo? | `llms-full.txt` |
+
+### Prompts prontos
+
+Use estes prompts como base quando quiser testar a documentação com uma IA ou montar um MCP mais direcionado.
+
+**Escolher service**
+
+```txt
+Use https://api-docs.idcerberus.com/services-catalog.min.json e, se precisar,
+https://api-docs.idcerberus.com/services-catalog.json.
+
+Quero resolver este caso: {descreva o objetivo}.
+Me diga qual service usar, qual alias vai no body, quais campos são obrigatórios
+e qual guia devo abrir antes de testar.
+Não invente service fora do catálogo.
+```
+
+**Montar curl**
+
+```txt
+Use https://api-docs.idcerberus.com/mcp-manifest.json,
+https://api-docs.idcerberus.com/services-catalog.json e os arquivos
+https://api-docs.idcerberus.com/examples/*.curl.
+
+Monte um curl de homologação para o service {SERVICE}.
+Use placeholders para token, CPF, CNPJ, client, secret e imagem.
+Não use dado real.
+```
+
+**Explicar erro**
+
+```txt
+Use o bloco troubleshootingByStatus do mcp-manifest.json e o commonErrors do
+service no services-catalog.json.
+
+Explique este retorno: {cole o retorno sem dados sensíveis}.
+Diga a causa provável, o que conferir primeiro e o próximo teste seguro.
+Não trate REFUSED como falha técnica sem analisar status.message.
+```
+
+**OCR**
+
+```txt
+Use services-catalog.json, llms-api-reference.txt e o guia de OCR.
+
+Quero testar OCR para {RG/CNH/cartão CNPJ/comprovante}.
+Me diga o payload mínimo, o tipo de imagem esperado, o retorno público esperado
+e os erros comuns. Não diga que OCR garante extrair todos os campos.
+```
+
+### Respostas que o MCP deve evitar
+
+- Não dizer que Face Index valida identidade definitiva. Ele busca correspondência na base de faces.
+- Não tratar `fieldsOutput` como contrato público.
+- Não prometer que OCR sempre extrai todos os campos.
+- Não inventar retorno de provider quando o campo não aparece na documentação.
+- Não pedir CPF, CNPJ, token, client, secret ou imagem real para montar exemplo.
+- Não sugerir chamada real em HML ou produção; esta base é somente leitura.
 
 Exemplos de perguntas que essa base deve responder:
 

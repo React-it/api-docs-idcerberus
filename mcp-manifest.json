@@ -9,10 +9,12 @@
     "api-reference/openapi.json",
     "guides/*.mdx",
     "api-reference/*.mdx",
-    "services-catalog.json"
+    "services-catalog.json",
+    "services-catalog.min.json"
   ],
   "recommendedReadOrder": [
     "https://api-docs.idcerberus.com/llms.txt",
+    "https://api-docs.idcerberus.com/services-catalog.min.json",
     "https://api-docs.idcerberus.com/services-catalog.json",
     "https://api-docs.idcerberus.com/mcp-manifest.json",
     "https://api-docs.idcerberus.com/llms-api-reference.txt",
@@ -49,6 +51,12 @@
       "url": "https://api-docs.idcerberus.com/services-catalog.json",
       "contentType": "application/json",
       "use": "Catálogo estruturado para buscar services por alias, campo, categoria, tag ou erro comum."
+    },
+    {
+      "name": "services-catalog.min.json",
+      "url": "https://api-docs.idcerberus.com/services-catalog.min.json",
+      "contentType": "application/json",
+      "use": "Catálogo leve para busca rápida antes de abrir o contrato completo do service."
     },
     {
       "name": "mcp-manifest.json",
@@ -128,6 +136,40 @@
     "Não inventar service, campo, endpoint ou retorno ausente da documentação.",
     "Usar `result` como contrato público da API e ignorar `fieldsOutput`/metadados internos."
   ],
+  "doNotAnswerAs": [
+    "Não afirmar que Face Index valida identidade definitiva; ele busca correspondência na base de faces.",
+    "Não tratar `fieldsOutput` como contrato público da API.",
+    "Não dizer que OCR garante extração de todos os campos; o retorno depende da imagem e do documento.",
+    "Não inventar retorno de provider quando o campo não aparece na documentação.",
+    "Não pedir CPF, CNPJ, token, client, secret ou imagem real para montar exemplo.",
+    "Não sugerir chamada real em HML/produção; este MCP é fonte de documentação."
+  ],
+  "troubleshootingByStatus": {
+    "400": {
+      "meaning": "Payload inválido, service sem acesso, imagem ausente ou campo obrigatório não enviado.",
+      "action": "Conferir `service`, campos obrigatórios, produto configurado e exemplo de payload no catálogo."
+    },
+    "401": {
+      "meaning": "Token ausente, expirado ou inválido.",
+      "action": "Gerar novo token em `/api/token-generate` e reenviar com `Authorization: Bearer {jwt_token}`."
+    },
+    "REFUSED": {
+      "meaning": "A chamada foi processada, mas a regra do serviço recusou o resultado.",
+      "action": "Ler `status.message`, conferir imagem/massa e não tratar como falha técnica automaticamente."
+    },
+    "ERROR": {
+      "meaning": "Falha técnica no fluxo, storage, processamento ou provider externo.",
+      "action": "Investigar com `externalId`, horário, ambiente e service chamado."
+    },
+    "result:{}": {
+      "meaning": "A chamada respondeu, mas não trouxe dado público útil.",
+      "action": "Conferir se o service tem retorno esperado para a massa usada e se a imagem/documento está correto."
+    },
+    "Don't have access to the service": {
+      "meaning": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+      "action": "Conferir configuração do produto, alias de chamada e flag de API."
+    }
+  },
   "catalogSummary": {
     "totalServices": 90,
     "categories": {
@@ -159,6 +201,2854 @@
       "risco-credito",
       "textract"
     ],
+    "serviceFamilies": {
+      "ocr": [
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+          "name": "Antecedentes criminais civis",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_INDEX",
+          "callingAlias": "SERVICE_FACE_INDEX",
+          "name": "Busca de face na base",
+          "tags": [
+            "cpf",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_MEI_BIGDATACORP",
+          "callingAlias": "SERVICE_MEI_BIGDATACORP",
+          "name": "Consulta de MEI",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+          "name": "Dados eleitorais de candidato",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+          "callingAlias": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+          "name": "Dados financeiros e endereços",
+          "tags": [
+            "bigdatacorp",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CONFIRM_PHONE_FACETEC",
+          "callingAlias": "SERVICE_CONFIRM_PHONE_FACETEC",
+          "name": "Dados pelo telefone",
+          "tags": [
+            "contato",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+          "name": "Dívida ativa",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+          "name": "Doações eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
+          "callingAlias": "SERVICE_DOCUMENTOSCOPY",
+          "name": "Documentoscopia digital",
+          "tags": [
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ADDRESS_BIGDATACORP",
+          "callingAlias": "SERVICE_ADDRESS_BIGDATACORP",
+          "name": "Endereços",
+          "tags": [
+            "bigdatacorp",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+          "name": "Envolvimento político",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+          "name": "Envolvimento político PF (BigDataCorp)",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH_BIGDATACORP",
+          "callingAlias": "SERVICE_FACE_MATCH_BIGDATACORP",
+          "name": "FaceMatch",
+          "tags": [
+            "bigdatacorp",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH_AWS",
+          "callingAlias": "SERVICE_FACE_MATCH_AWS",
+          "name": "FaceMatch (AWS)",
+          "tags": [
+            "aws",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+          "name": "Histórico familiar político",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+          "callingAlias": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+          "name": "Histórico profissional",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+          "callingAlias": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+          "name": "Histórico profissional do titular",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_LIVENESS_2D_FACETEC",
+          "callingAlias": "SERVICE_LIVENESS_2D_FACETEC",
+          "name": "Liveness 2D",
+          "tags": [
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ARREST_WARRANT",
+          "callingAlias": "SERVICE_ARREST_WARRANT",
+          "name": "Mandado de prisão",
+          "tags": [
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "name": "Modelagem de dados",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+          "callingAlias": "SERVICE_OCR_PROOF_OF_ADDRESS",
+          "name": "OCR de comprovante de endereço",
+          "tags": [
+            "aws",
+            "comprovante-endereco",
+            "imagem",
+            "ocr",
+            "textract"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_BIGDATACORP",
+          "callingAlias": "SERVICE_OCR_BIGDATACORP",
+          "name": "OCR de documentos",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "imagem",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_EMANCIPATION",
+          "callingAlias": "SERVICE_OCR_EMANCIPATION",
+          "name": "OCR de emancipação",
+          "tags": [
+            "imagem",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR",
+          "callingAlias": "SERVICE_OCR",
+          "name": "OCR React RG/CNH",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "ocr",
+            "react",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PEP",
+          "callingAlias": "SERVICE_PEP",
+          "name": "Pessoa politicamente exposta",
+          "tags": [
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+          "callingAlias": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+          "name": "Pessoas relacionadas",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
+          "callingAlias": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+          "name": "Resultado da documentoscopia digital",
+          "tags": [
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DATAVALID_CNH_SERPRO",
+          "callingAlias": "SERVICE_DATAVALID_CNH_SERPRO",
+          "name": "Score biométrico",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+          "callingAlias": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+          "name": "Servidores públicos",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PF_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PF_BIGDATACORP",
+          "name": "Status do CPF na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "cpf",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+          "name": "Validação de CPF com endereço",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "name": "CNPJ na Receita Federal on-demand",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "callingAlias": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "name": "Dados cadastrais de CNPJ",
+          "tags": [
+            "beneficios-sociais",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "name": "Débitos ativos",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico",
+            "rg",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "name": "Doações eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "name": "Endereços estendidos",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "name": "Enriquecimento de dados",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_CNPJ_CARD",
+          "callingAlias": "SERVICE_OCR_CNPJ_CARD",
+          "name": "OCR de cartão CNPJ",
+          "tags": [
+            "cadastral",
+            "cartao-cnpj",
+            "cnpj",
+            "comprovante-endereco",
+            "imagem",
+            "juridico",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+          "callingAlias": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+          "name": "SINTEGRA",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+          "callingAlias": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+          "name": "Sócios de primeiro nível",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "name": "Sócios na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_BIGDATACORP",
+          "name": "Status do CNPJ na Receita Federal",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "faceBiometrics": [
+        {
+          "service": "SERVICE_FACE_INDEX",
+          "callingAlias": "SERVICE_FACE_INDEX",
+          "name": "Busca de face na base",
+          "tags": [
+            "cpf",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CONFIRM_PHONE_FACETEC",
+          "callingAlias": "SERVICE_CONFIRM_PHONE_FACETEC",
+          "name": "Dados pelo telefone",
+          "tags": [
+            "contato",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
+          "callingAlias": "SERVICE_DOCUMENTOSCOPY",
+          "name": "Documentoscopia digital",
+          "tags": [
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH_BIGDATACORP",
+          "callingAlias": "SERVICE_FACE_MATCH_BIGDATACORP",
+          "name": "FaceMatch",
+          "tags": [
+            "bigdatacorp",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH_AWS",
+          "callingAlias": "SERVICE_FACE_MATCH_AWS",
+          "name": "FaceMatch (AWS)",
+          "tags": [
+            "aws",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_LIVENESS_2D_FACETEC",
+          "callingAlias": "SERVICE_LIVENESS_2D_FACETEC",
+          "name": "Liveness 2D",
+          "tags": [
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
+          "callingAlias": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+          "name": "Resultado da documentoscopia digital",
+          "tags": [
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "name": "Validação de CPF com telefone (Facetec)",
+          "tags": [
+            "cadastral",
+            "contato",
+            "cpf",
+            "face"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "cpf": [
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+          "name": "Antecedentes criminais civis",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+          "name": "Antecedentes criminais federais",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "callingAlias": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "name": "Benefícios sociais estendidos",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "callingAlias": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "name": "Benefícios sociais familiares",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_INDEX",
+          "callingAlias": "SERVICE_FACE_INDEX",
+          "name": "Busca de face na base",
+          "tags": [
+            "cpf",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+          "callingAlias": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+          "name": "Certidão de Nada Consta",
+          "tags": [
+            "aws",
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Certidão negativa de protesto",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PF_INFOSIMPLES",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Certidão negativa de protesto PF (InfoSimples)",
+          "tags": [
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PF_NETRIN",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Certidão negativa de protesto PF (Netrin)",
+          "tags": [
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_MEI_BIGDATACORP",
+          "callingAlias": "SERVICE_MEI_BIGDATACORP",
+          "name": "Consulta de MEI",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+          "name": "CPF na Receita Federal on-demand",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+          "callingAlias": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+          "name": "Dados demográficos",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+          "name": "Dados eleitorais de candidato",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+          "callingAlias": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+          "name": "Dados financeiros e endereços",
+          "tags": [
+            "bigdatacorp",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+          "callingAlias": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+          "name": "Dados PIS",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+          "name": "Dívida ativa",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+          "name": "Doações eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CPF",
+          "callingAlias": "SERVICE_DOMAINS_CPF",
+          "name": "Domínios",
+          "tags": [
+            "cadastral",
+            "cpf",
+            "dominios"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ADDRESS_BIGDATACORP",
+          "callingAlias": "SERVICE_ADDRESS_BIGDATACORP",
+          "name": "Endereços",
+          "tags": [
+            "bigdatacorp",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+          "name": "Enriquecimento de dados",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+          "name": "Envolvimento político",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+          "name": "Envolvimento político PF (BigDataCorp)",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP",
+          "callingAlias": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP",
+          "name": "Exposição e perfil na mídia",
+          "tags": [
+            "bigdatacorp",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+          "callingAlias": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+          "name": "Histórico de e-mails",
+          "tags": [
+            "bigdatacorp",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+          "callingAlias": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+          "name": "Histórico de telefones",
+          "tags": [
+            "bigdatacorp",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+          "name": "Histórico familiar político",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+          "callingAlias": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+          "name": "Histórico profissional",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+          "callingAlias": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+          "name": "Histórico profissional do titular",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ACTIVITIES_INDICATORS",
+          "callingAlias": "SERVICE_ACTIVITIES_INDICATORS",
+          "name": "Indicadores de atividades",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FINANCIAL_INFORMATION_BIGDATACORP",
+          "callingAlias": "SERVICE_FINANCIAL_INFORMATION_BIGDATACORP",
+          "name": "Informações financeiras",
+          "tags": [
+            "bigdatacorp",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "name": "KYC e compliance",
+          "tags": [
+            "bigdatacorp",
+            "compliance",
+            "cpf",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ARREST_WARRANT",
+          "callingAlias": "SERVICE_ARREST_WARRANT",
+          "name": "Mandado de prisão",
+          "tags": [
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "name": "Modelagem de dados",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_BIGDATACORP",
+          "callingAlias": "SERVICE_OCR_BIGDATACORP",
+          "name": "OCR de documentos",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "imagem",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR",
+          "callingAlias": "SERVICE_OCR",
+          "name": "OCR React RG/CNH",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "ocr",
+            "react",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PEP",
+          "callingAlias": "SERVICE_PEP",
+          "name": "Pessoa politicamente exposta",
+          "tags": [
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+          "callingAlias": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+          "name": "Pessoas relacionadas",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+          "callingAlias": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+          "name": "Prêmios e certificações",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+          "name": "Prestadores de serviço eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+          "name": "Processos jurídicos e administrativos",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_AI_PROMPT_OPENAI",
+          "callingAlias": "SERVICE_PERSON_AI_PROMPT",
+          "name": "Prompt de IA para pessoa",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+          "callingAlias": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+          "name": "Propensão a apostas online",
+          "tags": [
+            "bigdatacorp",
+            "compliance",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP",
+          "callingAlias": "economic_relationships",
+          "name": "Relacionamentos econômicos",
+          "tags": [
+            "bigdatacorp",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+          "callingAlias": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+          "name": "Risco financeiro",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DATAVALID_CNH_SERPRO",
+          "callingAlias": "SERVICE_DATAVALID_CNH_SERPRO",
+          "name": "Score biométrico",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_SCORE",
+          "callingAlias": "SERVICE_CREDIT_SCORE",
+          "name": "Score de crédito",
+          "tags": [
+            "assertiva",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+          "callingAlias": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+          "name": "Score de inadimplência",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+          "callingAlias": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+          "name": "Score de risco de fraude",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
+          "callingAlias": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
+          "name": "Score de risco Quantum",
+          "tags": [
+            "cpf",
+            "quantum",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+          "callingAlias": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+          "name": "Servidores públicos",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PF_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PF_BIGDATACORP",
+          "name": "Status do CPF na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "cpf",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+          "name": "Validação de CPF com endereço",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
+          "name": "Validação de CPF com telefone",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "name": "Validação de CPF com telefone (Facetec)",
+          "tags": [
+            "cadastral",
+            "contato",
+            "cpf",
+            "face"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+          "callingAlias": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+          "name": "Validação do E-Social",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "name": "CNPJ na Receita Federal on-demand",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "callingAlias": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "name": "DAS MEI na Receita",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "name": "Sócios na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_BIGDATACORP",
+          "name": "Status do CNPJ na Receita Federal",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "cnpj": [
+        {
+          "service": "SERVICE_MEI_BIGDATACORP",
+          "callingAlias": "SERVICE_MEI_BIGDATACORP",
+          "name": "Consulta de MEI",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PJ_INFOSIMPLES",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ",
+          "name": "Certidão negativa de protesto",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PJ_NETRIN",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ",
+          "name": "Certidão negativa de protesto PJ (Netrin)",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "name": "CNPJ na Receita Federal on-demand",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET",
+          "callingAlias": "SERVICE_COMPLIANCE_BET",
+          "name": "Compliance de casas de apostas",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+          "name": "Compliance de casas de apostas",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "callingAlias": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "name": "Dados cadastrais de CNPJ",
+          "tags": [
+            "beneficios-sociais",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "callingAlias": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "name": "DAS MEI na Receita",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "name": "Débitos ativos",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico",
+            "rg",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "name": "Doações eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "name": "Doações eleitorais dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CNPJ",
+          "callingAlias": "SERVICE_DOMAINS_CNPJ",
+          "name": "Domínios CNPJ",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "dominios",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "name": "Endereços estendidos",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "name": "Enriquecimento de dados",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+          "name": "Exposição e perfil na mídia dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+          "name": "Fornecedores eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "name": "KYC e compliance dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "compliance",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_CNPJ_CARD",
+          "callingAlias": "SERVICE_OCR_CNPJ_CARD",
+          "name": "OCR de cartão CNPJ",
+          "tags": [
+            "cadastral",
+            "cartao-cnpj",
+            "cnpj",
+            "comprovante-endereco",
+            "imagem",
+            "juridico",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "name": "Processos jurídicos",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+          "name": "Processos jurídicos dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+          "name": "Relacionamentos da empresa",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY",
+          "name": "Risco de crédito",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+          "name": "Risco de crédito Murabei",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "murabei",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+          "callingAlias": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+          "name": "SINTEGRA",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+          "callingAlias": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+          "name": "Sócios de primeiro nível",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "name": "Sócios na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_BIGDATACORP",
+          "name": "Status do CNPJ na Receita Federal",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "creditRisk": [
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+          "name": "Dívida ativa",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "rg",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH_BIGDATACORP",
+          "callingAlias": "SERVICE_FACE_MATCH_BIGDATACORP",
+          "name": "FaceMatch",
+          "tags": [
+            "bigdatacorp",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH_AWS",
+          "callingAlias": "SERVICE_FACE_MATCH_AWS",
+          "name": "FaceMatch (AWS)",
+          "tags": [
+            "aws",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "name": "KYC e compliance",
+          "tags": [
+            "bigdatacorp",
+            "compliance",
+            "cpf",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_LIVENESS_2D_FACETEC",
+          "callingAlias": "SERVICE_LIVENESS_2D_FACETEC",
+          "name": "Liveness 2D",
+          "tags": [
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+          "callingAlias": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+          "name": "Propensão a apostas online",
+          "tags": [
+            "bigdatacorp",
+            "compliance",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+          "callingAlias": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+          "name": "Risco financeiro",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DATAVALID_CNH_SERPRO",
+          "callingAlias": "SERVICE_DATAVALID_CNH_SERPRO",
+          "name": "Score biométrico",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_SCORE",
+          "callingAlias": "SERVICE_CREDIT_SCORE",
+          "name": "Score de crédito",
+          "tags": [
+            "assertiva",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+          "callingAlias": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+          "name": "Score de inadimplência",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+          "callingAlias": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+          "name": "Score de risco de fraude",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
+          "callingAlias": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
+          "name": "Score de risco Quantum",
+          "tags": [
+            "cpf",
+            "quantum",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_EMAIL_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_EMAIL_VALIDATION1",
+          "name": "Validação de e-mail",
+          "tags": [
+            "bigdatacorp",
+            "contato",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "name": "Débitos ativos",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico",
+            "rg",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "name": "KYC e compliance dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "compliance",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY",
+          "name": "Risco de crédito",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+          "name": "Risco de crédito Murabei",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "murabei",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "legal": [
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+          "name": "Antecedentes criminais civis",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+          "name": "Antecedentes criminais federais",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+          "callingAlias": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+          "name": "Certidão de Nada Consta",
+          "tags": [
+            "aws",
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Certidão negativa de protesto",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PF_INFOSIMPLES",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Certidão negativa de protesto PF (InfoSimples)",
+          "tags": [
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PF_NETRIN",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Certidão negativa de protesto PF (Netrin)",
+          "tags": [
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "name": "KYC e compliance",
+          "tags": [
+            "bigdatacorp",
+            "compliance",
+            "cpf",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+          "name": "Processos jurídicos e administrativos",
+          "tags": [
+            "bigdatacorp",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PJ_INFOSIMPLES",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ",
+          "name": "Certidão negativa de protesto",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PROTEST_PJ_NETRIN",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ",
+          "name": "Certidão negativa de protesto PJ (Netrin)",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "name": "CNPJ na Receita Federal on-demand",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET",
+          "callingAlias": "SERVICE_COMPLIANCE_BET",
+          "name": "Compliance de casas de apostas",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+          "name": "Compliance de casas de apostas",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "callingAlias": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "name": "Dados cadastrais de CNPJ",
+          "tags": [
+            "beneficios-sociais",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "callingAlias": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "name": "DAS MEI na Receita",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+          "name": "Débitos ativos",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico",
+            "rg",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "name": "Doações eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "name": "Doações eleitorais dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CNPJ",
+          "callingAlias": "SERVICE_DOMAINS_CNPJ",
+          "name": "Domínios CNPJ",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "dominios",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "name": "Endereços estendidos",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "name": "Enriquecimento de dados",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+          "name": "Exposição e perfil na mídia dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+          "name": "Fornecedores eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "name": "KYC e compliance dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "compliance",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_CNPJ_CARD",
+          "callingAlias": "SERVICE_OCR_CNPJ_CARD",
+          "name": "OCR de cartão CNPJ",
+          "tags": [
+            "cadastral",
+            "cartao-cnpj",
+            "cnpj",
+            "comprovante-endereco",
+            "imagem",
+            "juridico",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "name": "Processos jurídicos",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+          "name": "Processos jurídicos dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+          "name": "Relacionamentos da empresa",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY",
+          "name": "Risco de crédito",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+          "name": "Risco de crédito Murabei",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "murabei",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+          "callingAlias": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+          "name": "SINTEGRA",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+          "callingAlias": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+          "name": "Sócios de primeiro nível",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "name": "Sócios na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_BIGDATACORP",
+          "name": "Status do CNPJ na Receita Federal",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "compliance": [
+        {
+          "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_KYC_BIGDATACORP",
+          "name": "KYC e compliance",
+          "tags": [
+            "bigdatacorp",
+            "compliance",
+            "cpf",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+          "callingAlias": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+          "name": "Propensão a apostas online",
+          "tags": [
+            "bigdatacorp",
+            "compliance",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET",
+          "callingAlias": "SERVICE_COMPLIANCE_BET",
+          "name": "Compliance de casas de apostas",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+          "name": "Compliance de casas de apostas",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+          "name": "KYC e compliance dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cnpj",
+            "compliance",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "contact": [
+        {
+          "service": "SERVICE_CONFIRM_PHONE_FACETEC",
+          "callingAlias": "SERVICE_CONFIRM_PHONE_FACETEC",
+          "name": "Dados pelo telefone",
+          "tags": [
+            "contato",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+          "callingAlias": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+          "name": "Histórico de e-mails",
+          "tags": [
+            "bigdatacorp",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+          "callingAlias": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+          "name": "Histórico de telefones",
+          "tags": [
+            "bigdatacorp",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "name": "Modelagem de dados",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
+          "name": "Validação de CPF com telefone",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "name": "Validação de CPF com telefone (Facetec)",
+          "tags": [
+            "cadastral",
+            "contato",
+            "cpf",
+            "face"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_EMAIL_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_EMAIL_VALIDATION1",
+          "name": "Validação de e-mail",
+          "tags": [
+            "bigdatacorp",
+            "contato",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "socialBenefits": [
+        {
+          "service": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "callingAlias": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "name": "Benefícios sociais estendidos",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "callingAlias": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "name": "Benefícios sociais familiares",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_MEI_BIGDATACORP",
+          "callingAlias": "SERVICE_MEI_BIGDATACORP",
+          "name": "Consulta de MEI",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+          "callingAlias": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+          "name": "Validação do E-Social",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "name": "CNPJ na Receita Federal on-demand",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "callingAlias": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "name": "Dados cadastrais de CNPJ",
+          "tags": [
+            "beneficios-sociais",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "name": "Enriquecimento de dados",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_BIGDATACORP",
+          "name": "Status do CNPJ na Receita Federal",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ],
+      "registration": [
+        {
+          "service": "SERVICE_MEI_BIGDATACORP",
+          "callingAlias": "SERVICE_MEI_BIGDATACORP",
+          "name": "Consulta de MEI",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+          "name": "CPF na Receita Federal on-demand",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+          "callingAlias": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+          "name": "Dados demográficos",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+          "name": "Dados eleitorais de candidato",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+          "callingAlias": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+          "name": "Dados PIS",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+          "name": "Doações eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CPF",
+          "callingAlias": "SERVICE_DOMAINS_CPF",
+          "name": "Domínios",
+          "tags": [
+            "cadastral",
+            "cpf",
+            "dominios"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+          "name": "Enriquecimento de dados",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+          "name": "Envolvimento político PF (BigDataCorp)",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+          "name": "Histórico familiar político",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "callingAlias": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+          "name": "Modelagem de dados",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+          "callingAlias": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+          "name": "Prêmios e certificações",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+          "name": "Prestadores de serviço eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PF_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PF_BIGDATACORP",
+          "name": "Status do CPF na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "cpf",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+          "name": "Validação de CPF com endereço",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "comprovante-endereco",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
+          "name": "Validação de CPF com telefone",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+          "name": "Validação de CPF com telefone (Facetec)",
+          "tags": [
+            "cadastral",
+            "contato",
+            "cpf",
+            "face"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+          "callingAlias": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+          "name": "Validação do E-Social",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+          "name": "CNPJ na Receita Federal on-demand",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "callingAlias": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "name": "Dados cadastrais de CNPJ",
+          "tags": [
+            "beneficios-sociais",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "callingAlias": "SERVICE_DAS_MEI_INFOSIMPLES",
+          "name": "DAS MEI na Receita",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "name": "Doações eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+          "name": "Doações eleitorais dos sócios",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CNPJ",
+          "callingAlias": "SERVICE_DOMAINS_CNPJ",
+          "name": "Domínios CNPJ",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "dominios",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+          "name": "Endereços estendidos",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "callingAlias": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+          "name": "Enriquecimento de dados",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+          "name": "Fornecedores eleitorais",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_OCR_CNPJ_CARD",
+          "callingAlias": "SERVICE_OCR_CNPJ_CARD",
+          "name": "OCR de cartão CNPJ",
+          "tags": [
+            "cadastral",
+            "cartao-cnpj",
+            "cnpj",
+            "comprovante-endereco",
+            "imagem",
+            "juridico",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+          "name": "Sócios na Receita Federal",
+          "tags": [
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "imagem",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_BIGDATACORP",
+          "callingAlias": "SERVICE_RFB_PJ_BIGDATACORP",
+          "name": "Status do CNPJ na Receita Federal",
+          "tags": [
+            "beneficios-sociais",
+            "bigdatacorp",
+            "cadastral",
+            "cnpj",
+            "comprovante-endereco",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance"
+        }
+      ]
+    },
     "examples": [
       {
         "title": "Gerar token em homologação",

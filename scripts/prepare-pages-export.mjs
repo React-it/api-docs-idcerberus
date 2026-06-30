@@ -179,6 +179,7 @@ for (const staticFile of [
   'llms-full.txt',
   'llms-api-reference.txt',
   'services-catalog.json',
+  'services-catalog.min.json',
   'mcp-manifest.json',
 ]) {
   try {
