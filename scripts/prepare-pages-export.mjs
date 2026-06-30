@@ -179,6 +179,7 @@ for (const staticFile of [
   'llms-full.txt',
   'llms-api-reference.txt',
   'services-catalog.json',
+  'mcp-manifest.json',
 ]) {
   try {
     await copyFile(path.join(process.cwd(), staticFile), path.join(distDir, staticFile));

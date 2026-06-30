@@ -1,0 +1,253 @@
+{
+  "name": "idcerberus-docs",
+  "title": "idCerberus API Docs",
+  "description": "Manifesto somente leitura para MCPs e agentes consultarem a documentação pública da API idCerberus.",
+  "version": "1.0.0",
+  "baseUrl": "https://api-docs.idcerberus.com",
+  "generatedFrom": [
+    "docs.json",
+    "api-reference/openapi.json",
+    "guides/*.mdx",
+    "api-reference/*.mdx",
+    "services-catalog.json"
+  ],
+  "recommendedReadOrder": [
+    "https://api-docs.idcerberus.com/llms.txt",
+    "https://api-docs.idcerberus.com/services-catalog.json",
+    "https://api-docs.idcerberus.com/mcp-manifest.json",
+    "https://api-docs.idcerberus.com/llms-api-reference.txt",
+    "https://api-docs.idcerberus.com/examples/*.curl",
+    "https://api-docs.idcerberus.com/llms-full.txt"
+  ],
+  "resources": [
+    {
+      "name": "llms.txt",
+      "url": "https://api-docs.idcerberus.com/llms.txt",
+      "contentType": "text/plain",
+      "use": "Manifesto inicial, regras principais, atalhos e URLs importantes."
+    },
+    {
+      "name": "llms-small.txt",
+      "url": "https://api-docs.idcerberus.com/llms-small.txt",
+      "contentType": "text/plain",
+      "use": "Contexto curto para gerar payload, curl e explicação de integração."
+    },
+    {
+      "name": "llms-api-reference.txt",
+      "url": "https://api-docs.idcerberus.com/llms-api-reference.txt",
+      "contentType": "text/plain",
+      "use": "Resumo operacional dos services, payloads e responses esperados."
+    },
+    {
+      "name": "llms-full.txt",
+      "url": "https://api-docs.idcerberus.com/llms-full.txt",
+      "contentType": "text/plain",
+      "use": "Contexto completo para perguntas amplas ou comparação entre guias."
+    },
+    {
+      "name": "services-catalog.json",
+      "url": "https://api-docs.idcerberus.com/services-catalog.json",
+      "contentType": "application/json",
+      "use": "Catálogo estruturado para buscar services por alias, campo, categoria, tag ou erro comum."
+    },
+    {
+      "name": "mcp-manifest.json",
+      "url": "https://api-docs.idcerberus.com/mcp-manifest.json",
+      "contentType": "application/json",
+      "use": "Mapa de recursos, ordem de leitura, ferramentas sugeridas e regras para MCPs/agentes."
+    },
+    {
+      "name": "examples",
+      "url": "https://api-docs.idcerberus.com/examples/",
+      "contentType": "text/plain",
+      "use": "Arquivos curl prontos para testes em homologação."
+    }
+  ],
+  "suggestedTools": [
+    {
+      "name": "search_services",
+      "source": "services-catalog.json",
+      "purpose": "Encontrar services por texto, tag, categoria, campo de entrada ou alias.",
+      "inputs": [
+        "query",
+        "category",
+        "tag",
+        "field"
+      ],
+      "returns": [
+        "service",
+        "callingAlias",
+        "name",
+        "requestFields",
+        "documentationUrl"
+      ]
+    },
+    {
+      "name": "get_service",
+      "source": "services-catalog.json",
+      "purpose": "Buscar o contrato de um service específico.",
+      "inputs": [
+        "service"
+      ],
+      "returns": [
+        "payloadExample",
+        "successResponseExample",
+        "commonErrors",
+        "curlExampleUrls"
+      ]
+    },
+    {
+      "name": "get_curl_example",
+      "source": "examples/*.curl",
+      "purpose": "Retornar exemplo de curl pronto para homologação.",
+      "inputs": [
+        "service",
+        "useCase"
+      ],
+      "returns": [
+        "curl"
+      ]
+    },
+    {
+      "name": "read_full_context",
+      "source": "llms-full.txt",
+      "purpose": "Consultar contexto completo quando o catálogo não for suficiente.",
+      "inputs": [
+        "topic"
+      ],
+      "returns": [
+        "relevant_sections"
+      ]
+    }
+  ],
+  "safetyRules": [
+    "Operar como fonte somente leitura da documentação.",
+    "Não chamar HML, produção, banco de dados ou endpoints reais da idCerberus.",
+    "Não solicitar, armazenar ou repetir client, secret, JWT, CPF, CNPJ ou imagens reais.",
+    "Usar placeholders em exemplos e preferir homologação como ambiente padrão.",
+    "Não inventar service, campo, endpoint ou retorno ausente da documentação.",
+    "Usar `result` como contrato público da API e ignorar `fieldsOutput`/metadados internos."
+  ],
+  "catalogSummary": {
+    "totalServices": 90,
+    "categories": {
+      "Pessoa Física": 64,
+      "Pessoa Jurídica": 26
+    },
+    "tags": [
+      "assertiva",
+      "aws",
+      "beneficios-sociais",
+      "bigdatacorp",
+      "cadastral",
+      "cartao-cnpj",
+      "cnh",
+      "cnpj",
+      "compliance",
+      "comprovante-endereco",
+      "contato",
+      "cpf",
+      "dominios",
+      "face",
+      "imagem",
+      "juridico",
+      "murabei",
+      "ocr",
+      "quantum",
+      "react",
+      "rg",
+      "risco-credito",
+      "textract"
+    ],
+    "examples": [
+      {
+        "title": "Gerar token em homologação",
+        "url": "https://api-docs.idcerberus.com/examples/auth.hml.curl"
+      },
+      {
+        "title": "Gerar token em produção",
+        "url": "https://api-docs.idcerberus.com/examples/auth.prod.curl"
+      },
+      {
+        "title": "Consulta simples de CPF em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl"
+      },
+      {
+        "title": "Consulta simples de CPF em produção",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cpf.prod.curl"
+      },
+      {
+        "title": "Consulta simples de CNPJ em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      },
+      {
+        "title": "Consulta simples de CNPJ em produção",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cnpj.prod.curl"
+      },
+      {
+        "title": "OCR de CNH em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-cnh.hml.curl"
+      },
+      {
+        "title": "OCR de RG em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-rg.hml.curl"
+      },
+      {
+        "title": "OCR de cartão CNPJ em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-cnpj-card.hml.curl"
+      },
+      {
+        "title": "OCR de comprovante de endereço em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-proof-of-address.hml.curl"
+      },
+      {
+        "title": "Face Index em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-face-index.hml.curl"
+      },
+      {
+        "title": "Risco de crédito PJ em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-credit-risk-company.hml.curl"
+      },
+      {
+        "title": "Score de crédito PF em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-credit-score.hml.curl"
+      },
+      {
+        "title": "FaceMatch em HML",
+        "url": "https://api-docs.idcerberus.com/examples/facematch.hml.curl"
+      },
+      {
+        "title": "Documentoscopia em HML",
+        "url": "https://api-docs.idcerberus.com/examples/documentoscopia.hml.curl"
+      }
+    ]
+  },
+  "exampleQuestionsByUseCase": {
+    "ocr": [
+      "Qual service devo usar para OCR de CNH?",
+      "Como montar payload para OCR de RG frente e verso?",
+      "Qual retorno público esperado do OCR de cartão CNPJ?",
+      "O que conferir quando o OCR retorna result vazio?"
+    ],
+    "cpfCnpj": [
+      "Qual service usar para consultar CPF na Receita Federal?",
+      "Qual payload mínimo para consultar CNPJ na Receita Federal?",
+      "Como diferenciar alias de chamada e alias técnico do parceiro?"
+    ],
+    "faceBiometrics": [
+      "Como testar SERVICE_FACE_INDEX em HML?",
+      "Face Index confirma identidade ou só busca face na base?",
+      "Qual imagem devo usar para Face Index?"
+    ],
+    "errors": [
+      "O que significa Don't have access to the service?",
+      "O que fazer quando a resposta vem com onboardingStatus ERROR?",
+      "Como investigar uma chamada usando externalId?"
+    ],
+    "payloadAndCurl": [
+      "Gere um curl de homologação para SERVICE_CREDIT_RISK_COMPANY.",
+      "Gere um curl de homologação para SERVICE_OCR_PROOF_OF_ADDRESS.",
+      "Quais headers são obrigatórios no POST /api/service-api?"
+    ]
+  }
+}

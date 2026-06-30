@@ -26,6 +26,7 @@ copie a URL completa.
 | [`llms-full.txt`](https://api-docs.idcerberus.com/llms-full.txt) | Conteúdo completo consolidado dos guias, API Reference e OpenAPI. |
 | [`llms-api-reference.txt`](https://api-docs.idcerberus.com/llms-api-reference.txt) | Versão operacional do API Reference, com services e exemplos de curl prontos para consulta por IA. |
 | [`services-catalog.json`](https://api-docs.idcerberus.com/services-catalog.json) | Catálogo estruturado em JSON para automações, validadores e agentes. |
+| [`mcp-manifest.json`](https://api-docs.idcerberus.com/mcp-manifest.json) | Manifesto para MCPs e agentes, com recursos, ordem de leitura, regras e ferramentas sugeridas. |
 | [`examples/auth.hml.curl`](https://api-docs.idcerberus.com/examples/auth.hml.curl) | Exemplo pronto de autenticação em homologação. |
 
 ## Uso recomendado
@@ -61,6 +62,56 @@ Para automações que precisam de dados estruturados, use:
 ```txt
 https://api-docs.idcerberus.com/services-catalog.json
 ```
+
+Para configurar um MCP ou agente com a lista de recursos recomendados, use:
+
+```txt
+https://api-docs.idcerberus.com/mcp-manifest.json
+```
+
+## Uso como base para MCP
+
+Esses arquivos já servem como base para um MCP da documentação. A ideia é o MCP consultar os arquivos publicados e responder perguntas sobre services, payloads, exemplos e guias sem chamar a API idCerberus.
+
+Ordem recomendada:
+
+1. Use `llms.txt` como manifesto inicial.
+2. Use `services-catalog.json` para busca estruturada por `service`, nome, categoria, campo ou termo de busca.
+3. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.
+4. Use `llms-api-reference.txt` para payload, response resumido e exemplo por service.
+5. Use os arquivos `examples/*.curl` para devolver chamadas prontas.
+6. Use `llms-full.txt` quando precisar de contexto completo dos guias e da API Reference.
+
+Um MCP da documentação deve ser somente leitura. Ele não precisa chamar HML, produção, banco ou endpoint real. Também não deve pedir token, `client`, `secret`, CPF, CNPJ ou imagem real.
+
+### Fluxo prático para usar no MCP
+
+1. Leia `mcp-manifest.json` para descobrir quais arquivos existem, em qual ordem usar e quais regras seguir.
+2. Busque o service em `services-catalog.json`. Esse arquivo traz alias de chamada, campos, tags, erros comuns, exemplo de payload e dicas para agente.
+3. Abra `llms-api-reference.txt` quando precisar explicar o contrato do service com mais texto.
+4. Use `examples/*.curl` quando a resposta precisar de uma chamada pronta para copiar.
+5. Use `llms-full.txt` só quando a pergunta depender do contexto completo dos guias.
+
+Na prática, o MCP não precisa “adivinhar” nada. Primeiro ele encontra o service no catálogo, depois usa o guia certo para explicar payload, retorno e erro comum.
+
+### O que cada arquivo resolve
+
+| Pergunta | Melhor fonte |
+| --- | --- |
+| Qual service devo usar? | `services-catalog.json` |
+| Qual alias vai no body? | `services-catalog.json` em `callingAlias` |
+| Quais campos mandar? | `services-catalog.json` em `requiredFields`, `optionalFields` e `payloadExample` |
+| Como testar no Postman/curl? | `examples/*.curl` e `llms-api-reference.txt` |
+| O que fazer com erro comum? | `commonErrors` no catálogo e `llms-api-reference.txt` |
+| Preciso de uma explicação completa do fluxo? | `llms-full.txt` |
+
+Exemplos de perguntas que essa base deve responder:
+
+- OCR: qual service usar para RG, CNH, cartão CNPJ ou comprovante de endereço?
+- CPF/CNPJ: qual payload mínimo para Receita Federal, score, risco ou cadastro?
+- Face: como testar `SERVICE_FACE_INDEX` e qual imagem usar?
+- Erro: o que significa `Don't have access to the service` ou `onboardingStatus: ERROR`?
+- Curl: como montar uma chamada de homologação sem usar dado real?
 
 ## Exemplo de prompt
 

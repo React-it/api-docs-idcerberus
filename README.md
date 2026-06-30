@@ -112,6 +112,7 @@ O projeto gera arquivos em texto simples e JSON para ChatGPT, Claude, Cursor, Wi
 - `llms-full.txt`: conteúdo completo dos guias, API Reference e OpenAPI.
 - `llms-api-reference.txt`: resumo operacional do API Reference com payloads, responses e exemplos de curl.
 - `services-catalog.json`: catálogo estruturado dos services documentados.
+- `mcp-manifest.json`: manifesto para MCPs e agentes com recursos, regras e ferramentas sugeridas.
 - `examples/*.curl`: chamadas prontas para homologação e produção.
 
 Arquivos publicados:
@@ -121,6 +122,7 @@ Arquivos publicados:
 - `https://api-docs.idcerberus.com/llms-full.txt`
 - `https://api-docs.idcerberus.com/llms-api-reference.txt`
 - `https://api-docs.idcerberus.com/services-catalog.json`
+- `https://api-docs.idcerberus.com/mcp-manifest.json`
 
 ## Geração de Artifacts
 
@@ -186,6 +188,7 @@ api-docs-idcerberus/
 |-- llms-full.txt
 |-- llms-api-reference.txt
 |-- services-catalog.json
+|-- mcp-manifest.json
 |-- package.json
 `-- README.md
 ```

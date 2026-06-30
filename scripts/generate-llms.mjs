@@ -492,6 +492,281 @@ function mergePartnerApiServices(catalog) {
   return [...catalog, ...extras].sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
 }
 
+function aliasRowsForService(service) {
+  const serviceAlias = service.service;
+  return serviceAliasRows.filter(([documentedAlias, callingAlias]) => (
+    serviceAlias === callingAlias || documentedAlias.split(', ').includes(serviceAlias)
+  ));
+}
+
+function callingAliasForService(service) {
+  return aliasRowsForService(service)[0]?.[1] || service.service;
+}
+
+function partnerAliasesForService(service) {
+  const aliases = aliasRowsForService(service)
+    .flatMap(([documentedAlias]) => documentedAlias.split(', '))
+    .filter((alias) => alias !== service.service);
+
+  return [...new Set(aliases)];
+}
+
+function optionalRequestFields(service) {
+  return service.requestExample
+    .split(/\r?\n/)
+    .filter((line) => /\bopcional\b/i.test(line))
+    .map((line) => line.match(/^\s*([A-Za-z0-9_]+):/)?.[1])
+    .filter(Boolean)
+    .filter((field) => field !== 'service');
+}
+
+function requiredRequestFields(service) {
+  const optional = new Set(optionalRequestFields(service));
+  return service.requestFields.filter((field) => !optional.has(field));
+}
+
+function payloadExampleForService(service) {
+  return jsonBodyFromRequestExample(service.requestExample);
+}
+
+function addTag(tags, condition, tag) {
+  if (condition) tags.add(tag);
+}
+
+function serviceTags(service) {
+  const tags = new Set();
+  const fields = service.requestFields || [];
+  const searchable = normalizeText([
+    service.service,
+    service.documentedAlias,
+    service.name,
+    service.category,
+    service.responseSummary,
+    fields.join(' '),
+    ...(service.searchTerms || []),
+  ].join(' '));
+
+  addTag(tags, fields.includes('cpf') || /\bcpf\b/.test(searchable), 'cpf');
+  addTag(tags, fields.includes('cnpj') || /\bcnpj\b/.test(searchable), 'cnpj');
+  addTag(tags, /ocr|image|base64|documento|cartao|comprovante|emancipacao/.test(searchable), 'imagem');
+  addTag(tags, /ocr/.test(searchable), 'ocr');
+  addTag(tags, /rg/.test(searchable), 'rg');
+  addTag(tags, /cnh/.test(searchable), 'cnh');
+  addTag(tags, /cartao cnpj|cartao-cnpj/.test(searchable), 'cartao-cnpj');
+  addTag(tags, /comprovante|endereco/.test(searchable), 'comprovante-endereco');
+  addTag(tags, /face|selfie|biometria/.test(searchable), 'face');
+  addTag(tags, /bigdatacorp/.test(searchable), 'bigdatacorp');
+  addTag(tags, /aws|textract/.test(searchable), 'aws');
+  addTag(tags, /textract/.test(searchable), 'textract');
+  addTag(tags, /react/.test(searchable), 'react');
+  addTag(tags, /assertiva/.test(searchable), 'assertiva');
+  addTag(tags, /quantum/.test(searchable), 'quantum');
+  addTag(tags, /murabei/.test(searchable), 'murabei');
+  addTag(tags, /credito|score|risco|inadimplencia/.test(searchable), 'risco-credito');
+  addTag(tags, /juridic|processos|antecedentes|protesto/.test(searchable), 'juridico');
+  addTag(tags, /compliance|bet/.test(searchable), 'compliance');
+  addTag(tags, /beneficios|social/.test(searchable), 'beneficios-sociais');
+  addTag(tags, /dominios/.test(searchable), 'dominios');
+  addTag(tags, /receita|rfb|cadastrais|cadastral/.test(searchable), 'cadastral');
+  addTag(tags, /telefone|email|contato/.test(searchable), 'contato');
+
+  return [...tags].sort();
+}
+
+function sampleResultForService(service) {
+  const tags = new Set(serviceTags(service));
+  const result = {};
+  const fields = new Set(service.requestFields || []);
+
+  if (fields.has('cpf') || tags.has('cpf')) result.cpf = '00000000000';
+  if (fields.has('cnpj') || tags.has('cnpj')) result.cnpj = '00000000000000';
+
+  if (service.service === 'SERVICE_FACE_INDEX') {
+    return { faceFound: true, similarity: 99.9, cpf: '00000000000' };
+  }
+
+  if (service.service === 'SERVICE_OCR') {
+    return { docType: 'CNH', cpf: '00000000000', name: 'NOME DO CLIENTE' };
+  }
+
+  if (service.service === 'SERVICE_OCR_CNPJ_CARD') {
+    return { cnpj: '00000000000000', docType: 'CNPJ_CARD', genericOcr: 'texto extraído do cartão CNPJ' };
+  }
+
+  if (service.service === 'SERVICE_OCR_PROOF_OF_ADDRESS') {
+    return { docType: 'COMPROVANTE_ENDERECO', fullAddress: 'Endereço extraído do comprovante', genericOcr: 'texto extraído do comprovante' };
+  }
+
+  if (service.service === 'SERVICE_OCR_EMANCIPATION') {
+    return { docType: 'EMANCIPATION_DOCUMENT', genericOcr: 'texto extraído do documento' };
+  }
+
+  if (service.service === 'SERVICE_CREDIT_RISK_COMPANY') {
+    return {
+      cnpj: '00000000000000',
+      creditRisk: {
+        score: '000',
+        rating: 'A',
+        expectedDefault: '0.00',
+        legalProcess: false,
+      },
+    };
+  }
+
+  if (service.service === 'SERVICE_CREDIT_SCORE') {
+    return { cpf: '00000000000', score: '000', riskLevel: 'BAIXO' };
+  }
+
+  return Object.keys(result).length ? result : { message: service.responseSummary };
+}
+
+function successResponseExampleForService(service) {
+  return {
+    result: sampleResultForService(service),
+    status: {
+      code: 200,
+      message: 'Consulta realizada com sucesso',
+    },
+    onboardingStatus: 'APPROVED',
+    externalId: '{externalId}',
+  };
+}
+
+function commonErrorsForService(service) {
+  const tags = new Set(serviceTags(service));
+  const errors = [
+    {
+      statusCode: 400,
+      message: "Don't have access to the service",
+      cause: 'Produto sem service ativo/API habilitada ou alias de chamada incorreto.',
+      action: 'Conferir produto, alias configurado e flag de API antes de testar de novo.',
+    },
+  ];
+
+  if (tags.has('imagem') || tags.has('face')) {
+    errors.push({
+      statusCode: 400,
+      message: 'Imagem obrigatória não encontrada',
+      cause: 'Payload sem `image1`, `image2`, `selfie1`, URL ou `key` esperado pelo service.',
+      action: 'Enviar base64 puro, URL válida ou key existente conforme o guia do service.',
+    });
+  }
+
+  if (tags.has('ocr')) {
+    errors.push({
+      statusCode: 400,
+      message: 'Não foi possível ler o documento',
+      cause: 'Imagem ilegivel, documento errado ou campo principal nao encontrado no OCR.',
+      action: 'Testar imagem nítida, documento correto e payload mínimo indicado na documentação.',
+    });
+  }
+
+  if (tags.has('face')) {
+    errors.push({
+      statusCode: 400,
+      message: 'Face nao encontrada na base',
+      cause: 'Selfie nao teve correspondencia na base de faces ou nao foi possivel detectar rosto.',
+      action: 'Usar selfie real, frontal e nítida. Não usar foto de documento.',
+    });
+  }
+
+  errors.push({
+    statusCode: 500,
+    message: 'Falha ao realizar consulta',
+    cause: 'Falha técnica no fluxo interno, storage ou parceiro externo.',
+    action: 'Investigar com `externalId`, horario, ambiente e service chamado.',
+  });
+
+  return errors;
+}
+
+function curlExamplesForService(service, exampleFiles) {
+  const fileByService = [
+    ['SERVICE_OCR', ['service-api-ocr-cnh.hml.curl', 'service-api-ocr-rg.hml.curl']],
+    ['SERVICE_OCR_CNPJ_CARD', ['service-api-ocr-cnpj-card.hml.curl']],
+    ['SERVICE_OCR_PROOF_OF_ADDRESS', ['service-api-ocr-proof-of-address.hml.curl']],
+    ['SERVICE_FACE_INDEX', ['service-api-face-index.hml.curl']],
+    ['SERVICE_CREDIT_RISK_COMPANY', ['service-api-credit-risk-company.hml.curl']],
+    ['SERVICE_CREDIT_SCORE', ['service-api-credit-score.hml.curl']],
+  ].find(([alias]) => alias === service.service)?.[1];
+
+  const fallbackFiles = [];
+  if (!fileByService && service.requestFields?.includes('cpf')) fallbackFiles.push('service-api-cpf.hml.curl');
+  if (!fileByService && service.requestFields?.includes('cnpj')) fallbackFiles.push('service-api-cnpj.hml.curl');
+
+  const wanted = fileByService || fallbackFiles;
+  return exampleFiles.filter((example) => wanted.includes(example.file)).map((example) => example.url);
+}
+
+function mcpHintsForService(service, curlExampleUrls) {
+  const tags = new Set(serviceTags(service));
+  const requiredFields = requiredRequestFields(service);
+  const optionalFields = optionalRequestFields(service);
+  const notes = [];
+
+  if (tags.has('ocr')) {
+    notes.push('Use imagem real e legível do documento. Base64 deve ser puro, sem prefixo data:image.');
+    notes.push('Se o OCR não extrair um campo, explique que o retorno depende da leitura da imagem e não invente valor.');
+  }
+
+  if (tags.has('face')) {
+    notes.push('Use selfie real, frontal e nítida. Não use foto de RG, CNH ou print de documento.');
+    notes.push('Face Index busca correspondência na base de faces; isso não é validação definitiva de identidade.');
+  }
+
+  if (tags.has('risco-credito')) {
+    notes.push('Explique score, rating e risco apenas quando esses campos aparecerem no result.');
+  }
+
+  if (tags.has('bigdatacorp') || tags.has('assertiva') || tags.has('quantum') || tags.has('aws')) {
+    notes.push('Pode depender de provider externo, massa disponível e configuração do produto.');
+  }
+
+  return {
+    bestContext: 'llms-api-reference.txt',
+    readBeforeAnswering: [
+      'services-catalog.json',
+      curlExampleUrls.length ? 'examples/*.curl' : null,
+      'llms-api-reference.txt',
+    ].filter(Boolean),
+    useCurlExample: curlExampleUrls.length > 0,
+    needsImage: tags.has('imagem') || tags.has('ocr') || tags.has('face'),
+    needsRealDocument: tags.has('ocr'),
+    needsSelfie: tags.has('face'),
+    needsCpf: requiredFields.includes('cpf') || optionalFields.includes('cpf'),
+    needsCnpj: requiredFields.includes('cnpj') || optionalFields.includes('cnpj'),
+    publicResponseField: 'result',
+    avoidFields: ['fieldsOutput', 'required', 'enabled', 'valid', 'callService', 'nextStep', 'services'],
+    doNotDo: [
+      'Não inventar payload, retorno ou service fora do catálogo.',
+      'Não solicitar token, client, secret, CPF, CNPJ ou imagem real.',
+      'Não chamar HML ou produção; usar apenas a documentação como fonte.',
+    ],
+    notes,
+  };
+}
+
+function enrichServiceForMcp(service, exampleFiles) {
+  const callingAlias = callingAliasForService(service);
+  const partnerAliases = partnerAliasesForService(service);
+  const curlExampleUrls = curlExamplesForService(service, exampleFiles);
+
+  return {
+    ...service,
+    callingAlias,
+    partnerAliases,
+    requiredFields: requiredRequestFields(service),
+    optionalFields: optionalRequestFields(service),
+    payloadExample: payloadExampleForService(service),
+    successResponseExample: successResponseExampleForService(service),
+    commonErrors: commonErrorsForService(service),
+    curlExampleUrl: curlExampleUrls[0] || null,
+    curlExampleUrls,
+    mcpHints: mcpHintsForService(service, curlExampleUrls),
+    tags: serviceTags(service),
+  };
+}
+
 const activeServiceApiAliases = new Set([
   'SERVICE_ACTIVITIES_INDICATORS',
   'SERVICE_ACTIVE_DEBT_PF_BIGDATACORP',
@@ -2094,8 +2369,9 @@ const mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
 }));
 const openApiContent = read(openApiPath);
 const openApiSummary = extractOpenApiSummary(openApiContent);
-const servicesCatalog = filterActiveServiceApiServices(mergePartnerApiServices(buildServicesCatalog(openApiSummary.services)));
-const exampleFiles = writeExampleFiles(servicesCatalog);
+const baseServicesCatalog = filterActiveServiceApiServices(mergePartnerApiServices(buildServicesCatalog(openApiSummary.services)));
+const exampleFiles = writeExampleFiles(baseServicesCatalog);
+const servicesCatalog = baseServicesCatalog.map((service) => enrichServiceForMcp(service, exampleFiles));
 function pushLlmFileMap(lines) {
   lines.push('## Como escolher o arquivo certo');
   lines.push('');
@@ -2105,7 +2381,45 @@ function pushLlmFileMap(lines) {
   lines.push(`| Gerar integração, curl ou escolher service | ${siteUrl}/llms-small.txt |`);
   lines.push(`| Consultar payloads e responses por service | ${siteUrl}/llms-api-reference.txt |`);
   lines.push(`| Fazer busca estruturada por automação | ${siteUrl}/services-catalog.json |`);
+  lines.push(`| Configurar MCP ou agente com recursos estruturados | ${siteUrl}/mcp-manifest.json |`);
   lines.push(`| Responder com todo o contexto da documentação | ${siteUrl}/llms-full.txt |`);
+  lines.push('');
+}
+
+function pushMcpUsageNotes(lines) {
+  lines.push('## Uso como base para MCP e agentes');
+  lines.push('');
+  lines.push('Estes arquivos podem ser usados como fonte de contexto para um MCP da documentação. O MCP deve consultar a documentação, não executar chamadas na API idCerberus.');
+  lines.push('');
+  lines.push('### Ordem recomendada de leitura');
+  lines.push('');
+  lines.push('1. Leia `llms.txt` como manifesto inicial da documentação.');
+  lines.push('2. Use `services-catalog.json` para busca estruturada por `service`, nome, categoria, campos e termos de busca.');
+  lines.push('3. Use `mcp-manifest.json` para listar recursos, ferramentas sugeridas, regras de segurança e ordem de leitura.');
+  lines.push('4. Use `llms-api-reference.txt` para payloads, responses resumidos e exemplos por service.');
+  lines.push('5. Use `examples/*.curl` quando a resposta precisar de um curl pronto.');
+  lines.push('6. Use `llms-full.txt` apenas quando a pergunta exigir contexto completo dos guias, API Reference e OpenAPI.');
+  lines.push('');
+  lines.push('### Recursos que um MCP pode expor');
+  lines.push('');
+  lines.push('| Recurso | Uso no MCP |');
+  lines.push('| --- | --- |');
+  lines.push(`| ${siteUrl}/llms.txt | Manifesto, regras, URLs principais e atalhos. |`);
+  lines.push(`| ${siteUrl}/llms-small.txt | Contexto curto para gerar integração, curl e explicação. |`);
+  lines.push(`| ${siteUrl}/llms-api-reference.txt | Payloads, responses e exemplos por service. |`);
+  lines.push(`| ${siteUrl}/llms-full.txt | Contexto completo para perguntas amplas. |`);
+  lines.push(`| ${siteUrl}/services-catalog.json | Busca estruturada e filtros por service/categoria/campo. |`);
+  lines.push(`| ${siteUrl}/mcp-manifest.json | Manifesto com recursos, ferramentas sugeridas, regras e ordem de leitura. |`);
+  lines.push(`| ${siteUrl}/examples/*.curl | Exemplos prontos para copiar e testar. |`);
+  lines.push('');
+  lines.push('### Regras para o MCP');
+  lines.push('');
+  lines.push('- Operar como fonte somente leitura da documentação.');
+  lines.push('- Não chamar HML, produção, banco ou endpoints idCerberus.');
+  lines.push('- Não solicitar nem armazenar `client`, `secret`, JWT, CPF, CNPJ ou imagem real.');
+  lines.push('- Usar homologação como ambiente padrão quando gerar exemplos.');
+  lines.push('- Se o service não existir no catálogo, responder que precisa ser confirmado antes de integrar.');
+  lines.push('- Preferir `result` como contrato público; não usar `fieldsOutput` ou metadados internos.');
   lines.push('');
 }
 
@@ -2190,6 +2504,158 @@ function pushLlmCommonErrors(lines) {
   lines.push('| Campo esperado ausente | O campo pode não existir no documento/base ou não ter sido extraído. | Não inventar valor; explicar que o retorno traz apenas dados disponíveis. |');
   lines.push('');
 }
+
+function buildMcpManifest(servicesCatalog, exampleFiles) {
+  const serviceCountByCategory = servicesCatalog.reduce((acc, service) => {
+    acc[service.category] = (acc[service.category] || 0) + 1;
+    return acc;
+  }, {});
+
+  const tags = [...new Set(servicesCatalog.flatMap((service) => service.tags || []))].sort();
+
+  return {
+    name: 'idcerberus-docs',
+    title: 'idCerberus API Docs',
+    description: 'Manifesto somente leitura para MCPs e agentes consultarem a documentação pública da API idCerberus.',
+    version: '1.0.0',
+    baseUrl: siteUrl,
+    generatedFrom: [
+      'docs.json',
+      'api-reference/openapi.json',
+      'guides/*.mdx',
+      'api-reference/*.mdx',
+      'services-catalog.json',
+    ],
+    recommendedReadOrder: [
+      `${siteUrl}/llms.txt`,
+      `${siteUrl}/services-catalog.json`,
+      `${siteUrl}/mcp-manifest.json`,
+      `${siteUrl}/llms-api-reference.txt`,
+      `${siteUrl}/examples/*.curl`,
+      `${siteUrl}/llms-full.txt`,
+    ],
+    resources: [
+      {
+        name: 'llms.txt',
+        url: `${siteUrl}/llms.txt`,
+        contentType: 'text/plain',
+        use: 'Manifesto inicial, regras principais, atalhos e URLs importantes.',
+      },
+      {
+        name: 'llms-small.txt',
+        url: `${siteUrl}/llms-small.txt`,
+        contentType: 'text/plain',
+        use: 'Contexto curto para gerar payload, curl e explicação de integração.',
+      },
+      {
+        name: 'llms-api-reference.txt',
+        url: `${siteUrl}/llms-api-reference.txt`,
+        contentType: 'text/plain',
+        use: 'Resumo operacional dos services, payloads e responses esperados.',
+      },
+      {
+        name: 'llms-full.txt',
+        url: `${siteUrl}/llms-full.txt`,
+        contentType: 'text/plain',
+        use: 'Contexto completo para perguntas amplas ou comparação entre guias.',
+      },
+      {
+        name: 'services-catalog.json',
+        url: `${siteUrl}/services-catalog.json`,
+        contentType: 'application/json',
+        use: 'Catálogo estruturado para buscar services por alias, campo, categoria, tag ou erro comum.',
+      },
+      {
+        name: 'mcp-manifest.json',
+        url: `${siteUrl}/mcp-manifest.json`,
+        contentType: 'application/json',
+        use: 'Mapa de recursos, ordem de leitura, ferramentas sugeridas e regras para MCPs/agentes.',
+      },
+      {
+        name: 'examples',
+        url: `${siteUrl}/examples/`,
+        contentType: 'text/plain',
+        use: 'Arquivos curl prontos para testes em homologação.',
+      },
+    ],
+    suggestedTools: [
+      {
+        name: 'search_services',
+        source: 'services-catalog.json',
+        purpose: 'Encontrar services por texto, tag, categoria, campo de entrada ou alias.',
+        inputs: ['query', 'category', 'tag', 'field'],
+        returns: ['service', 'callingAlias', 'name', 'requestFields', 'documentationUrl'],
+      },
+      {
+        name: 'get_service',
+        source: 'services-catalog.json',
+        purpose: 'Buscar o contrato de um service específico.',
+        inputs: ['service'],
+        returns: ['payloadExample', 'successResponseExample', 'commonErrors', 'curlExampleUrls'],
+      },
+      {
+        name: 'get_curl_example',
+        source: 'examples/*.curl',
+        purpose: 'Retornar exemplo de curl pronto para homologação.',
+        inputs: ['service', 'useCase'],
+        returns: ['curl'],
+      },
+      {
+        name: 'read_full_context',
+        source: 'llms-full.txt',
+        purpose: 'Consultar contexto completo quando o catálogo não for suficiente.',
+        inputs: ['topic'],
+        returns: ['relevant_sections'],
+      },
+    ],
+    safetyRules: [
+      'Operar como fonte somente leitura da documentação.',
+      'Não chamar HML, produção, banco de dados ou endpoints reais da idCerberus.',
+      'Não solicitar, armazenar ou repetir client, secret, JWT, CPF, CNPJ ou imagens reais.',
+      'Usar placeholders em exemplos e preferir homologação como ambiente padrão.',
+      'Não inventar service, campo, endpoint ou retorno ausente da documentação.',
+      'Usar `result` como contrato público da API e ignorar `fieldsOutput`/metadados internos.',
+    ],
+    catalogSummary: {
+      totalServices: servicesCatalog.length,
+      categories: serviceCountByCategory,
+      tags,
+      examples: exampleFiles.map((example) => ({
+        title: example.title,
+        url: example.url,
+      })),
+    },
+    exampleQuestionsByUseCase: {
+      ocr: [
+        'Qual service devo usar para OCR de CNH?',
+        'Como montar payload para OCR de RG frente e verso?',
+        'Qual retorno público esperado do OCR de cartão CNPJ?',
+        'O que conferir quando o OCR retorna result vazio?',
+      ],
+      cpfCnpj: [
+        'Qual service usar para consultar CPF na Receita Federal?',
+        'Qual payload mínimo para consultar CNPJ na Receita Federal?',
+        'Como diferenciar alias de chamada e alias técnico do parceiro?',
+      ],
+      faceBiometrics: [
+        'Como testar SERVICE_FACE_INDEX em HML?',
+        'Face Index confirma identidade ou só busca face na base?',
+        'Qual imagem devo usar para Face Index?',
+      ],
+      errors: [
+        "O que significa Don't have access to the service?",
+        'O que fazer quando a resposta vem com onboardingStatus ERROR?',
+        'Como investigar uma chamada usando externalId?',
+      ],
+      payloadAndCurl: [
+        'Gere um curl de homologação para SERVICE_CREDIT_RISK_COMPANY.',
+        'Gere um curl de homologação para SERVICE_OCR_PROOF_OF_ADDRESS.',
+        'Quais headers são obrigatórios no POST /api/service-api?',
+      ],
+    },
+  };
+}
+
 const llmRules = [
   '## Regras para assistentes de IA',
   '',
@@ -2205,6 +2671,7 @@ const llmRules = [
 ].join('\n');
 
 write(path.join(root, 'services-catalog.json'), `${JSON.stringify(servicesCatalog, null, 2)}\n`);
+write(path.join(root, 'mcp-manifest.json'), `${JSON.stringify(buildMcpManifest(servicesCatalog, exampleFiles), null, 2)}\n`);
 write(path.join(root, 'llms-api-reference.txt'), renderApiReferenceText(servicesCatalog));
 write(path.join(root, 'guides', 'indice-de-services.mdx'), renderServicesIndex(servicesCatalog));
 write(path.join(root, 'api-reference', 'como-executar-service.mdx'), renderServiceQuickstartPage());
@@ -2235,6 +2702,7 @@ llmsLines.push('- Documentação publicada: `https://api-docs.idcerberus.com/`')
 llmsLines.push('');
 llmsLines.push(llmRules);
 pushLlmFileMap(llmsLines);
+pushMcpUsageNotes(llmsLines);
 pushServiceApiContract(llmsLines);
 pushFeaturedServiceShortcuts(llmsLines, servicesCatalog);
 pushOcrLlmNotes(llmsLines);
@@ -2266,6 +2734,7 @@ llmsLines.push(`- [llms-small.txt](${siteUrl}/llms-small.txt): resumo operaciona
 llmsLines.push(`- [llms-full.txt](${siteUrl}/llms-full.txt): versão consolidada dos guias e da API Reference.`);
 llmsLines.push(`- [llms-api-reference.txt](${siteUrl}/llms-api-reference.txt): referência operacional dos services com exemplos de curl.`);
 llmsLines.push(`- [services-catalog.json](${siteUrl}/services-catalog.json): catálogo estruturado para ferramentas e automações.`);
+llmsLines.push(`- [mcp-manifest.json](${siteUrl}/mcp-manifest.json): manifesto para MCPs e agentes com recursos, regras e ferramentas sugeridas.`);
 llmsLines.push('');
 llmsLines.push('## Exemplos curl');
 llmsLines.push('');
@@ -2280,6 +2749,7 @@ smallLines.push('Use este arquivo quando precisar de contexto rápido para integ
 smallLines.push('');
 smallLines.push(llmRules);
 pushLlmFileMap(smallLines);
+pushMcpUsageNotes(smallLines);
 pushServiceApiContract(smallLines);
 pushFeaturedServiceShortcuts(smallLines, servicesCatalog);
 pushOcrLlmNotes(smallLines);
@@ -2326,6 +2796,7 @@ smallLines.push('## Arquivos auxiliares');
 smallLines.push('');
 smallLines.push(`- Catálogo JSON: ${siteUrl}/services-catalog.json`);
 smallLines.push(`- API Reference para LLM: ${siteUrl}/llms-api-reference.txt`);
+smallLines.push(`- Manifesto MCP: ${siteUrl}/mcp-manifest.json`);
 smallLines.push('- Exemplos curl: ' + siteUrl + '/examples/auth.hml.curl');
 smallLines.push('- Lista de exemplos curl: ' + siteUrl + '/llms.txt#exemplos-curl');
 
@@ -2343,6 +2814,7 @@ fullLines.push('- Produção: `https://backoffice.idcerberus.com`');
 fullLines.push('');
 fullLines.push(llmRules);
 pushLlmFileMap(fullLines);
+pushMcpUsageNotes(fullLines);
 pushServiceApiContract(fullLines);
 pushServiceAliasLlmNotes(fullLines);
 pushFeaturedServiceShortcuts(fullLines, servicesCatalog);
@@ -2388,6 +2860,7 @@ console.log('Generated llms-small.txt.');
 console.log(`Generated llms-full.txt with ${servicesCatalog.length} service examples.`);
 console.log('Generated llms-api-reference.txt.');
 console.log('Generated services-catalog.json.');
+console.log('Generated mcp-manifest.json.');
 console.log('Generated guides/indice-de-services.mdx.');
 console.log('Generated api-reference/como-executar-service.mdx.');
 console.log('Generated api-reference/services-por-caso-de-uso.mdx.');
