@@ -4,11 +4,34 @@ import path from 'node:path';
 const root = process.cwd();
 const ignoredDirs = new Set(['.git', '.idea', '.mint-export-check', 'node_modules']);
 const allowedExtensions = new Set(['.md', '.mdx', '.json', '.mjs', '.txt']);
+const mojibakeFragments = [
+  'Ã§',
+  'Ã£',
+  'Ã¡',
+  'Ã©',
+  'Ãª',
+  'Ã­',
+  'Ã³',
+  'Ãº',
+  'Ãµ',
+  'Ã‡',
+  'Ãƒ',
+  'Ã‰',
+  'Ãš',
+  'Â´',
+  'Âº',
+  'Âª',
+  'â€™',
+  'â€œ',
+  'â€�',
+  'â€',
+  '�',
+];
 
 const checks = [
   {
     name: 'mojibake',
-    pattern: /(\u00c3[\u0080-\u00bf]|\u00c2[\u0080-\u00bf]|�|â€“|â€”|â€œ|â€|â€˜|â€™)/,
+    test: (line) => mojibakeFragments.some((fragment) => line.includes(fragment)),
   },
   {
     name: 'texto quebrado',
@@ -39,6 +62,11 @@ function walk(dir, files = []) {
   return files;
 }
 
+function failsCheck(check, line) {
+  if (check.test) return check.test(line);
+  return check.pattern.test(line);
+}
+
 const findings = [];
 const internalLinks = [];
 const openApiRequestExamples = new Set();
@@ -57,7 +85,7 @@ for (const file of walk(root)) {
 
   for (const [index, line] of lines.entries()) {
     for (const check of checks) {
-      if (check.pattern.test(line)) {
+      if (failsCheck(check, line)) {
         findings.push({
           file: relative,
           line: index + 1,

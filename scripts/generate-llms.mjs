@@ -5,6 +5,8 @@ const root = process.cwd();
 const siteUrl = 'https://api-docs.idcerberus.com';
 const docsJsonPath = path.join(root, 'docs.json');
 const openApiPath = path.join(root, 'api-reference', 'openapi.json');
+const generatedBy = 'scripts/generate-llms.mjs';
+const artifactVersion = '2026-06';
 
 const serviceAliasRows = [
   ['SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX', 'SERVICE_DOCUMENTOSCOPY'],
@@ -72,7 +74,13 @@ function read(filePath) {
 }
 
 function write(filePath, content) {
-  fs.writeFileSync(filePath, content.replace(/\r?\n/g, '\n'), 'utf8');
+  const normalized = content
+    .replace(/\r?\n/g, '\n')
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .join('\n')
+    .replace(/\s+$/g, '');
+  fs.writeFileSync(filePath, `${normalized}\n`, 'utf8');
 }
 
 function ensureDir(dirPath) {
@@ -768,18 +776,23 @@ function enrichServiceForMcp(service, exampleFiles) {
 }
 
 function buildServicesCatalogMin(servicesCatalog) {
-  return servicesCatalog.map((service) => ({
-    service: service.service,
-    name: service.name,
-    callingAlias: service.callingAlias,
-    partnerAliases: service.partnerAliases,
-    category: service.category,
-    tags: service.tags,
-    requiredFields: service.requiredFields,
-    optionalFields: service.optionalFields,
-    documentationUrl: service.documentationUrl,
-    curlExampleUrl: service.curlExampleUrl,
-  }));
+  return {
+    generatedBy,
+    artifactVersion,
+    totalServices: servicesCatalog.length,
+    services: servicesCatalog.map((service) => ({
+      service: service.service,
+      name: service.name,
+      callingAlias: service.callingAlias,
+      partnerAliases: service.partnerAliases,
+      category: service.category,
+      tags: service.tags,
+      requiredFields: service.requiredFields,
+      optionalFields: service.optionalFields,
+      documentationUrl: service.documentationUrl,
+      curlExampleUrl: service.curlExampleUrl,
+    })),
+  };
 }
 
 const activeServiceApiAliases = new Set([
@@ -2273,6 +2286,26 @@ function renderUseCasePage(catalog) {
   lines.push('Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurídica para copiar o request completo.');
   lines.push('</Info>');
   lines.push('');
+  lines.push('<CardGroup cols={3}>');
+  lines.push('  <Card title="Pessoa física" href="/api-reference/services-pessoa-fisica">');
+  lines.push('    CPF, dados cadastrais, OCR, biometria, risco, compliance e contatos.');
+  lines.push('  </Card>');
+  lines.push('  <Card title="Pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
+  lines.push('    CNPJ, Receita Federal, risco de crédito, sócios, domínios, compliance e OCR.');
+  lines.push('  </Card>');
+  lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
+  lines.push('    Fluxos prontos com payload, retorno esperado e erro comum.');
+  lines.push('  </Card>');
+  lines.push('</CardGroup>');
+  lines.push('');
+  lines.push('## Como escolher');
+  lines.push('');
+  lines.push('1. Comece pelo objetivo da consulta.');
+  lines.push('2. Copie o `service` indicado.');
+  lines.push('3. Abra o catálogo de pessoa física ou jurídica para ver payload e retorno.');
+  lines.push('4. Se for OCR, confira o guia de imagem antes de testar.');
+  lines.push('5. Se quiser um fluxo pronto, use [Receitas prontas](/guides/receitas-prontas).');
+  lines.push('');
 
   for (const [family, services] of [...groups.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
     lines.push(`## ${family}`);
@@ -2316,6 +2349,32 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
     includeDocumentPayloadNote: category === 'Pessoa Física',
     rows: category === 'Pessoa Jurídica' ? serviceAliasRowsPessoaJuridica : serviceAliasRowsPessoaFisica,
   });
+  lines.push('## Atalhos práticos');
+  lines.push('');
+  lines.push('<CardGroup cols={2}>');
+  lines.push('  <Card title="Como executar um service" href="/api-reference/como-executar-service">');
+  lines.push('    Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.');
+  lines.push('  </Card>');
+  lines.push('  <Card title="Testar no Postman" href="/guides/postman-do-zero">');
+  lines.push('    Configure environment, gere token e rode `POST /api/service-api` em HML.');
+  lines.push('  </Card>');
+  if (category === 'Pessoa Jurídica') {
+    lines.push('  <Card title="OCR cartão CNPJ" href="/guides/service-api/ocr-service-api#ocr-de-cartao-cnpj">');
+    lines.push('    Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.');
+    lines.push('  </Card>');
+    lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
+    lines.push('    Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.');
+    lines.push('  </Card>');
+  } else {
+    lines.push('  <Card title="OCR e imagem" href="/guides/service-api/ocr-service-api">');
+    lines.push('    Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.');
+    lines.push('  </Card>');
+    lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
+    lines.push('    Copie fluxos completos para CPF, OCR, Face Index, risco e score.');
+    lines.push('  </Card>');
+  }
+  lines.push('</CardGroup>');
+  lines.push('');
   lines.push('## Como ler esta referência');
   lines.push('');
   lines.push('- **Nome**: nome funcional do produto.');
@@ -2560,6 +2619,8 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
     title: 'idCerberus API Docs',
     description: 'Manifesto somente leitura para MCPs e agentes consultarem a documentação pública da API idCerberus.',
     version: '1.0.0',
+    generatedBy,
+    artifactVersion,
     baseUrl: siteUrl,
     generatedFrom: [
       'docs.json',
@@ -2755,7 +2816,12 @@ const llmRules = [
   '',
 ].join('\n');
 
-write(path.join(root, 'services-catalog.json'), `${JSON.stringify(servicesCatalog, null, 2)}\n`);
+write(path.join(root, 'services-catalog.json'), `${JSON.stringify({
+  generatedBy,
+  artifactVersion,
+  totalServices: servicesCatalog.length,
+  services: servicesCatalog,
+}, null, 2)}\n`);
 write(path.join(root, 'services-catalog.min.json'), `${JSON.stringify(buildServicesCatalogMin(servicesCatalog), null, 2)}\n`);
 write(path.join(root, 'mcp-manifest.json'), `${JSON.stringify(buildMcpManifest(servicesCatalog, exampleFiles), null, 2)}\n`);
 write(path.join(root, 'llms-api-reference.txt'), renderApiReferenceText(servicesCatalog));

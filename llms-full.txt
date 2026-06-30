@@ -1083,6 +1083,79 @@ Formato da resposta:
 
 ---
 
+# Manutenção da documentação
+
+URL: https://api-docs.idcerberus.com/guides/manutencao-da-documentacao
+Fonte: guides/manutencao-da-documentacao.mdx
+Descrição: Regras internas para manter guias, API Reference, arquivos LLM e artefatos MCP alinhados
+
+# Manutenção da documentação
+
+Use esta página quando for alterar OpenAPI, guias, exemplos, catálogo de services
+ou arquivos usados por LLM/MCP.
+
+## Regra principal
+
+Não edite artefatos gerados como fonte principal. A fonte deve ser o OpenAPI,
+os guias em MDX e o script `scripts/generate-llms.mjs`.
+
+Artefatos gerados:
+
+- `llms.txt`
+- `llms-small.txt`
+- `llms-full.txt`
+- `llms-api-reference.txt`
+- `services-catalog.json`
+- `services-catalog.min.json`
+- `mcp-manifest.json`
+- `examples/*.curl`
+- páginas geradas do catálogo no API Reference
+
+## Fluxo recomendado
+
+1. Altere a fonte correta: guia, OpenAPI ou gerador.
+2. Rode `npm run generate:artifacts`.
+3. Rode `npm run check`.
+4. Revise o diff.
+5. Confirme que não entrou arquivo local, credencial, base64, CPF, CNPJ ou token sensível.
+
+## Checks disponíveis
+
+| Comando | O que valida |
+| --- | --- |
+| `npm run generate:artifacts` | Regenera LLMS, catálogo, manifesto, exemplos e páginas derivadas. |
+| `npm run check:text` | Procura texto quebrado, mojibake, placeholders inseguros e links internos quebrados. |
+| `npm run check:artifacts` | Valida estrutura do catálogo, manifesto MCP e arquivos obrigatórios. |
+| `npm run check:drift` | Regenera artefatos e falha se ficar diff não commitado. |
+| `npm run check` | Roda geração, validação de texto e validação de artefatos. |
+
+## Antes de abrir PR
+
+- Confirme que o `service` documentado usa o alias de chamada correto.
+- Confirme que exemplos usam placeholders, não dados reais.
+- Confirme que OCR, Face e biometria deixam claro o tipo de imagem esperado.
+- Confirme que a resposta pública usa `result`, não `fieldsOutput`.
+- Confirme que `mcp-manifest.json` e os catálogos JSON continuam válidos.
+
+## Quando mexer no OpenAPI
+
+Sempre rode geração e checks depois de qualquer alteração em
+`api-reference/openapi.json`. O catálogo de services, os arquivos LLM e os curls
+dependem desse arquivo.
+
+## Quando mexer no gerador
+
+Depois de alterar `scripts/generate-llms.mjs`, rode:
+
+```bash
+npm run check
+npm run check:drift
+```
+
+Se o gerador criar uma página nova, adicione ela também no `docs.json`.
+
+---
+
 # Como usar esta documentação
 
 URL: https://api-docs.idcerberus.com/guides/como-usar-a-documentacao
@@ -14663,8 +14736,6 @@ Use esta página quando souber o objetivo da integração, mas ainda não souber
 Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurídica para copiar o request completo.
 
 
-
-
     CPF, dados cadastrais, OCR, biometria, risco, compliance e contatos.
 
 
@@ -14672,7 +14743,6 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 
 
     Fluxos prontos com payload, retorno esperado e erro comum.
-
 
 
 ## Como escolher
@@ -14828,12 +14898,10 @@ Catálogo explícito dos services de pessoa física disponíveis via API, com ca
 > Info:
 Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produto executado é definido pelo campo `service` no body da requisição.
 
-
 > Atencao:
   Antes de executar a chamada, confirme qual alias está liberado no produto
   do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
   casos, ele é mais curto que o alias técnico do parceiro exibido no catálogo.
-
 
 Na prática: se o alias configurado no produto for diferente do alias abaixo,
 use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
@@ -14872,9 +14940,7 @@ quando o produto está ativo.
   validar autenticação, acesso ao produto e formato básico da chamada, mas
   não valida o retorno completo do parceiro.
 
-
 ## Atalhos práticos
-
 
 
     Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
@@ -14887,7 +14953,6 @@ quando o produto está ativo.
 
 
     Copie fluxos completos para CPF, OCR, Face Index, risco e score.
-
 
 
 ## Como ler esta referência
@@ -15006,13 +15071,9 @@ quando o produto está ativo.
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
 | Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de inadimplência Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponível. |
 
-
 ## Requests completos
 
 ### Biometria e documentos
-
-
-
 
 **Service:** `SERVICE_FACE_INDEX`
 
@@ -15092,10 +15153,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX`
 
@@ -15197,10 +15254,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
 
-
-
-
-
 **Service:** `SERVICE_FACE_MATCH_BIGDATACORP`
 
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
@@ -15283,10 +15336,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
-
-
-
-
 
 **Service:** `SERVICE_FACE_MATCH_AWS`
 
@@ -15371,10 +15420,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
 
-
-
-
-
 **Service:** `SERVICE_LIVENESS_2D_FACETEC`
 
 **Quando usar:** Use para validar prova de vida a partir de uma imagem de selfie.
@@ -15453,10 +15498,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
-
-
-
-
 
 **Service:** `SERVICE_OCR_BIGDATACORP`
 
@@ -15601,10 +15642,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
 
-
-
-
-
 **Service:** `SERVICE_OCR_EMANCIPATION`
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
@@ -15746,10 +15783,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
 
-
-
-
-
 **Service:** `SERVICE_OCR`
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
@@ -15888,10 +15921,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
 
-
-
-
-
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
@@ -15982,10 +16011,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
 
-
-
-
-
 **Service:** `SERVICE_DATAVALID_CNH_SERPRO`
 
 **Quando usar:** Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.
@@ -16070,14 +16095,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
 
-
-
-
-
 ### Contatos, sites e relacionamentos
-
-
-
 
 **Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP`
 
@@ -16168,10 +16186,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados.
 
-
-
-
-
 **Service:** `SERVICE_CONFIRM_PHONE_FACETEC`
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
@@ -16253,10 +16267,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_DOMAINS_CPF`
 
@@ -16341,10 +16351,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_ADDRESS_BIGDATACORP`
 
@@ -16434,10 +16440,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_EMAILS_EXTENDED_BIGDATACORP`
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
@@ -16526,10 +16528,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_PHONE_HISTORY_BIGDATACORP`
 
@@ -16623,10 +16621,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_OCR_PROOF_OF_ADDRESS`
 
@@ -16757,10 +16751,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
 
-
-
-
-
 **Service:** `SERVICE_RELATED_PEOPLE_BIGDATACORP`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
@@ -16849,10 +16839,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo.
 
-
-
-
-
 **Service:** `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
@@ -16936,10 +16922,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participacoes, relacoes profissionais e indicadores de relacionamento.
-
-
-
-
 
 **Service:** `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP`
 
@@ -17030,10 +17012,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação.
 
-
-
-
-
 **Service:** `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP`
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
@@ -17119,10 +17097,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação.
 
-
-
-
-
 **Service:** `SERVICE_CPF_PHONE_VALIDATION_FACETEC`
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
@@ -17207,10 +17181,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.
 
-
-
-
-
 **Service:** `SERVICE_EMAIL_VALIDATION_BIGDATACORP`
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
@@ -17292,14 +17262,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco.
 
-
-
-
-
 ### Dados cadastrais e Receita Federal
-
-
-
 
 **Service:** `SERVICE_MEI_BIGDATACORP`
 
@@ -17385,10 +17348,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
@@ -17469,10 +17428,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo.
-
-
-
-
 
 **Service:** `SERVICE_DEMOGRAPHIC_DATA_CPF`
 
@@ -17562,10 +17517,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada.
 
-
-
-
-
 **Service:** `SERVICE_PIS_CONSULTATION_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Dados PIS" via API.
@@ -17644,10 +17595,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta.
-
-
-
-
 
 **Service:** `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP`
 
@@ -17730,10 +17677,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Prêmios e certificações" via API.
@@ -17814,10 +17757,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados.
-
-
-
-
 
 **Service:** `SERVICE_RFB_PF_BIGDATACORP`
 
@@ -17904,10 +17843,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Validação do E-Social" via API.
@@ -17992,14 +17927,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados.
 
-
-
-
-
 ### Dados eleitorais e PEP
-
-
-
 
 **Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP`
 
@@ -18086,10 +18014,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível.
 
-
-
-
-
 **Service:** `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP`
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
@@ -18173,10 +18097,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
-
-
-
-
 
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP`
 
@@ -18262,10 +18182,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
 
-
-
-
-
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API.
@@ -18350,10 +18266,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
 
-
-
-
-
 **Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico familiar político" via API.
@@ -18437,10 +18349,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados.
-
-
-
-
 
 **Service:** `SERVICE_PERSON_KYC_BIGDATACORP`
 
@@ -18527,10 +18435,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
 
-
-
-
-
 **Service:** `SERVICE_PEP`
 
 **Quando usar:** Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta.
@@ -18610,10 +18514,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP`
 
@@ -18700,14 +18600,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço.
 
-
-
-
-
 ### Jurídico, certidões e protestos
-
-
-
 
 **Service:** `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP`
 
@@ -18798,10 +18691,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta.
 
-
-
-
-
 **Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
@@ -18880,10 +18769,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta.
-
-
-
-
 
 **Service:** `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
 
@@ -18978,10 +18863,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta.
 
-
-
-
-
 **Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
@@ -19060,10 +18941,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas.
-
-
-
-
 
 **Service:** `SERVICE_PROTEST_PF_INFOSIMPLES`
 
@@ -19145,10 +19022,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens.
 
-
-
-
-
 **Service:** `SERVICE_PROTEST_PF_NETRIN`
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
@@ -19228,10 +19101,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
-
-
-
-
 
 **Service:** `SERVICE_ARREST_WARRANT`
 
@@ -19328,10 +19197,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência.
 
-
-
-
-
 **Service:** `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
@@ -19417,14 +19282,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis.
 
-
-
-
-
 ### KYC, compliance e exposição
-
-
-
 
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP`
 
@@ -19511,10 +19369,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna exposição e perfil de mídia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.
 
-
-
-
-
 **Service:** `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Propensão a apostas online" via API.
@@ -19597,14 +19451,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
 
-
-
-
-
 ### Outros services
-
-
-
 
 **Service:** `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
 
@@ -19691,10 +19538,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna beneficios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_FAMILY_SOCIAL_BENEFITS`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Benefícios sociais familiares" via API.
@@ -19779,10 +19622,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna beneficios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional" via API.
@@ -19866,10 +19705,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais.
-
-
-
-
 
 **Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP`
 
@@ -19959,10 +19794,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo.
 
-
-
-
-
 **Service:** `SERVICE_ACTIVITIES_INDICATORS`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Indicadores de atividades" via API.
@@ -20047,10 +19878,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_PERSON_DATA_MODELING_BIGDATACORP`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Modelagem de dados" via API.
@@ -20132,10 +19959,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados.
 
-
-
-
-
 **Service:** `SERVICE_PERSON_AI_PROMPT_OPENAI`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API.
@@ -20216,10 +20039,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional.
-
-
-
-
 
 **Service:** `SERVICE_PUBLIC_SERVANTS_BIGDATACORP`
 
@@ -20305,14 +20124,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis.
 
-
-
-
-
 ### Risco, crédito e dívidas
-
-
-
 
 **Service:** `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP`
 
@@ -20400,10 +20212,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta.
 
-
-
-
-
 **Service:** `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP`
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
@@ -20483,10 +20291,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP`
 
@@ -20572,10 +20376,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação.
 
-
-
-
-
 **Service:** `SERVICE_CREDIT_SCORE`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
@@ -20656,10 +20456,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna score de credito associado ao CPF via Assertiva, com pontuacao, faixa de risco e mensagem da consulta quando disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
@@ -20739,10 +20535,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação.
-
-
-
-
 
 **Service:** `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP`
 
@@ -20829,10 +20621,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão.
 
-
-
-
-
 **Service:** `SERVICE_DEFAULT_RISK_SCORE_QUANTUM`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
@@ -20913,17 +20701,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna score de risco de inadimplência Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponível.
 
-
-
-
-
-
 ## Padrões de erro
 
 Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme validação, produto e ambiente.
-
-
-
 
 ```json
 {
@@ -20934,9 +20714,6 @@ Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme vali
 }
 ```
 
-
-
-
 ```json
 {
   "status": {
@@ -20945,9 +20722,6 @@ Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme vali
   }
 }
 ```
-
-
-
 
 ```json
 {
@@ -20973,12 +20747,10 @@ Catálogo explícito dos services de pessoa jurídica disponíveis via API, com 
 > Info:
 Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produto executado é definido pelo campo `service` no body da requisição.
 
-
 > Atencao:
   Antes de executar a chamada, confirme qual alias está liberado no produto
   do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
   casos, ele é mais curto que o alias técnico do parceiro exibido no catálogo.
-
 
 Na prática: se o alias configurado no produto for diferente do alias abaixo,
 use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
@@ -20991,7 +20763,6 @@ quando o produto está ativo.
 ## Atalhos práticos
 
 
-
     Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
 
 
@@ -21002,7 +20773,6 @@ quando o produto está ativo.
 
 
     Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.
-
 
 
 ## Como ler esta referência
@@ -21078,13 +20848,9 @@ quando o produto está ativo.
 | Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis. |
 | Risco de crédito Murabei | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
 
-
 ## Requests completos
 
 ### Biometria e documentos
-
-
-
 
 **Service:** `SERVICE_OCR_CNPJ_CARD`
 
@@ -21209,14 +20975,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados extraídos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
 
-
-
-
-
 ### Contatos, sites e relacionamentos
-
-
-
 
 **Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
 
@@ -21303,10 +21062,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais.
 
-
-
-
-
 **Service:** `SERVICE_DOMAINS_CNPJ`
 
 **Quando usar:** Use para consultar dados de sites vinculados à empresa.
@@ -21390,10 +21145,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP`
 
@@ -21482,10 +21233,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
@@ -21570,10 +21317,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna exposição e perfil de mídia da empresa e sócios, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.
-
-
-
-
 
 **Service:** `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP`
 
@@ -21661,10 +21404,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
 
-
-
-
-
 **Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
@@ -21748,10 +21487,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas.
-
-
-
-
 
 **Service:** `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP`
 
@@ -21838,10 +21573,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participacoes e vínculos societários identificados.
 
-
-
-
-
 **Service:** `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
@@ -21927,10 +21658,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ.
 
-
-
-
-
 **Service:** `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
@@ -22015,14 +21742,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível.
 
-
-
-
-
 ### Dados cadastrais e Receita Federal
-
-
-
 
 **Service:** `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
 
@@ -22105,10 +21825,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço.
 
-
-
-
-
 **Service:** `SERVICE_REGISTRATION_DATA_CNPJ`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API.
@@ -22189,10 +21905,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_DAS_MEI_INFOSIMPLES`
 
@@ -22278,10 +21990,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis.
 
-
-
-
-
 **Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP`
 
 **Quando usar:** Use para complementar dados cadastrais da empresa a partir do documento informado.
@@ -22362,10 +22070,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço.
-
-
-
-
 
 **Service:** `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP`
 
@@ -22452,10 +22156,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta.
 
-
-
-
-
 **Service:** `SERVICE_RFB_PJ_BIGDATACORP`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
@@ -22537,14 +22237,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço.
 
-
-
-
-
 ### Dados eleitorais e PEP
-
-
-
 
 **Service:** `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
 
@@ -22629,10 +22322,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
-
-
-
-
 
 **Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP`
 
@@ -22719,14 +22408,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço.
 
-
-
-
-
 ### Jurídico, certidões e protestos
-
-
-
 
 **Service:** `SERVICE_PROTEST_PJ_INFOSIMPLES`
 
@@ -22808,10 +22490,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas.
 
-
-
-
-
 **Service:** `SERVICE_PROTEST_PJ_NETRIN`
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
@@ -22891,10 +22569,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
-
-
-
-
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_PJ`
 
@@ -22981,14 +22655,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
 
-
-
-
-
 ### KYC, compliance e exposição
-
-
-
 
 **Service:** `SERVICE_COMPLIANCE_BET`
 
@@ -23072,10 +22739,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
 
-
-
-
-
 **Service:** `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP`
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
@@ -23158,14 +22821,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
 
-
-
-
-
 ### Risco, crédito e dívidas
-
-
-
 
 **Service:** `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP`
 
@@ -23253,10 +22909,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta.
 
-
-
-
-
 **Service:** `SERVICE_CREDIT_RISK_COMPANY`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
@@ -23340,10 +22992,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
-
-
-
-
 
 **Service:** `SERVICE_CREDIT_RISK_COMPANY_MURABEI`
 
@@ -23429,17 +23077,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
-
-
-
-
-
 ## Padrões de erro
 
 Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme validação, produto e ambiente.
-
-
-
 
 ```json
 {
@@ -23450,9 +23090,6 @@ Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme vali
 }
 ```
 
-
-
-
 ```json
 {
   "status": {
@@ -23461,9 +23098,6 @@ Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme vali
   }
 }
 ```
-
-
-
 
 ```json
 {
