@@ -43,6 +43,11 @@ const checks = [
     pattern: /(jwt_token_real|client_secret|secret_real|token real)/i,
   },
   {
+    name: 'placeholder ruim',
+    pattern:
+      /(FULANINHO DA SILVA|FULANO DA SILVA|FULANA DA SILVA|CICLANO DA SILVA|MARIO SOUSA|FRANCISCA SOUSA|FULANINHO DE TAL|FULANA DE TAL|Fulano de Tal|TEM FE PUBLICA|Tem f[eé]|fahtername|fatherName":\s*"")/i,
+  },
+  {
     name: 'frase duplicada comum',
     pattern: /(Example RequestExample Request|Example Response\s+json\s+[\s\S]{0,80}Example Response\s+json)/,
   },
@@ -79,8 +84,14 @@ for (const file of walk(root)) {
   const content = fs.readFileSync(file, 'utf8');
   const lines = content.split(/\r?\n/);
 
-  for (const match of content.matchAll(/\]\((\/(?:guides|api-reference)[^)#\s]+)(?:#[^)]+)?\)/g)) {
-    internalLinks.push({ file: relative, target: match[1] });
+  if (!relative.startsWith('scripts/')) {
+    for (const match of content.matchAll(/\]\((\/(?:guides|api-reference)[^)#\s]+)(?:#[^)]+)?\)/g)) {
+      internalLinks.push({ file: relative, target: match[1] });
+    }
+
+    for (const match of content.matchAll(/\bhref=["'](\/(?:guides|api-reference)[^"'\s#]+)(?:#[^"']*)?["']/g)) {
+      internalLinks.push({ file: relative, target: match[1] });
+    }
   }
 
   for (const [index, line] of lines.entries()) {

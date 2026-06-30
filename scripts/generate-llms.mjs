@@ -759,7 +759,7 @@ function enrichServiceForMcp(service, exampleFiles) {
   const partnerAliases = partnerAliasesForService(service);
   const curlExampleUrls = curlExamplesForService(service, exampleFiles);
 
-  return {
+  const enriched = {
     ...service,
     callingAlias,
     partnerAliases,
@@ -768,11 +768,12 @@ function enrichServiceForMcp(service, exampleFiles) {
     payloadExample: payloadExampleForService(service),
     successResponseExample: successResponseExampleForService(service),
     commonErrors: commonErrorsForService(service),
-    curlExampleUrl: curlExampleUrls[0] || null,
     curlExampleUrls,
     mcpHints: mcpHintsForService(service, curlExampleUrls),
     tags: serviceTags(service),
   };
+  if (curlExampleUrls[0]) enriched.curlExampleUrl = curlExampleUrls[0];
+  return enriched;
 }
 
 function buildServicesCatalogMin(servicesCatalog) {
@@ -780,18 +781,21 @@ function buildServicesCatalogMin(servicesCatalog) {
     generatedBy,
     artifactVersion,
     totalServices: servicesCatalog.length,
-    services: servicesCatalog.map((service) => ({
-      service: service.service,
-      name: service.name,
-      callingAlias: service.callingAlias,
-      partnerAliases: service.partnerAliases,
-      category: service.category,
-      tags: service.tags,
-      requiredFields: service.requiredFields,
-      optionalFields: service.optionalFields,
-      documentationUrl: service.documentationUrl,
-      curlExampleUrl: service.curlExampleUrl,
-    })),
+    services: servicesCatalog.map((service) => {
+      const item = {
+        service: service.service,
+        name: service.name,
+        callingAlias: service.callingAlias,
+        partnerAliases: service.partnerAliases,
+        category: service.category,
+        tags: service.tags,
+        requiredFields: service.requiredFields,
+        optionalFields: service.optionalFields,
+        documentationUrl: service.documentationUrl,
+      };
+      if (service.curlExampleUrl) item.curlExampleUrl = service.curlExampleUrl;
+      return item;
+    }),
   };
 }
 
@@ -1743,7 +1747,7 @@ const serviceReturnDetails = {
   },
   SERVICE_PEP: {
     summary: 'Retorna se o CPF e PEP ou relacionado a PEP, com cargo, orgao, nivel de exposicao, periodo e vinculos encontrados quando disponiveis.',
-    result: { cpf: 'cpf', isPep: false, pepLevel: null, positions: [] },
+    result: { cpf: 'cpf', isPep: false, positions: [] },
   },
   SERVICE_PERSON_AI_PROMPT_OPENAI: {
     summary: 'Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atencao e leitura operacional.',
