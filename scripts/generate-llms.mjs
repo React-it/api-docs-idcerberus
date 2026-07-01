@@ -664,7 +664,7 @@ function commonErrorsForService(service) {
     errors.push({
       statusCode: 400,
       message: 'Não foi possível ler o documento',
-      cause: 'Imagem ilegivel, documento errado ou campo principal nao encontrado no OCR.',
+      cause: 'Imagem ilegível, documento errado ou campo principal não encontrado no OCR.',
       action: 'Testar imagem nítida, documento correto e payload mínimo indicado na documentação.',
     });
   }
@@ -681,7 +681,7 @@ function commonErrorsForService(service) {
   errors.push({
     statusCode: 500,
     message: 'Falha ao realizar consulta',
-    cause: 'Falha técnica no fluxo interno, storage ou parceiro externo.',
+    cause: 'Falha técnica no processamento, storage ou parceiro externo.',
     action: 'Investigar com `externalId`, horario, ambiente e service chamado.',
   });
 
@@ -938,7 +938,7 @@ function guideUrlForCategory(category) {
   const map = {
     'Pessoa Física': `${siteUrl}/guides/servicos-pessoa-fisica`,
     'Pessoa Jurídica': `${siteUrl}/guides/servicos-pessoa-juridica`,
-    Customers: `${siteUrl}/guides/customers`,
+    Customers: `${siteUrl}/api-reference/boas-vindas`,
     Onboarding: `${siteUrl}/guides/onboarding-sdk`,
   };
   return map[category] || `${siteUrl}/guides/matriz-de-servicos`;
@@ -1248,6 +1248,7 @@ function renderServicesIndex(catalog) {
   lines.push('---');
   lines.push('title: Índice de services');
   lines.push('description: Lista operacional dos services já documentados no API Reference');
+  lines.push('boost: 4');
   lines.push('---');
   lines.push('');
   lines.push('# Índice de services');
@@ -1526,7 +1527,7 @@ const serviceReturnDetails = {
     result: { cnpj: 'cnpj', ownersChecked: 2, owners: [{ name: 'Nome do socio', isPep: false, sanctions: [], riskAlerts: [] }] },
   },
   SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP: {
-    summary: 'Retorna relacionamentos da empresa, como socios, proprietarios, empresas relacionadas, participacoes e vinculos societarios identificados.',
+    summary: 'Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados.',
     result: { cnpj: 'cnpj', owners: [{ name: 'Nome do socio', document: 'cpf', share: '50%' }], relatedCompanies: [] },
   },
   SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP: {
@@ -1562,15 +1563,15 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', phone: '11900000000', match: true, statusMessage: 'Telefone associado ao documento' },
   },
   SERVICE_CREDIT_RISK_COMPANY: {
-    summary: 'Retorna dados publicos de risco de credito da empresa, como status, score, rating, risco esperado e processos legais quando disponiveis.',
+    summary: 'Retorna dados públicos de risco de crédito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.',
     result: { cnpj: 'cnpj', creditRisk: { status: 'APPROVED', score: '750', rating: 'A', expectedDefault: 'LOW', legalProcess: false } },
   },
   SERVICE_CREDIT_RISK_COMPANY_MURABEI: {
-    summary: 'Retorna dados de risco de credito PJ no fluxo Murabei, com score, rating, risco esperado e sinais juridicos quando disponiveis.',
+    summary: 'Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.',
     result: { cnpj: 'cnpj', creditRisk: { status: 'APPROVED', score: '720', rating: 'B', expectedDefault: 'MEDIUM', legalProcess: false } },
   },
   SERVICE_CREDIT_SCORE: {
-    summary: 'Retorna score de credito associado ao CPF via Assertiva, com pontuacao, faixa de risco e mensagem da consulta quando disponiveis.',
+    summary: 'Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.',
     result: { cpf: 'cpf', score: 750, riskLevel: 'LOW', message: 'Score calculado com sucesso' },
   },
   SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP: {
@@ -1594,7 +1595,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', score: 742, riskLevel: 'LOW', defaultProbability: '3%' },
   },
   SERVICE_DEFAULT_RISK_SCORE_QUANTUM: {
-    summary: 'Retorna score de risco de inadimplencia Quantum para CPF, com pontuacao, faixa de risco e probabilidade estimada quando disponivel.',
+    summary: 'Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.',
     result: { cpf: 'cpf', score: 690, riskLevel: 'MEDIUM', defaultProbability: '8%' },
   },
   SERVICE_DEMOGRAPHIC_DATA_CPF: {
@@ -1603,7 +1604,7 @@ const serviceReturnDetails = {
   },
   SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX: {
     summary: 'Retorna status da documentoscopia, chave da consulta, dados extraidos do documento, validacoes de documento/selfie e resultado de aprovacao.',
-    result: { key: '{key}', status: 'APPROVED', documentData: { name: 'Nome extraido', cpf: 'cpf' }, validations: [{ name: 'faceMatch', status: 'APPROVED' }] },
+    result: { key: '{key}', status: 'APPROVED', documentData: { name: 'Nome extraído', cpf: 'cpf' }, validations: [{ name: 'faceMatch', status: 'APPROVED' }] },
   },
   SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX: {
     summary: 'Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraidos, regras avaliadas e evidencias.',
@@ -1618,7 +1619,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', totalDomains: 1, domains: [{ domain: 'exemplo.com.br', status: 'ACTIVE' }] },
   },
   SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP: {
-    summary: 'Retorna vinculos economicos associados ao CPF, como empresas relacionadas, participacoes, relacoes profissionais e indicadores de relacionamento.',
+    summary: 'Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento.',
     result: { cpf: 'cpf', relationships: [{ type: 'OWNER', relatedDocument: 'cnpj', relatedName: 'Empresa relacionada' }] },
   },
   SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP: {
@@ -1670,7 +1671,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', familyPoliticalHistory: [{ relativeName: 'Nome relacionado', relationship: 'PARENTE', role: 'Candidato' }] },
   },
   SERVICE_FAMILY_SOCIAL_BENEFITS: {
-    summary: 'Retorna beneficios sociais familiares vinculados ao CPF, com programas, situacao, quantidade e registros encontrados quando disponiveis.',
+    summary: 'Retorna benefícios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis.',
     result: { cpf: 'cpf', totalBenefits: 1, benefits: [{ program: 'Programa social', status: 'ACTIVE' }] },
   },
   SERVICE_FINANCIAL_INFORMATION_BIGDATACORP: {
@@ -1706,11 +1707,11 @@ const serviceReturnDetails = {
     result: { liveness: true, confidence: 0.97, status: 'APPROVED' },
   },
   SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP: {
-    summary: 'Retorna exposicao e perfil de midia da pessoa, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.',
+    summary: 'Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados.',
     result: { cpf: 'cpf', mediaMentions: [{ title: 'Noticia encontrada', source: 'Fonte', sentiment: 'NEUTRAL' }], exposureLevel: 'LOW' },
   },
   SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP: {
-    summary: 'Retorna exposicao e perfil de midia da empresa e socios, com noticias, fontes, categorias, sentimento, relevancia e alertas encontrados.',
+    summary: 'Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados.',
     result: { cnpj: 'cnpj', mediaMentions: [{ title: 'Noticia encontrada', source: 'Fonte', sentiment: 'NEUTRAL' }], exposureLevel: 'LOW' },
   },
   SERVICE_MEI_BIGDATACORP: {
@@ -1723,23 +1724,23 @@ const serviceReturnDetails = {
   },
   SERVICE_OCR_BIGDATACORP: {
     summary: 'Retorna dados extraidos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiacao, numero do documento e campos especificos.',
-    result: { documentType: 'CNH', fields: { name: 'Nome extraido', cpf: 'cpf', birthDate: 'yyyy-MM-dd' }, extractionStatus: 'SUCCESS' },
+    result: { documentType: 'CNH', fields: { name: 'Nome extraído', cpf: 'cpf', birthDate: 'yyyy-MM-dd' }, extractionStatus: 'SUCCESS' },
   },
   SERVICE_OCR: {
     summary: 'Retorna dados extraidos de RG ou CNH enviados por imagem, como CPF, nome, filiacao, nascimento, orgao emissor e dados especificos do documento.',
-    result: { cpf: 'cpf', docType: 'CNH', name: 'Nome extraido', birthDate: 'yyyy-MM-dd', cnhCategory: 'B', validDate: 'yyyy-MM-dd' },
+    result: { cpf: 'cpf', docType: 'CNH', name: 'Nome extraído', birthDate: 'yyyy-MM-dd', cnhCategory: 'B', validDate: 'yyyy-MM-dd' },
   },
   SERVICE_OCR_CNPJ_CARD: {
-    summary: 'Retorna dados extraidos do cartao CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponivel.',
-    result: { cnpj: 'cnpj', docType: 'CNPJ_CARD', genericOcr: 'texto extraido do cartao CNPJ' },
+    summary: 'Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.',
+    result: { cnpj: 'cnpj', docType: 'CNPJ_CARD', genericOcr: 'texto extraído do cartão CNPJ' },
   },
   SERVICE_OCR_EMANCIPATION: {
     summary: 'Retorna texto OCR do documento de emancipacao e dados objetivos extraidos quando existirem, sem reprovar pela ausencia de campos variaveis.',
-    result: { docType: 'EMANCIPATION_DOCUMENT', genericOcr: 'texto extraido', extractedFields: { cpf: 'cpf', dates: ['yyyy-MM-dd'] }, analysis: { isEmancipationRelated: true, confidence: 'MEDIUM' } },
+    result: { docType: 'EMANCIPATION_DOCUMENT', genericOcr: 'texto extraído', extractedFields: { cpf: 'cpf', dates: ['yyyy-MM-dd'] }, analysis: { isEmancipationRelated: true, confidence: 'MEDIUM' } },
   },
   SERVICE_OCR_PROOF_OF_ADDRESS: {
     summary: 'Retorna dados extraidos do comprovante de endereco por Textract, como texto OCR, nome, endereco, tipo do documento, datas e valores quando encontrados.',
-    result: { genericOcr: 'texto extraido', fullName: 'Nome extraido', fullAddress: 'Endereco extraido', docType: 'Conta de consumo', dueDate: 'yyyy-MM-dd', invoiceAmount: 'R$ 100,00' },
+    result: { genericOcr: 'texto extraído', fullName: 'Nome extraído', fullAddress: 'Endereço extraído', docType: 'Conta de consumo', dueDate: 'yyyy-MM-dd', invoiceAmount: 'R$ 100,00' },
   },
   SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP: {
     summary: 'Retorna doacoes eleitorais feitas pelos socios da empresa, com socio relacionado, ano, candidato/partido, valor e detalhes eleitorais.',
@@ -1846,7 +1847,7 @@ const serviceReturnDetails = {
     result: { cnpj: 'cnpj', stateRegistration: '000000000', state: 'SP', status: 'HABILITADO', regime: 'NORMAL' },
   },
   SERVICE_SOCIAL_ASSISTANCE_EXTENDED: {
-    summary: 'Retorna beneficios sociais estendidos vinculados ao CPF, com programas, indicadores, situacao e detalhes encontrados quando disponiveis.',
+    summary: 'Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis.',
     result: { cpf: 'cpf', totalBenefits: 1, benefits: [{ program: 'Programa social', status: 'ACTIVE' }], indicators: [] },
   },
   SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP: {
@@ -2170,6 +2171,7 @@ function renderServiceQuickstartPage() {
   lines.push('---');
   lines.push('title: Como executar um service');
   lines.push('description: Passo a passo para autenticar, escolher ambiente, montar o body e chamar um service da API idCerberus.');
+  lines.push('boost: 4');
   lines.push('---');
   lines.push('');
   lines.push('# Como executar um service');
@@ -2441,7 +2443,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
 
 const docsConfig = JSON.parse(read(docsJsonPath));
 const pages = flattenPages(docsConfig.navigation);
-const mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
+let mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
   ...page,
   ...getPageMeta(page.slug),
 }));
@@ -2844,6 +2846,11 @@ write(path.join(root, 'api-reference', 'services-pessoa-juridica.mdx'), renderAp
   'Services de pessoa jurídica',
   'Catálogo explícito dos services de pessoa jurídica disponíveis via API, com campos esperados e exemplos de request.',
 ));
+
+mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
+  ...page,
+  ...getPageMeta(page.slug),
+}));
 
 const llmsLines = [];
 llmsLines.push('# idCerberus API Docs');
