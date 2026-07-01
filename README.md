@@ -126,6 +126,58 @@ Arquivos publicados:
 - `https://api-docs.idcerberus.com/services-catalog.min.json`
 - `https://api-docs.idcerberus.com/mcp-manifest.json`
 
+## MCP Local
+
+O projeto também entrega um servidor MCP real, somente leitura, para usar a documentação em Claude Desktop, Cursor, Windsurf ou outro cliente compatível.
+
+Ele expõe:
+
+- Resources: `llms.txt`, `llms-small.txt`, `llms-full.txt`, `llms-api-reference.txt`, `services-catalog.json`, `services-catalog.min.json` e `mcp-manifest.json`.
+- Tools:
+  - `search_services`: busca services por alias, nome, campo, tag ou caso de uso.
+  - `get_service`: retorna detalhes de um service documentado.
+  - `get_curl_example`: retorna um exemplo `.curl` publicado em `examples/`.
+  - `read_doc`: lê páginas locais de `guides/`, `api-reference/` ou `README.md`.
+- Prompt: `service_api_helper`, para responder dúvidas usando apenas a documentação.
+
+O MCP não chama HML, produção, banco, API idCerberus nem endpoints reais. Ele só consulta arquivos locais da documentação.
+
+Para testar o servidor MCP, incluindo uma conexão real por `stdio`:
+
+```bash
+npm run mcp:check
+```
+
+Para rodar via stdio:
+
+```bash
+npm run mcp:stdio
+```
+
+Configuração exemplo para clientes MCP locais:
+
+```json
+{
+  "mcpServers": {
+    "idcerberus-docs": {
+      "command": "node",
+      "args": ["C:/dev/api-docs-idcerberus/scripts/mcp-server.mjs"]
+    }
+  }
+}
+```
+
+O mesmo exemplo está em `mcp-config.example.json`. Para usar em outro caminho, troque apenas o valor de `args` para o caminho absoluto do arquivo `scripts/mcp-server.mjs` na sua máquina.
+
+Depois de conectar no cliente MCP, teste perguntas como:
+
+- "Qual service devo usar para OCR de CNH?"
+- "Monte um payload de HML para SERVICE_FACE_INDEX."
+- "Quais campos obrigatórios do SERVICE_CREDIT_RISK_COMPANY?"
+- "O que conferir quando a Service API retorna Don't have access to the service?"
+
+O servidor deve responder consultando as tools/resources locais, sem solicitar credenciais, documentos ou imagens de clientes.
+
 ## Geração de Artifacts
 
 Para regenerar catálogo, páginas do API Reference, arquivos LLM e exemplos curl:
@@ -180,8 +232,10 @@ api-docs-idcerberus/
 |   |-- quickstart.mdx
 |   `-- ...
 |-- scripts/
+|   |-- check-mcp-server.mjs
 |   |-- check-text-quality.mjs
 |   |-- generate-llms.mjs
+|   |-- mcp-server.mjs
 |   `-- prepare-pages-export.mjs
 |-- docs.json
 |-- index.mdx
