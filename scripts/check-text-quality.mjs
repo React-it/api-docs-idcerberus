@@ -72,6 +72,15 @@ function failsCheck(check, line) {
   return check.pattern.test(line);
 }
 
+function markdownTableCellCount(line) {
+  return line.trim().split('|').filter((_, index, cells) => index !== 0 && index !== cells.length - 1).length;
+}
+
+function isMarkdownTableSeparator(line) {
+  const cells = line.trim().split('|').filter((_, index, parts) => index !== 0 && index !== parts.length - 1).map((cell) => cell.trim());
+  return cells.length > 0 && cells.every((cell) => /^:?-{3,}:?$/.test(cell));
+}
+
 const findings = [];
 const internalLinks = [];
 const openApiRequestExamples = new Set();
@@ -91,6 +100,23 @@ for (const file of walk(root)) {
 
     for (const match of content.matchAll(/\bhref=["'](\/(?:guides|api-reference)[^"'\s#]+)(?:#[^"']*)?["']/g)) {
       internalLinks.push({ file: relative, target: match[1] });
+    }
+  }
+
+  for (let index = 0; index < lines.length - 1; index += 1) {
+    const line = lines[index];
+    const nextLine = lines[index + 1];
+    if (line.trim().startsWith('|') && isMarkdownTableSeparator(nextLine)) {
+      const headerColumns = markdownTableCellCount(line);
+      const separatorColumns = markdownTableCellCount(nextLine);
+      if (headerColumns !== separatorColumns) {
+        findings.push({
+          file: relative,
+          line: index + 1,
+          check: 'tabela markdown quebrada',
+          text: line.trim().slice(0, 180),
+        });
+      }
     }
   }
 
