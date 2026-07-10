@@ -342,7 +342,7 @@ function buildServicesCatalog(openApiServices) {
     });
 }
 
-const partnerApiServices = [
+const additionalPublicApiServices = [
   ['SERVICE_ACTIVITIES_INDICATORS', 'Indicadores de atividades', 'Pessoa Física', { service: 'SERVICE_ACTIVITIES_INDICATORS', cpf: 'cpf' }],
   ['SERVICE_ACTIVE_DEBT_PF', 'Débitos ativos PF', 'Pessoa Física', { service: 'SERVICE_ACTIVE_DEBT_PF', cpf: 'cpf' }],
   ['SERVICE_ADDRESS', 'Endereços', 'Pessoa Física', { service: 'SERVICE_ADDRESS', cpf: 'cpf' }],
@@ -427,11 +427,11 @@ function requestExampleFromBody(body) {
   return Object.entries(body).map(([key, value]) => `${key}: ${value}`).join('\n');
 }
 
-function mergePartnerApiServices(catalog) {
+function mergeAdditionalPublicApiServices(catalog) {
   const seen = new Set(catalog.map((service) => service.service));
   const extras = [];
 
-  for (const [service, name, category, body] of partnerApiServices) {
+  for (const [service, name, category, body] of additionalPublicApiServices) {
     if (seen.has(service)) continue;
 
     const item = {
@@ -529,8 +529,6 @@ function serviceTags(service) {
   addTag(tags, /cartao cnpj|cartao-cnpj/.test(searchable), 'cartao-cnpj');
   addTag(tags, /comprovante|endereco/.test(searchable), 'comprovante-endereco');
   addTag(tags, /face|selfie|biometria/.test(searchable), 'face');
-  addTag(tags, /bigdatacorp/.test(searchable), 'bigdatacorp');
-  addTag(tags, /aws|textract/.test(searchable), 'aws');
   addTag(tags, /textract/.test(searchable), 'textract');
   addTag(tags, /react/.test(searchable), 'react');
   addTag(tags, /assertiva/.test(searchable), 'assertiva');
@@ -690,10 +688,6 @@ function mcpHintsForService(service, curlExampleUrls) {
 
   if (tags.has('risco-credito')) {
     notes.push('Explique score, rating e risco apenas quando esses campos aparecerem no result.');
-  }
-
-  if (tags.has('bigdatacorp') || tags.has('assertiva') || tags.has('quantum') || tags.has('aws')) {
-    notes.push('Pode depender de massa dispon\u00edvel e configura\u00e7\u00e3o do produto.');
   }
 
   return {
@@ -2601,7 +2595,7 @@ let mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
 }));
 const openApiContent = read(openApiPath);
 const openApiSummary = extractOpenApiSummary(openApiContent);
-const baseServicesCatalog = filterActiveServiceApiServices(mergePartnerApiServices(buildServicesCatalog(openApiSummary.services)));
+const baseServicesCatalog = filterActiveServiceApiServices(mergeAdditionalPublicApiServices(buildServicesCatalog(openApiSummary.services)));
 const exampleFiles = writeExampleFiles(baseServicesCatalog);
 const servicesCatalog = baseServicesCatalog.map((service) => enrichServiceForMcp(service, exampleFiles));
 function pushLlmFileMap(lines) {
