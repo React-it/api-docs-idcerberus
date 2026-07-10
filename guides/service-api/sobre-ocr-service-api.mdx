@@ -49,6 +49,37 @@ Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
   Para teste manual no Postman, use a seção [Copiar e testar](#copiar-e-testar). Ela monta o JSON completo no clipboard.
 </Tip>
 
+## Jornada visual do OCR
+
+<CardGroup cols={3}>
+  <Card title="1. Escolha o documento">
+    Defina se o teste é CNH, RG, cartão CNPJ, comprovante de endereço ou documento de emancipação antes de montar o payload.
+  </Card>
+  <Card title="2. Use imagem real">
+    Envie imagem nítida, sem corte e em base64 puro. OCR ruim quase sempre começa com imagem ruim ou documento errado.
+  </Card>
+  <Card title="3. Leia o result">
+    O retorno útil fica em `result`. Use `status`, `onboardingStatus` e `externalId` para rastrear o processamento.
+  </Card>
+</CardGroup>
+
+## Blocos de decisão
+
+<CardGroup cols={2}>
+  <Card title="Tenho RG ou CNH">
+    Use `SERVICE_OCR` com `documentType`. Para RG, envie frente e verso quando o documento exigir os dois lados.
+  </Card>
+  <Card title="Tenho cartão CNPJ">
+    Use `SERVICE_OCR_CNPJ_CARD`. O mínimo esperado é CNPJ válido, `docType` coerente e `genericOcr` preenchido.
+  </Card>
+  <Card title="Tenho comprovante">
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS`. O documento precisa ter endereço visível e texto suficiente para leitura.
+  </Card>
+  <Card title="Tenho documento variável">
+    Use `SERVICE_OCR_EMANCIPATION`. Não trate CPF, RG ou código como obrigatórios, porque o layout pode variar.
+  </Card>
+</CardGroup>
+
 ## Caminho recomendado
 
 Se você precisa testar agora, siga esta ordem:

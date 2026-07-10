@@ -2093,6 +2093,77 @@ function pushPublicResponseCards(lines) {
   lines.push('');
 }
 
+function pushServiceExecutionTabs(lines, body, hmlCurl, prodCurl) {
+  lines.push('### Copiar e testar');
+  lines.push('');
+  lines.push('<Tabs>');
+  lines.push('<Tab title="Body JSON">');
+  lines.push('');
+  lines.push('Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.');
+  lines.push('');
+  lines.push('```json');
+  lines.push(JSON.stringify(body, null, 2));
+  lines.push('```');
+  lines.push('');
+  lines.push('</Tab>');
+  lines.push('<Tab title="Curl HML">');
+  lines.push('');
+  lines.push('```bash');
+  lines.push(hmlCurl);
+  lines.push('```');
+  lines.push('');
+  lines.push('</Tab>');
+  lines.push('<Tab title="Curl produção">');
+  lines.push('');
+  lines.push('```bash');
+  lines.push(prodCurl);
+  lines.push('```');
+  lines.push('');
+  lines.push('</Tab>');
+  lines.push('</Tabs>');
+  lines.push('');
+}
+
+function pushApiReferenceReturnCards(lines) {
+  lines.push('## Como interpretar qualquer retorno');
+  lines.push('');
+  lines.push('<CardGroup cols={2}>');
+  lines.push(' <Card title="Dados úteis">');
+  lines.push(' Leia primeiro o objeto `result`. Ele concentra os campos de negócio que o cliente deve consumir.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Status técnico">');
+  lines.push(' Use `status.code` e `status.message` para entender se a chamada processou, recusou ou falhou.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Rastreio">');
+  lines.push(' Guarde `externalId` em testes, suporte e auditoria. Ele é o identificador mais prático da consulta.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Contrato limpo">');
+  lines.push(' Não dependa de metadados internos. A integração deve mapear somente os campos públicos documentados.');
+  lines.push(' </Card>');
+  lines.push('</CardGroup>');
+  lines.push('');
+}
+
+function pushApiReferenceChecklist(lines) {
+  lines.push('## Checklist antes de abrir chamado');
+  lines.push('');
+  lines.push('<CardGroup cols={2}>');
+  lines.push(' <Card title="Acesso">');
+  lines.push(' Confirme se o token pertence ao produto certo e se o service está ativo para API.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Payload">');
+  lines.push(' Confirme o valor exato de `service` e os campos obrigatórios listados no accordion.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Ambiente">');
+  lines.push(' Valide se a chamada foi feita em HML ou produção com o token do mesmo ambiente.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Evidência">');
+  lines.push(' Separe body sem dados sensíveis, horário, ambiente, `status.message` e `externalId`.');
+  lines.push(' </Card>');
+  lines.push('</CardGroup>');
+  lines.push('');
+}
+
 function pushResultFieldsTable(lines, service) {
   const rows = resultRowsFromService(service);
   if (!rows.length) return;
@@ -2219,24 +2290,7 @@ function renderServiceRequestBlock(service) {
   lines.push('4. Confira `status.code` e `status.message` para validar o processamento técnico.');
   lines.push('5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.');
   lines.push('');
-  lines.push('### Body');
-  lines.push('');
-  lines.push('```json');
-  lines.push(JSON.stringify(body, null, 2));
-  lines.push('```');
-  lines.push('');
-  lines.push('### Homologação');
-  lines.push('');
-  lines.push('```bash');
-  lines.push(hmlCurl);
-  lines.push('```');
-  lines.push('');
-  lines.push('### Produção');
-  lines.push('');
-  lines.push('```bash');
-  lines.push(prodCurl);
-  lines.push('```');
-  lines.push('');
+  pushServiceExecutionTabs(lines, body, hmlCurl, prodCurl);
   lines.push('### Campos do body');
   lines.push('');
   lines.push('| Campo | Obrigatório | Descrição |');
@@ -2463,7 +2517,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push(' <Card title="Postman do zero" href="/guides/postman-do-zero">');
   lines.push(' Configure HML, gere token e execute `POST /api/service-api` com um payload real.');
   lines.push(' </Card>');
-  if (category === 'Pessoa Jurdica') {
+  if (category === 'Pessoa Jurídica') {
     lines.push(' <Card title="OCR de cart\u00e3o CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
     lines.push(' Payload, imagem esperada, retorno limpo e diagn\u00f3stico de erro para cart\u00e3o CNPJ.');
     lines.push(' </Card>');
@@ -2494,6 +2548,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push(' </Step>');
   lines.push('</Steps>');
   lines.push('');
+  pushApiReferenceReturnCards(lines);
   lines.push('## Fam\u00edlias de services');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
@@ -2518,6 +2573,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   }
   lines.push('</AccordionGroup>');
   lines.push('');
+  pushApiReferenceChecklist(lines);
   lines.push('## Padr\u00f5es de erro');
   lines.push('');
   lines.push('Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme valida\u00e7\u00e3o, produto e ambiente.');
