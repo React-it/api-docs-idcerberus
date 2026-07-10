@@ -20,30 +20,17 @@ const serviceAliasRows = [
 const serviceAliasRowsPessoaFisica = serviceAliasRows.filter(([documentedAlias]) => !documentedAlias.includes('SERVICE_PROTEST_PJ'));
 const serviceAliasRowsPessoaJuridica = serviceAliasRows.filter(([documentedAlias]) => documentedAlias.includes('SERVICE_PROTEST_PJ'));
 
-function pushServiceAliasNote(lines, { includeDocumentPayloadNote = false, rows = serviceAliasRows } = {}) {
-  const aliases = [...new Set(rows.map(([, callAlias]) => callAlias))].sort();
-
+function pushServiceAliasNote(lines, { includeDocumentPayloadNote = false } = {}) {
   lines.push('<Warning>');
-  lines.push(' Antes de executar a chamada, confirme qual service est\u00e1 liberado no produto');
-  lines.push(' do cliente. O campo `service` deve receber o alias p\u00fablico de chamada,');
-  lines.push(' exatamente como aparece no cat\u00e1logo abaixo.');
+  lines.push('Antes de executar a chamada, confirme qual service está liberado no produto do cliente. O campo \`service\` deve receber exatamente o valor público exibido no catálogo.');
   lines.push('</Warning>');
   lines.push('');
-  lines.push('Na pr\u00e1tica: copie o valor da coluna `Service` e envie esse valor no body.');
-  lines.push('A documenta\u00e7\u00e3o n\u00e3o exp\u00f5e aliases internos de integra\u00e7\u00e3o; o cliente deve');
-  lines.push('usar somente o service liberado no produto.');
-  lines.push('');
-  lines.push('| Service |');
-  lines.push('| --- |');
-  for (const alias of aliases) lines.push(`| \`${alias}\` |`);
+  lines.push('Na prática: copie o valor de \`Service\` no card ou no accordion do produto e envie esse valor no body da requisição. A documentação não expõe aliases internos de integração.');
   lines.push('');
 
   if (includeDocumentPayloadNote) {
     lines.push('<Info>');
-    lines.push(' OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64,');
-    lines.push(' URL ou `key` real para retornar dados completos. Payload curto ajuda a');
-    lines.push(' validar autentica\u00e7\u00e3o, acesso ao produto e formato b\u00e1sico da chamada, mas');
-    lines.push(' n\u00e3o valida o retorno completo do processamento.');
+    lines.push('OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64, URL ou \`key\` real para retornar dados completos. Payload curto ajuda a validar autenticação, acesso ao produto e formato básico da chamada, mas não valida o retorno completo do processamento.');
     lines.push('</Info>');
     lines.push('');
   }
@@ -1195,13 +1182,13 @@ function pushSearchHowTo(lines) {
   lines.push('');
   lines.push('<CardGroup cols={2}>');
   lines.push(' <Card title="Tenho um CPF" href="#pessoa-fisica">');
-  lines.push(' Pesquise por `cpf`, `receita`, `score`, `risco`, `telefone`, `email`, `ocr`, `face` ou `processos`.');
+  lines.push(' Pesquise por \`cpf\`, \`receita\`, \`score\`, \`risco\`, \`telefone\`, \`email\`, \`ocr\`, \`face\` ou \`processos\`.');
   lines.push(' </Card>');
   lines.push(' <Card title="Tenho um CNPJ" href="#pessoa-juridica">');
-  lines.push(' Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.');
+  lines.push(' Pesquise por \`cnpj\`, \`receita\`, \`risco de crédito\`, \`sócios\`, \`domínios\`, \`cartão CNPJ\` ou \`compliance\`.');
   lines.push(' </Card>');
   lines.push(' <Card title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">');
-  lines.push(' Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.');
+  lines.push(' Pesquise por \`OCR\`, \`CNH\`, \`RG\`, \`cartão CNPJ\`, \`comprovante de endereço\`, \`base64\` ou \`image1\`.');
   lines.push(' </Card>');
   lines.push(' <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">');
   lines.push(' Vá para o API Reference quando precisar de body, curl, response resumido e erro comum.');
@@ -1210,17 +1197,46 @@ function pushSearchHowTo(lines) {
   lines.push('');
   lines.push('### Atalhos de busca');
   lines.push('');
-  lines.push('| Digite na busca | O que deve aparecer |');
-  lines.push('| --- | --- |');
-  lines.push('| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |');
-  lines.push('| `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |');
-  lines.push('| `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |');
-  lines.push('| `face index` | Busca facial por selfie na base de faces. |');
-  lines.push('| `risco de crédito` | Services de score, rating, risco e crédito PF/PJ. |');
-  lines.push('| `processos` | Consultas jurídicas, certidões e antecedentes. |');
-  lines.push('| `telefone` ou `email` | Validações e histórico de contato. |');
+  lines.push('<CardGroup cols={2}>');
+  const shortcuts = [
+    ['SERVICE_OCR ou OCR React', 'Documentos de identificação, CNH, RG, OAB, RNE/CRNM e passaporte.'],
+    ['cartão CNPJ', 'OCR de cartão CNPJ com \`SERVICE_OCR_CNPJ_CARD\`.'],
+    ['comprovante de endereço', 'OCR de conta, fatura ou comprovante com imagem/base64.'],
+    ['face index', 'Busca facial por selfie na base de faces.'],
+    ['risco de crédito', 'Services de score, rating, risco e crédito PF/PJ.'],
+    ['telefone ou email', 'Validações e histórico de contato.'],
+  ];
+  for (const [title, body] of shortcuts) {
+    lines.push(' <Card title="' + title + '">');
+    lines.push(' ' + body);
+    lines.push(' </Card>');
+  }
+  lines.push('</CardGroup>');
   lines.push('');
 }
+
+function renderServiceIndexCard(service) {
+  const fields = service.requestFields.length ? service.requestFields.map((field) => '\`' + field + '\`').join(', ') : 'sem campos adicionais';
+  const terms = displaySearchTerms(service);
+  return [
+    '<Accordion title="' + escapeAttribute(service.name) + '">',
+    '',
+    '**Service:** \`' + service.service + '\`',
+    '',
+    '**Campos principais:** ' + fields,
+    '',
+    '**Termos de busca:** ' + terms,
+    '',
+    '**Quando usar:** ' + serviceUseCase(service),
+    '',
+    '**Retorno principal:** ' + service.responseSummary,
+    '',
+    '[Ver no API Reference](' + service.documentationUrl + ')',
+    '',
+    '</Accordion>',
+  ].join('\n');
+}
+
 function renderServicesIndex(catalog) {
   const lines = [];
   lines.push('---');
@@ -1231,35 +1247,27 @@ function renderServicesIndex(catalog) {
   lines.push('');
   lines.push('# Índice de services');
   lines.push('');
-  lines.push('Use este índice quando já souber qual produto precisa executar e quiser confirmar o nome exato do `service` antes de montar a chamada.');
+  lines.push('Use este Índice quando já souber qual produto precisa executar e quiser confirmar o nome exato do \`service\` antes de montar a chamada.');
   lines.push('');
   lines.push('<Info>');
-  lines.push('Todas as consultas abaixo usam `POST /api/service-api`. O produto executado é definido pelo campo `service` no body.');
+  lines.push('Todas as consultas abaixo usam \`POST /api/service-api\`. O produto executado é definido pelo campo \`service\` no body.');
   lines.push('</Info>');
   lines.push('');
   pushSearchHowTo(lines);
   pushServiceAliasNote(lines);
+  lines.push('## Services por tipo de pessoa');
+  lines.push('');
+  lines.push('<CardGroup cols={2}>');
+  lines.push(' <Card title="Pessoa Física" href="#pessoa-fisica">');
+  lines.push(' ' + catalog.filter((service) => service.category === 'Pessoa Física').length + ' services para CPF, biometria, OCR, contatos, risco, crédito, compliance e dados eleitorais.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Pessoa Jurídica" href="#pessoa-juridica">');
+  lines.push(' ' + catalog.filter((service) => service.category === 'Pessoa Jurídica').length + ' services para CNPJ, Receita Federal, sócios, contatos, risco, compliance, OCR e dados societários.');
+  lines.push(' </Card>');
+  lines.push('</CardGroup>');
+  lines.push('');
 
   let currentCategory = '';
-  for (const service of catalog) {
-    if (service.category !== currentCategory) {
-      currentCategory = service.category;
-      lines.push(`## ${currentCategory}`);
-      lines.push('');
-      lines.push('| Nome | Service | Campos principais | Termos de busca | Retorno principal |');
-      lines.push('| --- | --- | --- | --- | --- |');
-    }
-    const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
-    lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} | ${escapeTable(displaySearchTerms(service))} | ${escapeTable(service.responseSummary)} |`);
-  }
-
-  lines.push('');
-  lines.push('## Passo a passo por service');
-  lines.push('');
-  lines.push('Use esta parte quando precisar explicar para o cliente exatamente o que enviar e o que esperar de volta em cada produto.');
-  lines.push('');
-
-  currentCategory = '';
   for (const service of catalog) {
     if (service.category !== currentCategory) {
       if (currentCategory) {
@@ -1267,19 +1275,30 @@ function renderServicesIndex(catalog) {
         lines.push('');
       }
       currentCategory = service.category;
-      lines.push(`### ${currentCategory}`);
+      lines.push('## ' + currentCategory);
+      lines.push('');
+      lines.push('Abra o service para ver alias público, campos de entrada, termos de busca e retorno esperado.');
       lines.push('');
       lines.push('<AccordionGroup>');
     }
-
-    lines.push(renderServiceGuideBlock(service));
+    lines.push(renderServiceIndexCard(service));
     lines.push('');
   }
+  if (currentCategory) lines.push('</AccordionGroup>');
 
-  if (currentCategory) {
-    lines.push('</AccordionGroup>');
-  }
-
+  lines.push('');
+  lines.push('## Passo a passo por service');
+  lines.push('');
+  lines.push('Use o API Reference para copiar body, curl e response resumido de cada produto:');
+  lines.push('');
+  lines.push('<CardGroup cols={2}>');
+  lines.push(' <Card title="Services de pessoa f?sica" href="/api-reference/services-pessoa-fisica">');
+  lines.push(' Cat?logo completo com payloads e responses para services de CPF.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Services de pessoa jur?dica" href="/api-reference/services-pessoa-juridica">');
+  lines.push(' Cat?logo completo com payloads e responses para services de CNPJ.');
+  lines.push(' </Card>');
+  lines.push('</CardGroup>');
   return lines.join('\n');
 }
 

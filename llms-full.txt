@@ -4160,7 +4160,7 @@ Descrição: Lista operacional dos services já documentados no API Reference
 
 # Índice de services
 
-Use este índice quando já souber qual produto precisa executar e quiser confirmar o nome exato do `service` antes de montar a chamada.
+Use este Índice quando já souber qual produto precisa executar e quiser confirmar o nome exato do `service` antes de montar a chamada.
 
 > Info:
 Todas as consultas abaixo usam `POST /api/service-api`. O produto executado é definido pelo campo `service` no body.
@@ -4184,3923 +4184,1064 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
 
 ### Atalhos de busca
 
-| Digite na busca | O que deve aparecer |
-| --- | --- |
-| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |
-| `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |
-| `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |
-| `face index` | Busca facial por selfie na base de faces. |
-| `risco de crédito` | Services de score, rating, risco e crédito PF/PJ. |
-| `processos` | Consultas jurídicas, certidões e antecedentes. |
-| `telefone` ou `email` | Validações e histórico de contato. |
+
+ Documentos de identificação, CNH, RG, OAB, RNE/CRNM e passaporte.
+
+
+ OCR de cartão CNPJ com `SERVICE_OCR_CNPJ_CARD`.
+
+
+ OCR de conta, fatura ou comprovante com imagem/base64.
+
+
+ Busca facial por selfie na base de faces.
+
+
+ Services de score, rating, risco e crédito PF/PJ.
+
+
+ Validações e histórico de contato.
+
 
 > Atencao:
- Antes de executar a chamada, confirme qual service está liberado no produto
- do cliente. O campo `service` deve receber o alias público de chamada,
- exatamente como aparece no catálogo abaixo.
+Antes de executar a chamada, confirme qual service está liberado no produto do cliente. O campo `service` deve receber exatamente o valor público exibido no catálogo.
 
-Na prática: copie o valor da coluna `Service` e envie esse valor no body.
-A documentação não expõe aliases internos de integração; o cliente deve
-usar somente o service liberado no produto.
+Na prática: copie o valor de `Service` no card ou no accordion do produto e envie esse valor no body da requisição. A documentação não expõe aliases internos de integração.
 
-| Service |
-| --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
-| `economic_relationships` |
+## Services por tipo de pessoa
+
+
+ 60 services para CPF, biometria, OCR, contatos, risco, crédito, compliance e dados eleitorais.
+
+
+ 24 services para CNPJ, Receita Federal, sócios, contatos, risco, compliance, OCR e dados societários.
+
 
 ## Pessoa Física
 
-| Nome | Service | Campos principais | Termos de busca | Retorno principal |
-| --- | --- | --- | --- | --- |
-| [Antecedentes criminais civis](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` | PF - Antecedentes criminais civis | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
-| [Antecedentes criminais federais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` | PF - Antecedentes criminais federais | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
-| [Benefícios sociais estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | PF - Benefícios sociais estendidos | Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis. |
-| [Benefícios sociais familiares](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | PF - Benefícios sociais familiares | Retorna benefícios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis. |
-| [Busca de face na base](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_INDEX` | `image1` | PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces | Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis. |
-| [Certidão de Nada Consta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` | PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
-| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` | PF - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
-| [Certidão negativa de protesto PF](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF | Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens. |
-| [Certidão negativa de protesto PF](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF | Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens. |
-| [Consulta de MEI](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEI` | `cpf` | PF - Consulta de MEI | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
-| [CPF na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` | CPF Receita Federal, PF - CPF na Receita Federal on-demand | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
-| [Dados demográficos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | CPF Receita Federal, PF - Dados demográficos | Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada. |
-| [Dados eleitorais de candidato](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` | CPF Receita Federal, PF - Dados eleitorais de candidato | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
-| [Dados financeiros e endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` | PF - Dados financeiros e endereços | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
-| [Dados pelo telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CONFIRM_PHONE` | `phone` | PF - Dados pelo telefone, telefone celular validação contato | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
-| [Dados PIS](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PIS_CONSULTATION` | `cpf` | PF - Dados PIS | Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta. |
-| [Dívida ativa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PF` | `cpf` | PF - Dívida ativa, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` | CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| [Documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` | PF - Documentoscopia digital, documentoscopia documento selfie validação | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
-| [Domínios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CPF` | `cpf` | CPF Receita Federal, PF - Domínios, domínios sites presença digital | Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis. |
-| [Endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESS` | `cpf` | PF - Endereços | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
-| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` | PF - Enriquecimento de dados | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
-| [Envolvimento político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | PF - Envolvimento político | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| [Envolvimento político PF](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | CPF Receita Federal, PF - Envolvimento político PF | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| [Exposição e perfil na mídia](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | PF - Exposição e perfil na mídia | Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
-| [FaceMatch](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH` | `image1`, `image2` | PF - FaceMatch, comparação facial biometria selfie rosto | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
-| [Histórico de e-mails](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | PF - Histórico de e-mails, email validação contato | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
-| [Histórico de telefones](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` | PF - Histórico de telefones, telefone celular validação contato | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
-| [Histórico familiar político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` | CPF Receita Federal, PF - Histórico familiar político | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
-| [Histórico profissional](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` | PF - Histórico profissional | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
-| [Histórico profissional do titular](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` | PF - Histórico profissional do titular | Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo. |
-| [Indicadores de atividades](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | PF - Indicadores de atividades | Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis. |
-| [Informações financeiras](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_INFORMATION` | `cpf` | PF - Informações financeiras | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
-| [KYC e compliance](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` | PF - KYC e compliance, compliance KYC sanções PEP mídia | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
-| [Liveness 2D](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_LIVENESS_2D` | `image1` | PF - Liveness 2D, prova de vida selfie liveness | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
-| [Mandado de prisão](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | PF - Mandado de prisão | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
-| [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING` | `cpf` | PF - Modelagem de dados | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
-| [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço | Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
-| [OCR de emancipação](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_EMANCIPATION` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
-| [OCR React](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR documento imagem base64 leitura extração, PF - OCR React | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
-| [Pessoa politicamente exposta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PEP` | `cpf` | PF - Pessoa politicamente exposta | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
-| [Pessoas relacionadas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | PF - Pessoas relacionadas | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
-| [Prêmios e certificações](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | CPF Receita Federal, PF - Prêmios e certificações | Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados. |
-| [Prestadores de serviço eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` | CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
-| [Processos jurídicos e administrativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES` | `cpf` | PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
-| [Prompt de IA para pessoa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_AI_PROMPT` | `cpf` | PF - Prompt de IA para pessoa | Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional. |
-| [Propensão a apostas online](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` | PF - Propensão a apostas online, apostas bets compliance bet | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
-| [Relacionamentos econômicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` | PF - Relacionamentos econômicos | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento. |
-| [Resultado da documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` | PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
-| [Risco financeiro](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` | PF - Risco financeiro, score risco crédito rating inadimplência | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
-| [Score biométrico](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | PF - Score biométrico, score risco crédito rating inadimplência | Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
-| [Score de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_SCORE` | `cpf` | PF - Score de crédito, score risco crédito rating inadimplência | Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis. |
-| [Score de inadimplência](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | PF - Score de inadimplência, score risco crédito rating inadimplência | Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
-| [Score de risco de fraude](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` | PF - Score de risco de fraude, score risco crédito rating inadimplência | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
-| [Servidores públicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PUBLIC_SERVANTS` | `cpf` | PF - Servidores públicos | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
-| [Status do CPF na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | CPF Receita Federal, PF - Status do CPF na Receita Federal | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
-| [Validação de CPF com endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` | CPF Receita Federal, PF - Validação de CPF com endereço | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
-| [Validação de CPF com telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta. |
-| [Validação de e-mail](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAIL_VALIDATION` | `email` | PF - Validação de e-mail, email validação contato | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
-| [Validação do E-Social](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf`, `nit` | PF - Validação do E-Social | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
-## Pessoa Jurídica
-
-| Nome | Service | Campos principais | Termos de busca | Retorno principal |
-| --- | --- | --- | --- | --- |
-| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ` | `cnpj` | PJ - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas. |
-| [CNPJ na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
-| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
-| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
-| [Dados cadastrais de CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
-| [DAS MEI na Receita](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DAS_MEI` | `cnpj` | CPF Receita Federal, PJ - DAS MEI na Receita | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
-| [Débitos ativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | PJ - Débitos ativos, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| [Doações eleitorais dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
-| [Domínios CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
-| [Endereços estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Endereços estendidos | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
-| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` | CNPJ Receita Federal, PJ - Enriquecimento de dados | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
-| [Exposição e perfil na mídia dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` | PJ - Exposição e perfil na mídia dos sócios | Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
-| [Fornecedores eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
-| [KYC e compliance dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_KYC_OWNERS` | `cnpj` | PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
-| [OCR de cartão CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ | Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível. |
-| [Processos jurídicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
-| [Processos jurídicos dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | `cnpj` | PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
-| [Relacionamentos da empresa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` | PJ - Relacionamentos da empresa | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados. |
-| [Risco de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | PJ - Risco de crédito, score risco crédito rating inadimplência | Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
-| [SINTEGRA](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SINTEGRA_CONSULTATION` | `cnpj`, `uf` | PJ - SINTEGRA | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
-| [Sócios de primeiro nível](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` | PJ - Sócios de primeiro nível | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
-| [Sócios na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` | CPF Receita Federal, PJ - Sócios na Receita Federal | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
-| [Status do CNPJ na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal | Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço. |
-
-## Passo a passo por service
-
-Use esta parte quando precisar explicar para o cliente exatamente o que enviar e o que esperar de volta em cada produto.
-
-### Pessoa Física
+Abra o service para ver alias público, campos de entrada, termos de busca e retorno esperado.
 
 **Service:** `SERVICE_CRIMINAL_RECORD_CIVIL`
+
+**Campos principais:** `cpf`, `rg`, `uf`
 
 **Termos de busca:** PF - Antecedentes criminais civis
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
-**O que retorna:** Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta.
+**Retorno principal:** Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `rg`, `uf` junto com `service: SERVICE_CRIMINAL_RECORD_CIVIL` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `rg`, `state`, `hasRecords`, `records`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
-  "cpf": "cpf",
-  "rg": "rg",
-  "uf": "uf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "rg": "rg",
-    "state": "SP",
-    "hasRecords": false,
-    "records": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Antecedentes criminais federais
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
-**O que retorna:** Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta.
+**Retorno principal:** Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_CRIMINAL_RECORD_FEDERAL` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `hasFederalCriminalRecord`, `records`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasFederalCriminalRecord": false,
-    "records": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Benefícios sociais estendidos
 
 **Quando usar:** Use este service quando precisar executar a consulta "Benefícios sociais estendidos" via API.
 
-**O que retorna:** Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis.
+**Retorno principal:** Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_SOCIAL_ASSISTANCE_EXTENDED` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `totalBenefits`, `benefits`, `indicators`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "totalBenefits": 1,
-    "benefits": [
-      {
-        "program": "Programa social",
-        "status": "ACTIVE"
-      }
-    ],
-    "indicators": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FAMILY_SOCIAL_BENEFITS`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Benefícios sociais familiares
 
 **Quando usar:** Use este service quando precisar executar a consulta "Benefícios sociais familiares" via API.
 
-**O que retorna:** Retorna benefícios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis.
+**Retorno principal:** Retorna benefícios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_FAMILY_SOCIAL_BENEFITS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `totalBenefits`, `benefits`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FAMILY_SOCIAL_BENEFITS",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "totalBenefits": 1,
-    "benefits": [
-      {
-        "program": "Programa social",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FACE_INDEX`
+
+**Campos principais:** `image1`
 
 **Termos de busca:** PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces
 
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
 
-**O que retorna:** Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
+**Retorno principal:** Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_FACE_INDEX` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `faceFound`, `similarity`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "faceFound": true,
-    "similarity": 98.42
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_NOTHING_RECORD_LAWSUITS`
+
+**Campos principais:** `cpf`, `court`, `uf`, `sphere`
 
 **Termos de busca:** PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
-**O que retorna:** Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta.
+**Retorno principal:** Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `court`, `uf`, `sphere` junto com `service: SERVICE_NOTHING_RECORD_LAWSUITS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `court`, `sphere`, `nothingFound`, `records`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
-  "cpf": "cpf",
-  "court": "TRF1",
-  "uf": "uf",
-  "sphere": "CIVIL"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "court": "TRF1",
-    "sphere": "CIVIL",
-    "nothingFound": true,
-    "records": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Certidão negativa de protesto
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas.
+**Retorno principal:** Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `hasProtests`, `protests`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasProtests": false,
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PROTEST_PF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Certidão negativa de protesto PF
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
+**Retorno principal:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROTEST_PF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `hasProtests`, `notaryOffices`, `protests`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PROTEST_PF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PROTEST_PF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Certidão negativa de protesto PF
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
+**Retorno principal:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROTEST_PF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `hasProtests`, `notaryOffices`, `protests`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PROTEST_PF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_MEI`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Consulta de MEI
 
 **Quando usar:** Use este service quando precisar executar a consulta "Consulta de MEI" via API.
 
-**O que retorna:** Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis.
+**Retorno principal:** Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_MEI` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `meiCompanies`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_MEI",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "meiCompanies": [
-      {
-        "cnpj": "cnpj",
-        "officialName": "MEI EXEMPLO",
-        "status": "ATIVA"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_RFB_PF_ON_DEMAND`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - CPF na Receita Federal on-demand
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
 
-**O que retorna:** Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo.
+**Retorno principal:** Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_RFB_PF_ON_DEMAND` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `name`, `birthDate`, `registrationStatus`, `protocol`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_RFB_PF_ON_DEMAND",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "name": "Nome completo",
-    "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
-    "protocol": "protocolo"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DEMOGRAPHIC_DATA_CPF`
+
+**Campos principais:** `cpf`, `birthDate`
 
 **Termos de busca:** CPF Receita Federal, PF - Dados demográficos
 
 **Quando usar:** Use para consultar dados demograficos associados à pessoa.
 
-**O que retorna:** Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada.
+**Retorno principal:** Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_DEMOGRAPHIC_DATA_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `demographicData`, `totalIndicators`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "demographicData": [
-      {
-        "indicator": "Faixa de renda",
-        "value": "Media"
-      }
-    ],
-    "totalIndicators": 1
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - Dados eleitorais de candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
-**O que retorna:** Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível.
+**Retorno principal:** Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ELECTION_CANDIDATE_DATA_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `candidacies`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "candidacies": [
-      {
-        "year": 2024,
-        "role": "VEREADOR",
-        "party": "PARTIDO",
-        "status": "DEFERIDO"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS`
+
+**Campos principais:** `cpf`, `birthDate`
 
 **Termos de busca:** PF - Dados financeiros e endereços
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
-**O que retorna:** Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados.
+**Retorno principal:** Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PF_FINANCIAL_AND_ADDRESS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `estimatedIncome`, `addresses`, `financialIndicators`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "estimatedIncome": "5000-10000",
-    "addresses": [
-      {
-        "city": "Sao Paulo",
-        "state": "SP"
-      }
-    ],
-    "financialIndicators": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_CONFIRM_PHONE`
+
+**Campos principais:** `phone`
 
 **Termos de busca:** PF - Dados pelo telefone, telefone celular validação contato
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
-**O que retorna:** Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis.
+**Retorno principal:** Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `phone` junto com `service: SERVICE_CONFIRM_PHONE` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `phone`, `matched`, `person`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CONFIRM_PHONE",
-  "phone": "+5561123456789"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "phone": "+5561123456789",
-    "matched": true,
-    "person": {
-      "name": "Nome encontrado",
-      "document": "cpf"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PIS_CONSULTATION`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Dados PIS
 
 **Quando usar:** Use este service quando precisar executar a consulta "Dados PIS" via API.
 
-**O que retorna:** Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta.
+**Retorno principal:** Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PIS_CONSULTATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `pis`, `status`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PIS_CONSULTATION",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "pis": "00000000000",
-    "status": "FOUND"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ACTIVE_DEBT_PF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Dívida ativa, dívida ativa débito cobrança inadimplência
 
 **Quando usar:** Use para consultar débitos ou dívidas associadas à pessoa.
 
-**O que retorna:** Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta.
+**Retorno principal:** Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ACTIVE_DEBT_PF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `totalDebts`, `totalValue`, `debts`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ACTIVE_DEBT_PF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "totalDebts": 2,
-    "totalValue": "1234.56",
-    "debts": [
-      {
-        "source": "PGFN",
-        "value": "1234.56",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ELECTORAL_DONORS_CPF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
-**O que retorna:** Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
+**Retorno principal:** Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ELECTORAL_DONORS_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `donations`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_DONORS_CPF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "donations": [
-      {
-        "year": 2024,
-        "recipient": "Candidato",
-        "amount": "500.00"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
+
+**Campos principais:** `key`, `image1`, `image2`, `selfie1`
 
 **Termos de busca:** PF - Documentoscopia digital, documentoscopia documento selfie validação
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
 
-**O que retorna:** Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
+**Retorno principal:** Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `key`, `image1`, `image2`, `selfie1` junto com `service: SERVICE_DIGITAL_DOCUMENTOSCOPY` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `key`, `status`, `documentData`, `validations`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "key": "{key}",
-    "status": "APPROVED",
-    "documentData": {
-      "name": "Nome extraído",
-      "cpf": "cpf"
-    },
-    "validations": [
-      {
-        "name": "faceMatch",
-        "status": "APPROVED"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DOMAINS_CPF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - Domínios, domínios sites presença digital
 
 **Quando usar:** Use para consultar dados de sites vinculados à pessoa.
 
-**O que retorna:** Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis.
+**Retorno principal:** Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_DOMAINS_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `totalDomains`, `domains`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DOMAINS_CPF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "totalDomains": 1,
-    "domains": [
-      {
-        "domain": "exemplo.com.br",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ADDRESS`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Endereços
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
-**O que retorna:** Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis.
+**Retorno principal:** Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ADDRESS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `totalAddresses`, `addresses`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ADDRESS",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "totalAddresses": 2,
-    "addresses": [
-      {
-        "address": "Rua Exemplo",
-        "number": "100",
-        "neighborhood": "Centro",
-        "city": "Sao Paulo",
-        "state": "SP",
-        "zipcode": "01001000"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PERSON_DATA_ENRICHMENT`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Enriquecimento de dados
 
 **Quando usar:** Use para complementar dados cadastrais da pessoa a partir do documento informado.
 
-**O que retorna:** Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis.
+**Retorno principal:** Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_DATA_ENRICHMENT` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `name`, `birthDate`, `registrationStatus`, `motherName`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "name": "Nome completo",
-    "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
-    "motherName": "Nome da mãe"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Envolvimento político
 
 **Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político" via API.
 
-**O que retorna:** Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
+**Retorno principal:** Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_POLITICAL_INVOLVEMENT` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `politicalInvolvement`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "politicalInvolvement": [
-      {
-        "type": "CANDIDACY",
-        "year": 2024,
-        "details": "Candidatura encontrada"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - Envolvimento político PF
 
 **Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF" via API.
 
-**O que retorna:** Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
+**Retorno principal:** Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_POLITICAL_INVOLVEMENT_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `politicalInvolvement`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "politicalInvolvement": [
-      {
-        "type": "DONATION",
-        "year": 2024,
-        "details": "Doacao encontrada"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Exposição e perfil na mídia
 
 **Quando usar:** Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API.
 
-**O que retorna:** Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados.
+**Retorno principal:** Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `mediaMentions`, `exposureLevel`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "mediaMentions": [
-      {
-        "title": "Noticia encontrada",
-        "source": "Fonte",
-        "sentiment": "NEUTRAL"
-      }
-    ],
-    "exposureLevel": "LOW"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FACE_MATCH`
+
+**Campos principais:** `image1`, `image2`
 
 **Termos de busca:** PF - FaceMatch, comparação facial biometria selfie rosto
 
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
 
-**O que retorna:** Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
+**Retorno principal:** Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1`, `image2` junto com `service: SERVICE_FACE_MATCH` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `match`, `similarity`, `status`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
-  "image2": "base64"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "match": true,
-    "similarity": 98.2,
-    "status": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_EMAILS_EXTENDED`
+
+**Campos principais:** `cpf`, `limit`
 
 **Termos de busca:** PF - Histórico de e-mails, email validação contato
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
 
-**O que retorna:** Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis.
+**Retorno principal:** Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `limit` junto com `service: SERVICE_EMAILS_EXTENDED` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `emails`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_EMAILS_EXTENDED",
-  "cpf": "cpf",
-  "limit": "10"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "emails": [
-      {
-        "email": "email@exemplo.com",
-        "priority": 1,
-        "isValid": true,
-        "lastUpdate": "yyyy-MM-dd"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PHONE_HISTORY`
+
+**Campos principais:** `cpf`, `birthDate`, `limit`
 
 **Termos de busca:** PF - Histórico de telefones, telefone celular validação contato
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
-**O que retorna:** Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis.
+**Retorno principal:** Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `limit` junto com `service: SERVICE_PHONE_HISTORY` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `phones`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PHONE_HISTORY",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)",
-  "limit": "10"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "phones": [
-      {
-        "phone": "11900000000",
-        "lineType": "MOBILE",
-        "priority": 1,
-        "lastUpdate": "yyyy-MM-dd"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - Histórico familiar político
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico familiar político" via API.
 
-**O que retorna:** Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados.
+**Retorno principal:** Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `familyPoliticalHistory`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "familyPoliticalHistory": [
-      {
-        "relativeName": "Nome relacionado",
-        "relationship": "PARENTE",
-        "role": "Candidato"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PROFESSIONAL_HISTORY`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Histórico profissional
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional" via API.
 
-**O que retorna:** Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais.
+**Retorno principal:** Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROFESSIONAL_HISTORY` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `professionalHistory`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PROFESSIONAL_HISTORY",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "professionalHistory": [
-      {
-        "companyName": "Empresa Exemplo",
-        "role": "Analista",
-        "startDate": "yyyy-MM-dd"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY`
+
+**Campos principais:** `cpf`, `birthDate`
 
 **Termos de busca:** PF - Histórico profissional do titular
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional do titular" via API.
 
-**O que retorna:** Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo.
+**Retorno principal:** Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `ownerHistory`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "ownerHistory": [
-      {
-        "companyName": "Empresa Exemplo",
-        "cnpj": "cnpj",
-        "qualification": "SOCIO"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ACTIVITIES_INDICATORS`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Indicadores de atividades
 
 **Quando usar:** Use este service quando precisar executar a consulta "Indicadores de atividades" via API.
 
-**O que retorna:** Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis.
+**Retorno principal:** Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ACTIVITIES_INDICATORS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `activityIndicators`, `hasActivityIndicators`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ACTIVITIES_INDICATORS",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "activityIndicators": [
-      {
-        "type": "PROFESSIONAL",
-        "description": "Indicador encontrado"
-      }
-    ],
-    "hasActivityIndicators": true
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FINANCIAL_INFORMATION`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Informações financeiras
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
-**O que retorna:** Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis.
+**Retorno principal:** Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_FINANCIAL_INFORMATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `estimatedIncome`, `purchasingPower`, `financialIndicators`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FINANCIAL_INFORMATION",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "estimatedIncome": "5000-10000",
-    "purchasingPower": "MEDIUM",
-    "financialIndicators": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PERSON_KYC`
+
+**Campos principais:** `cpf`, `birthDate`
 
 **Termos de busca:** PF - KYC e compliance, compliance KYC sanções PEP mídia
 
 **Quando usar:** Use para executar checagens de KYC e compliance da pessoa.
 
-**O que retorna:** Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
+**Retorno principal:** Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_KYC` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `isPep`, `sanctions`, `mediaExposure`, `riskAlerts`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PERSON_KYC",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "isPep": false,
-    "sanctions": [],
-    "mediaExposure": [],
-    "riskAlerts": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_LIVENESS_2D`
+
+**Campos principais:** `image1`
 
 **Termos de busca:** PF - Liveness 2D, prova de vida selfie liveness
 
 **Quando usar:** Use para validar prova de vida a partir de uma imagem de selfie.
 
-**O que retorna:** Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
+**Retorno principal:** Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_LIVENESS_2D` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `liveness`, `confidence`, `status`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_LIVENESS_2D",
-  "image1": "selfie"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "liveness": true,
-    "confidence": 0.97,
-    "status": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ARREST_WARRANT`
+
+**Campos principais:** `nome`, `motherName`, `fatherName`, `birthDate`, `cpf`
 
 **Termos de busca:** PF - Mandado de prisão
 
 **Quando usar:** Use este service quando precisar executar a consulta "Mandado de prisão" via API.
 
-**O que retorna:** Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência.
+**Retorno principal:** Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` junto com `service: SERVICE_ARREST_WARRANT` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `hasArrestWarrant`, `warrants`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ARREST_WARRANT",
-  "nome": "nome",
-  "motherName": "nome da mãe",
-  "fatherName": "nome do pai",
-  "birthDate": "dd/MM/yyyy",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasArrestWarrant": false,
-    "warrants": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PERSON_DATA_MODELING`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Modelagem de dados
 
 **Quando usar:** Use este service quando precisar executar a consulta "Modelagem de dados" via API.
 
-**O que retorna:** Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados.
+**Retorno principal:** Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_DATA_MODELING` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `profileSummary`, `contacts`, `addresses`, `relationships`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PERSON_DATA_MODELING",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "profileSummary": "Resumo consolidado",
-    "contacts": [],
-    "addresses": [],
-    "relationships": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_OCR_PROOF_OF_ADDRESS`
+
+**Campos principais:** `image1`
 
 **Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
+**Retorno principal:** Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_OCR_PROOF_OF_ADDRESS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `genericOcr`, `fullName`, `fullAddress`, `docType`, `dueDate`, `invoiceAmount`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
-  "image1": "base64"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "genericOcr": "texto extraído",
-    "fullName": "Nome extraído",
-    "fullAddress": "Endereço extraído",
-    "docType": "Conta de consumo",
-    "dueDate": "yyyy-MM-dd",
-    "invoiceAmount": "R$ 100,00"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_OCR_EMANCIPATION`
+
+**Campos principais:** `image1`
 
 **Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
+**Retorno principal:** Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_OCR_EMANCIPATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `docType`, `genericOcr`, `extractedFields`, `analysis`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "texto extraído",
-    "extractedFields": {
-      "cpf": "cpf",
-      "dates": [
-        "yyyy-MM-dd"
-      ]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "confidence": "MEDIUM"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_OCR`
+
+**Campos principais:** `documentType`, `image1`, `image2`
 
 **Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR React
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
+**Retorno principal:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `documentType`, `image1` junto com `service: SERVICE_OCR` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
-  "image2": "base64 (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "docType": "CNH",
-    "name": "Nome extraído",
-    "birthDate": "yyyy-MM-dd",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PEP`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Pessoa politicamente exposta
 
 **Quando usar:** Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta.
 
-**O que retorna:** Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis.
+**Retorno principal:** Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PEP` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `isPep`, `positions`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PEP",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "isPep": false,
-    "positions": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_RELATED_PEOPLE`
+
+**Campos principais:** `cpf`, `birthDate`
 
 **Termos de busca:** PF - Pessoas relacionadas
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
 
-**O que retorna:** Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo.
+**Retorno principal:** Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_RELATED_PEOPLE` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `relatedPeople`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_RELATED_PEOPLE",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "relatedPeople": [
-      {
-        "name": "Pessoa relacionada",
-        "relationshipType": "FAMILIAR",
-        "confidence": "HIGH"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - Prêmios e certificações
 
 **Quando usar:** Use este service quando precisar executar a consulta "Prêmios e certificações" via API.
 
-**O que retorna:** Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados.
+**Retorno principal:** Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `totalAwards`, `totalCertifications`, `awards`, `certifications`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "totalAwards": 0,
-    "totalCertifications": 0,
-    "awards": [],
-    "certifications": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
-**O que retorna:** Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço.
+**Retorno principal:** Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CPF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `campos`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "campos": [
-      {
-        "year": 2024,
-        "campaign": "Campanha",
-        "amount": "800.00",
-        "serviceType": "Servico"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
-**O que retorna:** Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis.
+**Retorno principal:** Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_JURIDICAL_PROCESSES` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `totalProcesses`, `processes`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_JURIDICAL_PROCESSES",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "totalProcesses": 1,
-    "processes": [
-      {
-        "court": "TJSP",
-        "processNumber": "0000000-00.0000.0.00.0000",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PERSON_AI_PROMPT`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Prompt de IA para pessoa
 
 **Quando usar:** Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API.
 
-**O que retorna:** Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional.
+**Retorno principal:** Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_AI_PROMPT` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `answer`, `highlights`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PERSON_AI_PROMPT",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "answer": "Resumo analitico gerado pela IA",
-    "highlights": [
-      "ponto relevante"
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SEVICE_ONLINE_BETTING_PROPENSITY`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Propensão a apostas online, apostas bets compliance bet
 
 **Quando usar:** Use este service quando precisar executar a consulta "Propensão a apostas online" via API.
 
-**O que retorna:** Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
+**Retorno principal:** Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SEVICE_ONLINE_BETTING_PROPENSITY` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `propensityScore`, `propensityLevel`, `indicators`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "propensityScore": 78,
-    "propensityLevel": "HIGH",
-    "indicators": [
-      "sinal encontrado"
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ECONOMIC_RELATIONSHIP`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Relacionamentos econômicos
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
 
-**O que retorna:** Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento.
+**Retorno principal:** Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ECONOMIC_RELATIONSHIP` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `relationships`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ECONOMIC_RELATIONSHIP",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "relationships": [
-      {
-        "type": "OWNER",
-        "relatedDocument": "cnpj",
-        "relatedName": "Empresa relacionada"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
+
+**Campos principais:** `key`
 
 **Termos de busca:** PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
 
-**O que retorna:** Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
+**Retorno principal:** Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `key` junto com `service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `key`, `status`, `fields`, `rules`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
-  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "key": "{key}",
-    "status": "APPROVED",
-    "fields": [
-      {
-        "name": "cpf",
-        "value": "cpf"
-      }
-    ],
-    "rules": [
-      {
-        "name": "document",
-        "status": "APPROVED"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FINANCIAL_RISK_SCORE`
+
+**Campos principais:** `cpf`, `birthDate`
 
 **Termos de busca:** PF - Risco financeiro, score risco crédito rating inadimplência
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
-**O que retorna:** Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação.
+**Retorno principal:** Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_FINANCIAL_RISK_SCORE` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `score`, `riskLevel`, `recommendation`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FINANCIAL_RISK_SCORE",
-  "cpf": "cpf",
-  "birthDate": "yyyy-MM-dd (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "score": 681,
-    "riskLevel": "MEDIUM",
-    "recommendation": "REVIEW"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DATAVALID_CNH`
+
+**Campos principais:** `cpf`, `image1`
 
 **Termos de busca:** PF - Score biométrico, score risco crédito rating inadimplência
 
 **Quando usar:** Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.
 
-**O que retorna:** Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
+**Retorno principal:** Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `image1` junto com `service: SERVICE_DATAVALID_CNH` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `biometricScore`, `validated`, `validationStatus`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DATAVALID_CNH",
-  "cpf": "cpf",
-  "image1": "{base64Image}"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "biometricScore": 0.98,
-    "validated": true,
-    "validationStatus": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_CREDIT_SCORE`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Score de crédito, score risco crédito rating inadimplência
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
+**Retorno principal:** Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_CREDIT_SCORE` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `score`, `riskLevel`, `message`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CREDIT_SCORE",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "score": 750,
-    "riskLevel": "LOW",
-    "message": "Score calculado com sucesso"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DEFAULT_RISK_SCORE`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Score de inadimplência, score risco crédito rating inadimplência
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
+**Retorno principal:** Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_DEFAULT_RISK_SCORE` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `score`, `riskLevel`, `defaultProbability`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DEFAULT_RISK_SCORE",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "score": 690,
-    "riskLevel": "MEDIUM",
-    "defaultProbability": "8%"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FRAUD_RISK_SCORE`
+
+**Campos principais:** `cpf`, `factor`
 
 **Termos de busca:** PF - Score de risco de fraude, score risco crédito rating inadimplência
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão.
+**Retorno principal:** Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `factor` junto com `service: SERVICE_FRAUD_RISK_SCORE` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `factor`, `score`, `riskLevel`, `indicators`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FRAUD_RISK_SCORE",
-  "cpf": "cpf",
-  "factor": "minRisk or minattrition"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "factor": "minRisk",
-    "score": 720,
-    "riskLevel": "LOW",
-    "indicators": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_PUBLIC_SERVANTS`
+
+**Campos principais:** `cpf`
 
 **Termos de busca:** PF - Servidores públicos
 
 **Quando usar:** Use este service quando precisar executar a consulta "Servidores públicos" via API.
 
-**O que retorna:** Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis.
+**Retorno principal:** Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PUBLIC_SERVANTS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `publicServantRecords`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PUBLIC_SERVANTS",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "publicServantRecords": [
-      {
-        "agency": "Orgao publico",
-        "role": "Cargo",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_RFB_PF`
+
+**Campos principais:** `cpf`, `dataDeNascimento`
 
 **Termos de busca:** CPF Receita Federal, PF - Status do CPF na Receita Federal
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
 
-**O que retorna:** Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis.
+**Retorno principal:** Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_RFB_PF` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `name`, `birthDate`, `registrationStatus`, `protocol`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_RFB_PF",
-  "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "name": "Nome completo",
-    "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
-    "protocol": "protocolo"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_CPF_ADDRESS_VALIDATION`
+
+**Campos principais:** `cpf`, `zipcode`, `numberAddress`
 
 **Termos de busca:** CPF Receita Federal, PF - Validação de CPF com endereço
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
-**O que retorna:** Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação.
+**Retorno principal:** Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `zipcode`, `numberAddress` junto com `service: SERVICE_CPF_ADDRESS_VALIDATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `zipcode`, `match`, `confidence`, `normalizedAddress`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CPF_ADDRESS_VALIDATION",
-  "cpf": "cpf",
-  "zipcode": "00000-000",
-  "numberAddress": "13"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "zipcode": "01001000",
-    "match": true,
-    "confidence": "HIGH",
-    "normalizedAddress": "Rua Exemplo, 100"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_CPF_PHONE_VALIDATION`
+
+**Campos principais:** `cpf`, `phone`
 
 **Termos de busca:** CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
-**O que retorna:** Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta.
+**Retorno principal:** Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `phone` junto com `service: SERVICE_CPF_PHONE_VALIDATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `phone`, `match`, `statusMessage`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CPF_PHONE_VALIDATION",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "phone": "11900000000",
-    "match": true,
-    "statusMessage": "Telefone associado ao documento"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_EMAIL_VALIDATION`
+
+**Campos principais:** `email`
 
 **Termos de busca:** PF - Validação de e-mail, email validação contato
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
 
-**O que retorna:** Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco.
+**Retorno principal:** Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `email` junto com `service: SERVICE_EMAIL_VALIDATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `email`, `validFormat`, `deliverable`, `domain`, `riskLevel`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_EMAIL_VALIDATION",
-  "email": "email@email.com"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "email": "email@email.com",
-    "validFormat": true,
-    "deliverable": true,
-    "domain": "email.com",
-    "riskLevel": "LOW"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION`
+
+**Campos principais:** `cpf`, `nit`
 
 **Termos de busca:** PF - Validação do E-Social
 
 **Quando usar:** Use este service quando precisar executar a consulta "Validação do E-Social" via API.
 
-**O que retorna:** Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados.
+**Retorno principal:** Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados.
 
-**Passo a passo:**
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `nit`, `qualified`, `inconsistencies`.
+## Pessoa Jurídica
 
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
-  "cpf": "cpf",
-  "nit": "(opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "nit": "nit",
-    "qualified": true,
-    "inconsistencies": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Pessoa Jurídica
+Abra o service para ver alias público, campos de entrada, termos de busca e retorno esperado.
 
 **Service:** `SERVICE_PROTEST_PJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Certidão negativa de protesto
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
+**Retorno principal:** Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_PROTEST_PJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `hasProtests`, `notaryOffices`, `protests`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PROTEST_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_RFB_PJ_ON_DEMAND`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
-**O que retorna:** Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço.
+**Retorno principal:** Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_RFB_PJ_ON_DEMAND` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `officialName`, `status`, `openingDate`, `mainActivity`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_RFB_PJ_ON_DEMAND",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "officialName": "EMPRESA EXEMPLO LTDA",
-    "status": "ATIVA",
-    "openingDate": "yyyy-MM-dd",
-    "mainActivity": "CNAE principal"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_COMPLIANCE_BET`
 
+**Campos principais:** `cnpj`
+
 **Termos de busca:** PJ - Compliance de casas de apostas, apostas bets compliance bet
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
-**O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+**Retorno principal:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPLIANCE_BET` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasBettingExposure": true,
-    "indicators": [
-      "atividade relacionada"
-    ],
-    "riskLevel": "MEDIUM"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_COMPLIANCE_BET_PJ`
 
+**Campos principais:** `cnpj`
+
 **Termos de busca:** PJ - Compliance de casas de apostas, apostas bets compliance bet
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
-**O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+**Retorno principal:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPLIANCE_BET_PJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_COMPLIANCE_BET_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasBettingExposure": true,
-    "indicators": [
-      "atividade relacionada"
-    ],
-    "riskLevel": "MEDIUM"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_REGISTRATION_DATA_CNPJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ
 
 **Quando usar:** Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API.
 
-**O que retorna:** Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
+**Retorno principal:** Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_REGISTRATION_DATA_CNPJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `officialName`, `tradeName`, `status`, `openingDate`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "officialName": "EMPRESA EXEMPLO LTDA",
-    "tradeName": "EMPRESA EXEMPLO",
-    "status": "ATIVA",
-    "openingDate": "yyyy-MM-dd"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DAS_MEI`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CPF Receita Federal, PJ - DAS MEI na Receita
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
-**O que retorna:** Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis.
+**Retorno principal:** Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_DAS_MEI` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `meiStatus`, `periods`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DAS_MEI",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "meiStatus": "ACTIVE",
-    "periods": [
-      {
-        "period": "2026-01",
-        "paid": true
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ACTIVE_DEBT_PJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Débitos ativos, dívida ativa débito cobrança inadimplência
 
 **Quando usar:** Use para consultar débitos ou dívidas associadas à empresa.
 
-**O que retorna:** Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta.
+**Retorno principal:** Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ACTIVE_DEBT_PJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `totalDebts`, `totalValue`, `debts`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ACTIVE_DEBT_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "totalDebts": 1,
-    "totalValue": "9800.00",
-    "debts": [
-      {
-        "source": "PGFN",
-        "value": "9800.00",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ELECTORAL_DONORS_CNPJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
-**O que retorna:** Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
+**Retorno principal:** Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ELECTORAL_DONORS_CNPJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `donations`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "donations": [
-      {
-        "year": 2024,
-        "recipient": "Candidato",
-        "amount": "1000.00"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
-**O que retorna:** Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais.
+**Retorno principal:** Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `ownersDonations`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "ownersDonations": [
-      {
-        "ownerName": "Nome do sócio",
-        "year": 2024,
-        "recipient": "Candidato",
-        "amount": "300.00"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_DOMAINS_CNPJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital
 
 **Quando usar:** Use para consultar dados de sites vinculados à empresa.
 
-**O que retorna:** Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
+**Retorno principal:** Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_DOMAINS_CNPJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `totalDomains`, `domains`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DOMAINS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "totalDomains": 1,
-    "domains": [
-      {
-        "domain": "empresa.com.br",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Endereços estendidos
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
-**O que retorna:** Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
+**Retorno principal:** Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ADDRESSES_EXTENDED_CNPJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `totalAddresses`, `addresses`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "totalAddresses": 1,
-    "addresses": [
-      {
-        "address": "Av Exemplo",
-        "city": "Sao Paulo",
-        "state": "SP",
-        "zipcode": "01001000",
-        "addressType": "COMMERCIAL"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Enriquecimento de dados
 
 **Quando usar:** Use para complementar dados cadastrais da empresa a partir do documento informado.
 
-**O que retorna:** Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço.
+**Retorno principal:** Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_CORPORATE_DATA_ENRICHMENT` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `officialName`, `tradeName`, `status`, `mainActivity`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "officialName": "EMPRESA EXEMPLO LTDA",
-    "tradeName": "EMPRESA EXEMPLO",
-    "status": "ATIVA",
-    "mainActivity": "CNAE principal"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Exposição e perfil na mídia dos sócios
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
-**O que retorna:** Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados.
+**Retorno principal:** Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `mediaMentions`, `exposureLevel`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "mediaMentions": [
-      {
-        "title": "Noticia encontrada",
-        "source": "Fonte",
-        "sentiment": "NEUTRAL"
-      }
-    ],
-    "exposureLevel": "LOW"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
-**O que retorna:** Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço.
+**Retorno principal:** Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CNPJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `campos`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "campos": [
-      {
-        "year": 2024,
-        "campaign": "Campanha",
-        "amount": "2500.00",
-        "serviceType": "Servico"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_COMPANY_KYC_OWNERS`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
-**O que retorna:** Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
+**Retorno principal:** Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPANY_KYC_OWNERS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `ownersChecked`, `owners`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_COMPANY_KYC_OWNERS",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "ownersChecked": 2,
-    "owners": [
-      {
-        "name": "Nome do sócio",
-        "isPep": false,
-        "sanctions": [],
-        "riskAlerts": []
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_OCR_CNPJ_CARD`
+
+**Campos principais:** `image1`
 
 **Termos de busca:** CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
+**Retorno principal:** Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_OCR_CNPJ_CARD` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `docType`, `genericOcr`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "texto extraído do cartão CNPJ"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_PJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
 
-**O que retorna:** Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
+**Retorno principal:** Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_JURIDICAL_PROCESSES_PJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `totalProcesses`, `processes`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "totalProcesses": 1,
-    "processes": [
-      {
-        "court": "TJSP",
-        "processNumber": "0000000-00.0000.0.00.0000",
-        "status": "ACTIVE"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
 
-**O que retorna:** Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas.
+**Retorno principal:** Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `ownersProcesses`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "ownersProcesses": [
-      {
-        "ownerName": "Nome do sócio",
-        "totalProcesses": 1,
-        "processes": []
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_COMPANY_RELATIONSHIP`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Relacionamentos da empresa
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
-**O que retorna:** Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados.
+**Retorno principal:** Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPANY_RELATIONSHIP` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `owners`, `relatedCompanies`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_COMPANY_RELATIONSHIP",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "owners": [
-      {
-        "name": "Nome do sócio",
-        "document": "cpf",
-        "share": "50%"
-      }
-    ],
-    "relatedCompanies": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_CREDIT_RISK_COMPANY`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Risco de crédito, score risco crédito rating inadimplência
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
-**O que retorna:** Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+**Retorno principal:** Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_CREDIT_RISK_COMPANY` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `creditRisk`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CREDIT_RISK_COMPANY",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "creditRisk": {
-      "status": "APPROVED",
-      "score": "720",
-      "rating": "B",
-      "expectedDefault": "MEDIUM",
-      "legalProcess": false
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_SINTEGRA_CONSULTATION`
+
+**Campos principais:** `cnpj`, `uf`
 
 **Termos de busca:** PJ - SINTEGRA
 
 **Quando usar:** Use este service quando precisar executar a consulta "SINTEGRA" via API.
 
-**O que retorna:** Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta.
+**Retorno principal:** Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_SINTEGRA_CONSULTATION` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `stateRegistration`, `state`, `status`, `regime`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_SINTEGRA_CONSULTATION",
-  "cnpj": "cnpj",
-  "uf": "uf (opcional)"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "stateRegistration": "000000000",
-    "state": "SP",
-    "status": "HABILITADO",
-    "regime": "NORMAL"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_FIRST_LEVEL_PARTNER`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** PJ - Sócios de primeiro nível
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
-**O que retorna:** Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ.
+**Retorno principal:** Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_FIRST_LEVEL_PARTNER` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `partners`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FIRST_LEVEL_PARTNER",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "partners": [
-      {
-        "name": "Nome do sócio",
-        "document": "cpf",
-        "level": 1,
-        "qualification": "SOCIO"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_COMPANY_RFB_OWNERS`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CPF Receita Federal, PJ - Sócios na Receita Federal
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
-**O que retorna:** Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível.
+**Retorno principal:** Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível.
 
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPANY_RFB_OWNERS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `owners`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_COMPANY_RFB_OWNERS",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "owners": [
-      {
-        "name": "Nome do sócio",
-        "qualification": "SOCIO-ADMINISTRADOR",
-        "entryDate": "yyyy-MM-dd"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
 **Service:** `SERVICE_RFB_PJ`
+
+**Campos principais:** `cnpj`
 
 **Termos de busca:** CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
-**O que retorna:** Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço.
+**Retorno principal:** Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço.
 
-**Passo a passo:**
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance)
 
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_RFB_PJ` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `officialName`, `status`, `openingDate`, `mainActivity`.
+## Passo a passo por service
 
-**Body exemplo:**
+Use o API Reference para copiar body, curl e response resumido de cada produto:
 
-```json
-{
-  "service": "SERVICE_RFB_PJ",
-  "cnpj": "cnpj"
-}
-```
 
-**Response resumido:**
+ Cat?logo completo com payloads e responses para services de CPF.
 
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "officialName": "EMPRESA EXEMPLO LTDA",
-    "status": "ATIVA",
-    "openingDate": "yyyy-MM-dd",
-    "mainActivity": "CNAE principal"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
+
+ Cat?logo completo com payloads e responses para services de CNPJ.
 
 ---
 
@@ -8195,7 +5336,7 @@ Neste caso, a API entende que deve executar o serviço de enriquecimento de dado
 de pessoa física. Se o `service` mudar, o produto executado também muda.
 
 | Tipo de consulta | Documento principal | Observação |
-| --- | --- |
+| --- | --- | --- |
 | Pessoa física | `cpf` | Pode exigir dados adicionais em certidões, validações ou biometria |
 | Pessoa jurídica | `cnpj` | Pode exigir `uf` em consultas estaduais ou documentos complementares |
 | Documento e biometria | `image1`, `image2`, `selfie1` ou URLs | Use base64 ou URL conforme o produto |
@@ -8208,7 +5349,7 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 ## Cadastro e identidade PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- |
+| --- | --- | --- |
 | Enriquecimento de pessoa física | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
 | Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
@@ -8234,7 +5375,7 @@ prefixo ou alias incorreto podem fazer a chamada autenticar e mesmo assim não
 produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- |
+| --- | --- | --- |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
@@ -8249,7 +5390,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Risco, validações e compliance PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- |
+| --- | --- | --- |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
@@ -8270,7 +5411,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Certidões e judicial PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- |
+| --- | --- | --- |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` |
@@ -8281,7 +5422,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Político e eleitoral
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- |
+| --- | --- | --- |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` |
 | Doações eleitorais PF | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` |
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
@@ -8291,7 +5432,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Cadastro e regularidade PJ
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- |
+| --- | --- | --- |
 | Enriquecimento de pessoa jurídica | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` |
 | Status do CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` |
@@ -8306,7 +5447,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Sócios, relacionamentos e compliance PJ
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- |
+| --- | --- | --- |
 | Relacionamentos de empresa | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` |
 | Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
 | Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` |
@@ -9167,7 +6308,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Cadastro e identidade
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- |
+| --- | --- | --- |
 | Enriquecimento de dados de PF | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
 | Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
@@ -9190,7 +6331,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Biometria e documentos
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- |
+| --- | --- | --- |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
@@ -9205,7 +6346,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Risco, compliance e validações
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- |
+| --- | --- | --- |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
@@ -9247,7 +6388,7 @@ fontes complementares. Eles seguem o mesmo padrão de chamada do endpoint
 disponibilidade dos dados na consulta.
 
 | Serviço | Quando usar | Exemplo de body |
-| --- | --- |
+| --- | --- | --- |
 | `SERVICE_RFB_PF_ON_DEMAND` | Buscar o CPF na Receita Federal em tempo de consulta | `{ "service": "SERVICE_RFB_PF_ON_DEMAND", "cpf": "cpf" }` |
 | `SERVICE_PERSON_DATA_MODELING` | Consolidar dados de modelagem, contatos, vínculos, processos e endereços | `{ "service": "SERVICE_PERSON_DATA_MODELING", "cpf": "cpf" }` |
 | `SERVICE_PERSON_AI_PROMPT` | Gerar resumo analítico textual a partir dos dados consolidados da pessoa | `{ "service": "SERVICE_PERSON_AI_PROMPT", "cpf": "cpf" }` |
@@ -10313,7 +7454,7 @@ retornada por essa consulta.
 Parâmetros aceitos:
 
 | Campo | Descrição | Valor aceito |
-| --- | --- |
+| --- | --- | --- |
 | `cpf` | Número do CPF | Qualquer texto |
 | `rg` | Número do RG da identidade | Qualquer texto |
 | `uf` | UF do estado | Qualquer texto |
@@ -10333,7 +7474,7 @@ Parâmetros aceitos:
 Obrigatoriedade de parâmetros por estado:
 
 | Estado | CPF | UF | RG | MOTHERNAME | FATHERNAME | RGISSUINGAGENCY | RGISSUINGUF | RGEXPEDITIONDATE | DATEFORMAT | PLACEOFBIRTH | ADDRESS | NUMBERADDRESS | NEIGHBORHOOD | CITY | ZIPCODE |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | MG | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
 | CE | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
 | RR | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
@@ -12715,22 +9856,9 @@ Esta página explica o fluxo padrão para executar qualquer produto documentado 
 A maior parte das consultas usa o endpoint `POST /api/service-api`. O campo `service` define qual produto será executado.
 
 > Atencao:
- Antes de executar a chamada, confirme qual service está liberado no produto
- do cliente. O campo `service` deve receber o alias público de chamada,
- exatamente como aparece no catálogo abaixo.
+Antes de executar a chamada, confirme qual service está liberado no produto do cliente. O campo `service` deve receber exatamente o valor público exibido no catálogo.
 
-Na prática: copie o valor da coluna `Service` e envie esse valor no body.
-A documentação não expõe aliases internos de integração; o cliente deve
-usar somente o service liberado no produto.
-
-| Service |
-| --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
-| `economic_relationships` |
+Na prática: copie o valor de `Service` no card ou no accordion do produto e envie esse valor no body da requisição. A documentação não expõe aliases internos de integração.
 
 ## Passo a passo
 
