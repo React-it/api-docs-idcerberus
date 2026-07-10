@@ -1,0 +1,162 @@
+---
+title: Dúvidas e Suporte
+description: Orientação para cenários possíveis de dúvida em testes do OCR por API e casos para chamada de suporte técnico.
+---
+
+## Respostas comuns
+
+| Cenário | Status esperado | Como agir |
+| --- | --- | --- |
+| OCR leu e extraiu dados | `APPROVED` | Usar os dados de `result`. |
+| Documento legível, mas campo principal não apareceu | `REFUSED` | Conferir se a imagem corresponde ao service correto. |
+| Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuração do produto. |
+| Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte técnico se persistir. |
+
+<CardGroup cols={2}>
+  <Card title="Falta de acesso" href="#produto-sem-acesso-ao-service">
+    Quando o token é válido, mas o produto não tem o service liberado para API.
+  </Card>
+  <Card title="Imagem ausente" href="#imagem-ausente">
+    Quando `image1`, `image2`, URL ou `key` não foram enviados como o service espera.
+  </Card>
+  <Card title="Documento não lido" href="#documento-nao-lido">
+    Quando a imagem chega, mas o OCR não extrai dados suficientes.
+  </Card>
+  <Card title="Erro interno" href="#erro-interno">
+    Quando a falha precisa ser investigada por `externalId`, logs e ambiente.
+  </Card>
+</CardGroup>
+
+Exemplo de recusa por documento não lido:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+## Exemplos de erro
+
+### Produto sem acesso ao service
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: conferir se o service está ativo no produto e se está habilitado para API.
+
+### Imagem ausente
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: conferir se `image1`, `image2`, `image1Url` ou `key` foram enviados conforme
+o service escolhido.
+
+### RG sem verso
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: enviar `image1` com a frente e `image2` com o verso.
+
+### Documento não lido
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: conferir qualidade da imagem e se o documento corresponde ao service usado.
+
+### Erro interno
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Falha ao realizar OCR"
+  },
+  "onboardingStatus": "ERROR",
+  "externalId": "..."
+}
+```
+
+Ação: guardar o `externalId`, repetir com uma imagem válida e acionar suporte
+técnico se persistir.
+
+## Checklist antes de passar para o cliente
+
+1. Testou em HML com token do produto correto.
+2. Confirmou que o service está ativo e com API habilitada.
+3. Usou base64 puro, sem prefixo `data:image`.
+4. Validou um caso de sucesso.
+5. Validou um caso de recusa esperado.
+6. Conferiu se o retorno veio sem `fieldsOutput` e sem metadados internos.
+7. Conferiu se `externalId` voltou para rastreio.
+8. Conferiu se os dados retornados vieram dentro de `result`.
+
+## Resumo para suporte e CS
+
+Quando um cliente disser que o OCR não funcionou, confira nesta ordem:
+
+1. Produto e service liberados para API.
+2. Alias correto no campo `service`.
+3. Tipo de documento correto para o service escolhido.
+4. Imagem legível e completa.
+5. Retorno de `status.message`.
+6. `externalId` para rastrear a execução.
+
+Isso evita tratar problema de configuração como problema de OCR, e também evita
+trocar payload quando o erro real está no produto.
+
+## Quando acionar cada time
+
+| Situação | Quem acionar | O que enviar |
+| --- | --- | --- |
+| Falta de acesso ao service | Produto/configuração | Produto, cliente, alias enviado e print da configuração. |
+| OCR retorna vazio com imagem boa | Time técnico | Payload sem base64, imagem usada e `externalId`. |
+| Erro 500 | Backend/logs | `externalId`, ambiente, horário aproximado e service usado. |
+| Campo extraído errado | Time técnico/OCR | Imagem, retorno recebido, campo esperado e `externalId`. |
+| Dúvida de qual service usar | Produto/CS | Tipo de documento e objetivo da consulta. |
+| Divergência entre HML e PROD | Produto + técnico | Produto dos dois ambientes, alias configurado e retorno de cada ambiente. |

@@ -204,7 +204,7 @@ export function createIdCerberusDocsMcpServer() {
       title: 'Detalhar service documentado',
       description: 'Retorna payload, response, campos, links e alertas de um service documentado.',
       inputSchema: {
-        service: z.string().min(2).describe('Alias base, alias de chamada ou alias técnico do parceiro.'),
+        service: z.string().min(2).describe('Alias base, alias de chamada ou alias documentado.'),
       },
     },
     ({ service }) => {

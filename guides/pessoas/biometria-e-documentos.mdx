@@ -17,13 +17,13 @@ POST /api/service-api
 ```
 
 <Info>
-  Para OCR, comece pelo guia [OCR via Service API](/guides/service-api/ocr-service-api).
+  Para OCR, comece pelo guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
   Ele reúne os payloads de RG, CNH, cartão CNPJ, emancipação e comprovante de endereço,
   além do padrão de retorno limpo em `result`.
 </Info>
 
 <CardGroup cols={2}>
-  <Card title="OCR" href="/guides/service-api/ocr-service-api">
+  <Card title="OCR" href="/guides/service-api/sobre-ocr-service-api">
     Extraia dados de RG, CNH, cartão CNPJ, comprovantes e documentos variáveis.
   </Card>
   <Card title="FaceMatch" href="/api-reference/services-pessoa-fisica#facematch">
@@ -51,17 +51,16 @@ Use estes serviços quando precisar:
 
 | Serviço | Código `service` | Uso principal |
 | --- | --- | --- |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | Extrai campos de CNH, RG, RNE, CPF, passaporte, CRLV, comprovante de luz e carteira de trabalho |
-| OCR React RG/CNH | `SERVICE_OCR` | Lê RG ou CNH e retorna campos limpos dentro de `result` |
+| OCR React | `SERVICE_OCR` | Lê RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identifica automaticamente e retorna campos limpos dentro de `result` |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | Extrai CNPJ e texto OCR do cartão CNPJ |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | Extrai nome, endereço, datas e valores quando encontrados |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | Lê documentos variáveis de emancipação e retorna texto, campos objetivos e análise |
-| FaceMatch | `SERVICE_FACE_MATCH_BIGDATACORP` | Compara duas imagens e retorna status e percentual de similaridade facial |
-| Liveness 2D | `SERVICE_LIVENESS_2D_FACETEC` | Verifica se a selfie enviada provavelmente representa uma pessoa real |
-| Score biométrico | `SERVICE_DATAVALID_CNH_SERPRO` | Compara CPF e selfie com bases oficiais e retorna similaridade |
-| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH_SERPRO` | Valida dados de CNH com apoio do DataValid/Serpro |
-| Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | Processa documento, extrai dados e executa FaceMatch quando houver selfie |
-| Resultado da documentoscopia | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | Consulta o resultado de uma documentoscopia usando a chave enviada na criação |
+| FaceMatch | `SERVICE_FACE_MATCH` | Compara duas imagens e retorna status e percentual de similaridade facial |
+| Liveness 2D | `SERVICE_LIVENESS_2D` | Verifica se a selfie enviada provavelmente representa uma pessoa real |
+| Score biométrico | `SERVICE_DATAVALID_CNH` | Compara CPF e selfie com bases oficiais e retorna similaridade |
+| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | Valida dados de CNH com apoio do DataValid/Serpro |
+| Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Processa documento, extrai dados e executa FaceMatch quando houver selfie |
+| Resultado da documentoscopia | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | Consulta o resultado de uma documentoscopia usando a chave enviada na criação |
 
 ## Documentos suportados no OCR
 
@@ -86,7 +85,7 @@ curl --location '{base_url}/api/service-api' \
   --header 'Authorization: Bearer {jwt_token}' \
   --header 'Content-Type: application/json' \
   --data '{
-    "service": "SERVICE_FACE_MATCH_BIGDATACORP",
+    "service": "SERVICE_FACE_MATCH",
     "image1": "base64",
     "image2": "base64"
   }'
@@ -96,7 +95,7 @@ Payload:
 
 ```json
 {
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
+  "service": "SERVICE_FACE_MATCH",
   "image1": "base64",
   "image2": "base64"
 }

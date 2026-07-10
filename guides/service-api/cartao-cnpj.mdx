@@ -1,0 +1,52 @@
+---
+title: Cartão CNPJ
+description: Serviço para extração de dados do cartão CNPJ via API.
+---
+
+## OCR de cartão CNPJ
+
+Use `SERVICE_OCR_CNPJ_CARD` para imagem de cartão CNPJ.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraído do cartão CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Cartão CNPJ processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Se o CNPJ não for encontrado ou for inválido, o esperado é recusa com mensagem
+clara. Se a imagem, armazenamento ou leitura do provedor falhar, pode retornar
+erro.
+
+## Campos esperados por retorno
+
+| Service | Campos mais comuns em `result` |
+| --- | --- |
+| `SERVICE_OCR_CNPJ_CARD` | `cnpj`, `docType`, `genericOcr` |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+<Note>
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+</Note>

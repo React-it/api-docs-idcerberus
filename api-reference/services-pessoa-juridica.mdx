@@ -14,16 +14,16 @@ Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produ
 <Warning>
   Antes de executar a chamada, confirme qual alias está liberado no produto
   do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias técnico do parceiro exibido no catálogo.
+  casos, ele é mais curto que o alias documentado no catálogo.
 </Warning>
 
 Na prática: se o alias configurado no produto for diferente do alias abaixo,
 use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
 quando o produto está ativo.
 
-| Alias documentado/parceiro | Alias de chamada quando configurado no produto |
+| Alias documentado | Alias de chamada quando configurado no produto |
 | --- | --- |
-| `SERVICE_PROTEST_PJ_INFOSIMPLES`, `SERVICE_PROTEST_PJ_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
 
 ## Atalhos práticos
 
@@ -34,7 +34,7 @@ quando o produto está ativo.
   <Card title="Testar no Postman" href="/guides/postman-do-zero">
     Configure environment, gere token e rode `POST /api/service-api` em HML.
   </Card>
-  <Card title="OCR cartão CNPJ" href="/guides/service-api/ocr-service-api#ocr-de-cartao-cnpj">
+  <Card title="OCR cartão CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">
     Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.
   </Card>
   <Card title="Receitas prontas" href="/guides/receitas-prontas">
@@ -64,40 +64,39 @@ quando o produto está ativo.
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
+| Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
 | Domínios CNPJ | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Use para consultar dados de sites vinculados à empresa. | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
-| Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | `cnpj` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
-| Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. | Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
-| KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
-| Processos jurídicos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | `cnpj` | Use para consultar certidões, processos ou informações jurídicas da empresa. | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
-| Relacionamentos da empresa | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados. |
-| Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
-| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
+| Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
+| Exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. | Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
+| KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
+| Processos jurídicos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | `cnpj` | Use para consultar certidões, processos ou informações jurídicas da empresa. | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
+| Relacionamentos da empresa | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados. |
+| Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` | Use para consultar vínculos, sócios ou relacionamentos associados à empresa. | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
+| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
 
 ### Dados cadastrais e Receita Federal
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
+| CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
 | Dados cadastrais de CNPJ | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API. | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
-| DAS MEI na Receita | `SERVICE_DAS_MEI_INFOSIMPLES` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
-| Enriquecimento de dados | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | `cnpj` | Use para complementar dados cadastrais da empresa a partir do documento informado. | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
-| SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` | Use este service quando precisar executar a consulta "SINTEGRA" via API. | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
-| Status do CNPJ na Receita Federal | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço. |
+| DAS MEI na Receita | `SERVICE_DAS_MEI` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
+| Enriquecimento de dados | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` | Use para complementar dados cadastrais da empresa a partir do documento informado. | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
+| SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION` | `cnpj`, `uf` | Use este service quando precisar executar a consulta "SINTEGRA" via API. | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
+| Status do CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço. |
 
 ### Dados eleitorais e PEP
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| Fornecedores eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
+| Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
+| Fornecedores eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
 
 ### Jurídico, certidões e protestos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Certidão negativa de protesto | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas. |
-| Certidão negativa de protesto PJ (Netrin) | `SERVICE_PROTEST_PJ_NETRIN` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
+| Certidão negativa de protesto | `SERVICE_PROTEST_PJ` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
 | Processos jurídicos | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | Use para consultar certidões, processos ou informações jurídicas da empresa. | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
 
 ### KYC, compliance e exposição
@@ -105,15 +104,14 @@ quando o produto está ativo.
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
-| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
+| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 
 ### Risco, crédito e dívidas
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` | Use para consultar débitos ou dívidas associadas à empresa. | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados públicos de risco de crédito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis. |
-| Risco de crédito Murabei | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
+| Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | Use para consultar débitos ou dívidas associadas à empresa. | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
+| Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
 
 
 ## Requests completos
@@ -137,7 +135,7 @@ quando o produto está ativo.
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -255,7 +253,7 @@ Neste service, o objeto `result` representa: Retorna dados extraídos do cartão
 <AccordionGroup>
 <Accordion title="Doações eleitorais dos sócios">
 
-**Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
@@ -279,7 +277,7 @@ Neste service, o objeto `result` representa: Retorna dados extraídos do cartão
 
 ```json
 {
-  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -291,7 +289,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -303,7 +301,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -432,7 +430,7 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 
 <Accordion title="Endereços estendidos">
 
-**Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ`
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
@@ -456,7 +454,7 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 
 ```json
 {
-  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -468,7 +466,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -480,7 +478,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -523,7 +521,7 @@ Neste service, o objeto `result` representa: Retorna endereços associados ao CN
 
 <Accordion title="Exposição e perfil na mídia dos sócios">
 
-**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP`
+**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
@@ -547,7 +545,7 @@ Neste service, o objeto `result` representa: Retorna endereços associados ao CN
 
 ```json
 {
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -559,7 +557,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -571,7 +569,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -612,7 +610,7 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 
 <Accordion title="KYC e compliance dos sócios">
 
-**Service:** `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP`
+**Service:** `SERVICE_COMPANY_KYC_OWNERS`
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
@@ -636,7 +634,7 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 
 ```json
 {
-  "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_KYC_OWNERS",
   "cnpj": "cnpj"
 }
 ```
@@ -648,7 +646,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_KYC_OWNERS",
   "cnpj": "cnpj"
 }'
 ```
@@ -660,7 +658,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_KYC_OWNERS",
   "cnpj": "cnpj"
 }'
 ```
@@ -702,7 +700,7 @@ Neste service, o objeto `result` representa: Retorna checagens de KYC e complian
 
 <Accordion title="Processos jurídicos dos sócios">
 
-**Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP`
+**Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da empresa.
 
@@ -726,7 +724,7 @@ Neste service, o objeto `result` representa: Retorna checagens de KYC e complian
 
 ```json
 {
-  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
   "cnpj": "cnpj"
 }
 ```
@@ -738,7 +736,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
   "cnpj": "cnpj"
 }'
 ```
@@ -750,7 +748,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
   "cnpj": "cnpj"
 }'
 ```
@@ -790,7 +788,7 @@ Neste service, o objeto `result` representa: Retorna processos jurídicos associ
 
 <Accordion title="Relacionamentos da empresa">
 
-**Service:** `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP`
+**Service:** `SERVICE_COMPANY_RELATIONSHIP`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
@@ -814,7 +812,7 @@ Neste service, o objeto `result` representa: Retorna processos jurídicos associ
 
 ```json
 {
-  "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
   "cnpj": "cnpj"
 }
 ```
@@ -826,7 +824,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
   "cnpj": "cnpj"
 }'
 ```
@@ -838,7 +836,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
   "cnpj": "cnpj"
 }'
 ```
@@ -879,7 +877,7 @@ Neste service, o objeto `result` representa: Retorna relacionamentos da empresa,
 
 <Accordion title="Sócios de primeiro nível">
 
-**Service:** `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP`
+**Service:** `SERVICE_FIRST_LEVEL_PARTNER`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à empresa.
 
@@ -903,7 +901,7 @@ Neste service, o objeto `result` representa: Retorna relacionamentos da empresa,
 
 ```json
 {
-  "service": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+  "service": "SERVICE_FIRST_LEVEL_PARTNER",
   "cnpj": "cnpj"
 }
 ```
@@ -915,7 +913,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+  "service": "SERVICE_FIRST_LEVEL_PARTNER",
   "cnpj": "cnpj"
 }'
 ```
@@ -927,7 +925,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+  "service": "SERVICE_FIRST_LEVEL_PARTNER",
   "cnpj": "cnpj"
 }'
 ```
@@ -968,7 +966,7 @@ Neste service, o objeto `result` representa: Retorna sócios de primeiro nível 
 
 <Accordion title="Sócios na Receita Federal">
 
-**Service:** `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP`
+**Service:** `SERVICE_COMPANY_RFB_OWNERS`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
@@ -992,7 +990,7 @@ Neste service, o objeto `result` representa: Retorna sócios de primeiro nível 
 
 ```json
 {
-  "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
   "cnpj": "cnpj"
 }
 ```
@@ -1004,7 +1002,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
   "cnpj": "cnpj"
 }'
 ```
@@ -1016,7 +1014,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
   "cnpj": "cnpj"
 }'
 ```
@@ -1061,7 +1059,7 @@ Neste service, o objeto `result` representa: Retorna o quadro societario na Rece
 <AccordionGroup>
 <Accordion title="CNPJ na Receita Federal on-demand">
 
-**Service:** `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
+**Service:** `SERVICE_RFB_PJ_ON_DEMAND`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
@@ -1085,7 +1083,7 @@ Neste service, o objeto `result` representa: Retorna o quadro societario na Rece
 
 ```json
 {
-  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ_ON_DEMAND",
   "cnpj": "cnpj"
 }
 ```
@@ -1097,7 +1095,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ_ON_DEMAND",
   "cnpj": "cnpj"
 }'
 ```
@@ -1109,7 +1107,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ_ON_DEMAND",
   "cnpj": "cnpj"
 }'
 ```
@@ -1231,7 +1229,7 @@ Neste service, o objeto `result` representa: Retorna dados cadastrais do CNPJ, i
 
 <Accordion title="DAS MEI na Receita">
 
-**Service:** `SERVICE_DAS_MEI_INFOSIMPLES`
+**Service:** `SERVICE_DAS_MEI`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
@@ -1255,7 +1253,7 @@ Neste service, o objeto `result` representa: Retorna dados cadastrais do CNPJ, i
 
 ```json
 {
-  "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+  "service": "SERVICE_DAS_MEI",
   "cnpj": "cnpj"
 }
 ```
@@ -1267,7 +1265,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+  "service": "SERVICE_DAS_MEI",
   "cnpj": "cnpj"
 }'
 ```
@@ -1279,7 +1277,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+  "service": "SERVICE_DAS_MEI",
   "cnpj": "cnpj"
 }'
 ```
@@ -1319,7 +1317,7 @@ Neste service, o objeto `result` representa: Retorna informações de DAS MEI e 
 
 <Accordion title="Enriquecimento de dados">
 
-**Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP`
+**Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT`
 
 **Quando usar:** Use para complementar dados cadastrais da empresa a partir do documento informado.
 
@@ -1343,7 +1341,7 @@ Neste service, o objeto `result` representa: Retorna informações de DAS MEI e 
 
 ```json
 {
-  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
   "cnpj": "cnpj"
 }
 ```
@@ -1355,7 +1353,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
   "cnpj": "cnpj"
 }'
 ```
@@ -1367,7 +1365,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
   "cnpj": "cnpj"
 }'
 ```
@@ -1404,7 +1402,7 @@ Neste service, o objeto `result` representa: Retorna cadastro completo da empres
 
 <Accordion title="SINTEGRA">
 
-**Service:** `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP`
+**Service:** `SERVICE_SINTEGRA_CONSULTATION`
 
 **Quando usar:** Use este service quando precisar executar a consulta "SINTEGRA" via API.
 
@@ -1428,7 +1426,7 @@ Neste service, o objeto `result` representa: Retorna cadastro completo da empres
 
 ```json
 {
-  "service": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_SINTEGRA_CONSULTATION",
   "cnpj": "cnpj",
   "uf": "uf (opcional)"
 }
@@ -1441,7 +1439,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_SINTEGRA_CONSULTATION",
   "cnpj": "cnpj",
   "uf": "uf (opcional)"
 }'
@@ -1454,7 +1452,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_SINTEGRA_CONSULTATION",
   "cnpj": "cnpj",
   "uf": "uf (opcional)"
 }'
@@ -1493,7 +1491,7 @@ Neste service, o objeto `result` representa: Retorna dados do SINTEGRA, incluind
 
 <Accordion title="Status do CNPJ na Receita Federal">
 
-**Service:** `SERVICE_RFB_PJ_BIGDATACORP`
+**Service:** `SERVICE_RFB_PJ`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
@@ -1517,7 +1515,7 @@ Neste service, o objeto `result` representa: Retorna dados do SINTEGRA, incluind
 
 ```json
 {
-  "service": "SERVICE_RFB_PJ_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -1529,7 +1527,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PJ_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1541,7 +1539,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PJ_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1583,7 +1581,7 @@ Neste service, o objeto `result` representa: Retorna situação do CNPJ na Recei
 <AccordionGroup>
 <Accordion title="Doações eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_DONORS_CNPJ`
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
@@ -1607,7 +1605,7 @@ Neste service, o objeto `result` representa: Retorna situação do CNPJ na Recei
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -1619,7 +1617,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1631,7 +1629,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1671,7 +1669,7 @@ Neste service, o objeto `result` representa: Retorna doações eleitorais realiz
 
 <Accordion title="Fornecedores eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
@@ -1695,7 +1693,7 @@ Neste service, o objeto `result` representa: Retorna doações eleitorais realiz
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -1707,7 +1705,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1719,7 +1717,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1765,91 +1763,7 @@ Neste service, o objeto `result` representa: Retorna prestações de serviço el
 <AccordionGroup>
 <Accordion title="Certidão negativa de protesto">
 
-**Service:** `SERVICE_PROTEST_PJ_INFOSIMPLES`
-
-**Quando usar:** Use para consultar protestos associados ao documento da empresa.
-
-**O que retorna:** Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cnpj`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_PROTEST_PJ_INFOSIMPLES",
-  "cnpj": "cnpj"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PROTEST_PJ_INFOSIMPLES",
-  "cnpj": "cnpj"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PROTEST_PJ_INFOSIMPLES",
-  "cnpj": "cnpj"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cnpj` | Sim | CNPJ da empresa consultada. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas.
-
-</Accordion>
-
-<Accordion title="Certidão negativa de protesto PJ (Netrin)">
-
-**Service:** `SERVICE_PROTEST_PJ_NETRIN`
+**Service:** `SERVICE_PROTEST_PJ`
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
@@ -1873,7 +1787,7 @@ Neste service, o objeto `result` representa: Retorna certidão/consulta de prote
 
 ```json
 {
-  "service": "SERVICE_PROTEST_PJ_NETRIN",
+  "service": "SERVICE_PROTEST_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -1885,7 +1799,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_PJ_NETRIN",
+  "service": "SERVICE_PROTEST_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -1897,7 +1811,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_PJ_NETRIN",
+  "service": "SERVICE_PROTEST_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -2113,7 +2027,7 @@ Neste service, o objeto `result` representa: Retorna indicadores de exposição 
 
 <Accordion title="Compliance de casas de apostas">
 
-**Service:** `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP`
+**Service:** `SERVICE_COMPLIANCE_BET_PJ`
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
 
@@ -2137,7 +2051,7 @@ Neste service, o objeto `result` representa: Retorna indicadores de exposição 
 
 ```json
 {
-  "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -2149,7 +2063,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -2161,7 +2075,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -2204,7 +2118,7 @@ Neste service, o objeto `result` representa: Retorna indicadores de exposição 
 <AccordionGroup>
 <Accordion title="Débitos ativos">
 
-**Service:** `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP`
+**Service:** `SERVICE_ACTIVE_DEBT_PJ`
 
 **Quando usar:** Use para consultar débitos ou dívidas associadas à empresa.
 
@@ -2228,7 +2142,7 @@ Neste service, o objeto `result` representa: Retorna indicadores de exposição 
 
 ```json
 {
-  "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -2240,7 +2154,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -2252,7 +2166,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
   "cnpj": "cnpj"
 }'
 ```
@@ -2298,94 +2212,6 @@ Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas 
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
-**O que retorna:** Retorna dados públicos de risco de crédito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cnpj`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_CREDIT_RISK_COMPANY",
-  "cnpj": "cnpj"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_CREDIT_RISK_COMPANY",
-  "cnpj": "cnpj"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_CREDIT_RISK_COMPANY",
-  "cnpj": "cnpj"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cnpj` | Sim | CNPJ da empresa consultada. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "creditRisk": {
-      "status": "APPROVED",
-      "score": "750",
-      "rating": "A",
-      "expectedDefault": "LOW",
-      "legalProcess": false
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna dados públicos de risco de crédito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
-
-</Accordion>
-
-<Accordion title="Risco de crédito Murabei">
-
-**Service:** `SERVICE_CREDIT_RISK_COMPANY_MURABEI`
-
-**Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
-
 **O que retorna:** Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 **Endpoint:** `POST /api/service-api`
@@ -2406,7 +2232,7 @@ Neste service, o objeto `result` representa: Retorna dados públicos de risco de
 
 ```json
 {
-  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
   "cnpj": "cnpj"
 }
 ```
@@ -2418,7 +2244,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
   "cnpj": "cnpj"
 }'
 ```
@@ -2430,7 +2256,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
   "cnpj": "cnpj"
 }'
 ```

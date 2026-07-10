@@ -14,39 +14,20 @@ Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produ
 <Warning>
   Antes de executar a chamada, confirme qual alias está liberado no produto
   do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias técnico do parceiro exibido no catálogo.
+  casos, ele é mais curto que o alias documentado no catálogo.
 </Warning>
 
 Na prática: se o alias configurado no produto for diferente do alias abaixo,
 use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
 quando o produto está ativo.
 
-| Alias documentado/parceiro | Alias de chamada quando configurado no produto |
+| Alias documentado | Alias de chamada quando configurado no produto |
 | --- | --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `economic_relationships` |
-| `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`, `SERVICE_PROTEST_PF_INFOSIMPLES`, `SERVICE_PROTEST_PF_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PERSON_AI_PROMPT_OPENAI` | `SERVICE_PERSON_AI_PROMPT` |
-| `SERVICE_ACTIVITIES_INDICATORS_BIGDATACORP` | `SERVICE_ACTIVITIES_INDICATORS` |
-| `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF_BIGDATACORP` | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` |
-| `SERVICE_COMPLIANCE_BET_BIGDATACORP` | `SERVICE_COMPLIANCE_BET` |
-| `SERVICE_CREDIT_RISK_COMPANY_BIGDATACORP` | `SERVICE_CREDIT_RISK_COMPANY` |
-| `SERVICE_CREDIT_RISK_COMPANY_MURABEI_BIGDATACORP` | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` |
-| `SERVICE_CREDIT_SCORE_ASSERTIVA` | `SERVICE_CREDIT_SCORE` |
-| `SERVICE_DEFAULT_RISK_SCORE_QUANTUM_BIGDATACORP` | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` |
-| `SERVICE_DEMOGRAPHIC_DATA_CPF_BIGDATACORP` | `SERVICE_DEMOGRAPHIC_DATA_CPF` |
-| `SERVICE_DOMAINS_CNPJ_BIGDATACORP` | `SERVICE_DOMAINS_CNPJ` |
-| `SERVICE_DOMAINS_CPF_BIGDATACORP` | `SERVICE_DOMAINS_CPF` |
-| `SERVICE_FACE_INDEX_AWS` | `SERVICE_FACE_INDEX` |
-| `SERVICE_FAMILY_SOCIAL_BENEFITS_BIGDATACORP` | `SERVICE_FAMILY_SOCIAL_BENEFITS` |
-| `SERVICE_JURIDICAL_PROCESSES_PJ_BIGDATACORP` | `SERVICE_JURIDICAL_PROCESSES_PJ` |
-| `SERVICE_OCR_CNPJ_CARD_TEXTRACT` | `SERVICE_OCR_CNPJ_CARD` |
-| `SERVICE_OCR_PROOF_OF_ADDRESS_TEXTRACT` | `SERVICE_OCR_PROOF_OF_ADDRESS` |
-| `SERVICE_OCR_REACT` | `SERVICE_OCR` |
-| `SERVICE_REGISTRATION_DATA_CNPJ_BIGDATACORP` | `SERVICE_REGISTRATION_DATA_CNPJ` |
-| `SERVICE_SOCIAL_ASSISTANCE_EXTENDED_BIGDATACORP` | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
+| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
 
 <Info>
   OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64,
@@ -64,7 +45,7 @@ quando o produto está ativo.
   <Card title="Testar no Postman" href="/guides/postman-do-zero">
     Configure environment, gere token e rode `POST /api/service-api` em HML.
   </Card>
-  <Card title="OCR e imagem" href="/guides/service-api/ocr-service-api">
+  <Card title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">
     Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.
   </Card>
   <Card title="Receitas prontas" href="/guides/receitas-prontas">
@@ -89,79 +70,76 @@ quando o produto está ativo.
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
 | Busca de face na base | `SERVICE_FACE_INDEX` | `image1` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis. |
-| Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `key`, `image1`, `image2`, `selfie1` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
-| FaceMatch | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
-| FaceMatch (AWS) | `SERVICE_FACE_MATCH_AWS` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
-| Liveness 2D | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | Use para validar prova de vida a partir de uma imagem de selfie. | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos. |
+| Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
+| FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
+| Liveness 2D | `SERVICE_LIVENESS_2D` | `image1` | Use para validar prova de vida a partir de uma imagem de selfie. | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
-| OCR React RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento. |
-| Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `key` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
-| Score biométrico | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade. | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
+| OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
+| Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
+| Score biométrico | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade. | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
 
 ### Contatos, sites e relacionamentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Dados financeiros e endereços | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
-| Dados pelo telefone | `SERVICE_CONFIRM_PHONE_FACETEC` | `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
+| Dados financeiros e endereços | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
+| Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
 | Domínios | `SERVICE_DOMAINS_CPF` | `cpf` | Use para consultar dados de sites vinculados à pessoa. | Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis. |
-| Endereços | `SERVICE_ADDRESS_BIGDATACORP` | `cpf` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
-| Histórico de e-mails | `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | `cpf`, `limit` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
-| Histórico de telefones | `SERVICE_PHONE_HISTORY_BIGDATACORP` | `cpf`, `birthDate`, `limit` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
+| Endereços | `SERVICE_ADDRESS` | `cpf` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
+| Histórico de e-mails | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
+| Histórico de telefones | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
-| Pessoas relacionadas | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf`, `birthDate` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
-| Relacionamentos econômicos | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento. |
-| Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` | Use para consultar ou validar endereços associados ao documento. | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
-| Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação. |
-| Validação de CPF com telefone (Facetec) | `SERVICE_CPF_PHONE_VALIDATION_FACETEC` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
-| Validação de e-mail | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `email` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
+| Pessoas relacionadas | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
+| Relacionamentos econômicos | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento. |
+| Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` | Use para consultar ou validar endereços associados ao documento. | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
+| Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
+| Validação de e-mail | `SERVICE_EMAIL_VALIDATION` | `email` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
 
 ### Dados cadastrais e Receita Federal
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Consulta de MEI | `SERVICE_MEI_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Consulta de MEI" via API. | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
-| CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
+| Consulta de MEI | `SERVICE_MEI` | `cpf` | Use este service quando precisar executar a consulta "Consulta de MEI" via API. | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
+| CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
 | Dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | Use para consultar dados demograficos associados à pessoa. | Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada. |
-| Dados PIS | `SERVICE_PIS_CONSULTATION_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Dados PIS" via API. | Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta. |
-| Enriquecimento de dados | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | `cpf` | Use para complementar dados cadastrais da pessoa a partir do documento informado. | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
+| Dados PIS | `SERVICE_PIS_CONSULTATION` | `cpf` | Use este service quando precisar executar a consulta "Dados PIS" via API. | Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta. |
+| Enriquecimento de dados | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` | Use para complementar dados cadastrais da pessoa a partir do documento informado. | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
 | Prêmios e certificações | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | Use este service quando precisar executar a consulta "Prêmios e certificações" via API. | Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados. |
-| Status do CPF na Receita Federal | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
-| Validação do E-Social | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | `cpf`, `nit` | Use este service quando precisar executar a consulta "Validação do E-Social" via API. | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
+| Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
+| Validação do E-Social | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf`, `nit` | Use este service quando precisar executar a consulta "Validação do E-Social" via API. | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
 
 ### Dados eleitorais e PEP
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
-| Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| Envolvimento político PF (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Histórico familiar político" via API. | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
-| KYC e compliance | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | Use para executar checagens de KYC e compliance da pessoa. | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
+| Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
+| Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
+| Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| Envolvimento político PF (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` | Use este service quando precisar executar a consulta "Histórico familiar político" via API. | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
+| KYC e compliance | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` | Use para executar checagens de KYC e compliance da pessoa. | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` | Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta. | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
-| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
+| Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
 
 ### Jurídico, certidões e protestos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | `cpf`, `rg`, `uf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
-| Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
-| Certidão de Nada Consta | `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | `cpf`, `court`, `uf`, `sphere` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
-| Certidão negativa de protesto | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
-| Certidão negativa de protesto PF (InfoSimples) | `SERVICE_PROTEST_PF_INFOSIMPLES` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens. |
-| Certidão negativa de protesto PF (Netrin) | `SERVICE_PROTEST_PF_NETRIN` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
+| Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
+| Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
+| Certidão de Nada Consta | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
+| Certidão negativa de protesto | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
+| Certidão negativa de protesto PF (InfoSimples) | `SERVICE_PROTEST_PF` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
+| Certidão negativa de protesto PF (Netrin) | `SERVICE_PROTEST_PF` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | Use este service quando precisar executar a consulta "Mandado de prisão" via API. | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
-| Processos jurídicos e administrativos | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
+| Processos jurídicos e administrativos | `SERVICE_JURIDICAL_PROCESSES` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
 
 ### KYC, compliance e exposição
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API. | Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
-| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Propensão a apostas online" via API. | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
+| Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API. | Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
+| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` | Use este service quando precisar executar a consulta "Propensão a apostas online" via API. | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
 
 ### Outros services
 
@@ -169,24 +147,23 @@ quando o produto está ativo.
 | --- | --- | --- | --- | --- |
 | Benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | Use este service quando precisar executar a consulta "Benefícios sociais estendidos" via API. | Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis. |
 | Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | Use este service quando precisar executar a consulta "Benefícios sociais familiares" via API. | Retorna benefícios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis. |
-| Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Histórico profissional" via API. | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
-| Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` | Use este service quando precisar executar a consulta "Histórico profissional do titular" via API. | Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo. |
+| Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` | Use este service quando precisar executar a consulta "Histórico profissional" via API. | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
+| Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` | Use este service quando precisar executar a consulta "Histórico profissional do titular" via API. | Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo. |
 | Indicadores de atividades | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | Use este service quando precisar executar a consulta "Indicadores de atividades" via API. | Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis. |
-| Modelagem de dados | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Modelagem de dados" via API. | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
-| Prompt de IA para pessoa | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API. | Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional. |
-| Servidores públicos | `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | `cpf` | Use este service quando precisar executar a consulta "Servidores públicos" via API. | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
+| Modelagem de dados | `SERVICE_PERSON_DATA_MODELING` | `cpf` | Use este service quando precisar executar a consulta "Modelagem de dados" via API. | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
+| Prompt de IA para pessoa | `SERVICE_PERSON_AI_PROMPT` | `cpf` | Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API. | Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional. |
+| Servidores públicos | `SERVICE_PUBLIC_SERVANTS` | `cpf` | Use este service quando precisar executar a consulta "Servidores públicos" via API. | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
 
 ### Risco, crédito e dívidas
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
 | --- | --- | --- | --- | --- |
-| Dívida ativa | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` | Use para consultar débitos ou dívidas associadas à pessoa. | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| Informações financeiras | `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | `cpf` | Use para consultar informações financeiras associadas à pessoa. | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
-| Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
+| Dívida ativa | `SERVICE_ACTIVE_DEBT_PF` | `cpf` | Use para consultar débitos ou dívidas associadas à pessoa. | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
+| Informações financeiras | `SERVICE_FINANCIAL_INFORMATION` | `cpf` | Use para consultar informações financeiras associadas à pessoa. | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
+| Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
 | Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis. |
-| Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação. |
-| Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
-| Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
+| Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
+| Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
 
 
 ## Requests completos
@@ -279,7 +256,7 @@ Neste service, o objeto `result` representa: Busca uma selfie na base de faces i
 
 <Accordion title="Documentoscopia digital">
 
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX`
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
 
@@ -303,7 +280,7 @@ Neste service, o objeto `result` representa: Busca uma selfie na base de faces i
 
 ```json
 {
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
   "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
   "image1": "base64",
   "image2": "base64",
@@ -318,7 +295,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
   "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
   "image1": "base64",
   "image2": "base64",
@@ -333,7 +310,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
   "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
   "image1": "base64",
   "image2": "base64",
@@ -383,7 +360,7 @@ Neste service, o objeto `result` representa: Retorna status da documentoscopia, 
 
 <Accordion title="FaceMatch">
 
-**Service:** `SERVICE_FACE_MATCH_BIGDATACORP`
+**Service:** `SERVICE_FACE_MATCH`
 
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
 
@@ -407,7 +384,7 @@ Neste service, o objeto `result` representa: Retorna status da documentoscopia, 
 
 ```json
 {
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
+  "service": "SERVICE_FACE_MATCH",
   "image1": "base64",
   "image2": "base64"
 }
@@ -420,7 +397,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
+  "service": "SERVICE_FACE_MATCH",
   "image1": "base64",
   "image2": "base64"
 }'
@@ -433,94 +410,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-| `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "match": true,
-    "similarity": 98.2,
-    "status": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
-
-</Accordion>
-
-<Accordion title="FaceMatch (AWS)">
-
-**Service:** `SERVICE_FACE_MATCH_AWS`
-
-**Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
-
-**O que retorna:** Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`, `image2`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_FACE_MATCH_AWS",
-  "image1": "base64",
-  "image2": "base64"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH_AWS",
-  "image1": "base64",
-  "image2": "base64"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH_AWS",
+  "service": "SERVICE_FACE_MATCH",
   "image1": "base64",
   "image2": "base64"
 }'
@@ -557,7 +447,7 @@ Neste service, o objeto `result` representa: Retorna comparacao facial entre dua
 
 <Accordion title="Liveness 2D">
 
-**Service:** `SERVICE_LIVENESS_2D_FACETEC`
+**Service:** `SERVICE_LIVENESS_2D`
 
 **Quando usar:** Use para validar prova de vida a partir de uma imagem de selfie.
 
@@ -581,7 +471,7 @@ Neste service, o objeto `result` representa: Retorna comparacao facial entre dua
 
 ```json
 {
-  "service": "SERVICE_LIVENESS_2D_FACETEC",
+  "service": "SERVICE_LIVENESS_2D",
   "image1": "selfie"
 }
 ```
@@ -593,7 +483,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_LIVENESS_2D_FACETEC",
+  "service": "SERVICE_LIVENESS_2D",
   "image1": "selfie"
 }'
 ```
@@ -605,7 +495,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_LIVENESS_2D_FACETEC",
+  "service": "SERVICE_LIVENESS_2D",
   "image1": "selfie"
 }'
 ```
@@ -638,153 +528,6 @@ Neste service, o objeto `result` representa: Retorna resultado da prova de vida 
 
 </Accordion>
 
-<Accordion title="OCR de documentos">
-
-**Service:** `SERVICE_OCR_BIGDATACORP`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`
-
-**Campos opcionais:** `image2`, `image1Url`, `image2Url`
-
-### Guia de OCR
-
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
-
-### Payload mínimo
-
-```json
-{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "BASE64_DA_FRENTE_DO_DOCUMENTO"
-}
-```
-
-### Retorno limpo esperado
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Erro comum
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-| `image1Url` | Não | URL da primeira imagem, alternativa ao envio em base64 quando suportado. |
-| `image2Url` | Não | URL da segunda imagem, alternativa ao envio em base64 quando suportado. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-</Accordion>
-
 <Accordion title="OCR de emancipação">
 
 **Service:** `SERVICE_OCR_EMANCIPATION`
@@ -801,7 +544,7 @@ Neste service, o objeto `result` representa: Retorna dados extraídos das imagen
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -930,13 +673,13 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 
 </Accordion>
 
-<Accordion title="OCR React RG/CNH">
+<Accordion title="OCR React">
 
 **Service:** `SERVICE_OCR`
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -946,7 +689,7 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -968,7 +711,7 @@ Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -1005,9 +748,9 @@ Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR
 ```json
 {
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }
 ```
 
@@ -1019,9 +762,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }'
 ```
 
@@ -1033,9 +776,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }'
 ```
 
@@ -1058,7 +801,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -1068,13 +811,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+Neste service, o objeto `result` representa: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 </Accordion>
 
 <Accordion title="Resultado da documentoscopia digital">
 
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
 
 **Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
 
@@ -1098,7 +841,7 @@ Neste service, o objeto `result` representa: Retorna dados extraídos de RG ou C
 
 ```json
 {
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
   "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
 }
 ```
@@ -1110,7 +853,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
   "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
 }'
 ```
@@ -1122,7 +865,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
   "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
 }'
 ```
@@ -1168,7 +911,7 @@ Neste service, o objeto `result` representa: Retorna o resultado ja processado d
 
 <Accordion title="Score biométrico">
 
-**Service:** `SERVICE_DATAVALID_CNH_SERPRO`
+**Service:** `SERVICE_DATAVALID_CNH`
 
 **Quando usar:** Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.
 
@@ -1192,7 +935,7 @@ Neste service, o objeto `result` representa: Retorna o resultado ja processado d
 
 ```json
 {
-  "service": "SERVICE_DATAVALID_CNH_SERPRO",
+  "service": "SERVICE_DATAVALID_CNH",
   "cpf": "cpf",
   "image1": "{base64Image}"
 }
@@ -1205,7 +948,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DATAVALID_CNH_SERPRO",
+  "service": "SERVICE_DATAVALID_CNH",
   "cpf": "cpf",
   "image1": "{base64Image}"
 }'
@@ -1218,7 +961,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DATAVALID_CNH_SERPRO",
+  "service": "SERVICE_DATAVALID_CNH",
   "cpf": "cpf",
   "image1": "{base64Image}"
 }'
@@ -1261,7 +1004,7 @@ Neste service, o objeto `result` representa: Retorna validação DataValid/Serpr
 <AccordionGroup>
 <Accordion title="Dados financeiros e endereços">
 
-**Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP`
+**Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS`
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
@@ -1285,7 +1028,7 @@ Neste service, o objeto `result` representa: Retorna validação DataValid/Serpr
 
 ```json
 {
-  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -1298,7 +1041,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -1311,7 +1054,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -1354,7 +1097,7 @@ Neste service, o objeto `result` representa: Retorna dados financeiros e endere�
 
 <Accordion title="Dados pelo telefone">
 
-**Service:** `SERVICE_CONFIRM_PHONE_FACETEC`
+**Service:** `SERVICE_CONFIRM_PHONE`
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
@@ -1378,7 +1121,7 @@ Neste service, o objeto `result` representa: Retorna dados financeiros e endere�
 
 ```json
 {
-  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
+  "service": "SERVICE_CONFIRM_PHONE",
   "phone": "+5561123456789"
 }
 ```
@@ -1390,7 +1133,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
+  "service": "SERVICE_CONFIRM_PHONE",
   "phone": "+5561123456789"
 }'
 ```
@@ -1402,7 +1145,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
+  "service": "SERVICE_CONFIRM_PHONE",
   "phone": "+5561123456789"
 }'
 ```
@@ -1528,7 +1271,7 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 
 <Accordion title="Endereços">
 
-**Service:** `SERVICE_ADDRESS_BIGDATACORP`
+**Service:** `SERVICE_ADDRESS`
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
@@ -1552,7 +1295,7 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 
 ```json
 {
-  "service": "SERVICE_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_ADDRESS",
   "cpf": "cpf"
 }
 ```
@@ -1564,7 +1307,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_ADDRESS",
   "cpf": "cpf"
 }'
 ```
@@ -1576,7 +1319,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_ADDRESS",
   "cpf": "cpf"
 }'
 ```
@@ -1620,7 +1363,7 @@ Neste service, o objeto `result` representa: Retorna endereços associados ao CP
 
 <Accordion title="Histórico de e-mails">
 
-**Service:** `SERVICE_EMAILS_EXTENDED_BIGDATACORP`
+**Service:** `SERVICE_EMAILS_EXTENDED`
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
 
@@ -1644,7 +1387,7 @@ Neste service, o objeto `result` representa: Retorna endereços associados ao CP
 
 ```json
 {
-  "service": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+  "service": "SERVICE_EMAILS_EXTENDED",
   "cpf": "cpf",
   "limit": "10"
 }
@@ -1657,7 +1400,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+  "service": "SERVICE_EMAILS_EXTENDED",
   "cpf": "cpf",
   "limit": "10"
 }'
@@ -1670,7 +1413,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+  "service": "SERVICE_EMAILS_EXTENDED",
   "cpf": "cpf",
   "limit": "10"
 }'
@@ -1713,7 +1456,7 @@ Neste service, o objeto `result` representa: Retorna e-mails associados ao CPF, 
 
 <Accordion title="Histórico de telefones">
 
-**Service:** `SERVICE_PHONE_HISTORY_BIGDATACORP`
+**Service:** `SERVICE_PHONE_HISTORY`
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
@@ -1737,7 +1480,7 @@ Neste service, o objeto `result` representa: Retorna e-mails associados ao CPF, 
 
 ```json
 {
-  "service": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PHONE_HISTORY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)",
   "limit": "10"
@@ -1751,7 +1494,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PHONE_HISTORY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)",
   "limit": "10"
@@ -1765,7 +1508,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PHONE_HISTORY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)",
   "limit": "10"
@@ -1824,7 +1567,7 @@ Neste service, o objeto `result` representa: Retorna histórico de telefones ass
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -1943,7 +1686,7 @@ Neste service, o objeto `result` representa: Retorna dados extraídos do comprov
 
 <Accordion title="Pessoas relacionadas">
 
-**Service:** `SERVICE_RELATED_PEOPLE_BIGDATACORP`
+**Service:** `SERVICE_RELATED_PEOPLE`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
 
@@ -1967,7 +1710,7 @@ Neste service, o objeto `result` representa: Retorna dados extraídos do comprov
 
 ```json
 {
-  "service": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+  "service": "SERVICE_RELATED_PEOPLE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -1980,7 +1723,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+  "service": "SERVICE_RELATED_PEOPLE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -1993,7 +1736,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+  "service": "SERVICE_RELATED_PEOPLE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -2035,7 +1778,7 @@ Neste service, o objeto `result` representa: Retorna pessoas relacionadas ao CPF
 
 <Accordion title="Relacionamentos econômicos">
 
-**Service:** `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP`
+**Service:** `SERVICE_ECONOMIC_RELATIONSHIP`
 
 **Quando usar:** Use para consultar vínculos, sócios ou relacionamentos associados à pessoa.
 
@@ -2059,7 +1802,7 @@ Neste service, o objeto `result` representa: Retorna pessoas relacionadas ao CPF
 
 ```json
 {
-  "service": "SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_ECONOMIC_RELATIONSHIP",
   "cpf": "cpf"
 }
 ```
@@ -2071,7 +1814,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_ECONOMIC_RELATIONSHIP",
   "cpf": "cpf"
 }'
 ```
@@ -2083,7 +1826,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_ECONOMIC_RELATIONSHIP",
   "cpf": "cpf"
 }'
 ```
@@ -2123,7 +1866,7 @@ Neste service, o objeto `result` representa: Retorna vínculos econômicos assoc
 
 <Accordion title="Validação de CPF com endereço">
 
-**Service:** `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP`
+**Service:** `SERVICE_CPF_ADDRESS_VALIDATION`
 
 **Quando usar:** Use para consultar ou validar endereços associados ao documento.
 
@@ -2147,7 +1890,7 @@ Neste service, o objeto `result` representa: Retorna vínculos econômicos assoc
 
 ```json
 {
-  "service": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_CPF_ADDRESS_VALIDATION",
   "cpf": "cpf",
   "zipcode": "00000-000",
   "numberAddress": "13"
@@ -2161,7 +1904,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_CPF_ADDRESS_VALIDATION",
   "cpf": "cpf",
   "zipcode": "00000-000",
   "numberAddress": "13"
@@ -2175,7 +1918,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_CPF_ADDRESS_VALIDATION",
   "cpf": "cpf",
   "zipcode": "00000-000",
   "numberAddress": "13"
@@ -2216,96 +1959,7 @@ Neste service, o objeto `result` representa: Retorna se o endereço informado te
 
 <Accordion title="Validação de CPF com telefone">
 
-**Service:** `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP`
-
-**Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
-
-**O que retorna:** Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`, `phone`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cpf` | Sim | CPF da pessoa física consultada. |
-| `phone` | Sim | Telefone usado para consulta ou validação, de preferência com DDD. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "phone": "11900000000",
-    "match": true,
-    "confidence": "HIGH",
-    "lineType": "MOBILE"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação.
-
-</Accordion>
-
-<Accordion title="Validação de CPF com telefone (Facetec)">
-
-**Service:** `SERVICE_CPF_PHONE_VALIDATION_FACETEC`
+**Service:** `SERVICE_CPF_PHONE_VALIDATION`
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
@@ -2329,7 +1983,7 @@ Neste service, o objeto `result` representa: Retorna se o telefone informado tem
 
 ```json
 {
-  "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+  "service": "SERVICE_CPF_PHONE_VALIDATION",
   "cpf": "cpf",
   "phone": "11900000000"
 }
@@ -2342,7 +1996,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+  "service": "SERVICE_CPF_PHONE_VALIDATION",
   "cpf": "cpf",
   "phone": "11900000000"
 }'
@@ -2355,7 +2009,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+  "service": "SERVICE_CPF_PHONE_VALIDATION",
   "cpf": "cpf",
   "phone": "11900000000"
 }'
@@ -2393,7 +2047,7 @@ Neste service, o objeto `result` representa: Retorna validação da associação
 
 <Accordion title="Validação de e-mail">
 
-**Service:** `SERVICE_EMAIL_VALIDATION_BIGDATACORP`
+**Service:** `SERVICE_EMAIL_VALIDATION`
 
 **Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
 
@@ -2417,7 +2071,7 @@ Neste service, o objeto `result` representa: Retorna validação da associação
 
 ```json
 {
-  "service": "SERVICE_EMAIL_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_EMAIL_VALIDATION",
   "email": "email@email.com"
 }
 ```
@@ -2429,7 +2083,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_EMAIL_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_EMAIL_VALIDATION",
   "email": "email@email.com"
 }'
 ```
@@ -2441,7 +2095,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_EMAIL_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_EMAIL_VALIDATION",
   "email": "email@email.com"
 }'
 ```
@@ -2483,7 +2137,7 @@ Neste service, o objeto `result` representa: Retorna validação do e-mail infor
 <AccordionGroup>
 <Accordion title="Consulta de MEI">
 
-**Service:** `SERVICE_MEI_BIGDATACORP`
+**Service:** `SERVICE_MEI`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Consulta de MEI" via API.
 
@@ -2507,7 +2161,7 @@ Neste service, o objeto `result` representa: Retorna validação do e-mail infor
 
 ```json
 {
-  "service": "SERVICE_MEI_BIGDATACORP",
+  "service": "SERVICE_MEI",
   "cpf": "cpf"
 }
 ```
@@ -2519,7 +2173,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_MEI_BIGDATACORP",
+  "service": "SERVICE_MEI",
   "cpf": "cpf"
 }'
 ```
@@ -2531,7 +2185,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_MEI_BIGDATACORP",
+  "service": "SERVICE_MEI",
   "cpf": "cpf"
 }'
 ```
@@ -2571,7 +2225,7 @@ Neste service, o objeto `result` representa: Retorna empresas MEI associadas ao 
 
 <Accordion title="CPF na Receita Federal on-demand">
 
-**Service:** `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP`
+**Service:** `SERVICE_RFB_PF_ON_DEMAND`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
 
@@ -2595,7 +2249,7 @@ Neste service, o objeto `result` representa: Retorna empresas MEI associadas ao 
 
 ```json
 {
-  "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PF_ON_DEMAND",
   "cpf": "cpf"
 }
 ```
@@ -2607,7 +2261,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PF_ON_DEMAND",
   "cpf": "cpf"
 }'
 ```
@@ -2619,7 +2273,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PF_ON_DEMAND",
   "cpf": "cpf"
 }'
 ```
@@ -2748,7 +2402,7 @@ Neste service, o objeto `result` representa: Retorna dados demograficos associad
 
 <Accordion title="Dados PIS">
 
-**Service:** `SERVICE_PIS_CONSULTATION_BIGDATACORP`
+**Service:** `SERVICE_PIS_CONSULTATION`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Dados PIS" via API.
 
@@ -2772,7 +2426,7 @@ Neste service, o objeto `result` representa: Retorna dados demograficos associad
 
 ```json
 {
-  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_PIS_CONSULTATION",
   "cpf": "cpf"
 }
 ```
@@ -2784,7 +2438,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_PIS_CONSULTATION",
   "cpf": "cpf"
 }'
 ```
@@ -2796,7 +2450,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_PIS_CONSULTATION",
   "cpf": "cpf"
 }'
 ```
@@ -2831,7 +2485,7 @@ Neste service, o objeto `result` representa: Retorna dados de PIS/NIS associados
 
 <Accordion title="Enriquecimento de dados">
 
-**Service:** `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP`
+**Service:** `SERVICE_PERSON_DATA_ENRICHMENT`
 
 **Quando usar:** Use para complementar dados cadastrais da pessoa a partir do documento informado.
 
@@ -2855,7 +2509,7 @@ Neste service, o objeto `result` representa: Retorna dados de PIS/NIS associados
 
 ```json
 {
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
   "cpf": "cpf"
 }
 ```
@@ -2867,7 +2521,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
   "cpf": "cpf"
 }'
 ```
@@ -2879,7 +2533,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
   "cpf": "cpf"
 }'
 ```
@@ -3001,7 +2655,7 @@ Neste service, o objeto `result` representa: Retorna a quantidade e os registros
 
 <Accordion title="Status do CPF na Receita Federal">
 
-**Service:** `SERVICE_RFB_PF_BIGDATACORP`
+**Service:** `SERVICE_RFB_PF`
 
 **Quando usar:** Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal.
 
@@ -3025,7 +2679,7 @@ Neste service, o objeto `result` representa: Retorna a quantidade e os registros
 
 ```json
 {
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
+  "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
 }
@@ -3038,7 +2692,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
+  "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
 }'
@@ -3051,7 +2705,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
+  "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
 }'
@@ -3090,7 +2744,7 @@ Neste service, o objeto `result` representa: Retorna situação do CPF na Receit
 
 <Accordion title="Validação do E-Social">
 
-**Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP`
+**Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Validação do E-Social" via API.
 
@@ -3114,7 +2768,7 @@ Neste service, o objeto `result` representa: Retorna situação do CPF na Receit
 
 ```json
 {
-  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
   "cpf": "cpf",
   "nit": "(opcional)"
 }
@@ -3127,7 +2781,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
   "cpf": "cpf",
   "nit": "(opcional)"
 }'
@@ -3140,7 +2794,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
   "cpf": "cpf",
   "nit": "(opcional)"
 }'
@@ -3183,7 +2837,7 @@ Neste service, o objeto `result` representa: Retorna qualificação cadastral no
 <AccordionGroup>
 <Accordion title="Dados eleitorais de candidato">
 
-**Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP`
+**Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF`
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
@@ -3207,7 +2861,7 @@ Neste service, o objeto `result` representa: Retorna qualificação cadastral no
 
 ```json
 {
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
   "cpf": "cpf"
 }
 ```
@@ -3219,7 +2873,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3231,7 +2885,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3272,7 +2926,7 @@ Neste service, o objeto `result` representa: Retorna histórico de candidaturas 
 
 <Accordion title="Doações eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_DONORS_CPF`
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
@@ -3296,7 +2950,7 @@ Neste service, o objeto `result` representa: Retorna histórico de candidaturas 
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CPF",
   "cpf": "cpf"
 }
 ```
@@ -3308,7 +2962,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3320,7 +2974,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3360,7 +3014,7 @@ Neste service, o objeto `result` representa: Retorna doações eleitorais realiz
 
 <Accordion title="Envolvimento político">
 
-**Service:** `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP`
+**Service:** `SERVICE_POLITICAL_INVOLVEMENT`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político" via API.
 
@@ -3384,7 +3038,7 @@ Neste service, o objeto `result` representa: Retorna doações eleitorais realiz
 
 ```json
 {
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
   "cpf": "cpf"
 }
 ```
@@ -3396,7 +3050,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
   "cpf": "cpf"
 }'
 ```
@@ -3408,7 +3062,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
   "cpf": "cpf"
 }'
 ```
@@ -3448,7 +3102,7 @@ Neste service, o objeto `result` representa: Retorna envolvimento político do C
 
 <Accordion title="Envolvimento político PF (BigDataCorp)">
 
-**Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP`
+**Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API.
 
@@ -3472,7 +3126,7 @@ Neste service, o objeto `result` representa: Retorna envolvimento político do C
 
 ```json
 {
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
   "cpf": "cpf"
 }
 ```
@@ -3484,7 +3138,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3496,7 +3150,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3536,7 +3190,7 @@ Neste service, o objeto `result` representa: Retorna envolvimento político do C
 
 <Accordion title="Histórico familiar político">
 
-**Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP`
+**Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico familiar político" via API.
 
@@ -3560,7 +3214,7 @@ Neste service, o objeto `result` representa: Retorna envolvimento político do C
 
 ```json
 {
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
   "cpf": "cpf"
 }
 ```
@@ -3572,7 +3226,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3584,7 +3238,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3624,7 +3278,7 @@ Neste service, o objeto `result` representa: Retorna histórico político famili
 
 <Accordion title="KYC e compliance">
 
-**Service:** `SERVICE_PERSON_KYC_BIGDATACORP`
+**Service:** `SERVICE_PERSON_KYC`
 
 **Quando usar:** Use para executar checagens de KYC e compliance da pessoa.
 
@@ -3648,7 +3302,7 @@ Neste service, o objeto `result` representa: Retorna histórico político famili
 
 ```json
 {
-  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "service": "SERVICE_PERSON_KYC",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -3661,7 +3315,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "service": "SERVICE_PERSON_KYC",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -3674,7 +3328,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "service": "SERVICE_PERSON_KYC",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -3796,7 +3450,7 @@ Neste service, o objeto `result` representa: Retorna se o CPF e PEP ou relaciona
 
 <Accordion title="Prestadores de serviço eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF`
 
 **Quando usar:** Use para consultar informações eleitorais relacionadas à pessoa.
 
@@ -3820,7 +3474,7 @@ Neste service, o objeto `result` representa: Retorna se o CPF e PEP ou relaciona
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
   "cpf": "cpf"
 }
 ```
@@ -3832,7 +3486,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3844,7 +3498,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
   "cpf": "cpf"
 }'
 ```
@@ -3890,7 +3544,7 @@ Neste service, o objeto `result` representa: Retorna prestações de serviço el
 <AccordionGroup>
 <Accordion title="Antecedentes criminais civis">
 
-**Service:** `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP`
+**Service:** `SERVICE_CRIMINAL_RECORD_CIVIL`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
@@ -3914,7 +3568,7 @@ Neste service, o objeto `result` representa: Retorna prestações de serviço el
 
 ```json
 {
-  "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
   "cpf": "cpf",
   "rg": "rg",
   "uf": "uf"
@@ -3928,7 +3582,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
   "cpf": "cpf",
   "rg": "rg",
   "uf": "uf"
@@ -3942,7 +3596,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
   "cpf": "cpf",
   "rg": "rg",
   "uf": "uf"
@@ -3983,7 +3637,7 @@ Neste service, o objeto `result` representa: Retorna resultado de antecedentes c
 
 <Accordion title="Antecedentes criminais federais">
 
-**Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP`
+**Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
@@ -4007,7 +3661,7 @@ Neste service, o objeto `result` representa: Retorna resultado de antecedentes c
 
 ```json
 {
-  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
   "cpf": "cpf"
 }
 ```
@@ -4019,7 +3673,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
   "cpf": "cpf"
 }'
 ```
@@ -4031,7 +3685,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
   "cpf": "cpf"
 }'
 ```
@@ -4066,7 +3720,7 @@ Neste service, o objeto `result` representa: Retorna resultado de antecedentes c
 
 <Accordion title="Certidão de Nada Consta">
 
-**Service:** `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
+**Service:** `SERVICE_NOTHING_RECORD_LAWSUITS`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
@@ -4090,7 +3744,7 @@ Neste service, o objeto `result` representa: Retorna resultado de antecedentes c
 
 ```json
 {
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
   "cpf": "cpf",
   "court": "TRF1",
   "uf": "uf",
@@ -4105,7 +3759,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
   "cpf": "cpf",
   "court": "TRF1",
   "uf": "uf",
@@ -4120,7 +3774,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
   "cpf": "cpf",
   "court": "TRF1",
   "uf": "uf",
@@ -4163,7 +3817,7 @@ Neste service, o objeto `result` representa: Retorna certidão de nada consta pa
 
 <Accordion title="Certidão negativa de protesto">
 
-**Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`
+**Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
@@ -4187,7 +3841,7 @@ Neste service, o objeto `result` representa: Retorna certidão de nada consta pa
 
 ```json
 {
-  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP",
+  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
   "cpf": "cpf"
 }
 ```
@@ -4199,7 +3853,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP",
+  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
   "cpf": "cpf"
 }'
 ```
@@ -4211,7 +3865,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP",
+  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
   "cpf": "cpf"
 }'
 ```
@@ -4246,11 +3900,11 @@ Neste service, o objeto `result` representa: Retorna certidão/consulta de prote
 
 <Accordion title="Certidão negativa de protesto PF (InfoSimples)">
 
-**Service:** `SERVICE_PROTEST_PF_INFOSIMPLES`
+**Service:** `SERVICE_PROTEST_PF`
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens.
+**O que retorna:** Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -4270,7 +3924,7 @@ Neste service, o objeto `result` representa: Retorna certidão/consulta de prote
 
 ```json
 {
-  "service": "SERVICE_PROTEST_PF_INFOSIMPLES",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }
 ```
@@ -4282,7 +3936,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_PF_INFOSIMPLES",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }'
 ```
@@ -4294,7 +3948,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_PF_INFOSIMPLES",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }'
 ```
@@ -4324,13 +3978,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens.
+Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
 
 </Accordion>
 
 <Accordion title="Certidão negativa de protesto PF (Netrin)">
 
-**Service:** `SERVICE_PROTEST_PF_NETRIN`
+**Service:** `SERVICE_PROTEST_PF`
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
@@ -4354,7 +4008,7 @@ Neste service, o objeto `result` representa: Retorna certidão/consulta de prote
 
 ```json
 {
-  "service": "SERVICE_PROTEST_PF_NETRIN",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }
 ```
@@ -4366,7 +4020,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_PF_NETRIN",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }'
 ```
@@ -4378,7 +4032,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROTEST_PF_NETRIN",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }'
 ```
@@ -4513,7 +4167,7 @@ Neste service, o objeto `result` representa: Retorna indicativos de mandado de p
 
 <Accordion title="Processos jurídicos e administrativos">
 
-**Service:** `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP`
+**Service:** `SERVICE_JURIDICAL_PROCESSES`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
 
@@ -4537,7 +4191,7 @@ Neste service, o objeto `result` representa: Retorna indicativos de mandado de p
 
 ```json
 {
-  "service": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES",
   "cpf": "cpf"
 }
 ```
@@ -4549,7 +4203,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES",
   "cpf": "cpf"
 }'
 ```
@@ -4561,7 +4215,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES",
   "cpf": "cpf"
 }'
 ```
@@ -4607,7 +4261,7 @@ Neste service, o objeto `result` representa: Retorna processos jurídicos e admi
 <AccordionGroup>
 <Accordion title="Exposição e perfil na mídia">
 
-**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP`
+**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API.
 
@@ -4631,7 +4285,7 @@ Neste service, o objeto `result` representa: Retorna processos jurídicos e admi
 
 ```json
 {
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
   "cpf": "cpf"
 }
 ```
@@ -4643,7 +4297,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
   "cpf": "cpf"
 }'
 ```
@@ -4655,7 +4309,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
   "cpf": "cpf"
 }'
 ```
@@ -4696,7 +4350,7 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 
 <Accordion title="Propensão a apostas online">
 
-**Service:** `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP`
+**Service:** `SEVICE_ONLINE_BETTING_PROPENSITY`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Propensão a apostas online" via API.
 
@@ -4720,7 +4374,7 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 
 ```json
 {
-  "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+  "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
   "cpf": "cpf"
 }
 ```
@@ -4732,7 +4386,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+  "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
   "cpf": "cpf"
 }'
 ```
@@ -4744,7 +4398,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+  "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
   "cpf": "cpf"
 }'
 ```
@@ -4964,7 +4618,7 @@ Neste service, o objeto `result` representa: Retorna benefícios sociais familia
 
 <Accordion title="Histórico profissional">
 
-**Service:** `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP`
+**Service:** `SERVICE_PROFESSIONAL_HISTORY`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional" via API.
 
@@ -4988,7 +4642,7 @@ Neste service, o objeto `result` representa: Retorna benefícios sociais familia
 
 ```json
 {
-  "service": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY",
   "cpf": "cpf"
 }
 ```
@@ -5000,7 +4654,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY",
   "cpf": "cpf"
 }'
 ```
@@ -5012,7 +4666,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY",
   "cpf": "cpf"
 }'
 ```
@@ -5052,7 +4706,7 @@ Neste service, o objeto `result` representa: Retorna histórico profissional do 
 
 <Accordion title="Histórico profissional do titular">
 
-**Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP`
+**Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Histórico profissional do titular" via API.
 
@@ -5076,7 +4730,7 @@ Neste service, o objeto `result` representa: Retorna histórico profissional do 
 
 ```json
 {
-  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -5089,7 +4743,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -5102,7 +4756,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -5232,7 +4886,7 @@ Neste service, o objeto `result` representa: Retorna indicadores de atividades v
 
 <Accordion title="Modelagem de dados">
 
-**Service:** `SERVICE_PERSON_DATA_MODELING_BIGDATACORP`
+**Service:** `SERVICE_PERSON_DATA_MODELING`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Modelagem de dados" via API.
 
@@ -5256,7 +4910,7 @@ Neste service, o objeto `result` representa: Retorna indicadores de atividades v
 
 ```json
 {
-  "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_MODELING",
   "cpf": "cpf"
 }
 ```
@@ -5268,7 +4922,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_MODELING",
   "cpf": "cpf"
 }'
 ```
@@ -5280,7 +4934,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_MODELING",
   "cpf": "cpf"
 }'
 ```
@@ -5317,7 +4971,7 @@ Neste service, o objeto `result` representa: Retorna modelagem consolidada da pe
 
 <Accordion title="Prompt de IA para pessoa">
 
-**Service:** `SERVICE_PERSON_AI_PROMPT_OPENAI`
+**Service:** `SERVICE_PERSON_AI_PROMPT`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Prompt de IA para pessoa" via API.
 
@@ -5341,7 +4995,7 @@ Neste service, o objeto `result` representa: Retorna modelagem consolidada da pe
 
 ```json
 {
-  "service": "SERVICE_PERSON_AI_PROMPT_OPENAI",
+  "service": "SERVICE_PERSON_AI_PROMPT",
   "cpf": "cpf"
 }
 ```
@@ -5353,7 +5007,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_AI_PROMPT_OPENAI",
+  "service": "SERVICE_PERSON_AI_PROMPT",
   "cpf": "cpf"
 }'
 ```
@@ -5365,7 +5019,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PERSON_AI_PROMPT_OPENAI",
+  "service": "SERVICE_PERSON_AI_PROMPT",
   "cpf": "cpf"
 }'
 ```
@@ -5402,7 +5056,7 @@ Neste service, o objeto `result` representa: Retorna uma resposta textual consol
 
 <Accordion title="Servidores públicos">
 
-**Service:** `SERVICE_PUBLIC_SERVANTS_BIGDATACORP`
+**Service:** `SERVICE_PUBLIC_SERVANTS`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Servidores públicos" via API.
 
@@ -5426,7 +5080,7 @@ Neste service, o objeto `result` representa: Retorna uma resposta textual consol
 
 ```json
 {
-  "service": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+  "service": "SERVICE_PUBLIC_SERVANTS",
   "cpf": "cpf"
 }
 ```
@@ -5438,7 +5092,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+  "service": "SERVICE_PUBLIC_SERVANTS",
   "cpf": "cpf"
 }'
 ```
@@ -5450,7 +5104,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+  "service": "SERVICE_PUBLIC_SERVANTS",
   "cpf": "cpf"
 }'
 ```
@@ -5495,7 +5149,7 @@ Neste service, o objeto `result` representa: Retorna registros de servidor publi
 <AccordionGroup>
 <Accordion title="Dívida ativa">
 
-**Service:** `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP`
+**Service:** `SERVICE_ACTIVE_DEBT_PF`
 
 **Quando usar:** Use para consultar débitos ou dívidas associadas à pessoa.
 
@@ -5519,7 +5173,7 @@ Neste service, o objeto `result` representa: Retorna registros de servidor publi
 
 ```json
 {
-  "service": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PF",
   "cpf": "cpf"
 }
 ```
@@ -5531,7 +5185,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PF",
   "cpf": "cpf"
 }'
 ```
@@ -5543,7 +5197,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PF",
   "cpf": "cpf"
 }'
 ```
@@ -5585,7 +5239,7 @@ Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas 
 
 <Accordion title="Informações financeiras">
 
-**Service:** `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP`
+**Service:** `SERVICE_FINANCIAL_INFORMATION`
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
@@ -5609,7 +5263,7 @@ Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas 
 
 ```json
 {
-  "service": "SERVICE_FINANCIAL_INFORMATION_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_INFORMATION",
   "cpf": "cpf"
 }
 ```
@@ -5621,7 +5275,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FINANCIAL_INFORMATION_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_INFORMATION",
   "cpf": "cpf"
 }'
 ```
@@ -5633,7 +5287,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FINANCIAL_INFORMATION_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_INFORMATION",
   "cpf": "cpf"
 }'
 ```
@@ -5669,7 +5323,7 @@ Neste service, o objeto `result` representa: Retorna informações financeiras e
 
 <Accordion title="Risco financeiro">
 
-**Service:** `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP`
+**Service:** `SERVICE_FINANCIAL_RISK_SCORE`
 
 **Quando usar:** Use para consultar informações financeiras associadas à pessoa.
 
@@ -5693,7 +5347,7 @@ Neste service, o objeto `result` representa: Retorna informações financeiras e
 
 ```json
 {
-  "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_RISK_SCORE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -5706,7 +5360,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_RISK_SCORE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -5719,7 +5373,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_RISK_SCORE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }'
@@ -5841,11 +5495,11 @@ Neste service, o objeto `result` representa: Retorna score de crédito associado
 
 <Accordion title="Score de inadimplência">
 
-**Service:** `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP`
+**Service:** `SERVICE_DEFAULT_RISK_SCORE`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação.
+**O que retorna:** Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -5865,7 +5519,7 @@ Neste service, o objeto `result` representa: Retorna score de crédito associado
 
 ```json
 {
-  "service": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_DEFAULT_RISK_SCORE",
   "cpf": "cpf"
 }
 ```
@@ -5877,7 +5531,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_DEFAULT_RISK_SCORE",
   "cpf": "cpf"
 }'
 ```
@@ -5889,7 +5543,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_DEFAULT_RISK_SCORE",
   "cpf": "cpf"
 }'
 ```
@@ -5907,9 +5561,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "cpf": "cpf",
-    "score": 742,
-    "riskLevel": "LOW",
-    "defaultProbability": "3%"
+    "score": 690,
+    "riskLevel": "MEDIUM",
+    "defaultProbability": "8%"
   },
   "status": {
     "code": 200,
@@ -5919,13 +5573,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação.
+Neste service, o objeto `result` representa: Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 </Accordion>
 
 <Accordion title="Score de risco de fraude">
 
-**Service:** `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP`
+**Service:** `SERVICE_FRAUD_RISK_SCORE`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
@@ -5949,7 +5603,7 @@ Neste service, o objeto `result` representa: Retorna score de inadimplência do 
 
 ```json
 {
-  "service": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FRAUD_RISK_SCORE",
   "cpf": "cpf",
   "factor": "minRisk or minattrition"
 }
@@ -5962,7 +5616,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FRAUD_RISK_SCORE",
   "cpf": "cpf",
   "factor": "minRisk or minattrition"
 }'
@@ -5975,7 +5629,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FRAUD_RISK_SCORE",
   "cpf": "cpf",
   "factor": "minRisk or minattrition"
 }'
@@ -6009,90 +5663,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão.
-
-</Accordion>
-
-<Accordion title="Score de risco Quantum">
-
-**Service:** `SERVICE_DEFAULT_RISK_SCORE_QUANTUM`
-
-**Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
-
-**O que retorna:** Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
-  "cpf": "cpf"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
-  "cpf": "cpf"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cpf` | Sim | CPF da pessoa física consultada. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "score": 690,
-    "riskLevel": "MEDIUM",
-    "defaultProbability": "8%"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 </Accordion>
 

@@ -23,7 +23,7 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
   <Card title="Tenho um CNPJ" href="#pessoa-juridica">
     Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.
   </Card>
-  <Card title="Tenho uma imagem" href="/guides/service-api/ocr-service-api">
+  <Card title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">
     Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.
   </Card>
   <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">
@@ -35,7 +35,7 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
 
 | Digite na busca | O que deve aparecer |
 | --- | --- |
-| `SERVICE_OCR` ou `OCR CNH` | OCR React para RG/CNH e guia de OCR. |
+| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |
 | `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |
 | `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |
 | `face index` | Busca facial por selfie na base de faces. |
@@ -46,139 +46,114 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
 <Warning>
   Antes de executar a chamada, confirme qual alias está liberado no produto
   do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias técnico do parceiro exibido no catálogo.
+  casos, ele é mais curto que o alias documentado no catálogo.
 </Warning>
 
 Na prática: se o alias configurado no produto for diferente do alias abaixo,
 use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
 quando o produto está ativo.
 
-| Alias documentado/parceiro | Alias de chamada quando configurado no produto |
+| Alias documentado | Alias de chamada quando configurado no produto |
 | --- | --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `economic_relationships` |
-| `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`, `SERVICE_PROTEST_PF_INFOSIMPLES`, `SERVICE_PROTEST_PF_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PROTEST_PJ_INFOSIMPLES`, `SERVICE_PROTEST_PJ_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
-| `SERVICE_PERSON_AI_PROMPT_OPENAI` | `SERVICE_PERSON_AI_PROMPT` |
-| `SERVICE_ACTIVITIES_INDICATORS_BIGDATACORP` | `SERVICE_ACTIVITIES_INDICATORS` |
-| `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF_BIGDATACORP` | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` |
-| `SERVICE_COMPLIANCE_BET_BIGDATACORP` | `SERVICE_COMPLIANCE_BET` |
-| `SERVICE_CREDIT_RISK_COMPANY_BIGDATACORP` | `SERVICE_CREDIT_RISK_COMPANY` |
-| `SERVICE_CREDIT_RISK_COMPANY_MURABEI_BIGDATACORP` | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` |
-| `SERVICE_CREDIT_SCORE_ASSERTIVA` | `SERVICE_CREDIT_SCORE` |
-| `SERVICE_DEFAULT_RISK_SCORE_QUANTUM_BIGDATACORP` | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` |
-| `SERVICE_DEMOGRAPHIC_DATA_CPF_BIGDATACORP` | `SERVICE_DEMOGRAPHIC_DATA_CPF` |
-| `SERVICE_DOMAINS_CNPJ_BIGDATACORP` | `SERVICE_DOMAINS_CNPJ` |
-| `SERVICE_DOMAINS_CPF_BIGDATACORP` | `SERVICE_DOMAINS_CPF` |
-| `SERVICE_FACE_INDEX_AWS` | `SERVICE_FACE_INDEX` |
-| `SERVICE_FAMILY_SOCIAL_BENEFITS_BIGDATACORP` | `SERVICE_FAMILY_SOCIAL_BENEFITS` |
-| `SERVICE_JURIDICAL_PROCESSES_PJ_BIGDATACORP` | `SERVICE_JURIDICAL_PROCESSES_PJ` |
-| `SERVICE_OCR_CNPJ_CARD_TEXTRACT` | `SERVICE_OCR_CNPJ_CARD` |
-| `SERVICE_OCR_PROOF_OF_ADDRESS_TEXTRACT` | `SERVICE_OCR_PROOF_OF_ADDRESS` |
-| `SERVICE_OCR_REACT` | `SERVICE_OCR` |
-| `SERVICE_REGISTRATION_DATA_CNPJ_BIGDATACORP` | `SERVICE_REGISTRATION_DATA_CNPJ` |
-| `SERVICE_SOCIAL_ASSISTANCE_EXTENDED_BIGDATACORP` | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
+| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
 
 ## Pessoa Física
 
 | Nome | Service | Campos principais | Termos de busca | Retorno principal |
 | --- | --- | --- | --- | --- |
-| [Antecedentes criminais civis](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` | `cpf`, `rg`, `uf` | PF - Antecedentes criminais civis | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
-| [Antecedentes criminais federais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` | `cpf` | PF - Antecedentes criminais federais | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
+| [Antecedentes criminais civis](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` | PF - Antecedentes criminais civis | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
+| [Antecedentes criminais federais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` | PF - Antecedentes criminais federais | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
 | [Benefícios sociais estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | PF - Benefícios sociais estendidos | Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis. |
 | [Benefícios sociais familiares](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | PF - Benefícios sociais familiares | Retorna benefícios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis. |
 | [Busca de face na base](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_INDEX` | `image1` | PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces | Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis. |
-| [Certidão de Nada Consta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` | `cpf`, `court`, `uf`, `sphere` | PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
-| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` | `cpf` | PF - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
-| [Certidão negativa de protesto PF (InfoSimples)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF_INFOSIMPLES` | `cpf` | PF - Certidão negativa de protesto PF (InfoSimples) | Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens. |
-| [Certidão negativa de protesto PF (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF_NETRIN` | `cpf` | PF - Certidão negativa de protesto PF (Netrin) | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
-| [Consulta de MEI](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEI_BIGDATACORP` | `cpf` | PF - Consulta de MEI | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
-| [CPF na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - CPF na Receita Federal on-demand | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
+| [Certidão de Nada Consta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` | PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
+| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` | PF - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
+| [Certidão negativa de protesto PF (InfoSimples)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF (InfoSimples) | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
+| [Certidão negativa de protesto PF (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF (Netrin) | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
+| [Consulta de MEI](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEI` | `cpf` | PF - Consulta de MEI | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
+| [CPF na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` | CPF Receita Federal, PF - CPF na Receita Federal on-demand | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
 | [Dados demográficos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | CPF Receita Federal, PF - Dados demográficos | Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada. |
-| [Dados eleitorais de candidato](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Dados eleitorais de candidato | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
-| [Dados financeiros e endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` | `cpf`, `birthDate` | PF - Dados financeiros e endereços | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
-| [Dados pelo telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CONFIRM_PHONE_FACETEC` | `phone` | PF - Dados pelo telefone, telefone celular validação contato | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
-| [Dados PIS](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PIS_CONSULTATION_BIGDATACORP` | `cpf` | PF - Dados PIS | Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta. |
-| [Dívida ativa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` | `cpf` | PF - Dívida ativa, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| [Documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `key`, `image1`, `image2`, `selfie1` | PF - Documentoscopia digital, documentoscopia documento selfie validação | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
+| [Dados eleitorais de candidato](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` | CPF Receita Federal, PF - Dados eleitorais de candidato | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
+| [Dados financeiros e endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` | PF - Dados financeiros e endereços | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
+| [Dados pelo telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CONFIRM_PHONE` | `phone` | PF - Dados pelo telefone, telefone celular validação contato | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
+| [Dados PIS](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PIS_CONSULTATION` | `cpf` | PF - Dados PIS | Retorna dados de PIS/NIS associados ao CPF, incluindo número encontrado, status, dados cadastrais relacionados e mensagens da consulta. |
+| [Dívida ativa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PF` | `cpf` | PF - Dívida ativa, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
+| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` | CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
+| [Documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` | PF - Documentoscopia digital, documentoscopia documento selfie validação | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
 | [Domínios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CPF` | `cpf` | CPF Receita Federal, PF - Domínios, domínios sites presença digital | Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis. |
-| [Endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESS_BIGDATACORP` | `cpf` | PF - Endereços | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
-| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | `cpf` | PF - Enriquecimento de dados | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
-| [Envolvimento político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` | `cpf` | PF - Envolvimento político | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| [Envolvimento político PF (BigDataCorp)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp) | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| [Exposição e perfil na mídia](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` | `cpf` | PF - Exposição e perfil na mídia | Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
-| [FaceMatch](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | PF - FaceMatch, comparação facial biometria selfie rosto | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
-| [FaceMatch (AWS)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH_AWS` | `image1`, `image2` | PF - FaceMatch (AWS), comparação facial biometria selfie rosto | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
-| [Histórico de e-mails](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAILS_EXTENDED_BIGDATACORP` | `cpf`, `limit` | PF - Histórico de e-mails, email validação contato | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
-| [Histórico de telefones](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PHONE_HISTORY_BIGDATACORP` | `cpf`, `birthDate`, `limit` | PF - Histórico de telefones, telefone celular validação contato | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
-| [Histórico familiar político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Histórico familiar político | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
-| [Histórico profissional](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` | `cpf` | PF - Histórico profissional | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
-| [Histórico profissional do titular](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` | `cpf`, `birthDate` | PF - Histórico profissional do titular | Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo. |
+| [Endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESS` | `cpf` | PF - Endereços | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
+| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` | PF - Enriquecimento de dados | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
+| [Envolvimento político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | PF - Envolvimento político | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| [Envolvimento político PF (BigDataCorp)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp) | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| [Exposição e perfil na mídia](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | PF - Exposição e perfil na mídia | Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
+| [FaceMatch](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH` | `image1`, `image2` | PF - FaceMatch, comparação facial biometria selfie rosto | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
+| [Histórico de e-mails](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | PF - Histórico de e-mails, email validação contato | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
+| [Histórico de telefones](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` | PF - Histórico de telefones, telefone celular validação contato | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
+| [Histórico familiar político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` | CPF Receita Federal, PF - Histórico familiar político | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
+| [Histórico profissional](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` | PF - Histórico profissional | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
+| [Histórico profissional do titular](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` | PF - Histórico profissional do titular | Retorna histórico profissional em que a pessoa aparece como titular, sócio ou proprietario, com empresas, cargos e datas de vinculo. |
 | [Indicadores de atividades](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | PF - Indicadores de atividades | Retorna indicadores de atividades vinculadas ao CPF, como sinais profissionais, segmentos, ocupacoes e registros disponíveis. |
-| [Informações financeiras](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` | `cpf` | PF - Informações financeiras | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
-| [KYC e compliance](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_KYC_BIGDATACORP` | `cpf`, `birthDate` | PF - KYC e compliance, compliance KYC sanções PEP mídia | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
-| [Liveness 2D](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | PF - Liveness 2D, prova de vida selfie liveness | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
+| [Informações financeiras](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_INFORMATION` | `cpf` | PF - Informações financeiras | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
+| [KYC e compliance](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` | PF - KYC e compliance, compliance KYC sanções PEP mídia | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
+| [Liveness 2D](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_LIVENESS_2D` | `image1` | PF - Liveness 2D, prova de vida selfie liveness | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
 | [Mandado de prisão](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | PF - Mandado de prisão | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
-| [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | PF - Modelagem de dados | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
+| [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING` | `cpf` | PF - Modelagem de dados | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
 | [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
-| [OCR de documentos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | OCR documento imagem base64 leitura extração, PF - OCR de documentos | Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos. |
 | [OCR de emancipação](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_EMANCIPATION` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
-| [OCR React RG/CNH](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH | Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento. |
+| [OCR React](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR documento imagem base64 leitura extração, PF - OCR React | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
 | [Pessoa politicamente exposta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PEP` | `cpf` | PF - Pessoa politicamente exposta | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
-| [Pessoas relacionadas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf`, `birthDate` | PF - Pessoas relacionadas | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
+| [Pessoas relacionadas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | PF - Pessoas relacionadas | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
 | [Prêmios e certificações](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | CPF Receita Federal, PF - Prêmios e certificações | Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados. |
-| [Prestadores de serviço eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` | `cpf` | CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
-| [Processos jurídicos e administrativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` | `cpf` | PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
-| [Prompt de IA para pessoa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | PF - Prompt de IA para pessoa | Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional. |
-| [Propensão a apostas online](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` | `cpf` | PF - Propensão a apostas online, apostas bets compliance bet | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
-| [Relacionamentos econômicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `cpf` | PF - Relacionamentos econômicos | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento. |
-| [Resultado da documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `key` | PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
-| [Risco financeiro](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` | `cpf`, `birthDate` | PF - Risco financeiro, score risco crédito rating inadimplência | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
-| [Score biométrico](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | PF - Score biométrico, score risco crédito rating inadimplência | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
+| [Prestadores de serviço eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` | CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço. |
+| [Processos jurídicos e administrativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES` | `cpf` | PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
+| [Prompt de IA para pessoa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_AI_PROMPT` | `cpf` | PF - Prompt de IA para pessoa | Retorna uma resposta textual consolidada por IA a partir dos dados da pessoa, com resumo, pontos de atenção e leitura operacional. |
+| [Propensão a apostas online](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` | PF - Propensão a apostas online, apostas bets compliance bet | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
+| [Relacionamentos econômicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` | PF - Relacionamentos econômicos | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento. |
+| [Resultado da documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` | PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
+| [Risco financeiro](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` | PF - Risco financeiro, score risco crédito rating inadimplência | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
+| [Score biométrico](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | PF - Score biométrico, score risco crédito rating inadimplência | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
 | [Score de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_SCORE` | `cpf` | PF - Score de crédito, score risco crédito rating inadimplência | Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis. |
-| [Score de inadimplência](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` | `cpf` | PF - Score de inadimplência, score risco crédito rating inadimplência | Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação. |
-| [Score de risco de fraude](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` | `cpf`, `factor` | PF - Score de risco de fraude, score risco crédito rating inadimplência | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
-| [Score de risco Quantum](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE_QUANTUM` | `cpf` | PF - Score de risco Quantum, score risco crédito rating inadimplência | Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
-| [Servidores públicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PUBLIC_SERVANTS_BIGDATACORP` | `cpf` | PF - Servidores públicos | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
-| [Status do CPF na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | CPF Receita Federal, PF - Status do CPF na Receita Federal | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
-| [Validação de CPF com endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` | `cpf`, `zipcode`, `numberAddress` | CPF Receita Federal, PF - Validação de CPF com endereço | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
-| [Validação de CPF com telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato | Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação. |
-| [Validação de CPF com telefone (Facetec)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION_FACETEC` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone (Facetec), telefone celular validação contato | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
-| [Validação de e-mail](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `email` | PF - Validação de e-mail, email validação contato | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
-| [Validação do E-Social](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` | `cpf`, `nit` | PF - Validação do E-Social | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
+| [Score de inadimplência](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | PF - Score de inadimplência, score risco crédito rating inadimplência | Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
+| [Score de risco de fraude](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` | PF - Score de risco de fraude, score risco crédito rating inadimplência | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
+| [Servidores públicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PUBLIC_SERVANTS` | `cpf` | PF - Servidores públicos | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
+| [Status do CPF na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | CPF Receita Federal, PF - Status do CPF na Receita Federal | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
+| [Validação de CPF com endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` | CPF Receita Federal, PF - Validação de CPF com endereço | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
+| [Validação de CPF com telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
+| [Validação de e-mail](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAIL_VALIDATION` | `email` | PF - Validação de e-mail, email validação contato | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
+| [Validação do E-Social](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf`, `nit` | PF - Validação do E-Social | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
 ## Pessoa Jurídica
 
 | Nome | Service | Campos principais | Termos de busca | Retorno principal |
 | --- | --- | --- | --- | --- |
-| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ_INFOSIMPLES` | `cnpj` | PJ - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas. |
-| [Certidão negativa de protesto PJ (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ_NETRIN` | `cnpj` | PJ - Certidão negativa de protesto PJ (Netrin) | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
-| [CNPJ na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
+| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ` | `cnpj` | PJ - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
+| [CNPJ na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
 | [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
-| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
+| [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 | [Dados cadastrais de CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
-| [DAS MEI na Receita](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DAS_MEI_INFOSIMPLES` | `cnpj` | CPF Receita Federal, PJ - DAS MEI na Receita | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
-| [Débitos ativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` | `cnpj` | PJ - Débitos ativos, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
-| [Doações eleitorais dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
+| [DAS MEI na Receita](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DAS_MEI` | `cnpj` | CPF Receita Federal, PJ - DAS MEI na Receita | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
+| [Débitos ativos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | PJ - Débitos ativos, dívida ativa débito cobrança inadimplência | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
+| [Doações eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
+| [Doações eleitorais dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
 | [Domínios CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DOMAINS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
-| [Endereços estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Endereços estendidos | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
-| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Enriquecimento de dados | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
-| [Exposição e perfil na mídia dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` | `cnpj` | PJ - Exposição e perfil na mídia dos sócios | Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
-| [Fornecedores eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
-| [KYC e compliance dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | `cnpj` | PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
+| [Endereços estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Endereços estendidos | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
+| [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` | CNPJ Receita Federal, PJ - Enriquecimento de dados | Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço. |
+| [Exposição e perfil na mídia dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` | PJ - Exposição e perfil na mídia dos sócios | Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
+| [Fornecedores eleitorais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` | CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
+| [KYC e compliance dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_KYC_OWNERS` | `cnpj` | PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia | Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio. |
 | [OCR de cartão CNPJ](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ | Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível. |
 | [Processos jurídicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
-| [Processos jurídicos dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | `cnpj` | PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
-| [Relacionamentos da empresa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | `cnpj` | PJ - Relacionamentos da empresa | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados. |
-| [Risco de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | PJ - Risco de crédito, score risco crédito rating inadimplência | Retorna dados públicos de risco de crédito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis. |
-| [Risco de crédito Murabei](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY_MURABEI` | `cnpj` | PJ - Risco de crédito Murabei, score risco crédito rating inadimplência | Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
-| [SINTEGRA](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` | `cnpj`, `uf` | PJ - SINTEGRA | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
-| [Sócios de primeiro nível](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | `cnpj` | PJ - Sócios de primeiro nível | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
-| [Sócios na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | `cnpj` | CPF Receita Federal, PJ - Sócios na Receita Federal | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
-| [Status do CNPJ na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal | Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço. |
+| [Processos jurídicos dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | `cnpj` | PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
+| [Relacionamentos da empresa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` | PJ - Relacionamentos da empresa | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados. |
+| [Risco de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | PJ - Risco de crédito, score risco crédito rating inadimplência | Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
+| [SINTEGRA](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SINTEGRA_CONSULTATION` | `cnpj`, `uf` | PJ - SINTEGRA | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
+| [Sócios de primeiro nível](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` | PJ - Sócios de primeiro nível | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
+| [Sócios na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` | CPF Receita Federal, PJ - Sócios na Receita Federal | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
+| [Status do CNPJ na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal | Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço. |
 
 ## Passo a passo por service
 
@@ -189,7 +164,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <AccordionGroup>
 <Accordion title="Antecedentes criminais civis">
 
-**Service:** `SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP`
+**Service:** `SERVICE_CRIMINAL_RECORD_CIVIL`
 
 **Termos de busca:** PF - Antecedentes criminais civis
 
@@ -200,7 +175,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `rg`, `uf` junto com `service: SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf`, `rg`, `uf` junto com `service: SERVICE_CRIMINAL_RECORD_CIVIL` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `rg`, `state`, `hasRecords`, `records`.
 
@@ -208,7 +183,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
   "cpf": "cpf",
   "rg": "rg",
   "uf": "uf"
@@ -238,7 +213,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Antecedentes criminais federais">
 
-**Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP`
+**Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL`
 
 **Termos de busca:** PF - Antecedentes criminais federais
 
@@ -249,7 +224,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_CRIMINAL_RECORD_FEDERAL` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `hasFederalCriminalRecord`, `records`.
 
@@ -257,7 +232,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP",
+  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
   "cpf": "cpf"
 }
 ```
@@ -429,7 +404,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Certidão de Nada Consta">
 
-**Service:** `SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP`
+**Service:** `SERVICE_NOTHING_RECORD_LAWSUITS`
 
 **Termos de busca:** PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão
 
@@ -440,7 +415,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `court`, `uf`, `sphere` junto com `service: SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf`, `court`, `uf`, `sphere` junto com `service: SERVICE_NOTHING_RECORD_LAWSUITS` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `court`, `sphere`, `nothingFound`, `records`.
 
@@ -448,7 +423,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP",
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
   "cpf": "cpf",
   "court": "TRF1",
   "uf": "uf",
@@ -479,7 +454,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Certidão negativa de protesto">
 
-**Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`
+**Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`
 
 **Termos de busca:** PF - Certidão negativa de protesto
 
@@ -490,7 +465,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `hasProtests`, `protests`.
 
@@ -498,7 +473,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP",
+  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
   "cpf": "cpf"
 }
 ```
@@ -524,18 +499,18 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Certidão negativa de protesto PF (InfoSimples)">
 
-**Service:** `SERVICE_PROTEST_PF_INFOSIMPLES`
+**Service:** `SERVICE_PROTEST_PF`
 
 **Termos de busca:** PF - Certidão negativa de protesto PF (InfoSimples)
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF via InfoSimples, com status, cartórios consultados, protestos e mensagens.
+**O que retorna:** Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
 
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROTEST_PF_INFOSIMPLES` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PROTEST_PF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `hasProtests`, `notaryOffices`, `protests`.
 
@@ -543,7 +518,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PROTEST_PF_INFOSIMPLES",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }
 ```
@@ -570,7 +545,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Certidão negativa de protesto PF (Netrin)">
 
-**Service:** `SERVICE_PROTEST_PF_NETRIN`
+**Service:** `SERVICE_PROTEST_PF`
 
 **Termos de busca:** PF - Certidão negativa de protesto PF (Netrin)
 
@@ -581,7 +556,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROTEST_PF_NETRIN` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PROTEST_PF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `hasProtests`, `notaryOffices`, `protests`.
 
@@ -589,7 +564,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PROTEST_PF_NETRIN",
+  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }
 ```
@@ -616,7 +591,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Consulta de MEI">
 
-**Service:** `SERVICE_MEI_BIGDATACORP`
+**Service:** `SERVICE_MEI`
 
 **Termos de busca:** PF - Consulta de MEI
 
@@ -627,7 +602,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_MEI_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_MEI` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `meiCompanies`.
 
@@ -635,7 +610,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_MEI_BIGDATACORP",
+  "service": "SERVICE_MEI",
   "cpf": "cpf"
 }
 ```
@@ -666,7 +641,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="CPF na Receita Federal on-demand">
 
-**Service:** `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP`
+**Service:** `SERVICE_RFB_PF_ON_DEMAND`
 
 **Termos de busca:** CPF Receita Federal, PF - CPF na Receita Federal on-demand
 
@@ -677,7 +652,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_RFB_PF_ON_DEMAND` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `name`, `birthDate`, `registrationStatus`, `protocol`.
 
@@ -685,7 +660,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PF_ON_DEMAND",
   "cpf": "cpf"
 }
 ```
@@ -764,7 +739,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Dados eleitorais de candidato">
 
-**Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP`
+**Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF`
 
 **Termos de busca:** CPF Receita Federal, PF - Dados eleitorais de candidato
 
@@ -775,7 +750,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_ELECTION_CANDIDATE_DATA_CPF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `candidacies`.
 
@@ -783,7 +758,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
   "cpf": "cpf"
 }
 ```
@@ -815,7 +790,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Dados financeiros e endereços">
 
-**Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP`
+**Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS`
 
 **Termos de busca:** PF - Dados financeiros e endereços
 
@@ -826,7 +801,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PF_FINANCIAL_AND_ADDRESS` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `estimatedIncome`, `addresses`, `financialIndicators`.
 
@@ -834,7 +809,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -867,7 +842,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Dados pelo telefone">
 
-**Service:** `SERVICE_CONFIRM_PHONE_FACETEC`
+**Service:** `SERVICE_CONFIRM_PHONE`
 
 **Termos de busca:** PF - Dados pelo telefone, telefone celular validação contato
 
@@ -878,7 +853,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `phone` junto com `service: SERVICE_CONFIRM_PHONE_FACETEC` em `POST /api/service-api`.
+2. Envie `phone` junto com `service: SERVICE_CONFIRM_PHONE` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `phone`, `matched`, `person`.
 
@@ -886,7 +861,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_CONFIRM_PHONE_FACETEC",
+  "service": "SERVICE_CONFIRM_PHONE",
   "phone": "+5561123456789"
 }
 ```
@@ -915,7 +890,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Dados PIS">
 
-**Service:** `SERVICE_PIS_CONSULTATION_BIGDATACORP`
+**Service:** `SERVICE_PIS_CONSULTATION`
 
 **Termos de busca:** PF - Dados PIS
 
@@ -926,7 +901,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PIS_CONSULTATION_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PIS_CONSULTATION` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `pis`, `status`.
 
@@ -934,7 +909,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PIS_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_PIS_CONSULTATION",
   "cpf": "cpf"
 }
 ```
@@ -960,7 +935,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Dívida ativa">
 
-**Service:** `SERVICE_ACTIVE_DEBT_PF_BIGDATACORP`
+**Service:** `SERVICE_ACTIVE_DEBT_PF`
 
 **Termos de busca:** PF - Dívida ativa, dívida ativa débito cobrança inadimplência
 
@@ -971,7 +946,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ACTIVE_DEBT_PF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_ACTIVE_DEBT_PF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `totalDebts`, `totalValue`, `debts`.
 
@@ -979,7 +954,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ACTIVE_DEBT_PF_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PF",
   "cpf": "cpf"
 }
 ```
@@ -1012,7 +987,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Doações eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_DONORS_CPF`
 
 **Termos de busca:** CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato
 
@@ -1023,7 +998,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_ELECTORAL_DONORS_CPF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `donations`.
 
@@ -1031,7 +1006,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CPF",
   "cpf": "cpf"
 }
 ```
@@ -1062,7 +1037,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Documentoscopia digital">
 
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX`
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
 
 **Termos de busca:** PF - Documentoscopia digital, documentoscopia documento selfie validação
 
@@ -1073,7 +1048,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `key`, `image1`, `image2`, `selfie1` junto com `service: SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` em `POST /api/service-api`.
+2. Envie `key`, `image1`, `image2`, `selfie1` junto com `service: SERVICE_DIGITAL_DOCUMENTOSCOPY` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `key`, `status`, `documentData`, `validations`.
 
@@ -1081,7 +1056,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
   "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
   "image1": "base64",
   "image2": "base64",
@@ -1169,7 +1144,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Endereços">
 
-**Service:** `SERVICE_ADDRESS_BIGDATACORP`
+**Service:** `SERVICE_ADDRESS`
 
 **Termos de busca:** PF - Endereços
 
@@ -1180,7 +1155,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ADDRESS_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_ADDRESS` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `totalAddresses`, `addresses`.
 
@@ -1188,7 +1163,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ADDRESS_BIGDATACORP",
+  "service": "SERVICE_ADDRESS",
   "cpf": "cpf"
 }
 ```
@@ -1223,7 +1198,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Enriquecimento de dados">
 
-**Service:** `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP`
+**Service:** `SERVICE_PERSON_DATA_ENRICHMENT`
 
 **Termos de busca:** PF - Enriquecimento de dados
 
@@ -1234,7 +1209,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PERSON_DATA_ENRICHMENT` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `name`, `birthDate`, `registrationStatus`, `motherName`.
 
@@ -1242,7 +1217,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
   "cpf": "cpf"
 }
 ```
@@ -1270,7 +1245,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Envolvimento político">
 
-**Service:** `SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP`
+**Service:** `SERVICE_POLITICAL_INVOLVEMENT`
 
 **Termos de busca:** PF - Envolvimento político
 
@@ -1281,7 +1256,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_POLITICAL_INVOLVEMENT` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `politicalInvolvement`.
 
@@ -1289,7 +1264,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
   "cpf": "cpf"
 }
 ```
@@ -1320,7 +1295,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Envolvimento político PF (BigDataCorp)">
 
-**Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP`
+**Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF`
 
 **Termos de busca:** CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp)
 
@@ -1331,7 +1306,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_POLITICAL_INVOLVEMENT_CPF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `politicalInvolvement`.
 
@@ -1339,7 +1314,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF_BIGDATACORP",
+  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
   "cpf": "cpf"
 }
 ```
@@ -1370,7 +1345,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Exposição e perfil na mídia">
 
-**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP`
+**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
 
 **Termos de busca:** PF - Exposição e perfil na mídia
 
@@ -1381,7 +1356,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `mediaMentions`, `exposureLevel`.
 
@@ -1389,7 +1364,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
   "cpf": "cpf"
 }
 ```
@@ -1421,7 +1396,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="FaceMatch">
 
-**Service:** `SERVICE_FACE_MATCH_BIGDATACORP`
+**Service:** `SERVICE_FACE_MATCH`
 
 **Termos de busca:** PF - FaceMatch, comparação facial biometria selfie rosto
 
@@ -1432,7 +1407,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1`, `image2` junto com `service: SERVICE_FACE_MATCH_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `image1`, `image2` junto com `service: SERVICE_FACE_MATCH` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `match`, `similarity`, `status`.
 
@@ -1440,53 +1415,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_FACE_MATCH_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "match": true,
-    "similarity": 98.2,
-    "status": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-</Accordion>
-
-<Accordion title="FaceMatch (AWS)">
-
-**Service:** `SERVICE_FACE_MATCH_AWS`
-
-**Termos de busca:** PF - FaceMatch (AWS), comparação facial biometria selfie rosto
-
-**Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
-
-**O que retorna:** Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1`, `image2` junto com `service: SERVICE_FACE_MATCH_AWS` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `match`, `similarity`, `status`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_FACE_MATCH_AWS",
+  "service": "SERVICE_FACE_MATCH",
   "image1": "base64",
   "image2": "base64"
 }
@@ -1513,7 +1442,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Histórico de e-mails">
 
-**Service:** `SERVICE_EMAILS_EXTENDED_BIGDATACORP`
+**Service:** `SERVICE_EMAILS_EXTENDED`
 
 **Termos de busca:** PF - Histórico de e-mails, email validação contato
 
@@ -1524,7 +1453,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `limit` junto com `service: SERVICE_EMAILS_EXTENDED_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf`, `limit` junto com `service: SERVICE_EMAILS_EXTENDED` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `emails`.
 
@@ -1532,7 +1461,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_EMAILS_EXTENDED_BIGDATACORP",
+  "service": "SERVICE_EMAILS_EXTENDED",
   "cpf": "cpf",
   "limit": "10"
 }
@@ -1565,7 +1494,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Histórico de telefones">
 
-**Service:** `SERVICE_PHONE_HISTORY_BIGDATACORP`
+**Service:** `SERVICE_PHONE_HISTORY`
 
 **Termos de busca:** PF - Histórico de telefones, telefone celular validação contato
 
@@ -1576,7 +1505,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `limit` junto com `service: SERVICE_PHONE_HISTORY_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf`, `limit` junto com `service: SERVICE_PHONE_HISTORY` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `phones`.
 
@@ -1584,7 +1513,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PHONE_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PHONE_HISTORY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)",
   "limit": "10"
@@ -1618,7 +1547,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Histórico familiar político">
 
-**Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP`
+**Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF`
 
 **Termos de busca:** CPF Receita Federal, PF - Histórico familiar político
 
@@ -1629,7 +1558,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `familyPoliticalHistory`.
 
@@ -1637,7 +1566,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP",
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
   "cpf": "cpf"
 }
 ```
@@ -1668,7 +1597,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Histórico profissional">
 
-**Service:** `SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP`
+**Service:** `SERVICE_PROFESSIONAL_HISTORY`
 
 **Termos de busca:** PF - Histórico profissional
 
@@ -1679,7 +1608,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PROFESSIONAL_HISTORY` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `professionalHistory`.
 
@@ -1687,7 +1616,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY",
   "cpf": "cpf"
 }
 ```
@@ -1718,7 +1647,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Histórico profissional do titular">
 
-**Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP`
+**Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY`
 
 **Termos de busca:** PF - Histórico profissional do titular
 
@@ -1729,7 +1658,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `ownerHistory`.
 
@@ -1737,7 +1666,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP",
+  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -1819,7 +1748,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Informações financeiras">
 
-**Service:** `SERVICE_FINANCIAL_INFORMATION_BIGDATACORP`
+**Service:** `SERVICE_FINANCIAL_INFORMATION`
 
 **Termos de busca:** PF - Informações financeiras
 
@@ -1830,7 +1759,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_FINANCIAL_INFORMATION_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_FINANCIAL_INFORMATION` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `estimatedIncome`, `purchasingPower`, `financialIndicators`.
 
@@ -1838,7 +1767,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_FINANCIAL_INFORMATION_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_INFORMATION",
   "cpf": "cpf"
 }
 ```
@@ -1865,7 +1794,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="KYC e compliance">
 
-**Service:** `SERVICE_PERSON_KYC_BIGDATACORP`
+**Service:** `SERVICE_PERSON_KYC`
 
 **Termos de busca:** PF - KYC e compliance, compliance KYC sanções PEP mídia
 
@@ -1876,7 +1805,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_KYC_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PERSON_KYC` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `isPep`, `sanctions`, `mediaExposure`, `riskAlerts`.
 
@@ -1884,7 +1813,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PERSON_KYC_BIGDATACORP",
+  "service": "SERVICE_PERSON_KYC",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -1913,7 +1842,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Liveness 2D">
 
-**Service:** `SERVICE_LIVENESS_2D_FACETEC`
+**Service:** `SERVICE_LIVENESS_2D`
 
 **Termos de busca:** PF - Liveness 2D, prova de vida selfie liveness
 
@@ -1924,7 +1853,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_LIVENESS_2D_FACETEC` em `POST /api/service-api`.
+2. Envie `image1` junto com `service: SERVICE_LIVENESS_2D` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `liveness`, `confidence`, `status`.
 
@@ -1932,7 +1861,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_LIVENESS_2D_FACETEC",
+  "service": "SERVICE_LIVENESS_2D",
   "image1": "selfie"
 }
 ```
@@ -2007,7 +1936,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Modelagem de dados">
 
-**Service:** `SERVICE_PERSON_DATA_MODELING_BIGDATACORP`
+**Service:** `SERVICE_PERSON_DATA_MODELING`
 
 **Termos de busca:** PF - Modelagem de dados
 
@@ -2018,7 +1947,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_DATA_MODELING_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PERSON_DATA_MODELING` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `profileSummary`, `contacts`, `addresses`, `relationships`.
 
@@ -2026,7 +1955,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PERSON_DATA_MODELING_BIGDATACORP",
+  "service": "SERVICE_PERSON_DATA_MODELING",
   "cpf": "cpf"
 }
 ```
@@ -2100,58 +2029,6 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 </Accordion>
 
-<Accordion title="OCR de documentos">
-
-**Service:** `SERVICE_OCR_BIGDATACORP`
-
-**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de documentos
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_OCR_BIGDATACORP` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `documentType`, `fields`, `extractionStatus`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-</Accordion>
-
 <Accordion title="OCR de emancipação">
 
 **Service:** `SERVICE_OCR_EMANCIPATION`
@@ -2206,31 +2083,31 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 </Accordion>
 
-<Accordion title="OCR React RG/CNH">
+<Accordion title="OCR React">
 
 **Service:** `SERVICE_OCR`
 
-**Termos de busca:** OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH
+**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR React
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
 2. Envie `documentType`, `image1` junto com `service: SERVICE_OCR` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `validDate`.
+4. Leia `result`, que neste service costuma trazer: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
 
 **Body exemplo:**
 
 ```json
 {
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }
 ```
 
@@ -2244,7 +2121,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -2303,7 +2180,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Pessoas relacionadas">
 
-**Service:** `SERVICE_RELATED_PEOPLE_BIGDATACORP`
+**Service:** `SERVICE_RELATED_PEOPLE`
 
 **Termos de busca:** PF - Pessoas relacionadas
 
@@ -2314,7 +2191,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_RELATED_PEOPLE_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_RELATED_PEOPLE` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `relatedPeople`.
 
@@ -2322,7 +2199,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_RELATED_PEOPLE_BIGDATACORP",
+  "service": "SERVICE_RELATED_PEOPLE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -2401,7 +2278,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Prestadores de serviço eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF`
 
 **Termos de busca:** CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato
 
@@ -2412,7 +2289,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CPF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `providers`.
 
@@ -2420,7 +2297,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
   "cpf": "cpf"
 }
 ```
@@ -2452,7 +2329,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Processos jurídicos e administrativos">
 
-**Service:** `SERVICE_JURIDICAL_PROCESSES_BIGDATACORP`
+**Service:** `SERVICE_JURIDICAL_PROCESSES`
 
 **Termos de busca:** PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão
 
@@ -2463,7 +2340,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_JURIDICAL_PROCESSES_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_JURIDICAL_PROCESSES` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `totalProcesses`, `processes`.
 
@@ -2471,7 +2348,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_JURIDICAL_PROCESSES_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES",
   "cpf": "cpf"
 }
 ```
@@ -2503,7 +2380,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Prompt de IA para pessoa">
 
-**Service:** `SERVICE_PERSON_AI_PROMPT_OPENAI`
+**Service:** `SERVICE_PERSON_AI_PROMPT`
 
 **Termos de busca:** PF - Prompt de IA para pessoa
 
@@ -2514,7 +2391,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PERSON_AI_PROMPT_OPENAI` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PERSON_AI_PROMPT` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `answer`, `highlights`.
 
@@ -2522,7 +2399,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PERSON_AI_PROMPT_OPENAI",
+  "service": "SERVICE_PERSON_AI_PROMPT",
   "cpf": "cpf"
 }
 ```
@@ -2550,7 +2427,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Propensão a apostas online">
 
-**Service:** `SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP`
+**Service:** `SEVICE_ONLINE_BETTING_PROPENSITY`
 
 **Termos de busca:** PF - Propensão a apostas online, apostas bets compliance bet
 
@@ -2561,7 +2438,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SEVICE_ONLINE_BETTING_PROPENSITY` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `propensityScore`, `propensityLevel`, `indicators`.
 
@@ -2569,7 +2446,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP",
+  "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
   "cpf": "cpf"
 }
 ```
@@ -2598,7 +2475,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Relacionamentos econômicos">
 
-**Service:** `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP`
+**Service:** `SERVICE_ECONOMIC_RELATIONSHIP`
 
 **Termos de busca:** PF - Relacionamentos econômicos
 
@@ -2609,7 +2486,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_ECONOMIC_RELATIONSHIP` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `relationships`.
 
@@ -2617,7 +2494,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_ECONOMIC_RELATIONSHIP",
   "cpf": "cpf"
 }
 ```
@@ -2648,7 +2525,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Resultado da documentoscopia digital">
 
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
 
 **Termos de busca:** PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação
 
@@ -2659,7 +2536,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `key` junto com `service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` em `POST /api/service-api`.
+2. Envie `key` junto com `service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `key`, `status`, `fields`, `rules`.
 
@@ -2667,7 +2544,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX",
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
   "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
 }
 ```
@@ -2704,7 +2581,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Risco financeiro">
 
-**Service:** `SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP`
+**Service:** `SERVICE_FINANCIAL_RISK_SCORE`
 
 **Termos de busca:** PF - Risco financeiro, score risco crédito rating inadimplência
 
@@ -2715,7 +2592,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_FINANCIAL_RISK_SCORE` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `score`, `riskLevel`, `recommendation`.
 
@@ -2723,7 +2600,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FINANCIAL_RISK_SCORE",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
 }
@@ -2751,7 +2628,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Score biométrico">
 
-**Service:** `SERVICE_DATAVALID_CNH_SERPRO`
+**Service:** `SERVICE_DATAVALID_CNH`
 
 **Termos de busca:** PF - Score biométrico, score risco crédito rating inadimplência
 
@@ -2762,7 +2639,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `image1` junto com `service: SERVICE_DATAVALID_CNH_SERPRO` em `POST /api/service-api`.
+2. Envie `cpf`, `image1` junto com `service: SERVICE_DATAVALID_CNH` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `biometricScore`, `validated`, `validationStatus`.
 
@@ -2770,7 +2647,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_DATAVALID_CNH_SERPRO",
+  "service": "SERVICE_DATAVALID_CNH",
   "cpf": "cpf",
   "image1": "{base64Image}"
 }
@@ -2844,18 +2721,18 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Score de inadimplência">
 
-**Service:** `SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP`
+**Service:** `SERVICE_DEFAULT_RISK_SCORE`
 
 **Termos de busca:** PF - Score de inadimplência, score risco crédito rating inadimplência
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de inadimplência do CPF, faixa de risco, probabilidade estimada e indicadores usados na avaliação.
+**O que retorna:** Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_DEFAULT_RISK_SCORE` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `score`, `riskLevel`, `defaultProbability`.
 
@@ -2863,7 +2740,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_DEFAULT_RISK_SCORE",
   "cpf": "cpf"
 }
 ```
@@ -2874,9 +2751,9 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 {
   "result": {
     "cpf": "cpf",
-    "score": 742,
-    "riskLevel": "LOW",
-    "defaultProbability": "3%"
+    "score": 690,
+    "riskLevel": "MEDIUM",
+    "defaultProbability": "8%"
   },
   "status": {
     "code": 200,
@@ -2890,7 +2767,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Score de risco de fraude">
 
-**Service:** `SERVICE_FRAUD_RISK_SCORE_BIGDATACORP`
+**Service:** `SERVICE_FRAUD_RISK_SCORE`
 
 **Termos de busca:** PF - Score de risco de fraude, score risco crédito rating inadimplência
 
@@ -2901,7 +2778,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `factor` junto com `service: SERVICE_FRAUD_RISK_SCORE_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf`, `factor` junto com `service: SERVICE_FRAUD_RISK_SCORE` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `factor`, `score`, `riskLevel`, `indicators`.
 
@@ -2909,7 +2786,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_FRAUD_RISK_SCORE_BIGDATACORP",
+  "service": "SERVICE_FRAUD_RISK_SCORE",
   "cpf": "cpf",
   "factor": "minRisk or minattrition"
 }
@@ -2936,55 +2813,9 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 </Accordion>
 
-<Accordion title="Score de risco Quantum">
-
-**Service:** `SERVICE_DEFAULT_RISK_SCORE_QUANTUM`
-
-**Termos de busca:** PF - Score de risco Quantum, score risco crédito rating inadimplência
-
-**Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
-
-**O que retorna:** Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_DEFAULT_RISK_SCORE_QUANTUM` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `score`, `riskLevel`, `defaultProbability`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_DEFAULT_RISK_SCORE_QUANTUM",
-  "cpf": "cpf"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "score": 690,
-    "riskLevel": "MEDIUM",
-    "defaultProbability": "8%"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-</Accordion>
-
 <Accordion title="Servidores públicos">
 
-**Service:** `SERVICE_PUBLIC_SERVANTS_BIGDATACORP`
+**Service:** `SERVICE_PUBLIC_SERVANTS`
 
 **Termos de busca:** PF - Servidores públicos
 
@@ -2995,7 +2826,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_PUBLIC_SERVANTS_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_PUBLIC_SERVANTS` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `publicServantRecords`.
 
@@ -3003,7 +2834,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PUBLIC_SERVANTS_BIGDATACORP",
+  "service": "SERVICE_PUBLIC_SERVANTS",
   "cpf": "cpf"
 }
 ```
@@ -3034,7 +2865,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Status do CPF na Receita Federal">
 
-**Service:** `SERVICE_RFB_PF_BIGDATACORP`
+**Service:** `SERVICE_RFB_PF`
 
 **Termos de busca:** CPF Receita Federal, PF - Status do CPF na Receita Federal
 
@@ -3045,7 +2876,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_RFB_PF_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_RFB_PF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `name`, `birthDate`, `registrationStatus`, `protocol`.
 
@@ -3053,7 +2884,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_RFB_PF_BIGDATACORP",
+  "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
 }
@@ -3082,7 +2913,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Validação de CPF com endereço">
 
-**Service:** `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP`
+**Service:** `SERVICE_CPF_ADDRESS_VALIDATION`
 
 **Termos de busca:** CPF Receita Federal, PF - Validação de CPF com endereço
 
@@ -3093,7 +2924,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `zipcode`, `numberAddress` junto com `service: SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf`, `zipcode`, `numberAddress` junto com `service: SERVICE_CPF_ADDRESS_VALIDATION` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `zipcode`, `match`, `confidence`, `normalizedAddress`.
 
@@ -3101,7 +2932,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_CPF_ADDRESS_VALIDATION",
   "cpf": "cpf",
   "zipcode": "00000-000",
   "numberAddress": "13"
@@ -3131,57 +2962,9 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Validação de CPF com telefone">
 
-**Service:** `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP`
+**Service:** `SERVICE_CPF_PHONE_VALIDATION`
 
 **Termos de busca:** CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato
-
-**Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
-
-**O que retorna:** Retorna se o telefone informado tem associação com o CPF, incluindo nível de match, tipo de linha, status e sinais de validação.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `phone` junto com `service: SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `phone`, `match`, `confidence`, `lineType`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP",
-  "cpf": "cpf",
-  "phone": "11900000000"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "phone": "11900000000",
-    "match": true,
-    "confidence": "HIGH",
-    "lineType": "MOBILE"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-</Accordion>
-
-<Accordion title="Validação de CPF com telefone (Facetec)">
-
-**Service:** `SERVICE_CPF_PHONE_VALIDATION_FACETEC`
-
-**Termos de busca:** CPF Receita Federal, PF - Validação de CPF com telefone (Facetec), telefone celular validação contato
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
@@ -3190,7 +2973,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf`, `phone` junto com `service: SERVICE_CPF_PHONE_VALIDATION_FACETEC` em `POST /api/service-api`.
+2. Envie `cpf`, `phone` junto com `service: SERVICE_CPF_PHONE_VALIDATION` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `phone`, `match`, `statusMessage`.
 
@@ -3198,7 +2981,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_CPF_PHONE_VALIDATION_FACETEC",
+  "service": "SERVICE_CPF_PHONE_VALIDATION",
   "cpf": "cpf",
   "phone": "11900000000"
 }
@@ -3226,7 +3009,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Validação de e-mail">
 
-**Service:** `SERVICE_EMAIL_VALIDATION_BIGDATACORP`
+**Service:** `SERVICE_EMAIL_VALIDATION`
 
 **Termos de busca:** PF - Validação de e-mail, email validação contato
 
@@ -3237,7 +3020,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `email` junto com `service: SERVICE_EMAIL_VALIDATION_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `email` junto com `service: SERVICE_EMAIL_VALIDATION` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `email`, `validFormat`, `deliverable`, `domain`, `riskLevel`.
 
@@ -3245,7 +3028,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_EMAIL_VALIDATION_BIGDATACORP",
+  "service": "SERVICE_EMAIL_VALIDATION",
   "email": "email@email.com"
 }
 ```
@@ -3273,7 +3056,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Validação do E-Social">
 
-**Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP`
+**Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION`
 
 **Termos de busca:** PF - Validação do E-Social
 
@@ -3284,7 +3067,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cpf` junto com `service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cpf` junto com `service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cpf`, `nit`, `qualified`, `inconsistencies`.
 
@@ -3292,7 +3075,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP",
+  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
   "cpf": "cpf",
   "nit": "(opcional)"
 }
@@ -3325,55 +3108,9 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 <AccordionGroup>
 <Accordion title="Certidão negativa de protesto">
 
-**Service:** `SERVICE_PROTEST_PJ_INFOSIMPLES`
+**Service:** `SERVICE_PROTEST_PJ`
 
 **Termos de busca:** PJ - Certidão negativa de protesto
-
-**Quando usar:** Use para consultar protestos associados ao documento da empresa.
-
-**O que retorna:** Retorna certidão/consulta de protestos para CNPJ via InfoSimples, com status, cartórios consultados, protestos, valores e datas.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_PROTEST_PJ_INFOSIMPLES` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `hasProtests`, `notaryOffices`, `protests`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_PROTEST_PJ_INFOSIMPLES",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-</Accordion>
-
-<Accordion title="Certidão negativa de protesto PJ (Netrin)">
-
-**Service:** `SERVICE_PROTEST_PJ_NETRIN`
-
-**Termos de busca:** PJ - Certidão negativa de protesto PJ (Netrin)
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
@@ -3382,7 +3119,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_PROTEST_PJ_NETRIN` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_PROTEST_PJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `hasProtests`, `notaryOffices`, `protests`.
 
@@ -3390,7 +3127,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_PROTEST_PJ_NETRIN",
+  "service": "SERVICE_PROTEST_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -3417,7 +3154,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="CNPJ na Receita Federal on-demand">
 
-**Service:** `SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP`
+**Service:** `SERVICE_RFB_PJ_ON_DEMAND`
 
 **Termos de busca:** CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand
 
@@ -3428,7 +3165,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_RFB_PJ_ON_DEMAND` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `officialName`, `status`, `openingDate`, `mainActivity`.
 
@@ -3436,7 +3173,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ_ON_DEMAND",
   "cnpj": "cnpj"
 }
 ```
@@ -3512,7 +3249,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Compliance de casas de apostas">
 
-**Service:** `SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP`
+**Service:** `SERVICE_COMPLIANCE_BET_PJ`
 
 **Termos de busca:** PJ - Compliance de casas de apostas, apostas bets compliance bet
 
@@ -3523,7 +3260,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_COMPLIANCE_BET_PJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
 
@@ -3531,7 +3268,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP",
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -3607,7 +3344,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="DAS MEI na Receita">
 
-**Service:** `SERVICE_DAS_MEI_INFOSIMPLES`
+**Service:** `SERVICE_DAS_MEI`
 
 **Termos de busca:** CPF Receita Federal, PJ - DAS MEI na Receita
 
@@ -3618,7 +3355,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_DAS_MEI_INFOSIMPLES` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_DAS_MEI` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `meiStatus`, `periods`.
 
@@ -3626,7 +3363,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_DAS_MEI_INFOSIMPLES",
+  "service": "SERVICE_DAS_MEI",
   "cnpj": "cnpj"
 }
 ```
@@ -3657,7 +3394,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Débitos ativos">
 
-**Service:** `SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP`
+**Service:** `SERVICE_ACTIVE_DEBT_PJ`
 
 **Termos de busca:** PJ - Débitos ativos, dívida ativa débito cobrança inadimplência
 
@@ -3668,7 +3405,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_ACTIVE_DEBT_PJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `totalDebts`, `totalValue`, `debts`.
 
@@ -3676,7 +3413,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP",
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -3709,7 +3446,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Doações eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_DONORS_CNPJ`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato
 
@@ -3720,7 +3457,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_ELECTORAL_DONORS_CNPJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `donations`.
 
@@ -3728,7 +3465,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -3759,7 +3496,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Doações eleitorais dos sócios">
 
-**Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato
 
@@ -3770,7 +3507,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `ownersDonations`.
 
@@ -3778,7 +3515,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -3860,7 +3597,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Endereços estendidos">
 
-**Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Endereços estendidos
 
@@ -3871,7 +3608,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_ADDRESSES_EXTENDED_CNPJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `totalAddresses`, `addresses`.
 
@@ -3879,7 +3616,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -3913,7 +3650,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Enriquecimento de dados">
 
-**Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP`
+**Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Enriquecimento de dados
 
@@ -3924,7 +3661,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_CORPORATE_DATA_ENRICHMENT` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `officialName`, `tradeName`, `status`, `mainActivity`.
 
@@ -3932,7 +3669,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP",
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
   "cnpj": "cnpj"
 }
 ```
@@ -3960,7 +3697,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Exposição e perfil na mídia dos sócios">
 
-**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP`
+**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
 
 **Termos de busca:** PJ - Exposição e perfil na mídia dos sócios
 
@@ -3971,7 +3708,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `mediaMentions`, `exposureLevel`.
 
@@ -3979,7 +3716,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP",
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
   "cnpj": "cnpj"
 }
 ```
@@ -4011,7 +3748,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Fornecedores eleitorais">
 
-**Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP`
+**Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato
 
@@ -4022,7 +3759,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CNPJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `providers`.
 
@@ -4030,7 +3767,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP",
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
   "cnpj": "cnpj"
 }
 ```
@@ -4062,7 +3799,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="KYC e compliance dos sócios">
 
-**Service:** `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP`
+**Service:** `SERVICE_COMPANY_KYC_OWNERS`
 
 **Termos de busca:** PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia
 
@@ -4073,7 +3810,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_COMPANY_KYC_OWNERS` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `ownersChecked`, `owners`.
 
@@ -4081,7 +3818,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_KYC_OWNERS",
   "cnpj": "cnpj"
 }
 ```
@@ -4210,7 +3947,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Processos jurídicos dos sócios">
 
-**Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP`
+**Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS`
 
 **Termos de busca:** PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão
 
@@ -4221,7 +3958,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `ownersProcesses`.
 
@@ -4229,7 +3966,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP",
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
   "cnpj": "cnpj"
 }
 ```
@@ -4260,7 +3997,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Relacionamentos da empresa">
 
-**Service:** `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP`
+**Service:** `SERVICE_COMPANY_RELATIONSHIP`
 
 **Termos de busca:** PJ - Relacionamentos da empresa
 
@@ -4271,7 +4008,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_COMPANY_RELATIONSHIP` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `owners`, `relatedCompanies`.
 
@@ -4279,7 +4016,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
   "cnpj": "cnpj"
 }
 ```
@@ -4317,7 +4054,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
-**O que retorna:** Retorna dados públicos de risco de crédito da empresa, como status, score, rating, risco esperado e processos legais quando disponíveis.
+**O que retorna:** Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 **Passo a passo:**
 
@@ -4331,56 +4068,6 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 ```json
 {
   "service": "SERVICE_CREDIT_RISK_COMPANY",
-  "cnpj": "cnpj"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "creditRisk": {
-      "status": "APPROVED",
-      "score": "750",
-      "rating": "A",
-      "expectedDefault": "LOW",
-      "legalProcess": false
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-</Accordion>
-
-<Accordion title="Risco de crédito Murabei">
-
-**Service:** `SERVICE_CREDIT_RISK_COMPANY_MURABEI`
-
-**Termos de busca:** PJ - Risco de crédito Murabei, score risco crédito rating inadimplência
-
-**Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
-
-**O que retorna:** Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_CREDIT_RISK_COMPANY_MURABEI` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `creditRisk`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_CREDIT_RISK_COMPANY_MURABEI",
   "cnpj": "cnpj"
 }
 ```
@@ -4411,7 +4098,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="SINTEGRA">
 
-**Service:** `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP`
+**Service:** `SERVICE_SINTEGRA_CONSULTATION`
 
 **Termos de busca:** PJ - SINTEGRA
 
@@ -4422,7 +4109,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_SINTEGRA_CONSULTATION` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `stateRegistration`, `state`, `status`, `regime`.
 
@@ -4430,7 +4117,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP",
+  "service": "SERVICE_SINTEGRA_CONSULTATION",
   "cnpj": "cnpj",
   "uf": "uf (opcional)"
 }
@@ -4459,7 +4146,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Sócios de primeiro nível">
 
-**Service:** `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP`
+**Service:** `SERVICE_FIRST_LEVEL_PARTNER`
 
 **Termos de busca:** PJ - Sócios de primeiro nível
 
@@ -4470,7 +4157,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_FIRST_LEVEL_PARTNER` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `partners`.
 
@@ -4478,7 +4165,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP",
+  "service": "SERVICE_FIRST_LEVEL_PARTNER",
   "cnpj": "cnpj"
 }
 ```
@@ -4510,7 +4197,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Sócios na Receita Federal">
 
-**Service:** `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP`
+**Service:** `SERVICE_COMPANY_RFB_OWNERS`
 
 **Termos de busca:** CPF Receita Federal, PJ - Sócios na Receita Federal
 
@@ -4521,7 +4208,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_COMPANY_RFB_OWNERS` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `owners`.
 
@@ -4529,7 +4216,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
   "cnpj": "cnpj"
 }
 ```
@@ -4560,7 +4247,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 <Accordion title="Status do CNPJ na Receita Federal">
 
-**Service:** `SERVICE_RFB_PJ_BIGDATACORP`
+**Service:** `SERVICE_RFB_PJ`
 
 **Termos de busca:** CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal
 
@@ -4571,7 +4258,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
-2. Envie `cnpj` junto com `service: SERVICE_RFB_PJ_BIGDATACORP` em `POST /api/service-api`.
+2. Envie `cnpj` junto com `service: SERVICE_RFB_PJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
 4. Leia `result`, que neste service costuma trazer: `cnpj`, `officialName`, `status`, `openingDate`, `mainActivity`.
 
@@ -4579,7 +4266,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ```json
 {
-  "service": "SERVICE_RFB_PJ_BIGDATACORP",
+  "service": "SERVICE_RFB_PJ",
   "cnpj": "cnpj"
 }
 ```
