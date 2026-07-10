@@ -1211,7 +1211,7 @@ function pushSearchHowTo(lines) {
   lines.push('### Atalhos de busca');
   lines.push('');
   lines.push('| Digite na busca | O que deve aparecer |');
-  lines.push('| --- |');
+  lines.push('| --- | --- |');
   lines.push('| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |');
   lines.push('| `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |');
   lines.push('| `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |');
@@ -1247,7 +1247,7 @@ function renderServicesIndex(catalog) {
       lines.push(`## ${currentCategory}`);
       lines.push('');
       lines.push('| Nome | Service | Campos principais | Termos de busca | Retorno principal |');
-      lines.push('| --- | --- |');
+      lines.push('| --- | --- | --- | --- | --- |');
     }
     const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
     lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} | ${escapeTable(displaySearchTerms(service))} | ${escapeTable(service.responseSummary)} |`);
@@ -1997,6 +1997,10 @@ function renderServiceGuideBlock(service) {
 
   lines.push(`<Accordion title="${escapeAttribute(service.name)}">`);
   lines.push('');
+  if (service.familyLabel) {
+    lines.push(`**Famlia:** ${service.familyLabel}`);
+    lines.push('');
+  }
   lines.push(`**Service:** \`${service.service}\``);
   lines.push('');
   lines.push(`**Termos de busca:** ${displaySearchTerms(service, 10)}`);
@@ -2116,7 +2120,7 @@ function renderServiceRequestBlock(service) {
   lines.push('### Campos do body');
   lines.push('');
   lines.push('| Campo | Obrigatório | Descrição |');
-  lines.push('| --- |');
+  lines.push('| --- | --- | --- |');
   for (const field of fieldRows) {
     lines.push(`| \`${field.name}\` | ${field.required ? 'Sim' : 'Não'} | ${field.description} |`);
   }
@@ -2158,7 +2162,7 @@ function renderServiceQuickstartPage() {
   lines.push('<Step title="Escolha o ambiente">');
   lines.push('');
   lines.push('| Ambiente | Base URL | Quando usar |');
-  lines.push('| --- |');
+  lines.push('| --- | --- | --- |');
   lines.push('| Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validações e desenvolvimento. |');
   lines.push('| Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação do cliente. |');
   lines.push('');
@@ -2227,7 +2231,7 @@ function renderServiceQuickstartPage() {
   lines.push('## Erros comuns');
   lines.push('');
   lines.push('| Situação | Como corrigir |');
-  lines.push('| --- |');
+  lines.push('| --- | --- |');
   lines.push('| Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |');
   lines.push('| Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |');
   lines.push('| Produto usa alias curto | Confirme no produto qual alias está liberado e envie esse valor no campo `service`. |');
@@ -2286,7 +2290,7 @@ function renderUseCasePage(catalog) {
     lines.push(`## ${family}`);
     lines.push('');
     lines.push('| Objetivo | Service | Documento |');
-    lines.push('| --- |');
+    lines.push('| --- | --- | --- |');
     for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
       const doc = service.category === 'Pessoa Jurídica' ? 'CNPJ' : service.category === 'Pessoa Física' ? 'CPF' : '-';
       lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${doc} |`);
@@ -2305,6 +2309,14 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
     if (!grouped.has(family)) grouped.set(family, []);
     grouped.get(family).push(service);
   }
+
+  const orderedFamilies = [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  const orderedServices = orderedFamilies.flatMap(([family, services]) =>
+    services
+      .slice()
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((service) => ({ ...service, familyLabel: family })),
+  );
   const lines = [];
 
   lines.push('---');
@@ -2312,88 +2324,81 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push(`description: ${description}`);
   lines.push('---');
   lines.push('');
-  lines.push(`# ${title}`);
-  lines.push('');
-  lines.push(description);
-  lines.push('');
   lines.push('<Info>');
-  lines.push('Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produto executado é definido pelo campo `service` no body da requisição.');
+  lines.push(`${description} Todos os services usam \`POST /api/service-api\`; o produto executado \u00e9 definido pelo campo \`service\` no body.`);
   lines.push('</Info>');
   lines.push('');
-  pushServiceAliasNote(lines, {
-    includeDocumentPayloadNote: category === 'Pessoa Física',
-    rows: category === 'Pessoa Jurídica' ? serviceAliasRowsPessoaJuridica : serviceAliasRowsPessoaFisica,
-  });
-  lines.push('## Atalhos práticos');
+  lines.push('<Warning>');
+  lines.push('Use exatamente o valor exibido em `Service`. N\u00e3o envie alias interno nem nome de integra\u00e7\u00e3o.');
+  lines.push('</Warning>');
+  lines.push('');
+  lines.push('## Antes de testar');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Como executar um service" href="/api-reference/como-executar-service">');
-  lines.push(' Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.');
+  lines.push(' <Card title="Contrato base" href="/api-reference/como-executar-service">');
+  lines.push(' Veja token, headers, body padr\u00e3o, `result`, `status` e `externalId`.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Testar no Postman" href="/guides/postman-do-zero">');
-  lines.push(' Configure environment, gere token e rode `POST /api/service-api` em HML.');
+  lines.push(' <Card title="Postman do zero" href="/guides/postman-do-zero">');
+  lines.push(' Configure HML, gere token e execute `POST /api/service-api` com um payload real.');
   lines.push(' </Card>');
-  if (category === 'Pessoa Jurídica') {
-    lines.push(' <Card title="OCR cartão CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
-    lines.push(' Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.');
+  if (category === 'Pessoa Jurdica') {
+    lines.push(' <Card title="OCR de cart\u00e3o CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
+    lines.push(' Payload, imagem esperada, retorno limpo e diagn\u00f3stico de erro para cart\u00e3o CNPJ.');
     lines.push(' </Card>');
-    lines.push(' <Card title="Receitas prontas" href="/guides/receitas-prontas">');
-    lines.push(' Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.');
+    lines.push(' <Card title="Fluxos prontos" href="/guides/receitas-prontas">');
+    lines.push(' Exemplos completos para CNPJ, risco, cadastro e OCR.');
     lines.push(' </Card>');
   } else {
     lines.push(' <Card title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">');
-    lines.push(' Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.');
+    lines.push(' Payloads para CNH, RG, comprovante, cart\u00e3o CNPJ, base64 e erros de imagem.');
     lines.push(' </Card>');
-    lines.push(' <Card title="Receitas prontas" href="/guides/receitas-prontas">');
-    lines.push(' Copie fluxos completos para CPF, OCR, Face Index, risco e score.');
+    lines.push(' <Card title="Fluxos prontos" href="/guides/receitas-prontas">');
+    lines.push(' Exemplos completos para CPF, OCR, Face Index, risco e score.');
     lines.push(' </Card>');
   }
   lines.push('</CardGroup>');
   lines.push('');
-  lines.push('## Como ler esta referência');
+  lines.push('## Como usar esta p\u00e1gina');
   lines.push('');
-  lines.push('- **Nome**: nome funcional do produto.');
-  lines.push('- **Service**: valor exato que deve ser enviado no campo `service`.');
-  lines.push('- **Service**: valor p\u00fablico que deve ser enviado no campo `service`.');
-  lines.push('- **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.');
-  lines.push('- **Campos**: parâmetros esperados no body além de `service`.');
-  lines.push('- **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.');
-  lines.push('- **Exemplos**: cada item traz body JSON, curl de homologação, curl de produção e response resumido.');
+  lines.push('<Steps>');
+  lines.push(' <Step title="Escolha a fam\u00edlia">');
+  lines.push(' Use os cards abaixo para localizar o grupo certo de services.');
+  lines.push(' </Step>');
+  lines.push(' <Step title="Abra o service">');
+  lines.push(' No cat\u00e1logo completo, abra o accordion do service e copie o body de exemplo.');
+  lines.push(' </Step>');
+  lines.push(' <Step title="Leia o retorno">');
+  lines.push(' Use `result` como contrato p\u00fablico e preserve `status`, `onboardingStatus` e `externalId`.');
+  lines.push(' </Step>');
+  lines.push('</Steps>');
   lines.push('');
-  lines.push('## Índice por família');
+  lines.push('## Fam\u00edlias de services');
   lines.push('');
-
-  for (const [family, services] of [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
-    lines.push(`### ${family}`);
-    lines.push('');
-    lines.push('| Nome | Service | Campos | Quando usar | Retorno principal |');
-    lines.push('| --- | --- |');
-    for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
-      const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
-      lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${fields} | ${escapeTable(serviceUseCase(service))} | ${escapeTable(service.responseSummary)} |`);
-    }
+  lines.push('<CardGroup cols={2}>');
+  for (const [family, services] of orderedFamilies) {
+    const sorted = services.slice().sort((a, b) => a.name.localeCompare(b.name));
+    const examples = sorted.slice(0, 3).map((service) => `\`${service.service}\``).join(', ');
+    const suffix = sorted.length > 3 ? ` e mais ${sorted.length - 3}` : '';
+    lines.push(` <Card title="${escapeAttribute(family)}">`);
+    lines.push(` ${sorted.length} service${sorted.length === 1 ? '' : 's'}: ${examples}${suffix}.`);
+    lines.push(' </Card>');
+  }
+  lines.push('</CardGroup>');
+  lines.push('');
+  lines.push('## Catálogo completo');
+  lines.push('');
+  lines.push('Abra um service para ver quando usar, campos obrigat\u00f3rios, body, curl e response resumido.');
+  lines.push('');
+  lines.push('<AccordionGroup>');
+  for (const service of orderedServices) {
+    lines.push(renderServiceRequestBlock(service));
     lines.push('');
   }
-
+  lines.push('</AccordionGroup>');
   lines.push('');
-  lines.push('## Requests completos');
+  lines.push('## Padr\u00f5es de erro');
   lines.push('');
-
-  for (const [family, services] of [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
-    lines.push(`### ${family}`);
-    lines.push('');
-    lines.push('<AccordionGroup>');
-    for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
-      lines.push(renderServiceRequestBlock(service));
-      lines.push('');
-    }
-    lines.push('</AccordionGroup>');
-    lines.push('');
-  }
-  lines.push('');
-  lines.push('## Padrões de erro');
-  lines.push('');
-  lines.push('Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme validação, produto e ambiente.');
+  lines.push('Os exemplos abaixo mostram formatos comuns. A mensagem pode variar conforme valida\u00e7\u00e3o, produto e ambiente.');
   lines.push('');
   lines.push('<AccordionGroup>');
   for (const example of serviceErrorExamples()) {
@@ -2425,7 +2430,7 @@ function pushLlmFileMap(lines) {
   lines.push('## Como escolher o arquivo certo');
   lines.push('');
   lines.push('| Necessidade | Use |');
-  lines.push('| --- |');
+  lines.push('| --- | --- |');
   lines.push(`| Entender a estrutura da documentação | ${siteUrl}/llms.txt |`);
   lines.push(`| Gerar integração, curl ou escolher service | ${siteUrl}/llms-small.txt |`);
   lines.push(`| Consultar payloads e responses por service | ${siteUrl}/llms-api-reference.txt |`);
@@ -2454,7 +2459,7 @@ function pushMcpUsageNotes(lines) {
   lines.push('### Recursos que um MCP pode expor');
   lines.push('');
   lines.push('| Recurso | Uso no MCP |');
-  lines.push('| --- |');
+  lines.push('| --- | --- |');
   lines.push(`| ${siteUrl}/llms.txt | Manifesto, regras, URLs principais e atalhos. |`);
   lines.push(`| ${siteUrl}/llms-small.txt | Contexto curto para gerar integração, curl e explicação. |`);
   lines.push(`| ${siteUrl}/llms-api-reference.txt | Payloads, responses e exemplos por service. |`);
@@ -2521,7 +2526,7 @@ function pushFeaturedServiceShortcuts(lines, catalog) {
   lines.push('## Atalhos de services mais usados');
   lines.push('');
   lines.push('| Caso | Service | Campos principais | Guia/API |');
-  lines.push('| --- | --- |');
+  lines.push('| --- | --- | --- | --- |');
   const aliases = [
     ['CPF na Receita Federal', 'SERVICE_RFB_PF'],
     ['CNPJ na Receita Federal', 'SERVICE_RFB_PJ'],
@@ -2547,7 +2552,7 @@ function pushLlmCommonErrors(lines) {
   lines.push('## Diagnóstico rápido de erro');
   lines.push('');
   lines.push('| Sintoma | Interpretação provável | Ação recomendada |');
-  lines.push('| --- |');
+  lines.push('| --- | --- | --- |');
   lines.push('| `401 Unauthorized` | Token ausente, expirado ou inválido. | Gerar novo token em `/api/token-generate`. |');
   lines.push('| `Don\'t have access to the service` | Produto sem service ativo/API habilitada ou alias errado. | Conferir configuração do produto e alias de chamada. |');
   lines.push('| Imagem ausente | Payload não enviou `image1`, `image2`, URL ou `key` esperado. | Conferir o OCR chamado e montar o JSON novamente. |');
