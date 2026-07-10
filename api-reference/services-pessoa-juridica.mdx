@@ -81,6 +81,21 @@ Abra um service para ver quando usar, campos obrigatórios, body, curl e respons
 
 **O que retorna:** Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `image1`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `docType`, `genericOcr`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `image1`
@@ -179,6 +194,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.docType` | Tipo de documento identificado no processamento. |
+| `result.genericOcr` | Texto bruto extraído do documento por OCR. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
 ### Response resumido
 
 ```json
@@ -207,6 +247,21 @@ Neste service, o objeto `result` representa: Retorna dados extraídos do cartão
 **Quando usar:** Use para consultar informações eleitorais relacionadas à empresa.
 
 **O que retorna:** Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `ownersDonations`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
 
 **Endpoint:** `POST /api/service-api`
 
@@ -261,6 +316,30 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.ownersDonations` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -297,6 +376,21 @@ Neste service, o objeto `result` representa: Retorna doações eleitorais feitas
 
 **O que retorna:** Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `totalDomains`, `domains`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -350,6 +444,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.totalDomains` | Campo retornado no objeto result para consumo do cliente. |
+| `result.domains` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -385,6 +504,21 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 
 **O que retorna:** Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `totalAddresses`, `addresses`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -438,6 +572,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.totalAddresses` | Endereço, lista de endereços ou validação de endereço retornada pela consulta. |
+| `result.addresses` | Endereço, lista de endereços ou validação de endereço retornada pela consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -476,6 +635,21 @@ Neste service, o objeto `result` representa: Retorna endereços associados ao CN
 
 **O que retorna:** Retorna exposição e perfil de mídia da empresa e sócios, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `mediaMentions`, `exposureLevel`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -529,6 +703,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.mediaMentions` | Notícias, exposição em mídia ou indicadores públicos associados ao documento. |
+| `result.exposureLevel` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -565,6 +764,21 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 
 **O que retorna:** Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `ownersChecked`, `owners`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -618,6 +832,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.ownersChecked` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
+| `result.owners` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -655,6 +894,21 @@ Neste service, o objeto `result` representa: Retorna checagens de KYC e complian
 
 **O que retorna:** Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `ownersProcesses`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -708,6 +962,30 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.ownersProcesses` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -743,6 +1021,21 @@ Neste service, o objeto `result` representa: Retorna processos jurídicos associ
 
 **O que retorna:** Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `owners`, `relatedCompanies`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -796,6 +1089,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.owners` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
+| `result.relatedCompanies` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -832,6 +1150,21 @@ Neste service, o objeto `result` representa: Retorna relacionamentos da empresa,
 
 **O que retorna:** Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `partners`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -885,6 +1218,30 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.partners` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -921,6 +1278,21 @@ Neste service, o objeto `result` representa: Retorna sócios de primeiro nível 
 
 **O que retorna:** Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `owners`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -974,6 +1346,30 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.owners` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1009,6 +1405,21 @@ Neste service, o objeto `result` representa: Retorna o quadro societario na Rece
 
 **O que retorna:** Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `officialName`, `status`, `openingDate`, `mainActivity`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1062,6 +1473,33 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.officialName` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.openingDate` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.mainActivity` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1094,6 +1532,21 @@ Neste service, o objeto `result` representa: Retorna situação atualizada do CN
 
 **O que retorna:** Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `officialName`, `tradeName`, `status`, `openingDate`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1147,6 +1600,33 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.officialName` | Campo retornado no objeto result para consumo do cliente. |
+| `result.tradeName` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.openingDate` | Data retornada pela consulta, conforme o contexto do service. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1179,6 +1659,21 @@ Neste service, o objeto `result` representa: Retorna dados cadastrais do CNPJ, i
 
 **O que retorna:** Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `meiStatus`, `periods`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1232,6 +1727,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.meiStatus` | Campo retornado no objeto result para consumo do cliente. |
+| `result.periods` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1267,6 +1787,21 @@ Neste service, o objeto `result` representa: Retorna informações de DAS MEI e 
 
 **O que retorna:** Retorna cadastro completo da empresa, incluindo razão social, nome fantasia, situação cadastral, CNAEs, natureza jurídica, porte, capital e endereço.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `officialName`, `tradeName`, `status`, `mainActivity`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1321,6 +1856,33 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.officialName` | Campo retornado no objeto result para consumo do cliente. |
+| `result.tradeName` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.mainActivity` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
 ### Response resumido
 
 ```json
@@ -1351,6 +1913,21 @@ Neste service, o objeto `result` representa: Retorna cadastro completo da empres
 **Quando usar:** Use este service quando precisar executar a consulta "SINTEGRA" via API.
 
 **O que retorna:** Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `stateRegistration`, `state`, `status`, `regime`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ `uf`
+ </Card>
+</CardGroup>
 
 **Endpoint:** `POST /api/service-api`
 
@@ -1410,6 +1987,33 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 | `uf` | Não | UF usada para limitar a consulta estadual ou jurídica. |
 
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.stateRegistration` | Campo retornado no objeto result para consumo do cliente. |
+| `result.state` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.regime` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
 ### Response resumido
 
 ```json
@@ -1440,6 +2044,21 @@ Neste service, o objeto `result` representa: Retorna dados do SINTEGRA, incluind
 **Quando usar:** Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal.
 
 **O que retorna:** Retorna situação do CNPJ na Receita Federal, incluindo razão social, nome fantasia, situação cadastral, abertura, CNAEs e endereço.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `officialName`, `status`, `openingDate`, `mainActivity`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
 
 **Endpoint:** `POST /api/service-api`
 
@@ -1494,6 +2113,33 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.officialName` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.openingDate` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.mainActivity` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1526,6 +2172,21 @@ Neste service, o objeto `result` representa: Retorna situação do CNPJ na Recei
 
 **O que retorna:** Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `donations`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1579,6 +2240,30 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.donations` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1614,6 +2299,21 @@ Neste service, o objeto `result` representa: Retorna doações eleitorais realiz
 
 **O que retorna:** Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `campos`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1667,6 +2367,30 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.campos` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1703,6 +2427,21 @@ Neste service, o objeto `result` representa: Retorna prestações de serviço el
 
 **O que retorna:** Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `hasProtests`, `notaryOffices`, `protests`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1756,6 +2495,32 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.hasProtests` | Campo retornado no objeto result para consumo do cliente. |
+| `result.notaryOffices` | Campo retornado no objeto result para consumo do cliente. |
+| `result.protests` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1787,6 +2552,21 @@ Neste service, o objeto `result` representa: Retorna certidão/consulta de prote
 
 **O que retorna:** Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `totalProcesses`, `processes`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1840,6 +2620,31 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.totalProcesses` | Campo retornado no objeto result para consumo do cliente. |
+| `result.processes` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1876,6 +2681,21 @@ Neste service, o objeto `result` representa: Retorna processos jurídicos vincul
 
 **O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -1929,6 +2749,32 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.hasBettingExposure` | Campo retornado no objeto result para consumo do cliente. |
+| `result.indicators` | Campo retornado no objeto result para consumo do cliente. |
+| `result.riskLevel` | Indicador de risco retornado pelo produto. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -1962,6 +2808,21 @@ Neste service, o objeto `result` representa: Retorna indicadores de exposição 
 
 **O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -2015,6 +2876,32 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.hasBettingExposure` | Campo retornado no objeto result para consumo do cliente. |
+| `result.indicators` | Campo retornado no objeto result para consumo do cliente. |
+| `result.riskLevel` | Indicador de risco retornado pelo produto. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -2048,6 +2935,21 @@ Neste service, o objeto `result` representa: Retorna indicadores de exposição 
 
 **O que retorna:** Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `totalDebts`, `totalValue`, `debts`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -2101,6 +3003,32 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.totalDebts` | Campo retornado no objeto result para consumo do cliente. |
+| `result.totalValue` | Valor monetário, estimativa ou montante retornado pela consulta. |
+| `result.debts` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 
@@ -2138,6 +3066,21 @@ Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas 
 
 **O que retorna:** Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `creditRisk`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cnpj`
@@ -2191,6 +3134,30 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.creditRisk` | Indicador de risco retornado pelo produto. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
 
 ### Response resumido
 

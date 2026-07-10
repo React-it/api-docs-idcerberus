@@ -34,6 +34,11 @@ const checks = [
     test: (line) => mojibakeFragments.some((fragment) => line.includes(fragment)),
   },
   {
+    name: 'acentuacao quebrada',
+    pattern:
+      /(n\?o|est\?|p\?blico|cat\?logo|pr\?tica|requisi\?\?o|documenta\?\?o|integra\?\?o|autentica\?\?o|b\?sico|cr\?dito|cart\?o|endere\?o|identifica\?\?o|varia\?\?es|al\?m|p\?gina|fam\?lia|descri\?\?o|servi\?o|valida\?\?o|produ\?\?o|homologa\?\?o)/i,
+  },
+  {
     name: 'texto quebrado',
     pattern:
       /(Deascri[cç][aã]o|Hist[oó]rco|Profissonal|estrnahos|caracetres|toas as paginas|consutla|mensallidade|perioddos|dee empresas|stutus|carrinerName|Complice|Antecedenes|Fderal)/i,

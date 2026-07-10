@@ -1292,11 +1292,11 @@ function renderServicesIndex(catalog) {
   lines.push('Use o API Reference para copiar body, curl e response resumido de cada produto:');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Services de pessoa f?sica" href="/api-reference/services-pessoa-fisica">');
-  lines.push(' Cat?logo completo com payloads e responses para services de CPF.');
+  lines.push(' <Card title="Services de pessoa física" href="/api-reference/services-pessoa-fisica">');
+  lines.push(' Catálogo completo com payloads e responses para services de CPF.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Services de pessoa jur?dica" href="/api-reference/services-pessoa-juridica">');
-  lines.push(' Cat?logo completo com payloads e responses para services de CNPJ.');
+  lines.push(' <Card title="Services de pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
+  lines.push(' Catálogo completo com payloads e responses para services de CNPJ.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
   return lines.join('\n');
@@ -2007,6 +2007,105 @@ function serviceFieldDescription(service, fieldName) {
   return `Parametro usado pelo service ${service.service}.`;
 }
 
+
+function resultFieldDescription(service, fieldName) {
+  const field = normalizeText(fieldName);
+  const serviceText = normalizeText(service.name + ' ' + service.service + ' ' + service.responseSummary);
+
+  if (field === 'summary') return 'Resumo funcional dos dados retornados pelo service.';
+  if (field === 'observation') return 'Observação sobre variação ou disponibilidade dos dados retornados.';
+  if (field === 'cpf') return 'CPF relacionado ao resultado da consulta.';
+  if (field === 'cnpj') return 'CNPJ relacionado ao resultado da consulta.';
+  if (field === 'name' || field === 'fullname') return 'Nome completo retornado pela consulta quando disponível.';
+  if (field === 'shortname') return 'Nome curto ou forma resumida retornada pela consulta.';
+  if (field === 'status') return 'Situação principal retornada pelo produto consultado.';
+  if (field === 'message') return 'Mensagem de leitura do resultado ou do processamento.';
+  if (field === 'score') return 'Pontuação calculada pelo produto para o indicador consultado.';
+  if (field === 'factor') return 'Fator, faixa ou classificação usada para interpretar o score.';
+  if (field === 'similarity') return 'Percentual de similaridade retornado em validações biométricas ou faciais.';
+  if (field === 'facefound') return 'Indica se a busca facial encontrou uma face correspondente na base.';
+  if (field === 'doctype' || field === 'documenttype') return 'Tipo de documento identificado no processamento.';
+  if (field === 'genericocr') return 'Texto bruto extraído do documento por OCR.';
+  if (field.includes('address')) return 'Endereço, lista de endereços ou validação de endereço retornada pela consulta.';
+  if (field.includes('phone')) return 'Telefone, histórico de telefones ou validação de telefone retornada pela consulta.';
+  if (field.includes('email')) return 'E-mail, histórico de e-mails ou validação de e-mail retornada pela consulta.';
+  if (field.includes('date')) return 'Data retornada pela consulta, conforme o contexto do service.';
+  if (field.includes('amount') || field.includes('value')) return 'Valor monetário, estimativa ou montante retornado pela consulta.';
+  if (field.includes('risk')) return 'Indicador de risco retornado pelo produto.';
+  if (field.includes('news') || field.includes('media')) return 'Notícias, exposição em mídia ou indicadores públicos associados ao documento.';
+  if (field.includes('relationship') || field.includes('people') || field.includes('owners')) return 'Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta.';
+  if (field.includes('ocr')) return 'Informação extraída ou interpretada a partir da imagem enviada.';
+  if (serviceText.includes('ocr')) return 'Campo extraído do documento enviado para OCR.';
+
+  return 'Campo retornado no objeto result para consumo do cliente.';
+}
+
+function resultRowsFromService(service) {
+  const result = serviceResponseExample(service).result || {};
+  return Object.keys(result).slice(0, 12).map((name) => ({
+    name,
+    description: resultFieldDescription(service, name),
+  }));
+}
+
+function resultKeysSummary(service) {
+  const keys = Object.keys(serviceResponseExample(service).result || {});
+  if (!keys.length) return 'sem campos fixos no exemplo resumido';
+  const visible = keys.slice(0, 6).map((key) => '\`' + key + '\`').join(', ');
+  return keys.length > 6 ? visible + ' e mais ' + (keys.length - 6) : visible;
+}
+
+function pushServiceSummaryCards(lines, service, required, optional) {
+  lines.push('<CardGroup cols={2}>');
+  lines.push(' <Card title="Entrada">');
+  lines.push(' Campos obrigatórios: ' + required + '.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Resultado">');
+  lines.push(' Principais campos em \`result\`: ' + resultKeysSummary(service) + '.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Status da chamada">');
+  lines.push(' Use \`status.code\` e \`status.message\` para entender se a consulta processou corretamente.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Campos opcionais">');
+  lines.push(' ' + optional);
+  lines.push(' </Card>');
+  lines.push('</CardGroup>');
+  lines.push('');
+}
+
+function pushPublicResponseCards(lines) {
+  lines.push('### Como consumir o retorno');
+  lines.push('');
+  lines.push('<CardGroup cols={2}>');
+  lines.push(' <Card title="result">');
+  lines.push(' Dados públicos do service. É o objeto principal para mapear no sistema do cliente.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="status">');
+  lines.push(' Status técnico da chamada, com \`code\` e \`message\`.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="onboardingStatus">');
+  lines.push(' Quando retornado, resume o desfecho operacional: \`APPROVED\`, \`REFUSED\` ou \`ERROR\`.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="externalId">');
+  lines.push(' Identificador para rastrear a consulta em suporte, logs ou auditoria.');
+  lines.push(' </Card>');
+  lines.push('</CardGroup>');
+  lines.push('');
+}
+
+function pushResultFieldsTable(lines, service) {
+  const rows = resultRowsFromService(service);
+  if (!rows.length) return;
+  lines.push('### Campos principais do result');
+  lines.push('');
+  lines.push('| Campo | Descrição |');
+  lines.push('| --- | --- |');
+  for (const row of rows) {
+    lines.push('| \`result.' + row.name + '\` | ' + row.description + ' |');
+  }
+  lines.push('');
+}
+
 function renderServiceGuideBlock(service) {
   const body = jsonBodyFromRequestExample(service.requestExample);
   const fields = fieldRowsFromService(service);
@@ -2028,6 +2127,7 @@ function renderServiceGuideBlock(service) {
   lines.push('');
   lines.push(`**O que retorna:** ${service.responseSummary}`);
   lines.push('');
+  pushServiceSummaryCards(lines, service, requiredFields.length ? requiredFields.join(', ') : 'os campos exigidos pelo produto', 'Confira o API Reference para opcionais e variações por produto.');
   lines.push('**Passo a passo:**');
   lines.push('');
   lines.push('1. Gere um token em `POST /api/token-generate`.');
@@ -2101,6 +2201,7 @@ function renderServiceRequestBlock(service) {
   lines.push('');
   lines.push(`**O que retorna:** ${service.responseSummary}`);
   lines.push('');
+  pushServiceSummaryCards(lines, service, required || 'nenhum campo adicional além de `service`', optional);
   lines.push('**Endpoint:** `POST /api/service-api`');
   lines.push('');
   lines.push(`**Campos obrigatórios:** ${required}`);
@@ -2144,6 +2245,8 @@ function renderServiceRequestBlock(service) {
     lines.push(`| \`${field.name}\` | ${field.required ? 'Sim' : 'Não'} | ${field.description} |`);
   }
   lines.push('');
+  pushResultFieldsTable(lines, service);
+  pushPublicResponseCards(lines);
   lines.push('### Response resumido');
   lines.push('');
   lines.push('```json');
