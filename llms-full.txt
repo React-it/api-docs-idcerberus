@@ -115,7 +115,7 @@ Quando o alias técnico do parceiro for diferente do alias liberado no produto, 
 | --- | --- | --- | --- |
 | CPF na Receita Federal | `SERVICE_RFB_PF_BIGDATACORP` | `cpf`, `dataDeNascimento` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | CNPJ na Receita Federal | `SERVICE_RFB_PJ_BIGDATACORP` | `cnpj` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
-| OCR RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
+| OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | OCR cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | OCR comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | Face Index | `SERVICE_FACE_INDEX` | `image1` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
@@ -193,7 +193,7 @@ curto de acordo com o seu objetivo.
 | Consultar CPF | [Primeira consulta CPF](/guides/primeira-consulta-cpf) |
 | Consultar CNPJ | [Primeira consulta CNPJ](/guides/primeira-consulta-cnpj) |
 | Escolher um código `service` | [Escolha o serviço certo](/guides/escolha-o-servico-certo) |
-| Testar OCR com imagem ou base64 | [OCR via Service API](/guides/service-api/ocr-service-api) |
+| Testar OCR com imagem ou base64 | [OCR via Service API](/guides/service-api/sobre-ocr-service-api) |
 | Usar Postman | [Postman do zero](/guides/postman-do-zero) |
 | Resolver erro | [Troubleshooting](/guides/troubleshooting) |
 | Ir para produção | [Boas práticas de integração](/guides/boas-praticas-integracao) |
@@ -341,7 +341,6 @@ Você pode testar de três formas:
   Se você nunca executou um `curl`, comece pelo Postman. Depois que a chamada
   funcionar, copie o mesmo padrão para o terminal ou para o código da aplicação.
 
-
 ## Antes de começar
 
 Você precisa ter:
@@ -364,7 +363,6 @@ headers e body iguais e troque apenas a URL.
 > Atencao:
   Não misture ambientes. Token gerado em homologação deve ser usado com URL de
   homologação. Token gerado em produção deve ser usado com URL de produção.
-
 
 ## 1. Escolha onde vai testar
 
@@ -535,10 +533,9 @@ curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
 ```
 
 > Info:
-  Vai testar OCR? Use o guia [OCR via Service API](/guides/service-api/ocr-service-api)
+  Vai testar OCR? Use o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api)
   para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
   de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
-
 
 Substitua:
 
@@ -547,7 +544,6 @@ Substitua:
 | `{jwt_token}` | Token retornado no passo anterior |
 | `cpf` | CPF usado para teste |
 | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` | Código do serviço que deseja executar |
-
 
 
     Use quando quiser validar o fluxo com um service simples de pessoa física.
@@ -879,7 +875,6 @@ base usada na chamada.
   homologação deve ser usado com a URL de homologação. Um token gerado em
   produção deve ser usado com a URL de produção.
 
-
 ## Como trocar de ambiente
 
 Para trocar de homologação para produção, altere somente a URL base.
@@ -1193,7 +1188,6 @@ implementação técnica. O objetivo é evitar que você precise procurar em uma
 coleção grande de requests sem contexto.
 
 ## O caminho mais comum
-
 
 
     Use o [Quickstart](/guides/quickstart) para validar credenciais, gerar token
@@ -1528,691 +1522,6 @@ Use credenciais de produção e gere um novo token. Não reutilize token de HML 
 | Campo esperado não veio | Campo não existe no documento ou não foi extraído | Validar imagem, tipo de documento e contrato do service |
 
 Para diagnóstico mais completo, veja [Erros comuns de integração](/guides/erros-comuns-integracao).
-
----
-
-# OCR via Service API
-
-URL: https://api-docs.idcerberus.com/guides/service-api/ocr-service-api
-Fonte: guides/service-api/ocr-service-api.mdx
-Descrição: Guia prático para escolher, configurar, testar e interpretar os services de OCR no POST /api/service-api.
-
-# OCR via Service API
-
-Use esta página para integrar services de OCR pelo `POST /api/service-api`.
-Ela mostra qual service usar, como montar o payload, como deve ser o retorno e
-o que conferir antes de abrir chamado ou mexer na implementação.
-
-> Requisito básico: o token precisa ser do produto correto e o produto precisa
-> ter o service ativo com API habilitada. Se a configuração do produto estiver
-> incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
-
-
-    Use `SERVICE_OCR` quando o documento for RG ou CNH e o payload tiver `documentType`.
-
-
-    Use `SERVICE_OCR_CNPJ_CARD` para extrair CNPJ e texto OCR do cartão CNPJ.
-
-
-    Use `SERVICE_OCR_PROOF_OF_ADDRESS` para contas, faturas e comprovantes aceitos.
-
-
-    Use `SERVICE_OCR_EMANCIPATION` para documentos variáveis, sem layout fixo.
-
-
-## Teste mais rápido
-
-Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
-
-
-    Curl pronto com `SERVICE_OCR`, `documentType: CNH` e `image1`.
-
-
-    Curl pronto com `SERVICE_OCR`, `documentType: RG`, `image1` e `image2`.
-
-
-    Curl pronto para `SERVICE_OCR_CNPJ_CARD` com imagem do cartão CNPJ.
-
-
-    Curl pronto para `SERVICE_OCR_PROOF_OF_ADDRESS` com comprovante em base64.
-
-
-> Nota:
-  Para teste manual no Postman, use a seção [Copiar e testar](#copiar-e-testar). Ela monta o JSON completo no clipboard.
-
-## Caminho recomendado
-
-Se você precisa testar agora, siga esta ordem:
-
-1. Confirme o service no produto do cliente.
-2. Gere o token do mesmo produto.
-3. Converta uma imagem real para base64 puro.
-4. Envie o payload do OCR correto.
-5. Valide `status`, `onboardingStatus`, `externalId` e os campos dentro de `result`.
-
-Esse caminho evita misturar problema de permissão, imagem ruim e payload errado.
-
-## O que esta página resolve
-
-| Público | Como usar |
-| --- | --- |
-| Desenvolvimento | Copiar payload, entender campos obrigatórios e validar o retorno esperado. |
-| Produto | Conferir se o service certo está configurado para o documento certo. |
-| Suporte | Separar problema de configuração, imagem ruim, payload errado e falha técnica. |
-| CS/Operação | Explicar para o cliente o que enviar e o que esperar da resposta. |
-
-O objetivo é evitar tentativa e erro. Antes de abrir chamado, a pessoa deve
-conseguir responder: qual service foi chamado, qual imagem foi enviada, qual
-produto autorizou a chamada e qual `externalId` voltou.
-
-## Escolha rápida
-
-| Preciso ler | Service | Enviar | Retorno principal |
-| --- | --- | --- | --- |
-| CNH | `SERVICE_OCR` | `documentType: CNH` + `image1` | CPF, nome, nascimento, dados da CNH |
-| RG | `SERVICE_OCR` | `documentType: RG` + `image1` + `image2` | CPF, nome, filiação, nascimento, dados do RG |
-| Cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ, tipo do documento, texto OCR |
-| Documento de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Texto OCR, campos extraídos e análise estruturada |
-| Comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Nome, endereço, tipo do documento, datas e valores |
-
-O campo `image1` deve receber base64 puro da imagem. Não envie prefixo como
-`data:image/jpeg;base64,`.
-
-## Qual imagem usar
-
-| Service | Imagem certa | Não usar |
-| --- | --- | --- |
-| `SERVICE_OCR` com CNH | Foto ou imagem nítida da CNH inteira | Selfie, print cortado, documento de outro tipo |
-| `SERVICE_OCR` com RG | Frente em `image1` e verso em `image2` | Só frente quando o verso for obrigatório |
-| `SERVICE_OCR_CNPJ_CARD` | Cartão CNPJ completo e legível | Contrato social, nota fiscal ou comprovante |
-| `SERVICE_OCR_PROOF_OF_ADDRESS` | Conta, fatura ou comprovante aceito com endereço visível | Documento pessoal ou selfie |
-| `SERVICE_OCR_EMANCIPATION` | Documento de cartório, declaração, escritura ou certidão legível | Documento sem relação com emancipação |
-
-## Critério de sucesso por service
-
-| Service | Sucesso mínimo esperado | Quando recusar |
-| --- | --- | --- |
-| `SERVICE_OCR` com CNH | Documento lido e campos principais da CNH retornados. | Imagem ausente, documento não lido ou tipo documental inconsistente. |
-| `SERVICE_OCR` com RG | Frente e verso enviados, documento lido e dados principais retornados. | Verso ausente, imagem ilegível ou dados centrais não extraídos. |
-| `SERVICE_OCR_CNPJ_CARD` | CNPJ válido extraído e `docType` coerente com cartão CNPJ. | CNPJ não encontrado ou CNPJ inválido. |
-| `SERVICE_OCR_EMANCIPATION` | OCR retornou texto e a API retornou os campos encontrados, sem exigir layout fixo. | OCR vazio ou imagem que não permite leitura. |
-| `SERVICE_OCR_PROOF_OF_ADDRESS` | OCR retornou texto útil e dados possíveis do comprovante. | Imagem não lida ou documento fora do esperado para comprovante. |
-
-Nem todo service tem os mesmos campos obrigatórios. Em documentos variáveis,
-como emancipação e comprovante de endereço, o retorno deve trazer o que foi
-extraído sem inventar dado.
-
-## Fluxo completo
-
-1. Gere o token em `/api/token-generate`.
-2. Confirme se o produto tem o service ativo e habilitado para API.
-3. Escolha o `service` correto na tabela acima.
-4. Converta a imagem para base64 puro.
-5. Envie o payload para `POST /api/service-api`.
-6. Valide `status.code`, `onboardingStatus`, `externalId` e os campos dentro de
-   `result`.
-
-## Gerar base64 no PowerShell
-
-Para copiar apenas o base64 da imagem:
-
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
-```
-
-O valor copiado deve ser base64 puro. Não envie prefixo como `data:image/jpeg;base64,`.
-
-## Copiar e testar
-
-Use estes blocos quando quiser montar o JSON completo no clipboard e colar direto no body raw JSON do Postman.
-Troque apenas o caminho do arquivo e mantenha o `service` conforme o OCR que será testado.
-
-### CNH
-
-```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cnh.jpg"))
-@{
-  service = "SERVICE_OCR"
-  documentType = "CNH"
-  image1 = $b64
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-### RG com frente e verso
-
-```powershell
-$front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
-$back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.jpg"))
-@{
-  service = "SERVICE_OCR"
-  documentType = "RG"
-  image1 = $front
-  image2 = $back
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-### Cartão CNPJ
-
-```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cartao-cnpj.jpg"))
-@{
-  service = "SERVICE_OCR_CNPJ_CARD"
-  image1 = $b64
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-### Comprovante de endereço
-
-```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\comprovante-endereco.jpg"))
-@{
-  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
-  image1 = $b64
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-Depois de executar o comando, cole o conteúdo do clipboard no Postman em `Body > raw > JSON`.
-
-## Testar no Postman
-
-1. Gere token em `POST /api/token-generate`.
-2. Copie o `access_token`.
-3. Abra `POST https://backoffice-hml.idcerberus.com/api/service-api`.
-4. Adicione o header `Authorization: Bearer {access_token}`.
-5. Adicione `Content-Type: application/json`.
-6. Cole o JSON gerado pelo PowerShell no body raw.
-7. Execute e confira `status`, `onboardingStatus`, `externalId` e `result`.
-
-Exemplo de headers:
-
-```http
-Authorization: Bearer {access_token}
-Content-Type: application/json
-```
-
-## Conferência antes de chamar suporte
-
-| Ponto | O que conferir |
-| --- | --- |
-| Produto | O token usado pertence ao produto em que o service está ativo. |
-| Payload | O campo `service` usa o alias liberado no produto. |
-| Imagem | A imagem abre normalmente e o texto está legível para uma pessoa. |
-| Base64 | O valor enviado não tem prefixo `data:image/...;base64,`. |
-| Retorno | Guarde `externalId`, `status.message` e o horário do teste. |
-
-Se esses pontos estiverem corretos e o OCR ainda falhar, o chamado já chega com
-informação suficiente para investigar sem repetir teste básico.
-
-## Diagnóstico rápido
-
-| Sintoma | Conferir primeiro | Próxima ação |
-| --- | --- | --- |
-| Não tem acesso ao service | Token, produto, service ativo e API habilitada. | Corrigir a configuração do produto antes de mexer na imagem. |
-| Deu imagem ausente | `image1`, `image2`, `image1Url`, `image2Url` ou `key`, conforme o OCR. | Gerar novamente o JSON e confirmar se o campo esperado chegou no body. |
-| Retornou `{}` | Se a imagem é do tipo certo e está legível. | Testar com imagem mais nítida e validar se o service escolhido bate com o documento. |
-| Veio `ERROR` | `externalId`, horário, ambiente e mensagem técnica segura. | Repetir uma vez; se persistir, acionar suporte técnico com o `externalId`. |
-| Veio sem campo esperado | Se o campo existe visualmente no documento e se o OCR desse service retorna esse campo. | Comparar com o padrão de retorno abaixo e não tratar campo ausente como contrato obrigatório. |
-## Qualidade da imagem
-
-Para reduzir recusa por leitura ruim:
-
-| Item | Recomendação |
-| --- | --- |
-| Enquadramento | Documento inteiro visível, sem cortar bordas. |
-| Nitidez | Texto legível ao abrir a imagem manualmente. |
-| Iluminação | Evitar reflexo, sombra forte e blur. |
-| Orientação | Preferir documento reto, sem rotação exagerada. |
-| Arquivo | Usar imagem real em JPG/PNG convertida para base64. |
-
-Foto de documento não serve para service de face. Selfie não serve para OCR de
-documento.
-
-## Configuração do produto
-
-Antes de testar em HML ou PROD, confira:
-
-| Configuração | O que verificar |
-| --- | --- |
-| Token | `client` e `secret` pertencem ao produto que será testado. |
-| Service | O service está cadastrado e ativo no produto. |
-| API | O service está liberado para chamada via API. |
-| Alias | O valor enviado em `service` é o alias de chamada do produto. |
-| Campos | O service tem os campos de entrada e saída esperados. |
-
-Se o retorno for `"Don't have access to the service"`, o primeiro ponto a olhar
-e configuração do produto, não a imagem.
-
-## Padrão de retorno
-
-O retorno público deve ficar limpo, com os dados úteis dentro de `result`.
-
-Exemplo de sucesso:
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "docType": "CNH",
-    "name": "NOME EXTRAÍDO"
-  },
-  "status": {
-    "code": 200,
-    "message": "OCR realizado com sucesso"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-O cliente não deve depender de campos internos como:
-
-- `fieldsOutput`
-- `required`
-- `enabled`
-- `valid`
-- `callService`
-- `nextStep`
-- `fields`
-- `visible`
-
-A regra prática e simples: o integrador olha para `result`. Se o campo não está
-em `result`, ele não deve ser usado como contrato público da API.
-
-## Não use assim
-
-| Evite | Motivo |
-| --- | --- |
-| Enviar `data:image/jpeg;base64,...` | A API espera base64 puro. |
-| Usar foto de RG/CNH em service de face | Face e OCR usam fluxos diferentes. |
-| Usar selfie em OCR de documento | OCR precisa da imagem do documento. |
-| Testar RG enviando só a frente | O verso pode conter campos importantes. |
-| Testar cartão CNPJ no service de comprovante | Cada OCR tem parser e critério próprio. |
-| Colocar CPF, CNPJ ou nomes reais na documentação | Exemplos públicos devem usar dados fictícios. |
-| Assumir que campo ausente sempre é bug | O campo pode não existir no documento ou não ter sido lido. |
-
-## Limites conhecidos
-
-| Ponto | Como tratar |
-| --- | --- |
-| OCR não garante leitura perfeita em imagem ruim | Valide nitidez, enquadramento e documento completo antes de acionar suporte. |
-| Alguns campos podem não existir no documento | A API deve retornar apenas o que foi extraído com segurança. |
-| Produto sem API habilitada parece erro de acesso | Corrija configuração do produto antes de mexer no payload. |
-| RG pode variar por estado/modelo | Sempre enviar frente e verso quando o service exigir RG. |
-| Emancipação não tem layout único | O sucesso depende de texto OCR, não de todos os campos opcionais. |
-| Comprovantes variam muito | `fullAddress`, valores, datas e código de barras dependem do tipo de documento enviado. |
-
-## OCR React: RG e CNH
-
-Use `SERVICE_OCR` para RG e CNH.
-
-### CNH
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "CNH",
-  "image1": "BASE64_DA_CNH"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "docType": "CNH",
-    "name": "NOME EXTRAÍDO",
-    "fatherName": "NOME DO PAI",
-    "motherName": "NOME DA MÃE",
-    "birthDate": "2000-01-01",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000",
-    "rg": "000000000",
-    "rgIssuer": "SSP/UF",
-    "validDate": "2030-01-01"
-  },
-  "status": {
-    "code": 200,
-    "message": "OCR realizado com sucesso"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-### RG
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "RG",
-  "image1": "BASE64_DA_FRENTE",
-  "image2": "BASE64_DO_VERSO"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "docType": "RG",
-    "name": "NOME EXTRAÍDO",
-    "fatherName": "NOME DO PAI",
-    "motherName": "NOME DA MÃE",
-    "birthDate": "2000-01-01",
-    "rgIssuer": "SSP/UF",
-    "rgIssueDate": "2024-01-01",
-    "nationality": "BRA",
-    "naturality": "CIDADE/UF"
-  },
-  "status": {
-    "code": 200,
-    "message": "OCR realizado com sucesso"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-Por enquanto, esta página cobre RG e CNH. Outros documentos devem ser validados
-quando o suporte do OCR estiver fechado para cada tipo.
-
-## OCR de cartão CNPJ
-
-Use `SERVICE_OCR_CNPJ_CARD` para imagem de cartão CNPJ.
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "BASE64_DO_CARTAO_CNPJ"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "cnpj": "00000000000000",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "texto extraído do cartão CNPJ"
-  },
-  "status": {
-    "code": 200,
-    "message": "Cartão CNPJ processado com sucesso!"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-Se o CNPJ não for encontrado ou for inválido, o esperado é recusa com mensagem
-clara. Se a imagem, armazenamento ou leitura do provedor falhar, pode retornar
-erro.
-
-## OCR de emancipação
-
-Use `SERVICE_OCR_EMANCIPATION` para documentos de emancipação.
-
-Esse documento não tem layout único. Pode ser declaração, escritura, certidão ou
-documento de cartório. Por isso, o service deve priorizar texto OCR e extrair o
-que for possível, sem reprovar apenas porque CPF, RG ou código não apareceram.
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "BASE64_DO_DOCUMENTO"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "texto extraído do documento",
-    "extractedFields": {
-      "cpf": "00000000000",
-      "rg": "000000000",
-      "authenticationCode": "ABC123456",
-      "dates": ["2026-01-01"]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "summary": "Resumo do documento",
-      "confidence": "MEDIUM",
-      "evidence": ["Texto menciona emancipação"],
-      "warnings": ["Código de autenticação não encontrado"]
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Documento de emancipação processado com sucesso!"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-## OCR de comprovante de endereço
-
-Use `SERVICE_OCR_PROOF_OF_ADDRESS` para comprovantes de endereço.
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
-  "image1": "BASE64_DO_COMPROVANTE"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "genericOcr": "texto extraído",
-    "fullName": "NOME EXTRAÍDO",
-    "fullAddress": "ENDEREÇO EXTRAÍDO",
-    "docType": "Conta de consumo",
-    "issueDate": "2026-01-01",
-    "dueDate": "2026-01-10",
-    "invoiceAmount": "R$ 100,00",
-    "barcode": "00000000000000000000000000000000000000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Comprovante de endereço obtido com sucesso!"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-Nem todo comprovante terá todos os campos. A API deve retornar os campos
-extraídos sem preencher dado falso.
-
-## Campos esperados por retorno
-
-| Service | Campos mais comuns em `result` |
-| --- | --- |
-| `SERVICE_OCR` CNH | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `cnhCategory`, `cnhNumber`, `validDate` |
-| `SERVICE_OCR` RG | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rgIssuer`, `rgIssueDate`, `nationality`, `naturality` |
-| `SERVICE_OCR_CNPJ_CARD` | `cnpj`, `docType`, `genericOcr` |
-| `SERVICE_OCR_EMANCIPATION` | `docType`, `genericOcr`, `extractedFields`, `analysis` |
-| `SERVICE_OCR_PROOF_OF_ADDRESS` | `genericOcr`, `fullName`, `fullAddress`, `docType`, `issueDate`, `dueDate`, `invoiceAmount`, `barcode` |
-
-Campos ausentes não devem aparecer como `null` só para preencher contrato. O
-padrão público da Service API é retornar apenas dados úteis.
-
-## Respostas comuns
-
-| Cenário | Status esperado | Como agir |
-| --- | --- | --- |
-| OCR leu e extraiu dados | `APPROVED` | Usar os dados de `result`. |
-| Documento legível, mas campo principal não apareceu | `REFUSED` | Conferir se a imagem corresponde ao service correto. |
-| Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuração do produto. |
-| Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte técnico se persistir. |
-
-
-    Quando o token é válido, mas o produto não tem o service liberado para API.
-
-
-    Quando `image1`, `image2`, URL ou `key` não foram enviados como o service espera.
-
-
-    Quando a imagem chega, mas o OCR não extrai dados suficientes.
-
-
-    Quando a falha precisa ser investigada por `externalId`, logs e ambiente.
-
-
-Exemplo de recusa por documento não lido:
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-## Exemplos de erro
-
-### Produto sem acesso ao service
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Don't have access to the service"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: conferir se o service está ativo no produto e se está habilitado para API.
-
-### Imagem ausente
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: conferir se `image1`, `image2`, `image1Url` ou `key` foram enviados conforme
-o service escolhido.
-
-### RG sem verso
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do verso do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: enviar `image1` com a frente e `image2` com o verso.
-
-### Documento não lido
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: conferir qualidade da imagem e se o documento corresponde ao service usado.
-
-### Erro interno
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 500,
-    "message": "Falha ao realizar OCR"
-  },
-  "onboardingStatus": "ERROR",
-  "externalId": "..."
-}
-```
-
-Ação: guardar o `externalId`, repetir com uma imagem válida e acionar suporte
-técnico se persistir.
-
-## Checklist antes de passar para o cliente
-
-1. Testou em HML com token do produto correto.
-2. Confirmou que o service está ativo e com API habilitada.
-3. Usou base64 puro, sem prefixo `data:image`.
-4. Validou um caso de sucesso.
-5. Validou um caso de recusa esperado.
-6. Conferiu se o retorno veio sem `fieldsOutput` e sem metadados internos.
-7. Conferiu se `externalId` voltou para rastreio.
-8. Conferiu se os dados retornados vieram dentro de `result`.
-
-## Resumo para suporte e CS
-
-Quando um cliente disser que o OCR não funcionou, confira nesta ordem:
-
-1. Produto e service liberados para API.
-2. Alias correto no campo `service`.
-3. Tipo de documento correto para o service escolhido.
-4. Imagem legível e completa.
-5. Retorno de `status.message`.
-6. `externalId` para rastrear a execução.
-
-Isso evita tratar problema de configuração como problema de OCR, e também evita
-trocar payload quando o erro real está no produto.
-
-## Quando acionar cada time
-
-| Situação | Quem acionar | O que enviar |
-| --- | --- | --- |
-| Falta de acesso ao service | Produto/configuração | Produto, cliente, alias enviado e print da configuração. |
-| OCR retorna vazio com imagem boa | Time técnico | Payload sem base64, imagem usada e `externalId`. |
-| Erro 500 | Backend/logs | `externalId`, ambiente, horário aproximado e service usado. |
-| Campo extraído errado | Time técnico/OCR | Imagem, retorno recebido, campo esperado e `externalId`. |
-| Dúvida de qual service usar | Produto/CS | Tipo de documento e objetivo da consulta. |
-| Divergência entre HML e PROD | Produto + técnico | Produto dos dois ambientes, alias configurado e retorno de cada ambiente. |
 
 ---
 
@@ -3209,7 +2518,7 @@ Substitua:
 | Validar CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP` |
 | Validar CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP` |
 | Consultar PEP | `SERVICE_PEP` |
-| Executar OCR de documento | `SERVICE_OCR_BIGDATACORP` |
+| Executar OCR de documento | `SERVICE_OCR` |
 | Comparar faces | `SERVICE_FACE_MATCH_BIGDATACORP` |
 
 Para ver todos os serviços de pessoa física, consulte
@@ -3719,7 +3028,6 @@ protestos, sócios e compliance.
 Se a pessoa que vai integrar não conhece a API, comece pelos exemplos de CPF,
 CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-por-ambiente).
 
-
 ## Atalhos por necessidade
 
 | Se você quer... | Use este service |
@@ -3729,7 +3037,7 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Verificar CPF na Receita Federal em modo on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` |
 | Consolidar modelagem de dados da pessoa | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` |
 | Gerar resumo analítico de pessoa com IA | `SERVICE_PERSON_AI_PROMPT_OPENAI` |
-| Extrair dados de documento | `SERVICE_OCR_BIGDATACORP` |
+| Extrair dados de documento | `SERVICE_OCR` |
 | Comparar selfie e documento | `SERVICE_FACE_MATCH_BIGDATACORP` |
 | Validar prova de vida simples | `SERVICE_LIVENESS_2D_FACETEC` |
 | Validar CNH no DataValid | `SERVICE_DATAVALID_CNH_SERPRO` |
@@ -3760,7 +3068,7 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | --- | --- | --- |
 | Confirmar dados cadastrais do CPF | `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP`, `SERVICE_RFB_PF_BIGDATACORP` | Validar nome, nascimento, situação cadastral e origem Receita Federal |
 | Atualizar dados do CPF em consulta on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | Buscar o dado cadastral no momento da requisição |
-| Extrair dados de documento | `SERVICE_OCR_BIGDATACORP` | Ler CNH, RG, RNE, CPF, passaporte, CRLV e outros documentos suportados |
+| Extrair dados de documento | `SERVICE_OCR` | Ler RG/CIN, CNH, OAB, RNE/CRNM, passaporte e identificação automática |
 | Comparar selfie e documento | `SERVICE_FACE_MATCH_BIGDATACORP` | Validar se duas imagens pertencem à mesma pessoa |
 | Validar prova de vida | `SERVICE_LIVENESS_2D_FACETEC` | Reduzir risco de foto, tela ou tentativa de fraude simples |
 | Consultar biometria governamental | `SERVICE_DATAVALID_CNH_SERPRO` | Obter score de similaridade com bases governamentais |
@@ -3833,7 +3141,7 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Fluxo | Combinação recomendada |
 | --- | --- |
 | Cadastro simples de CPF | `SERVICE_RFB_PF_BIGDATACORP` + `SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP` |
-| Onboarding com documento | `SERVICE_OCR_BIGDATACORP` + `SERVICE_FACE_MATCH_BIGDATACORP` + `SERVICE_LIVENESS_2D_FACETEC` |
+| Onboarding com documento | `SERVICE_OCR` + `SERVICE_FACE_MATCH_BIGDATACORP` + `SERVICE_LIVENESS_2D_FACETEC` |
 | KYC pessoa física | `SERVICE_PEP` + certidões + débitos + score de risco |
 | Cadastro de empresa | `SERVICE_RFB_PJ_BIGDATACORP` + `SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP` + `SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP` |
 | KYC empresarial | dados PJ + sócios + KYC dos sócios + débitos + protestos |
@@ -4313,7 +3621,6 @@ Use credenciais, token e base URL do mesmo ambiente. Token de homologação não
 deve ser usado em produção, e token de produção não deve ser usado em
 homologação.
 
-
 ## URLs base
 
 | Ambiente | Base URL | Quando usar |
@@ -4322,9 +3629,6 @@ homologação.
 | Produção | `https://backoffice.idcerberus.com` | Operação real, com credenciais produtivas |
 
 ## Gerar token
-
-
-
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
@@ -4335,9 +3639,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
 }'
 ```
 
-
-
-
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
 --header 'Content-Type: application/json' \
@@ -4347,13 +3648,7 @@ curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
 }'
 ```
 
-
-
-
 ## Consulta de CPF
-
-
-
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -4366,9 +3661,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-
-
-
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -4379,15 +3671,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
 }'
 ```
-
-
-
 
 ## Consulta de CNPJ
 
-
-
-
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -4398,9 +3684,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-
-
-
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -4410,9 +3693,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
   "cnpj": "cnpj"
 }'
 ```
-
-
-
 
 ## Arquivos prontos
 
@@ -4756,14 +4036,12 @@ payload completo no API Reference.
   endpoints de autenticação, onboarding e customers. No endpoint central, o campo
   `service` escolhe o produto.
 
-
 ## Pessoa física
 
 > Info:
   Os serviços de OCR ficam nesta matriz, mas os payloads completos estão no guia
-  [OCR via Service API](/guides/service-api/ocr-service-api). Use esse guia quando
+  [OCR via Service API](/guides/service-api/sobre-ocr-service-api). Use esse guia quando
   a chamada envolver `image1`, `image2`, base64, URL de imagem ou `documentType`.
-
 
 | Objetivo | Serviço | Entrada principal | Quando usar |
 | --- | --- | --- | --- |
@@ -4772,8 +4050,7 @@ payload completo no API Reference.
 | Consultar CPF na Receita on-demand | `SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP` | `cpf` | Buscar dados cadastrais no momento da consulta |
 | Consolidar modelagem de dados PF | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | Reunir sinais cadastrais, contatos, vínculos e risco em texto consolidado |
 | Gerar resumo analítico de pessoa | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `cpf` | Apoiar leitura de dados consolidados com uma resposta textual |
-| Extrair dados de documento | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2` ou URLs | Ler CNH, RG, RNE, CPF, CRLV e outros documentos |
-| Extrair RG ou CNH via OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Ler RG ou CNH e retornar dados limpos no `result` |
+| Extrair dados de documento via OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Ler RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificar automaticamente |
 | Ler documento de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Extrair texto e dados possíveis de documento variável |
 | Ler comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Extrair nome, endereço, datas e valores quando disponíveis |
 | Buscar face na base | `SERVICE_FACE_INDEX` | `image1` | Procurar rosto em base indexada e retornar CPF/similaridade quando houver |
@@ -4880,7 +4157,7 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
 
 | Digite na busca | O que deve aparecer |
 | --- | --- |
-| `SERVICE_OCR` ou `OCR CNH` | OCR React para RG/CNH e guia de OCR. |
+| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |
 | `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |
 | `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |
 | `face index` | Busca facial por selfie na base de faces. |
@@ -4968,9 +4245,8 @@ quando o produto está ativo.
 | [Mandado de prisão](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | PF - Mandado de prisão | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
 | [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | PF - Modelagem de dados | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
 | [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
-| [OCR de documentos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | OCR documento imagem base64 leitura extração, PF - OCR de documentos | Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos. |
 | [OCR de emancipação](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_EMANCIPATION` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
-| [OCR React RG/CNH](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH | Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento. |
+| [OCR React](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR documento imagem base64 leitura extração, PF - OCR React | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
 | [Pessoa politicamente exposta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PEP` | `cpf` | PF - Pessoa politicamente exposta | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
 | [Pessoas relacionadas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf`, `birthDate` | PF - Pessoas relacionadas | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
 | [Prêmios e certificações](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | CPF Receita Federal, PF - Prêmios e certificações | Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados. |
@@ -6787,54 +6063,6 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 }
 ```
 
-**Service:** `SERVICE_OCR_BIGDATACORP`
-
-**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de documentos
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_OCR_BIGDATACORP` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `documentType`, `fields`, `extractionStatus`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
 **Service:** `SERVICE_OCR_EMANCIPATION`
 
 **Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração
@@ -6887,27 +6115,27 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_OCR`
 
-**Termos de busca:** OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH
+**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR React
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
 2. Envie `documentType`, `image1` junto com `service: SERVICE_OCR` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `validDate`.
+4. Leia `result`, que neste service costuma trazer: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
 
 **Body exemplo:**
 
 ```json
 {
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }
 ```
 
@@ -6921,7 +6149,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -9087,688 +8315,12 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 ---
 
-# OCR via Service API
+# [object Object]
 
-URL: https://api-docs.idcerberus.com/guides/service-api/ocr-service-api
-Fonte: guides/service-api/ocr-service-api.mdx
-Descrição: Guia prático para escolher, configurar, testar e interpretar os services de OCR no POST /api/service-api.
+URL: https://api-docs.idcerberus.com/[object Object]
+Fonte: [object Object].mdx
 
-# OCR via Service API
 
-Use esta página para integrar services de OCR pelo `POST /api/service-api`.
-Ela mostra qual service usar, como montar o payload, como deve ser o retorno e
-o que conferir antes de abrir chamado ou mexer na implementação.
-
-> Requisito básico: o token precisa ser do produto correto e o produto precisa
-> ter o service ativo com API habilitada. Se a configuração do produto estiver
-> incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
-
-
-    Use `SERVICE_OCR` quando o documento for RG ou CNH e o payload tiver `documentType`.
-
-
-    Use `SERVICE_OCR_CNPJ_CARD` para extrair CNPJ e texto OCR do cartão CNPJ.
-
-
-    Use `SERVICE_OCR_PROOF_OF_ADDRESS` para contas, faturas e comprovantes aceitos.
-
-
-    Use `SERVICE_OCR_EMANCIPATION` para documentos variáveis, sem layout fixo.
-
-
-## Teste mais rápido
-
-Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
-
-
-    Curl pronto com `SERVICE_OCR`, `documentType: CNH` e `image1`.
-
-
-    Curl pronto com `SERVICE_OCR`, `documentType: RG`, `image1` e `image2`.
-
-
-    Curl pronto para `SERVICE_OCR_CNPJ_CARD` com imagem do cartão CNPJ.
-
-
-    Curl pronto para `SERVICE_OCR_PROOF_OF_ADDRESS` com comprovante em base64.
-
-
-> Nota:
-  Para teste manual no Postman, use a seção [Copiar e testar](#copiar-e-testar). Ela monta o JSON completo no clipboard.
-
-## Caminho recomendado
-
-Se você precisa testar agora, siga esta ordem:
-
-1. Confirme o service no produto do cliente.
-2. Gere o token do mesmo produto.
-3. Converta uma imagem real para base64 puro.
-4. Envie o payload do OCR correto.
-5. Valide `status`, `onboardingStatus`, `externalId` e os campos dentro de `result`.
-
-Esse caminho evita misturar problema de permissão, imagem ruim e payload errado.
-
-## O que esta página resolve
-
-| Público | Como usar |
-| --- | --- |
-| Desenvolvimento | Copiar payload, entender campos obrigatórios e validar o retorno esperado. |
-| Produto | Conferir se o service certo está configurado para o documento certo. |
-| Suporte | Separar problema de configuração, imagem ruim, payload errado e falha técnica. |
-| CS/Operação | Explicar para o cliente o que enviar e o que esperar da resposta. |
-
-O objetivo é evitar tentativa e erro. Antes de abrir chamado, a pessoa deve
-conseguir responder: qual service foi chamado, qual imagem foi enviada, qual
-produto autorizou a chamada e qual `externalId` voltou.
-
-## Escolha rápida
-
-| Preciso ler | Service | Enviar | Retorno principal |
-| --- | --- | --- | --- |
-| CNH | `SERVICE_OCR` | `documentType: CNH` + `image1` | CPF, nome, nascimento, dados da CNH |
-| RG | `SERVICE_OCR` | `documentType: RG` + `image1` + `image2` | CPF, nome, filiação, nascimento, dados do RG |
-| Cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ, tipo do documento, texto OCR |
-| Documento de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Texto OCR, campos extraídos e análise estruturada |
-| Comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Nome, endereço, tipo do documento, datas e valores |
-
-O campo `image1` deve receber base64 puro da imagem. Não envie prefixo como
-`data:image/jpeg;base64,`.
-
-## Qual imagem usar
-
-| Service | Imagem certa | Não usar |
-| --- | --- | --- |
-| `SERVICE_OCR` com CNH | Foto ou imagem nítida da CNH inteira | Selfie, print cortado, documento de outro tipo |
-| `SERVICE_OCR` com RG | Frente em `image1` e verso em `image2` | Só frente quando o verso for obrigatório |
-| `SERVICE_OCR_CNPJ_CARD` | Cartão CNPJ completo e legível | Contrato social, nota fiscal ou comprovante |
-| `SERVICE_OCR_PROOF_OF_ADDRESS` | Conta, fatura ou comprovante aceito com endereço visível | Documento pessoal ou selfie |
-| `SERVICE_OCR_EMANCIPATION` | Documento de cartório, declaração, escritura ou certidão legível | Documento sem relação com emancipação |
-
-## Critério de sucesso por service
-
-| Service | Sucesso mínimo esperado | Quando recusar |
-| --- | --- | --- |
-| `SERVICE_OCR` com CNH | Documento lido e campos principais da CNH retornados. | Imagem ausente, documento não lido ou tipo documental inconsistente. |
-| `SERVICE_OCR` com RG | Frente e verso enviados, documento lido e dados principais retornados. | Verso ausente, imagem ilegível ou dados centrais não extraídos. |
-| `SERVICE_OCR_CNPJ_CARD` | CNPJ válido extraído e `docType` coerente com cartão CNPJ. | CNPJ não encontrado ou CNPJ inválido. |
-| `SERVICE_OCR_EMANCIPATION` | OCR retornou texto e a API retornou os campos encontrados, sem exigir layout fixo. | OCR vazio ou imagem que não permite leitura. |
-| `SERVICE_OCR_PROOF_OF_ADDRESS` | OCR retornou texto útil e dados possíveis do comprovante. | Imagem não lida ou documento fora do esperado para comprovante. |
-
-Nem todo service tem os mesmos campos obrigatórios. Em documentos variáveis,
-como emancipação e comprovante de endereço, o retorno deve trazer o que foi
-extraído sem inventar dado.
-
-## Fluxo completo
-
-1. Gere o token em `/api/token-generate`.
-2. Confirme se o produto tem o service ativo e habilitado para API.
-3. Escolha o `service` correto na tabela acima.
-4. Converta a imagem para base64 puro.
-5. Envie o payload para `POST /api/service-api`.
-6. Valide `status.code`, `onboardingStatus`, `externalId` e os campos dentro de
-   `result`.
-
-## Gerar base64 no PowerShell
-
-Para copiar apenas o base64 da imagem:
-
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
-```
-
-O valor copiado deve ser base64 puro. Não envie prefixo como `data:image/jpeg;base64,`.
-
-## Copiar e testar
-
-Use estes blocos quando quiser montar o JSON completo no clipboard e colar direto no body raw JSON do Postman.
-Troque apenas o caminho do arquivo e mantenha o `service` conforme o OCR que será testado.
-
-### CNH
-
-```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cnh.jpg"))
-@{
-  service = "SERVICE_OCR"
-  documentType = "CNH"
-  image1 = $b64
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-### RG com frente e verso
-
-```powershell
-$front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
-$back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.jpg"))
-@{
-  service = "SERVICE_OCR"
-  documentType = "RG"
-  image1 = $front
-  image2 = $back
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-### Cartão CNPJ
-
-```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cartao-cnpj.jpg"))
-@{
-  service = "SERVICE_OCR_CNPJ_CARD"
-  image1 = $b64
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-### Comprovante de endereço
-
-```powershell
-$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\comprovante-endereco.jpg"))
-@{
-  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
-  image1 = $b64
-} | ConvertTo-Json -Compress | Set-Clipboard
-```
-
-Depois de executar o comando, cole o conteúdo do clipboard no Postman em `Body > raw > JSON`.
-
-## Testar no Postman
-
-1. Gere token em `POST /api/token-generate`.
-2. Copie o `access_token`.
-3. Abra `POST https://backoffice-hml.idcerberus.com/api/service-api`.
-4. Adicione o header `Authorization: Bearer {access_token}`.
-5. Adicione `Content-Type: application/json`.
-6. Cole o JSON gerado pelo PowerShell no body raw.
-7. Execute e confira `status`, `onboardingStatus`, `externalId` e `result`.
-
-Exemplo de headers:
-
-```http
-Authorization: Bearer {access_token}
-Content-Type: application/json
-```
-
-## Conferência antes de chamar suporte
-
-| Ponto | O que conferir |
-| --- | --- |
-| Produto | O token usado pertence ao produto em que o service está ativo. |
-| Payload | O campo `service` usa o alias liberado no produto. |
-| Imagem | A imagem abre normalmente e o texto está legível para uma pessoa. |
-| Base64 | O valor enviado não tem prefixo `data:image/...;base64,`. |
-| Retorno | Guarde `externalId`, `status.message` e o horário do teste. |
-
-Se esses pontos estiverem corretos e o OCR ainda falhar, o chamado já chega com
-informação suficiente para investigar sem repetir teste básico.
-
-## Diagnóstico rápido
-
-| Sintoma | Conferir primeiro | Próxima ação |
-| --- | --- | --- |
-| Não tem acesso ao service | Token, produto, service ativo e API habilitada. | Corrigir a configuração do produto antes de mexer na imagem. |
-| Deu imagem ausente | `image1`, `image2`, `image1Url`, `image2Url` ou `key`, conforme o OCR. | Gerar novamente o JSON e confirmar se o campo esperado chegou no body. |
-| Retornou `{}` | Se a imagem é do tipo certo e está legível. | Testar com imagem mais nítida e validar se o service escolhido bate com o documento. |
-| Veio `ERROR` | `externalId`, horário, ambiente e mensagem técnica segura. | Repetir uma vez; se persistir, acionar suporte técnico com o `externalId`. |
-| Veio sem campo esperado | Se o campo existe visualmente no documento e se o OCR desse service retorna esse campo. | Comparar com o padrão de retorno abaixo e não tratar campo ausente como contrato obrigatório. |
-## Qualidade da imagem
-
-Para reduzir recusa por leitura ruim:
-
-| Item | Recomendação |
-| --- | --- |
-| Enquadramento | Documento inteiro visível, sem cortar bordas. |
-| Nitidez | Texto legível ao abrir a imagem manualmente. |
-| Iluminação | Evitar reflexo, sombra forte e blur. |
-| Orientação | Preferir documento reto, sem rotação exagerada. |
-| Arquivo | Usar imagem real em JPG/PNG convertida para base64. |
-
-Foto de documento não serve para service de face. Selfie não serve para OCR de
-documento.
-
-## Configuração do produto
-
-Antes de testar em HML ou PROD, confira:
-
-| Configuração | O que verificar |
-| --- | --- |
-| Token | `client` e `secret` pertencem ao produto que será testado. |
-| Service | O service está cadastrado e ativo no produto. |
-| API | O service está liberado para chamada via API. |
-| Alias | O valor enviado em `service` é o alias de chamada do produto. |
-| Campos | O service tem os campos de entrada e saída esperados. |
-
-Se o retorno for `"Don't have access to the service"`, o primeiro ponto a olhar
-e configuração do produto, não a imagem.
-
-## Padrão de retorno
-
-O retorno público deve ficar limpo, com os dados úteis dentro de `result`.
-
-Exemplo de sucesso:
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "docType": "CNH",
-    "name": "NOME EXTRAÍDO"
-  },
-  "status": {
-    "code": 200,
-    "message": "OCR realizado com sucesso"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-O cliente não deve depender de campos internos como:
-
-- `fieldsOutput`
-- `required`
-- `enabled`
-- `valid`
-- `callService`
-- `nextStep`
-- `fields`
-- `visible`
-
-A regra prática e simples: o integrador olha para `result`. Se o campo não está
-em `result`, ele não deve ser usado como contrato público da API.
-
-## Não use assim
-
-| Evite | Motivo |
-| --- | --- |
-| Enviar `data:image/jpeg;base64,...` | A API espera base64 puro. |
-| Usar foto de RG/CNH em service de face | Face e OCR usam fluxos diferentes. |
-| Usar selfie em OCR de documento | OCR precisa da imagem do documento. |
-| Testar RG enviando só a frente | O verso pode conter campos importantes. |
-| Testar cartão CNPJ no service de comprovante | Cada OCR tem parser e critério próprio. |
-| Colocar CPF, CNPJ ou nomes reais na documentação | Exemplos públicos devem usar dados fictícios. |
-| Assumir que campo ausente sempre é bug | O campo pode não existir no documento ou não ter sido lido. |
-
-## Limites conhecidos
-
-| Ponto | Como tratar |
-| --- | --- |
-| OCR não garante leitura perfeita em imagem ruim | Valide nitidez, enquadramento e documento completo antes de acionar suporte. |
-| Alguns campos podem não existir no documento | A API deve retornar apenas o que foi extraído com segurança. |
-| Produto sem API habilitada parece erro de acesso | Corrija configuração do produto antes de mexer no payload. |
-| RG pode variar por estado/modelo | Sempre enviar frente e verso quando o service exigir RG. |
-| Emancipação não tem layout único | O sucesso depende de texto OCR, não de todos os campos opcionais. |
-| Comprovantes variam muito | `fullAddress`, valores, datas e código de barras dependem do tipo de documento enviado. |
-
-## OCR React: RG e CNH
-
-Use `SERVICE_OCR` para RG e CNH.
-
-### CNH
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "CNH",
-  "image1": "BASE64_DA_CNH"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "docType": "CNH",
-    "name": "NOME EXTRAÍDO",
-    "fatherName": "NOME DO PAI",
-    "motherName": "NOME DA MÃE",
-    "birthDate": "2000-01-01",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000",
-    "rg": "000000000",
-    "rgIssuer": "SSP/UF",
-    "validDate": "2030-01-01"
-  },
-  "status": {
-    "code": 200,
-    "message": "OCR realizado com sucesso"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-### RG
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "RG",
-  "image1": "BASE64_DA_FRENTE",
-  "image2": "BASE64_DO_VERSO"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "docType": "RG",
-    "name": "NOME EXTRAÍDO",
-    "fatherName": "NOME DO PAI",
-    "motherName": "NOME DA MÃE",
-    "birthDate": "2000-01-01",
-    "rgIssuer": "SSP/UF",
-    "rgIssueDate": "2024-01-01",
-    "nationality": "BRA",
-    "naturality": "CIDADE/UF"
-  },
-  "status": {
-    "code": 200,
-    "message": "OCR realizado com sucesso"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-Por enquanto, esta página cobre RG e CNH. Outros documentos devem ser validados
-quando o suporte do OCR estiver fechado para cada tipo.
-
-## OCR de cartão CNPJ
-
-Use `SERVICE_OCR_CNPJ_CARD` para imagem de cartão CNPJ.
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "BASE64_DO_CARTAO_CNPJ"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "cnpj": "00000000000000",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "texto extraído do cartão CNPJ"
-  },
-  "status": {
-    "code": 200,
-    "message": "Cartão CNPJ processado com sucesso!"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-Se o CNPJ não for encontrado ou for inválido, o esperado é recusa com mensagem
-clara. Se a imagem, armazenamento ou leitura do provedor falhar, pode retornar
-erro.
-
-## OCR de emancipação
-
-Use `SERVICE_OCR_EMANCIPATION` para documentos de emancipação.
-
-Esse documento não tem layout único. Pode ser declaração, escritura, certidão ou
-documento de cartório. Por isso, o service deve priorizar texto OCR e extrair o
-que for possível, sem reprovar apenas porque CPF, RG ou código não apareceram.
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "BASE64_DO_DOCUMENTO"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "texto extraído do documento",
-    "extractedFields": {
-      "cpf": "00000000000",
-      "rg": "000000000",
-      "authenticationCode": "ABC123456",
-      "dates": ["2026-01-01"]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "summary": "Resumo do documento",
-      "confidence": "MEDIUM",
-      "evidence": ["Texto menciona emancipação"],
-      "warnings": ["Código de autenticação não encontrado"]
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Documento de emancipação processado com sucesso!"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-## OCR de comprovante de endereço
-
-Use `SERVICE_OCR_PROOF_OF_ADDRESS` para comprovantes de endereço.
-
-Payload:
-
-```json
-{
-  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
-  "image1": "BASE64_DO_COMPROVANTE"
-}
-```
-
-Retorno esperado:
-
-```json
-{
-  "result": {
-    "genericOcr": "texto extraído",
-    "fullName": "NOME EXTRAÍDO",
-    "fullAddress": "ENDEREÇO EXTRAÍDO",
-    "docType": "Conta de consumo",
-    "issueDate": "2026-01-01",
-    "dueDate": "2026-01-10",
-    "invoiceAmount": "R$ 100,00",
-    "barcode": "00000000000000000000000000000000000000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Comprovante de endereço obtido com sucesso!"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-Nem todo comprovante terá todos os campos. A API deve retornar os campos
-extraídos sem preencher dado falso.
-
-## Campos esperados por retorno
-
-| Service | Campos mais comuns em `result` |
-| --- | --- |
-| `SERVICE_OCR` CNH | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `cnhCategory`, `cnhNumber`, `validDate` |
-| `SERVICE_OCR` RG | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rgIssuer`, `rgIssueDate`, `nationality`, `naturality` |
-| `SERVICE_OCR_CNPJ_CARD` | `cnpj`, `docType`, `genericOcr` |
-| `SERVICE_OCR_EMANCIPATION` | `docType`, `genericOcr`, `extractedFields`, `analysis` |
-| `SERVICE_OCR_PROOF_OF_ADDRESS` | `genericOcr`, `fullName`, `fullAddress`, `docType`, `issueDate`, `dueDate`, `invoiceAmount`, `barcode` |
-
-Campos ausentes não devem aparecer como `null` só para preencher contrato. O
-padrão público da Service API é retornar apenas dados úteis.
-
-## Respostas comuns
-
-| Cenário | Status esperado | Como agir |
-| --- | --- | --- |
-| OCR leu e extraiu dados | `APPROVED` | Usar os dados de `result`. |
-| Documento legível, mas campo principal não apareceu | `REFUSED` | Conferir se a imagem corresponde ao service correto. |
-| Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuração do produto. |
-| Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte técnico se persistir. |
-
-
-    Quando o token é válido, mas o produto não tem o service liberado para API.
-
-
-    Quando `image1`, `image2`, URL ou `key` não foram enviados como o service espera.
-
-
-    Quando a imagem chega, mas o OCR não extrai dados suficientes.
-
-
-    Quando a falha precisa ser investigada por `externalId`, logs e ambiente.
-
-
-Exemplo de recusa por documento não lido:
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-## Exemplos de erro
-
-### Produto sem acesso ao service
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Don't have access to the service"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: conferir se o service está ativo no produto e se está habilitado para API.
-
-### Imagem ausente
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: conferir se `image1`, `image2`, `image1Url` ou `key` foram enviados conforme
-o service escolhido.
-
-### RG sem verso
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do verso do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: enviar `image1` com a frente e `image2` com o verso.
-
-### Documento não lido
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: conferir qualidade da imagem e se o documento corresponde ao service usado.
-
-### Erro interno
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 500,
-    "message": "Falha ao realizar OCR"
-  },
-  "onboardingStatus": "ERROR",
-  "externalId": "..."
-}
-```
-
-Ação: guardar o `externalId`, repetir com uma imagem válida e acionar suporte
-técnico se persistir.
-
-## Checklist antes de passar para o cliente
-
-1. Testou em HML com token do produto correto.
-2. Confirmou que o service está ativo e com API habilitada.
-3. Usou base64 puro, sem prefixo `data:image`.
-4. Validou um caso de sucesso.
-5. Validou um caso de recusa esperado.
-6. Conferiu se o retorno veio sem `fieldsOutput` e sem metadados internos.
-7. Conferiu se `externalId` voltou para rastreio.
-8. Conferiu se os dados retornados vieram dentro de `result`.
-
-## Resumo para suporte e CS
-
-Quando um cliente disser que o OCR não funcionou, confira nesta ordem:
-
-1. Produto e service liberados para API.
-2. Alias correto no campo `service`.
-3. Tipo de documento correto para o service escolhido.
-4. Imagem legível e completa.
-5. Retorno de `status.message`.
-6. `externalId` para rastrear a execução.
-
-Isso evita tratar problema de configuração como problema de OCR, e também evita
-trocar payload quando o erro real está no produto.
-
-## Quando acionar cada time
-
-| Situação | Quem acionar | O que enviar |
-| --- | --- | --- |
-| Falta de acesso ao service | Produto/configuração | Produto, cliente, alias enviado e print da configuração. |
-| OCR retorna vazio com imagem boa | Time técnico | Payload sem base64, imagem usada e `externalId`. |
-| Erro 500 | Backend/logs | `externalId`, ambiente, horário aproximado e service usado. |
-| Campo extraído errado | Time técnico/OCR | Imagem, retorno recebido, campo esperado e `externalId`. |
-| Dúvida de qual service usar | Produto/CS | Tipo de documento e objetivo da consulta. |
-| Divergência entre HML e PROD | Produto + técnico | Produto dos dois ambientes, alias configurado e retorno de cada ambiente. |
 
 ---
 
@@ -9783,7 +8335,6 @@ Descrição: Navegue pelos principais grupos de produtos executados via POST /ap
 O endpoint `POST /api/service-api` concentra diferentes produtos. A separação por
 família ajuda a localizar rapidamente o payload correto sem tratar o endpoint
 como uma lista única e extensa.
-
 
 
     Services de CPF, cadastro, score, compliance e dados complementares.
@@ -9866,7 +8417,6 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
   Para implementação, copie o exemplo completo na API Reference e use esta página
   apenas para escolher rapidamente o produto correto.
 
-
 ## Cadastro e identidade PF
 
 | Produto | Código `service` | Entrada principal |
@@ -9893,12 +8443,11 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 
 Nesta família, o payload precisa de mais cuidado: imagem errada, base64 com
 prefixo ou alias incorreto podem fazer a chamada autenticar e mesmo assim não
-produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](/guides/service-api/ocr-service-api).
+produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 | Produto | Código `service` | Entrada principal |
 | --- | --- | --- |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` |
-| OCR React RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
+| OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
 | Busca de face na base | `SERVICE_FACE_INDEX` | `image1` |
@@ -10118,11 +8667,9 @@ POST /api/service-api
 ```
 
 > Info:
-  Para OCR, comece pelo guia [OCR via Service API](/guides/service-api/ocr-service-api).
+  Para OCR, comece pelo guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
   Ele reúne os payloads de RG, CNH, cartão CNPJ, emancipação e comprovante de endereço,
   além do padrão de retorno limpo em `result`.
-
-
 
 
     Extraia dados de RG, CNH, cartão CNPJ, comprovantes e documentos variáveis.
@@ -10151,8 +8698,7 @@ Use estes serviços quando precisar:
 
 | Serviço | Código `service` | Uso principal |
 | --- | --- | --- |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | Extrai campos de CNH, RG, RNE, CPF, passaporte, CRLV, comprovante de luz e carteira de trabalho |
-| OCR React RG/CNH | `SERVICE_OCR` | Lê RG ou CNH e retorna campos limpos dentro de `result` |
+| OCR React | `SERVICE_OCR` | Lê RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identifica automaticamente e retorna campos limpos dentro de `result` |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | Extrai CNPJ e texto OCR do cartão CNPJ |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | Extrai nome, endereço, datas e valores quando encontrados |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | Lê documentos variáveis de emancipação e retorna texto, campos objetivos e análise |
@@ -10809,7 +9355,7 @@ Passo rápido para evitar erro:
 | --- | --- |
 | [Escolha o serviço certo](/guides/escolha-o-servico-certo) | Para decidir o service pelo caso de uso. |
 | [Famílias de serviços](/guides/service-api/familias-de-servicos) | Para navegar por grupo de produto. |
-| [OCR via Service API](/guides/service-api/ocr-service-api) | Para payloads de documento, imagem, base64 e exemplos de retorno. |
+| [OCR via Service API](/guides/service-api/sobre-ocr-service-api) | Para payloads de documento, imagem, base64 e exemplos de retorno. |
 | [API Reference](/api-reference/autorização/gerar-token-de-api) | Para detalhes endpoint a endpoint. |
 
 ## Status e erros
@@ -10858,8 +9404,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 
 | Serviço | Código `service` | Campos principais |
 | --- | --- | --- |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` |
-| OCR React RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
+| OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
 | Busca de face na base | `SERVICE_FACE_INDEX` | `image1` |
@@ -11196,11 +9741,11 @@ Exemplo de resposta:
 }
 ```
 
-### OCR de documentos
+### OCR React
 
-Esse serviço realiza a extração das informações de um documento. Durante o
-processamento, uma IA identifica o tipo da imagem e executa os procedimentos de
-classificação do documento. É possível enviar a imagem em base64 ou por URL.
+Use `SERVICE_OCR` para extrair dados de documentos de identificação como RG/CIN,
+CNH, OAB, RNE/CRNM e PASSAPORTE. Para deixar a API identificar o documento,
+envie `documentType: IDENTIFICATION_DOCUMENT`.
 
 ```http
 POST /api/service-api
@@ -11217,11 +9762,9 @@ Body:
 
 ```json
 {
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "base64"
 }
 ```
 
@@ -11230,123 +9773,14 @@ Tipos de documento suportados:
 | Documento | Valor |
 | --- | --- |
 | CNH | `CNH` |
-| RG | `RG` |
-| RG novo | `NEWRG` |
-| RNE | `RNE` |
-| Cartão CPF | `CARTAOCPF` |
-| Passaporte | `PASSPORT` |
-| CRLV | `BR_CAR_LICENCE` |
-| Comprovante de luz | `LIGHTRECEIPT` |
-| Carteira de trabalho | `CTPS` |
+| RG / CIN | `RG` |
+| OAB | `OAB` |
+| RNE / CRNM | `RNE` |
+| Passaporte | `PASSAPORT` |
+| Identificação automática | `IDENTIFICATION_DOCUMENT` |
 
-Lados do documento por tipo:
-
-| Documento | Valor |
-| --- | --- |
-| Frente da CNH, lado da foto | `A` |
-| Verso da CNH | `B` |
-| CNH aberta | `C` |
-| Frente do RG, lado da foto | `A` |
-| Verso do RG | `B` |
-| RG aberto | `C` |
-| CRLV | `C` |
-| Demais documentos | `A` |
-
-Campos principais do retorno para CNH:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.name` | Nome |
-| `result.nome` | Nome, quando retornado com essa nomenclatura |
-| `result.fatherName` | Nome do pai |
-| `result.motherName` | Nome da mãe |
-| `result.birthDate` | Data de nascimento |
-| `result.birthdate` | Data de nascimento, quando retornada com essa nomenclatura |
-| `result.cnhCategory` | Categoria |
-| `result.cnhNumber` | Número da CNH |
-| `result.emissionPlace` | Órgão emissor |
-| `result.expeditionDate` | Data de expedição |
-| `result.rg` | RG |
-| `result.rgUf` | UF do RG |
-| `result.doc` | Tipo de documento |
-| `result.reanch` | Número do Renach |
-| `result.REANCH` | Número do Renach, quando retornado em maiúsculas |
-| `result.orgEmission` | Órgão emissor do RG |
-| `result.place` | Local de emissão da CNH |
-| `result.side` | Lado do documento |
-| `result.validDate` | Data de validade |
-| `result.paidActivity` | Informa se a CNH exerce atividade remunerada |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para RG:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.rg` | RG |
-| `result.name` | Nome |
-| `result.fatherName` | Nome do pai |
-| `result.motherName` | Nome da mãe |
-| `result.MotherName` | Nome da mãe, quando retornado com `M` maiúsculo |
-| `result.birthDate` | Data de nascimento |
-| `result.doc` | Tipo de documento |
-| `result.emissionPlace` | Órgão emissor |
-| `result.side` | Lado do documento |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para RNE:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.rne` | RNE |
-| `result.name` | Nome |
-| `result.gender` | Gênero |
-| `result.fatherName` | Nome do pai |
-| `result.motherName` | Nome da mãe |
-| `result.expeditionDate` | Data de expedição |
-| `result.orgEmission` | Órgão emissor |
-| `result.validDate` | Data de validade |
-| `result.classification` | Classificação da RNE |
-| `result.entryDate` | Data de entrada na RNE |
-| `result.nacionality` | Nacionalidade |
-| `result.naturality` | Naturalidade |
-| `result.doc` | Tipo de documento |
-| `result.side` | Lado do documento |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para Cartão CPF:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.name` | Nome |
-| `result.birthDate` | Data de nascimento |
-| `result.doc` | Tipo de documento |
-| `result.side` | Lado do documento |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para CRLV:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.uf` | UF da CRLV |
-| `result.name` | Nome |
-| `result.birthDate` | Data de nascimento |
-| `result.chassis` | Chassi do veículo |
-| `result.color` | Cor do veículo |
-| `result.year` | Ano do veículo |
-| `result.fabricationYear` | Ano de fabricação do veículo |
-| `result.modelYear` | Ano do modelo do veículo |
-| `result.plate` | Placa do veículo |
-| `result.renavam` | RENAVAM |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
+Para respostas completas por tipo de documento, consulte
+[Documentos de identificação](/guides/service-api/identificacao-de-documentos).
 
 Exemplo com `curl`:
 
@@ -11355,11 +9789,9 @@ curl --location '{base_url}/api/service-api' \
   --header 'Content-Type: application/json' \
   --header 'Authorization: Bearer {jwt_token}' \
   --data '{
-    "service": "SERVICE_OCR_BIGDATACORP",
-    "image1": "base64",
-    "image2": "base64",
-    "image1Url": "url_image",
-    "image2Url": "urlImageMatch"
+    "service": "SERVICE_OCR",
+    "documentType": "CNH",
+    "image1": "base64"
   }'
 ```
 
@@ -11372,25 +9804,22 @@ Exemplo de resposta:
     "name": "NOME DA PESSOA",
     "fatherName": "NOME DO PAI",
     "motherName": "NOME DA MÃE",
-    "birthdate": "1992-01-05",
+    "birthDate": "1992-01-05",
     "cnhCategory": "AB",
     "cnhNumber": "07796497926",
     "emissionPlace": "DETRAN DE",
-    "expeditionDate": "13/04/2020",
     "rg": "3451620",
-    "rgUf": "DF",
-    "doc": "CNH",
-    "orgEmission": "DETRAN",
-    "place": "BRASILIA-DISTRITO FEDERAL, DF",
-    "side": "C",
-    "validDate": "13/02/2021",
-    "paidActivity": "False",
-    "REANCH": "DF767732467"
+    "rgIssuer": "SSP/UF",
+    "cnhIssueDate": "2020-04-13",
+    "renach": "DF767732467",
+    "state": "DF"
   },
   "status": {
     "code": 200,
-    "message": "Success"
-  }
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
 }
 ```
 
@@ -13550,7 +11979,7 @@ response.
 | Guia | Quando usar |
 | --- | --- |
 | [Famílias de serviços](/guides/service-api/familias-de-servicos) | Para navegar por grupo de produto. |
-| [OCR via Service API](/guides/service-api/ocr-service-api) | Para payloads de cartão CNPJ, imagem, base64 e exemplos de retorno. |
+| [OCR via Service API](/guides/service-api/sobre-ocr-service-api) | Para payloads de cartão CNPJ, imagem, base64 e exemplos de retorno. |
 | [API Reference](/api-reference/autorização/gerar-token-de-api) | Para detalhes endpoint a endpoint. |
 
 > Atencao:
@@ -14649,9 +13078,8 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 | FaceMatch (AWS) | `SERVICE_FACE_MATCH_AWS` | CPF |
 | Liveness 2D | `SERVICE_LIVENESS_2D_FACETEC` | CPF |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | CNPJ |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | CPF |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | CPF |
-| OCR React RG/CNH | `SERVICE_OCR` | CPF |
+| OCR React | `SERVICE_OCR` | CPF |
 | Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | CPF |
 | Score biométrico | `SERVICE_DATAVALID_CNH_SERPRO` | CPF |
 
@@ -14862,9 +13290,8 @@ quando o produto está ativo.
 | FaceMatch | `SERVICE_FACE_MATCH_BIGDATACORP` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
 | FaceMatch (AWS) | `SERVICE_FACE_MATCH_AWS` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
 | Liveness 2D | `SERVICE_LIVENESS_2D_FACETEC` | `image1` | Use para validar prova de vida a partir de uma imagem de selfie. | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos. |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
-| OCR React RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento. |
+| OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
 | Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `key` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
 | Score biométrico | `SERVICE_DATAVALID_CNH_SERPRO` | `cpf`, `image1` | Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade. | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
 
@@ -15385,149 +13812,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
 
-**Service:** `SERVICE_OCR_BIGDATACORP`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`
-
-**Campos opcionais:** `image2`, `image1Url`, `image2Url`
-
-### Guia de OCR
-
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
-
-### Payload mínimo
-
-```json
-{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "BASE64_DA_FRENTE_DO_DOCUMENTO"
-}
-```
-
-### Retorno limpo esperado
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Erro comum
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Body
-
-```json
-{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}
-```
-
-### Homologação
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-| `image1Url` | Não | URL da primeira imagem, alternativa ao envio em base64 quando suportado. |
-| `image2Url` | Não | URL da segunda imagem, alternativa ao envio em base64 quando suportado. |
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
 **Service:** `SERVICE_OCR_EMANCIPATION`
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
@@ -15542,7 +13826,7 @@ Neste service, o objeto `result` representa: Retorna dados extraídos das imagen
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -15673,7 +13957,7 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -15683,7 +13967,7 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -15705,7 +13989,7 @@ Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -15742,9 +14026,9 @@ Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR
 ```json
 {
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }
 ```
 
@@ -15756,9 +14040,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }'
 ```
 
@@ -15770,9 +14054,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }'
 ```
 
@@ -15795,7 +14079,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -15805,7 +14089,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+Neste service, o objeto `result` representa: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 **Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX`
 
@@ -16522,7 +14806,7 @@ Neste service, o objeto `result` representa: Retorna histórico de telefones ass
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -20751,7 +19035,7 @@ quando o produto está ativo.
 
 ### Guia de OCR
 
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 ### Payload mínimo
 
@@ -23269,16 +21553,6 @@ A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo c
   image1: base64
   ```
 
-- PF - OCR de documentos: `SERVICE_OCR_BIGDATACORP`
-
-  ```yaml
-  service: SERVICE_OCR_BIGDATACORP
-  image1: base64
-  image2: base64
-  image1Url: url_image
-  image2Url: urlImageMatch
-  ```
-
 - PF - OCR de emancipação: `SERVICE_OCR_EMANCIPATION`
 
   ```yaml
@@ -23286,13 +21560,13 @@ A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo c
   image1: base64
   ```
 
-- PF - OCR React RG/CNH: `SERVICE_OCR`
+- PF - OCR React: `SERVICE_OCR`
 
   ```yaml
   service: SERVICE_OCR
-  documentType: CNH
+  documentType: IDENTIFICATION_DOCUMENT
   image1: base64
-  image2: base64 (obrigatorio para RG)
+  image2: base64 (opcional)
   ```
 
 - PF - Pessoa politicamente exposta: `SERVICE_PEP`
@@ -25256,50 +23530,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### OCR de documentos
-
-- Service: `SERVICE_OCR_BIGDATACORP`
-- Endpoint: `POST /api/service-api`
-- Campos do request: `image1`, `image2`, `image1Url`, `image2Url`
-- Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR de documentos
-- Retorno principal: Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-Response resumido:
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Curl de homologação:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
 ### OCR de emancipação
 
 - Service: `SERVICE_OCR_EMANCIPATION`
@@ -25346,13 +23576,13 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### OCR React RG/CNH
+### OCR React
 
 - Service: `SERVICE_OCR`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `documentType`, `image1`, `image2`
-- Termos de busca: OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH
-- Retorno principal: Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+- Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR React
+- Retorno principal: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 Response resumido:
 
@@ -25364,7 +23594,7 @@ Response resumido:
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -25382,9 +23612,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }'
 ```
 
@@ -27723,13 +25953,12 @@ paths:
                   service: SERVICE_PERSON_AI_PROMPT_OPENAI
                   cpf: cpf
               ocrDocumentos:
-                summary: PF - OCR de documentos
+                summary: PF - OCR React
                 value:
-                  service: SERVICE_OCR_BIGDATACORP
+                  service: SERVICE_OCR
+                  documentType: IDENTIFICATION_DOCUMENT
                   image1: base64
-                  image2: base64
-                  image1Url: url_image
-                  image2Url: urlImageMatch
+                  image2: base64 (opcional)
               faceMatch:
                 summary: PF - FaceMatch
                 value:
@@ -27999,7 +26228,7 @@ paths:
                   service: SERVICE_FAMILY_SOCIAL_BENEFITS
                   cpf: cpf
               ocrReact:
-                summary: PF - OCR React RG/CNH
+                summary: PF - OCR React
                 value:
                   service: SERVICE_OCR
                   documentType: CNH
@@ -28245,7 +26474,7 @@ paths:
                       code: 200
                       message: Success
                 ocrDocumentos:
-                  summary: PF - OCR de documentos
+                  summary: PF - OCR React
                   value:
                     result:
                       cpf: "06319423196"

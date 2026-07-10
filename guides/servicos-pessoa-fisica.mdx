@@ -77,7 +77,7 @@ Passo rápido para evitar erro:
 | --- | --- |
 | [Escolha o serviço certo](/guides/escolha-o-servico-certo) | Para decidir o service pelo caso de uso. |
 | [Famílias de serviços](/guides/service-api/familias-de-servicos) | Para navegar por grupo de produto. |
-| [OCR via Service API](/guides/service-api/ocr-service-api) | Para payloads de documento, imagem, base64 e exemplos de retorno. |
+| [OCR via Service API](/guides/service-api/sobre-ocr-service-api) | Para payloads de documento, imagem, base64 e exemplos de retorno. |
 | [API Reference](/api-reference/autorização/gerar-token-de-api) | Para detalhes endpoint a endpoint. |
 
 ## Status e erros
@@ -126,8 +126,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 
 | Serviço | Código `service` | Campos principais |
 | --- | --- | --- |
-| OCR de documentos | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` |
-| OCR React RG/CNH | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
+| OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
 | Busca de face na base | `SERVICE_FACE_INDEX` | `image1` |
@@ -465,11 +464,11 @@ Exemplo de resposta:
 }
 ```
 
-### OCR de documentos
+### OCR React
 
-Esse serviço realiza a extração das informações de um documento. Durante o
-processamento, uma IA identifica o tipo da imagem e executa os procedimentos de
-classificação do documento. É possível enviar a imagem em base64 ou por URL.
+Use `SERVICE_OCR` para extrair dados de documentos de identificação como RG/CIN,
+CNH, OAB, RNE/CRNM e PASSAPORTE. Para deixar a API identificar o documento,
+envie `documentType: IDENTIFICATION_DOCUMENT`.
 
 ```http
 POST /api/service-api
@@ -486,11 +485,9 @@ Body:
 
 ```json
 {
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "base64"
 }
 ```
 
@@ -499,123 +496,14 @@ Tipos de documento suportados:
 | Documento | Valor |
 | --- | --- |
 | CNH | `CNH` |
-| RG | `RG` |
-| RG novo | `NEWRG` |
-| RNE | `RNE` |
-| Cartão CPF | `CARTAOCPF` |
-| Passaporte | `PASSPORT` |
-| CRLV | `BR_CAR_LICENCE` |
-| Comprovante de luz | `LIGHTRECEIPT` |
-| Carteira de trabalho | `CTPS` |
+| RG / CIN | `RG` |
+| OAB | `OAB` |
+| RNE / CRNM | `RNE` |
+| Passaporte | `PASSAPORT` |
+| Identificação automática | `IDENTIFICATION_DOCUMENT` |
 
-Lados do documento por tipo:
-
-| Documento | Valor |
-| --- | --- |
-| Frente da CNH, lado da foto | `A` |
-| Verso da CNH | `B` |
-| CNH aberta | `C` |
-| Frente do RG, lado da foto | `A` |
-| Verso do RG | `B` |
-| RG aberto | `C` |
-| CRLV | `C` |
-| Demais documentos | `A` |
-
-Campos principais do retorno para CNH:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.name` | Nome |
-| `result.nome` | Nome, quando retornado com essa nomenclatura |
-| `result.fatherName` | Nome do pai |
-| `result.motherName` | Nome da mãe |
-| `result.birthDate` | Data de nascimento |
-| `result.birthdate` | Data de nascimento, quando retornada com essa nomenclatura |
-| `result.cnhCategory` | Categoria |
-| `result.cnhNumber` | Número da CNH |
-| `result.emissionPlace` | Órgão emissor |
-| `result.expeditionDate` | Data de expedição |
-| `result.rg` | RG |
-| `result.rgUf` | UF do RG |
-| `result.doc` | Tipo de documento |
-| `result.reanch` | Número do Renach |
-| `result.REANCH` | Número do Renach, quando retornado em maiúsculas |
-| `result.orgEmission` | Órgão emissor do RG |
-| `result.place` | Local de emissão da CNH |
-| `result.side` | Lado do documento |
-| `result.validDate` | Data de validade |
-| `result.paidActivity` | Informa se a CNH exerce atividade remunerada |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para RG:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.rg` | RG |
-| `result.name` | Nome |
-| `result.fatherName` | Nome do pai |
-| `result.motherName` | Nome da mãe |
-| `result.MotherName` | Nome da mãe, quando retornado com `M` maiúsculo |
-| `result.birthDate` | Data de nascimento |
-| `result.doc` | Tipo de documento |
-| `result.emissionPlace` | Órgão emissor |
-| `result.side` | Lado do documento |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para RNE:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.rne` | RNE |
-| `result.name` | Nome |
-| `result.gender` | Gênero |
-| `result.fatherName` | Nome do pai |
-| `result.motherName` | Nome da mãe |
-| `result.expeditionDate` | Data de expedição |
-| `result.orgEmission` | Órgão emissor |
-| `result.validDate` | Data de validade |
-| `result.classification` | Classificação da RNE |
-| `result.entryDate` | Data de entrada na RNE |
-| `result.nacionality` | Nacionalidade |
-| `result.naturality` | Naturalidade |
-| `result.doc` | Tipo de documento |
-| `result.side` | Lado do documento |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para Cartão CPF:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.name` | Nome |
-| `result.birthDate` | Data de nascimento |
-| `result.doc` | Tipo de documento |
-| `result.side` | Lado do documento |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Campos principais do retorno para CRLV:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF |
-| `result.uf` | UF da CRLV |
-| `result.name` | Nome |
-| `result.birthDate` | Data de nascimento |
-| `result.chassis` | Chassi do veículo |
-| `result.color` | Cor do veículo |
-| `result.year` | Ano do veículo |
-| `result.fabricationYear` | Ano de fabricação do veículo |
-| `result.modelYear` | Ano do modelo do veículo |
-| `result.plate` | Placa do veículo |
-| `result.renavam` | RENAVAM |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
+Para respostas completas por tipo de documento, consulte
+[Documentos de identificação](/guides/service-api/identificacao-de-documentos).
 
 Exemplo com `curl`:
 
@@ -624,11 +512,9 @@ curl --location '{base_url}/api/service-api' \
   --header 'Content-Type: application/json' \
   --header 'Authorization: Bearer {jwt_token}' \
   --data '{
-    "service": "SERVICE_OCR_BIGDATACORP",
-    "image1": "base64",
-    "image2": "base64",
-    "image1Url": "url_image",
-    "image2Url": "urlImageMatch"
+    "service": "SERVICE_OCR",
+    "documentType": "CNH",
+    "image1": "base64"
   }'
 ```
 
@@ -641,25 +527,22 @@ Exemplo de resposta:
     "name": "NOME DA PESSOA",
     "fatherName": "NOME DO PAI",
     "motherName": "NOME DA MÃE",
-    "birthdate": "1992-01-05",
+    "birthDate": "1992-01-05",
     "cnhCategory": "AB",
     "cnhNumber": "07796497926",
     "emissionPlace": "DETRAN DE",
-    "expeditionDate": "13/04/2020",
     "rg": "3451620",
-    "rgUf": "DF",
-    "doc": "CNH",
-    "orgEmission": "DETRAN",
-    "place": "BRASILIA-DISTRITO FEDERAL, DF",
-    "side": "C",
-    "validDate": "13/02/2021",
-    "paidActivity": "False",
-    "REANCH": "DF767732467"
+    "rgIssuer": "SSP/UF",
+    "cnhIssueDate": "2020-04-13",
+    "renach": "DF767732467",
+    "state": "DF"
   },
   "status": {
     "code": 200,
-    "message": "Success"
-  }
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
 }
 ```
 

@@ -1624,50 +1624,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### OCR de documentos
-
-- Service: `SERVICE_OCR_BIGDATACORP`
-- Endpoint: `POST /api/service-api`
-- Campos do request: `image1`, `image2`, `image1Url`, `image2Url`
-- Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR de documentos
-- Retorno principal: Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-Response resumido:
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Curl de homologação:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}'
-```
-
 ### OCR de emancipação
 
 - Service: `SERVICE_OCR_EMANCIPATION`
@@ -1714,13 +1670,13 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### OCR React RG/CNH
+### OCR React
 
 - Service: `SERVICE_OCR`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `documentType`, `image1`, `image2`
-- Termos de busca: OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH
-- Retorno principal: Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+- Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR React
+- Retorno principal: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 Response resumido:
 
@@ -1732,7 +1688,7 @@ Response resumido:
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
@@ -1750,9 +1706,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }'
 ```
 

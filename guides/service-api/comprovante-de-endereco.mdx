@@ -1,0 +1,56 @@
+---
+title: Comprovante de endereço
+description: Serviço para extração de dados de comprovantes de endereço via API.
+---
+
+## OCR de comprovante de endereço
+
+Use `SERVICE_OCR_PROOF_OF_ADDRESS` para comprovantes de endereço.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "BASE64_DO_COMPROVANTE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraído",
+    "fullName": "NOME EXTRAÍDO",
+    "fullAddress": "ENDEREÇO EXTRAÍDO",
+    "docType": "Conta de consumo",
+    "issueDate": "2026-01-01",
+    "dueDate": "2026-01-10",
+    "invoiceAmount": "R$ 100,00",
+    "barcode": "00000000000000000000000000000000000000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Comprovante de endereço obtido com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Nem todo comprovante terá todos os campos. A API deve retornar os campos
+extraídos sem preencher dado falso.
+
+## Campos esperados por retorno
+
+| Service | Campos mais comuns em `result` |
+| --- | --- |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | `genericOcr`, `fullName`, `fullAddress`, `docType`, `issueDate`, `dueDate`, `invoiceAmount`, `barcode` |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+<Note>
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+</Note>

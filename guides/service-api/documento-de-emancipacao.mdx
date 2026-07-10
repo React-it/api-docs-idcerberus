@@ -1,0 +1,64 @@
+---
+title: Documento de emancipação
+description: Serviço para extração de dados de documentos de emancipação via API.
+---
+
+## OCR de emancipação
+
+Use `SERVICE_OCR_EMANCIPATION` para documentos de emancipação.
+
+Esse documento não tem layout único. Pode ser declaração, escritura, certidão ou
+documento de cartório. Por isso, o service deve priorizar texto OCR e extrair o
+que for possível, sem reprovar apenas porque CPF, RG ou código não apareceram.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraído do documento",
+    "extractedFields": {
+      "cpf": "00000000000",
+      "rg": "000000000",
+      "authenticationCode": "ABC123456",
+      "dates": ["2026-01-01"]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "summary": "Resumo do documento",
+      "confidence": "MEDIUM",
+      "evidence": ["Texto menciona emancipação"],
+      "warnings": ["Código de autenticação não encontrado"]
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Documento de emancipação processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+## Campos esperados por retorno
+
+| Service | Campos mais comuns em `result` |
+| --- | --- |
+| `SERVICE_OCR_EMANCIPATION` | `docType`, `genericOcr`, `extractedFields`, `analysis` |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+<Note>
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+</Note>

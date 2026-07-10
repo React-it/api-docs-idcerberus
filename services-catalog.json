@@ -1,7 +1,7 @@
 {
   "generatedBy": "scripts/generate-llms.mjs",
   "artifactVersion": "2026-06",
-  "totalServices": 90,
+  "totalServices": 89,
   "services": [
     {
       "service": "SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP",
@@ -4210,130 +4210,6 @@
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-ocr-proof-of-address.hml.curl"
     },
     {
-      "service": "SERVICE_OCR_BIGDATACORP",
-      "documentedAlias": "SERVICE_OCR_BIGDATACORP",
-      "name": "OCR de documentos",
-      "category": "Pessoa Física",
-      "documented": true,
-      "endpoint": "POST /api/service-api",
-      "method": "POST",
-      "requiresAuth": true,
-      "environments": {
-        "homologation": "https://backoffice-hml.idcerberus.com",
-        "production": "https://backoffice.idcerberus.com"
-      },
-      "requestFields": [
-        "image1",
-        "image2",
-        "image1Url",
-        "image2Url"
-      ],
-      "requestExample": "service: SERVICE_OCR_BIGDATACORP\nimage1: base64\nimage2: base64\nimage1Url: url_image\nimage2Url: urlImageMatch",
-      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance",
-      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-fisica",
-      "apiReferenceSection": "PF - OCR de documentos",
-      "searchTerms": [
-        "OCR de documentos",
-        "OCR documento imagem base64 leitura extração",
-        "PF - OCR de documentos",
-        "SERVICE_OCR_BIGDATACORP"
-      ],
-      "responseSummary": "Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.",
-      "callingAlias": "SERVICE_OCR_BIGDATACORP",
-      "partnerAliases": [],
-      "requiredFields": [
-        "image1",
-        "image2",
-        "image1Url",
-        "image2Url"
-      ],
-      "optionalFields": [],
-      "payloadExample": {
-        "service": "SERVICE_OCR_BIGDATACORP",
-        "image1": "base64",
-        "image2": "base64",
-        "image1Url": "url_image",
-        "image2Url": "urlImageMatch"
-      },
-      "successResponseExample": {
-        "result": {
-          "cpf": "00000000000"
-        },
-        "status": {
-          "code": 200,
-          "message": "Consulta realizada com sucesso"
-        },
-        "onboardingStatus": "APPROVED",
-        "externalId": "{externalId}"
-      },
-      "commonErrors": [
-        {
-          "statusCode": 400,
-          "message": "Don't have access to the service",
-          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
-          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
-        },
-        {
-          "statusCode": 400,
-          "message": "Imagem obrigatória não encontrada",
-          "cause": "Payload sem `image1`, `image2`, `selfie1`, URL ou `key` esperado pelo service.",
-          "action": "Enviar base64 puro, URL válida ou key existente conforme o guia do service."
-        },
-        {
-          "statusCode": 400,
-          "message": "Não foi possível ler o documento",
-          "cause": "Imagem ilegível, documento errado ou campo principal não encontrado no OCR.",
-          "action": "Testar imagem nítida, documento correto e payload mínimo indicado na documentação."
-        },
-        {
-          "statusCode": 500,
-          "message": "Falha ao realizar consulta",
-          "cause": "Falha técnica no processamento, storage ou parceiro externo.",
-          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
-        }
-      ],
-      "curlExampleUrls": [],
-      "mcpHints": {
-        "bestContext": "llms-api-reference.txt",
-        "readBeforeAnswering": [
-          "services-catalog.json",
-          "llms-api-reference.txt"
-        ],
-        "useCurlExample": false,
-        "needsImage": true,
-        "needsRealDocument": true,
-        "needsSelfie": false,
-        "needsCpf": false,
-        "needsCnpj": false,
-        "publicResponseField": "result",
-        "avoidFields": [
-          "fieldsOutput",
-          "required",
-          "enabled",
-          "valid",
-          "callService",
-          "nextStep",
-          "services"
-        ],
-        "doNotDo": [
-          "Não inventar payload, retorno ou service fora do catálogo.",
-          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
-          "Não chamar HML ou produção; usar apenas a documentação como fonte."
-        ],
-        "notes": [
-          "Use imagem real e legível do documento. Base64 deve ser puro, sem prefixo data:image.",
-          "Se o OCR não extrair um campo, explique que o retorno depende da leitura da imagem e não invente valor.",
-          "Pode depender de provider externo, massa disponível e configuração do produto."
-        ]
-      },
-      "tags": [
-        "bigdatacorp",
-        "cpf",
-        "imagem",
-        "ocr"
-      ]
-    },
-    {
       "service": "SERVICE_OCR_EMANCIPATION",
       "documentedAlias": "SERVICE_OCR_EMANCIPATION",
       "name": "OCR de emancipação",
@@ -4450,7 +4326,7 @@
     {
       "service": "SERVICE_OCR",
       "documentedAlias": "SERVICE_OCR",
-      "name": "OCR React RG/CNH",
+      "name": "OCR React",
       "category": "Pessoa Física",
       "documented": true,
       "endpoint": "POST /api/service-api",
@@ -4465,34 +4341,33 @@
         "image1",
         "image2"
       ],
-      "requestExample": "service: SERVICE_OCR\ndocumentType: CNH\nimage1: base64\nimage2: base64 (obrigatorio para RG)",
+      "requestExample": "service: SERVICE_OCR\ndocumentType: IDENTIFICATION_DOCUMENT\nimage1: base64\nimage2: base64 (opcional)",
       "documentationUrl": "https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance",
       "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-fisica",
-      "apiReferenceSection": "PF - OCR React RG/CNH",
+      "apiReferenceSection": "PF - OCR React",
       "searchTerms": [
-        "OCR CNH carteira motorista habilitação",
-        "OCR RG identidade frente verso",
-        "OCR React RG/CNH",
+        "OCR React",
         "OCR documento imagem base64 leitura extração",
-        "PF - OCR React RG/CNH",
+        "PF - OCR React",
         "SERVICE_OCR"
       ],
-      "responseSummary": "Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.",
+      "responseSummary": "Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.",
       "callingAlias": "SERVICE_OCR",
       "partnerAliases": [
         "SERVICE_OCR_REACT"
       ],
       "requiredFields": [
         "documentType",
-        "image1",
+        "image1"
+      ],
+      "optionalFields": [
         "image2"
       ],
-      "optionalFields": [],
       "payloadExample": {
         "service": "SERVICE_OCR",
-        "documentType": "CNH",
+        "documentType": "IDENTIFICATION_DOCUMENT",
         "image1": "base64",
-        "image2": "base64 (obrigatorio para RG)"
+        "image2": "base64 (opcional)"
       },
       "successResponseExample": {
         "result": {
@@ -4572,7 +4447,6 @@
       },
       "tags": [
         "cnh",
-        "cpf",
         "imagem",
         "ocr",
         "react",

@@ -412,8 +412,7 @@ const partnerApiServices = [
   ['SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP', 'Exposição e perfil na mídia PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP', cpf: 'cpf' }],
   ['SERVICE_MEI_BIGDATACORP', 'Consulta de MEI (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEI_BIGDATACORP', cpf: 'cpf' }],
   ['SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP', 'Nada consta de ações judiciais (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP', cpf: 'cpf', court: 'TRF1', uf: 'uf', sphere: 'CIVIL' }],
-  ['SERVICE_OCR', 'OCR React de documentos (RG/CNH)', 'Pessoa Física', { service: 'SERVICE_OCR', documentType: 'CNH ou RG', image1: 'base64', image2: 'base64 (opcional para CNH; obrigatorio para RG)' }],
-  ['SERVICE_OCR_BIGDATACORP', 'OCR de documentos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_OCR_BIGDATACORP', image1: 'base64', image2: 'base64 (opcional conforme documento)', image1Url: 'url_image (opcional, alternativa ao base64)', image2Url: 'urlImageMatch (opcional, alternativa ao base64)' }],
+  ['SERVICE_OCR', 'OCR React', 'Pessoa Física', { service: 'SERVICE_OCR', documentType: 'RG, CNH, OAB, RNE, PASSAPORT ou IDENTIFICATION_DOCUMENT', image1: 'base64', image2: 'base64 (obrigatorio para documentos com frente e verso; opcional para identificacao automatica)' }],
   ['SERVICE_OCR_EMANCIPATION', 'OCR de documento de emancipação', 'Pessoa Física', { service: 'SERVICE_OCR_EMANCIPATION', image1: 'base64' }],
   ['SERVICE_OCR_PROOF_OF_ADDRESS', 'OCR de comprovante de endereço (Textract)', 'Pessoa Física', { service: 'SERVICE_OCR_PROOF_OF_ADDRESS', image1: 'base64' }],
   ['SERVICE_PEP', 'Pessoa politicamente exposta', 'Pessoa Física', { service: 'SERVICE_PEP', cpf: 'cpf' }],
@@ -858,7 +857,6 @@ const activeServiceApiAliases = new Set([
   'SERVICE_MEI_BIGDATACORP',
   'SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP',
   'SERVICE_OCR',
-  'SERVICE_OCR_BIGDATACORP',
   'SERVICE_OCR_CNPJ_CARD',
   'SERVICE_OCR_EMANCIPATION',
   'SERVICE_OCR_PROOF_OF_ADDRESS',
@@ -1222,7 +1220,7 @@ function pushSearchHowTo(lines) {
   lines.push('  <Card title="Tenho um CNPJ" href="#pessoa-juridica">');
   lines.push('    Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.');
   lines.push('  </Card>');
-  lines.push('  <Card title="Tenho uma imagem" href="/guides/service-api/ocr-service-api">');
+  lines.push('  <Card title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">');
   lines.push('    Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.');
   lines.push('  </Card>');
   lines.push('  <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">');
@@ -1234,7 +1232,7 @@ function pushSearchHowTo(lines) {
   lines.push('');
   lines.push('| Digite na busca | O que deve aparecer |');
   lines.push('| --- | --- |');
-  lines.push('| `SERVICE_OCR` ou `OCR CNH` | OCR React para RG/CNH e guia de OCR. |');
+  lines.push('| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |');
   lines.push('| `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |');
   lines.push('| `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |');
   lines.push('| `face index` | Busca facial por selfie na base de faces. |');
@@ -1722,13 +1720,9 @@ const serviceReturnDetails = {
     summary: 'Retorna certidao de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrencias e dados usados na consulta.',
     result: { cpf: 'cpf', court: 'TRF1', sphere: 'CIVIL', nothingFound: true, records: [] },
   },
-  SERVICE_OCR_BIGDATACORP: {
-    summary: 'Retorna dados extraidos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiacao, numero do documento e campos especificos.',
-    result: { documentType: 'CNH', fields: { name: 'Nome extraído', cpf: 'cpf', birthDate: 'yyyy-MM-dd' }, extractionStatus: 'SUCCESS' },
-  },
   SERVICE_OCR: {
-    summary: 'Retorna dados extraidos de RG ou CNH enviados por imagem, como CPF, nome, filiacao, nascimento, orgao emissor e dados especificos do documento.',
-    result: { cpf: 'cpf', docType: 'CNH', name: 'Nome extraído', birthDate: 'yyyy-MM-dd', cnhCategory: 'B', validDate: 'yyyy-MM-dd' },
+    summary: 'Retorna dados extraidos de documentos de identificacao enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificacao automatica.',
+    result: { cpf: 'cpf', docType: 'CNH', name: 'Nome extraído', birthDate: 'yyyy-MM-dd', cnhCategory: 'B', cnhNumber: '00000000000' },
   },
   SERVICE_OCR_CNPJ_CARD: {
     summary: 'Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.',
@@ -1900,7 +1894,6 @@ function isOptionalServiceField(service, name, raw) {
 
   if (normalizedValue.includes('opcional')) return true;
   if (service.service === 'SERVICE_OCR' && normalizedName === 'image2') return true;
-  if (service.service === 'SERVICE_OCR_BIGDATACORP' && ['image2', 'image1url', 'image2url'].includes(normalizedName)) return true;
 
   return false;
 }
@@ -1937,10 +1930,6 @@ const ocrServiceApiDetails = {
     minimumPayload: { service: 'SERVICE_OCR', documentType: 'CNH', image1: 'BASE64_DA_CNH' },
     commonError: { result: {}, status: { code: 400, message: 'Imagem do documento não encontrada' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
   },
-  SERVICE_OCR_BIGDATACORP: {
-    minimumPayload: { service: 'SERVICE_OCR_BIGDATACORP', image1: 'BASE64_DA_FRENTE_DO_DOCUMENTO' },
-    commonError: { result: {}, status: { code: 400, message: 'Imagem do documento não encontrada' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
-  },
   SERVICE_OCR_CNPJ_CARD: {
     minimumPayload: { service: 'SERVICE_OCR_CNPJ_CARD', image1: 'BASE64_DO_CARTAO_CNPJ' },
     commonError: { result: {}, status: { code: 400, message: 'CNPJ não encontrado no cartão CNPJ' }, onboardingStatus: 'REFUSED', externalId: '{externalId}' },
@@ -1965,7 +1954,7 @@ function pushOcrApiReferenceBlock(lines, service) {
 
   lines.push('### Guia de OCR');
   lines.push('');
-  lines.push('Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/ocr-service-api).');
+  lines.push('Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).');
   lines.push('');
   lines.push('### Payload mínimo');
   lines.push('');
@@ -2365,14 +2354,14 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push('    Configure environment, gere token e rode `POST /api/service-api` em HML.');
   lines.push('  </Card>');
   if (category === 'Pessoa Jurídica') {
-    lines.push('  <Card title="OCR cartão CNPJ" href="/guides/service-api/ocr-service-api#ocr-de-cartao-cnpj">');
+    lines.push('  <Card title="OCR cartão CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
     lines.push('    Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.');
     lines.push('  </Card>');
     lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
     lines.push('    Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.');
     lines.push('  </Card>');
   } else {
-    lines.push('  <Card title="OCR e imagem" href="/guides/service-api/ocr-service-api">');
+    lines.push('  <Card title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">');
     lines.push('    Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.');
     lines.push('  </Card>');
     lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
@@ -2556,7 +2545,7 @@ function pushFeaturedServiceShortcuts(lines, catalog) {
   const aliases = [
     ['CPF na Receita Federal', 'SERVICE_RFB_PF_BIGDATACORP'],
     ['CNPJ na Receita Federal', 'SERVICE_RFB_PJ_BIGDATACORP'],
-    ['OCR RG/CNH', 'SERVICE_OCR'],
+    ['OCR React', 'SERVICE_OCR'],
     ['OCR cartão CNPJ', 'SERVICE_OCR_CNPJ_CARD'],
     ['OCR comprovante de endereço', 'SERVICE_OCR_PROOF_OF_ADDRESS'],
     ['Face Index', 'SERVICE_FACE_INDEX'],
@@ -3033,5 +3022,3 @@ console.log('Generated api-reference/services-por-caso-de-uso.mdx.');
 console.log('Generated api-reference/services-pessoa-fisica.mdx.');
 console.log('Generated api-reference/services-pessoa-juridica.mdx.');
 console.log(`Generated ${exampleFiles.length} curl examples.`);
-
-

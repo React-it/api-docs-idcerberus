@@ -1,0 +1,277 @@
+---
+title: Documentos de identificação
+description: Serviço para extração de dados de documentos de identificação via API.
+---
+
+Use `SERVICE_OCR` para realizar a extração de dados de documentos de identificação como RG, CNH, OAB, RNE e PASSAPORTE.
+
+## RG / CIN
+
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RG",
+  "image1": "BASE64_DA_FRENTE",
+  "image2": "BASE64_DO_VERSO"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "RG/CIN",
+    "name": "NOME EXTRAÍDO",
+    "fatherName": "NOME DO PAI",
+    "motherName": "NOME DA MÃE",
+    "birthDate": "yyyy-mm-dd",
+    "rg": "000000000", // <- Apenas para documento RG
+    "rgIssuer": "SSP/UF",
+    "rgIssueDate": "yyyy-mm-dd",
+    "nationality": "BRA", // <- Apenas para documento CIN
+    "validDate": "yyyy-mm-dd", // <- Apenas para documento CIN
+    "naturality": "CIDADE/UF",
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## CNH
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "NOME EXTRAÍDO",
+    "fatherName": "NOME DO PAI",
+    "motherName": "NOME DA MÃE",
+    "birthDate": "yyyy-mm-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000",
+    "emissionPlace": "LOCAL EMISSÃO",
+    "rg": "000000000",
+    "rgIssuer": "SSP/UF",
+    "cnhIssueDate": "yyyy-mm-dd",
+    "cnhDocEmissionPlace": "DETRAN/UF",
+    "cnhFirstQualificationDate": "yyyy-mm-dd",
+    "cnhLastEmissionDate": "yyyy-mm-dd",
+    "renach": "UF000000000",
+    "paidActivity": "BOOLEAN",
+    "state": "UF"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## OAB
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "OAB",
+  "image1": "BASE64_FRENTE_DA_OAB",
+  "image2": "BASE64_VERSO_DA_OAB"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+      "cpf": "00000000000",
+      "docType": "OAB",
+      "name": "NOME COMPLETO",
+      "fatherName": "NOME DO PAI",
+      "motherName": "NOME DA MÃE",
+      "birthDate": "yyyy-mm-dd",
+      "rg": "0000000",
+      "issueDate": "yyyy-mm-dd",
+      "naturality": "CIDADE-UF",
+      "registrationNumber": "00000",
+      "isOrganDonor": "NÃO",
+      "via": "00",
+      "observations": "OBSERVAÇÃO"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## RNE / CRNM
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RNE",
+  "image1": "BASE64_FRENTE_DO_RNE",
+  "image2": "BASE64_VERSO_DO_RNE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+      "cpf": "00000000000", // <- Apenas para documento CRNM
+      "docType": "RNE/CRNM",
+      "name": "NOME COMPLETO",
+      "fatherName": "NOME DO PAI",
+      "motherName": "NOME DA MÃE",
+      "birthDate": "yyyy-mm-dd",
+      "nationality": "NACIONALIDADE",
+      "issueDate": "yyyy-mm-dd",
+      "classification": "STATUS DA CLASSIFICAÇÃO",
+      "entryDate": "yyyy-mm-dd", // <- Apenas para documento RNE
+      "naturality": "NATURALIDADE", // <- Apenas para documento RNE
+      "sex": "F",
+      "via": "00", // <- Apenas para documento RNE
+      "rneValidDate": "DATA ou STATUS",
+      "rneNumber": "A000000-A", // <- Apenas para documento RNE
+      "rnmNumber": "A000000-0", // <- Apenas para documento CRNM
+      "residencePeriod": "STATUS", // <- Apenas para documento CRNM
+      "issueBody": "ORGÃO EMISSOR"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+
+```
+---
+
+## PASSAPORTE
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "PASSAPORT",
+  "image1": "BASE64_DO_PASSAPORTE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+      "docType": "Passaporte",
+      "name": "NOME COMPLETO",
+      "fatherName": "NOME DO PAI",
+      "motherName": "NOME DA MÃE",
+      "birthDate": "yyyy-mm-dd",
+      "nationality": "NACIONALIDADE",
+      "validDate": "yyyy-mm-dd",
+      "issueDate": "yyyy-mm-dd",
+      "naturality": "NATURALIDADE",
+      "sex": "M",
+      "issueCountry": "BRA",
+      "passaportType": "TIPO DE PASSAPORTE",
+      "passaportNumber": "AZ000000",
+      "authority": "AUTORIDADE"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## Identificação Automática
+
+Este tipo de OCR faz a identificação do documento por inferência e extraí os dados correspondentes do documento identificado.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "image1": "BASE64_FRENTE_DO_DOCUMENTO",
+  "image2": "BASE64_VERSO_DO_DOCUMENTO" // <- Opcional
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    // Depende do tipo de documento identificado.
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Por enquanto, esta página cobre RG, CNH, OAB, RNE e PASSAPORTE. Outros documentos devem ser validados quando o suporte do OCR estiver fechado para cada tipo.
+
+## Campos esperados por retorno
+
+| DocumentType | Campos retornados | Observações |
+| --- | --- | --- |
+| RG | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rg`, `rgIssuer`, `rgIssueDate`, `nationality`, `naturality`, `validDate` | Caso o documento enviado for do tipo `CIN`, ele poderá encontrar `nationality` e `validDate`, e não conter `rg`.<br /> Envio frente e verso do documento  |
+| CNH | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `cnhCategory`, `cnhNumber`, `validDate`, `emissionPlace`, `rg`, `rgIssuer`, `cnhIssueDate`, `cnhDocEmissionPlace`, `cnhFirstQualificationDate`, `cnhLastEmissionDate`, `renach`, `paidActivity`, `state` | Envio único de documento |
+| OAB | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rg`, `issueDate`, `naturality`, `registrationNumber`, `isOrganDonor`, `via`, `observations` | Envio frente e verso do documento |
+| RNE | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rneNumber`, `rnmNumber`, `nationality`, `issueDate`, `classification`, `entryDate`, `naturality`, `sex`, `via`, `rneValidDate`, `issueBody`, `residencePeriod` | Campos exclusivos de `RNE`: `entryDate`, `naturality`, `via`, `rneNumber`.<br /> Campos exclusivos de `CRNM`: `rnmNumber`, `cpf`, `residencePeriod`. <br /> Envio frente e verso do documento |
+| PASSAPORT | `docType`, `name`, `fatherName`, `motherName`, `birthDate`, `nationality`, `validDate`, `issueDate`, `naturality`, `sex`, `issueCountry`, `passaportType`, `passaportNumber`, `authority` | Envio único de documento |
+| IDENTIFICATION_DOCUMENT | Depende do documento identificado internamente | O texto OCR é analisado para inferir se o documento é CNH, RG, OAB, RNE ou Passaporte.<br /> Neste caso, o envio do verso do documento, `image2`, é opcional. |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+<Note>
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+</Note>

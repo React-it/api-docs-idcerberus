@@ -23,7 +23,7 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
   <Card title="Tenho um CNPJ" href="#pessoa-juridica">
     Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.
   </Card>
-  <Card title="Tenho uma imagem" href="/guides/service-api/ocr-service-api">
+  <Card title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">
     Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.
   </Card>
   <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">
@@ -35,7 +35,7 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
 
 | Digite na busca | O que deve aparecer |
 | --- | --- |
-| `SERVICE_OCR` ou `OCR CNH` | OCR React para RG/CNH e guia de OCR. |
+| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |
 | `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |
 | `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |
 | `face index` | Busca facial por selfie na base de faces. |
@@ -124,9 +124,8 @@ quando o produto está ativo.
 | [Mandado de prisão](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | PF - Mandado de prisão | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
 | [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING_BIGDATACORP` | `cpf` | PF - Modelagem de dados | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
 | [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
-| [OCR de documentos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_BIGDATACORP` | `image1`, `image2`, `image1Url`, `image2Url` | OCR documento imagem base64 leitura extração, PF - OCR de documentos | Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos. |
 | [OCR de emancipação](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_EMANCIPATION` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
-| [OCR React RG/CNH](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH | Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento. |
+| [OCR React](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR documento imagem base64 leitura extração, PF - OCR React | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
 | [Pessoa politicamente exposta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PEP` | `cpf` | PF - Pessoa politicamente exposta | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
 | [Pessoas relacionadas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RELATED_PEOPLE_BIGDATACORP` | `cpf`, `birthDate` | PF - Pessoas relacionadas | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
 | [Prêmios e certificações](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | CPF Receita Federal, PF - Prêmios e certificações | Retorna a quantidade e os registros de premios e certificacoes encontrados para o CPF, quando a base consultada possuir dados. |
@@ -2100,58 +2099,6 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 </Accordion>
 
-<Accordion title="OCR de documentos">
-
-**Service:** `SERVICE_OCR_BIGDATACORP`
-
-**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR de documentos
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos das imagens do documento, como tipo documental, nome, CPF, nascimento, filiação, número do documento e campos específicos.
-
-**Passo a passo:**
-
-1. Gere um token em `POST /api/token-generate`.
-2. Envie `image1` junto com `service: SERVICE_OCR_BIGDATACORP` em `POST /api/service-api`.
-3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `documentType`, `fields`, `extractionStatus`.
-
-**Body exemplo:**
-
-```json
-{
-  "service": "SERVICE_OCR_BIGDATACORP",
-  "image1": "base64",
-  "image2": "base64",
-  "image1Url": "url_image",
-  "image2Url": "urlImageMatch"
-}
-```
-
-**Response resumido:**
-
-```json
-{
-  "result": {
-    "documentType": "CNH",
-    "fields": {
-      "name": "Nome extraído",
-      "cpf": "cpf",
-      "birthDate": "yyyy-MM-dd"
-    },
-    "extractionStatus": "SUCCESS"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-</Accordion>
-
 <Accordion title="OCR de emancipação">
 
 **Service:** `SERVICE_OCR_EMANCIPATION`
@@ -2206,31 +2153,31 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 </Accordion>
 
-<Accordion title="OCR React RG/CNH">
+<Accordion title="OCR React">
 
 **Service:** `SERVICE_OCR`
 
-**Termos de busca:** OCR CNH carteira motorista habilitação, OCR RG identidade frente verso, OCR documento imagem base64 leitura extração, PF - OCR React RG/CNH
+**Termos de busca:** OCR documento imagem base64 leitura extração, PF - OCR React
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos de RG ou CNH enviados por imagem, como CPF, nome, filiação, nascimento, órgão emissor e dados específicos do documento.
+**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
 **Passo a passo:**
 
 1. Gere um token em `POST /api/token-generate`.
 2. Envie `documentType`, `image1` junto com `service: SERVICE_OCR` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `validDate`.
+4. Leia `result`, que neste service costuma trazer: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
 
 **Body exemplo:**
 
 ```json
 {
   "service": "SERVICE_OCR",
-  "documentType": "CNH",
+  "documentType": "IDENTIFICATION_DOCUMENT",
   "image1": "base64",
-  "image2": "base64 (obrigatorio para RG)"
+  "image2": "base64 (opcional)"
 }
 ```
 
@@ -2244,7 +2191,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
     "name": "Nome extraído",
     "birthDate": "yyyy-MM-dd",
     "cnhCategory": "B",
-    "validDate": "yyyy-MM-dd"
+    "cnhNumber": "00000000000"
   },
   "status": {
     "code": 200,
