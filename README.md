@@ -8,7 +8,7 @@ O projeto organiza guias de integração, catálogo técnico, API Reference, exe
 
 Esta documentação foi pensada para três usos principais:
 
-- Ajudar clientes e parceiros a entenderem como autenticar e executar services pela API.
+- Ajudar clientes a entenderem como autenticar e executar services pela API.
 - Ajudar suporte, QA e desenvolvimento a testarem chamadas reais com exemplos prontos.
 - Gerar arquivos de contexto para assistentes de IA consultarem a documentação com menos ambiguidade.
 

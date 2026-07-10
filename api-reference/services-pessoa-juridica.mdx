@@ -12,41 +12,41 @@ Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produ
 </Info>
 
 <Warning>
-  Antes de executar a chamada, confirme qual alias está liberado no produto
-  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias documentado no catálogo.
+ Antes de executar a chamada, confirme qual service está liberado no produto
+ do cliente. O campo `service` deve receber o alias público de chamada,
+ exatamente como aparece no catálogo abaixo.
 </Warning>
 
-Na prática: se o alias configurado no produto for diferente do alias abaixo,
-use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
-quando o produto está ativo.
+Na prática: copie o valor da coluna `Service` e envie esse valor no body.
+A documentação não expõe aliases internos de integração; o cliente deve
+usar somente o service liberado no produto.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
-| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| Service |
+| --- |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
 
 ## Atalhos práticos
 
 <CardGroup cols={2}>
-  <Card title="Como executar um service" href="/api-reference/como-executar-service">
-    Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
-  </Card>
-  <Card title="Testar no Postman" href="/guides/postman-do-zero">
-    Configure environment, gere token e rode `POST /api/service-api` em HML.
-  </Card>
-  <Card title="OCR cartão CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">
-    Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.
-  </Card>
-  <Card title="Receitas prontas" href="/guides/receitas-prontas">
-    Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.
-  </Card>
+ <Card title="Como executar um service" href="/api-reference/como-executar-service">
+ Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
+ </Card>
+ <Card title="Testar no Postman" href="/guides/postman-do-zero">
+ Configure environment, gere token e rode `POST /api/service-api` em HML.
+ </Card>
+ <Card title="OCR cartão CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">
+ Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.
+ </Card>
+ <Card title="Receitas prontas" href="/guides/receitas-prontas">
+ Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.
+ </Card>
 </CardGroup>
 
 ## Como ler esta referência
 
 - **Nome**: nome funcional do produto.
 - **Service**: valor exato que deve ser enviado no campo `service`.
-- **Alias de chamada**: quando o produto estiver configurado com alias curto, envie esse alias no body, mesmo que o nome documentado do parceiro seja outro.
+- **Service**: valor público que deve ser enviado no campo `service`.
 - **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.
 - **Campos**: parâmetros esperados no body além de `service`.
 - **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.
@@ -57,13 +57,13 @@ quando o produto está ativo.
 ### Biometria e documentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível. |
 
 ### Contatos, sites e relacionamentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
 | Domínios CNPJ | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Use para consultar dados de sites vinculados à empresa. | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
 | Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
@@ -77,7 +77,7 @@ quando o produto está ativo.
 ### Dados cadastrais e Receita Federal
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
 | Dados cadastrais de CNPJ | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API. | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
 | DAS MEI na Receita | `SERVICE_DAS_MEI` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
@@ -88,30 +88,30 @@ quando o produto está ativo.
 ### Dados eleitorais e PEP
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
 | Fornecedores eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
 
 ### Jurídico, certidões e protestos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
-| Certidão negativa de protesto | `SERVICE_PROTEST_PJ` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
+| --- | --- |
+| Certidão negativa de protesto | `SERVICE_PROTEST_PJ` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas. |
 | Processos jurídicos | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | Use para consultar certidões, processos ou informações jurídicas da empresa. | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
 
 ### KYC, compliance e exposição
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 
 ### Risco, crédito e dívidas
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | Use para consultar débitos ou dívidas associadas à empresa. | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
+| Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
 
 
 ## Requests completos
@@ -221,7 +221,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 
@@ -309,7 +309,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -398,7 +398,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -486,7 +486,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -577,7 +577,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -666,7 +666,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -756,7 +756,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -844,7 +844,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -933,7 +933,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1022,7 +1022,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1115,7 +1115,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1200,7 +1200,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1285,7 +1285,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1373,7 +1373,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1461,7 +1461,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 | `uf` | Não | UF usada para limitar a consulta estadual ou jurídica. |
@@ -1547,7 +1547,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1637,7 +1637,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1725,7 +1725,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1735,7 +1735,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "cnpj": "cnpj",
-    "providers": [
+    "campos": [
       {
         "year": 2024,
         "campaign": "Campanha",
@@ -1767,7 +1767,7 @@ Neste service, o objeto `result` representa: Retorna prestações de serviço el
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
+**O que retorna:** Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -1819,7 +1819,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1841,7 +1841,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
+Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
 </Accordion>
 
@@ -1903,7 +1903,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -1997,7 +1997,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -2083,7 +2083,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -2174,7 +2174,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -2212,7 +2212,7 @@ Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas 
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
-**O que retorna:** Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+**O que retorna:** Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -2264,7 +2264,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -2290,7 +2290,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+Neste service, o objeto `result` representa: Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 </Accordion>
 

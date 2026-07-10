@@ -13,23 +13,23 @@ A maior parte das consultas usa o endpoint `POST /api/service-api`. O campo `ser
 </Info>
 
 <Warning>
-  Antes de executar a chamada, confirme qual alias está liberado no produto
-  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias documentado no catálogo.
+ Antes de executar a chamada, confirme qual service está liberado no produto
+ do cliente. O campo `service` deve receber o alias público de chamada,
+ exatamente como aparece no catálogo abaixo.
 </Warning>
 
-Na prática: se o alias configurado no produto for diferente do alias abaixo,
-use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
-quando o produto está ativo.
+Na prática: copie o valor da coluna `Service` e envie esse valor no body.
+A documentação não expõe aliases internos de integração; o cliente deve
+usar somente o service liberado no produto.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
-| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| Service |
+| --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| `economic_relationships` |
 
 ## Passo a passo
 
@@ -37,7 +37,7 @@ quando o produto está ativo.
 <Step title="Escolha o ambiente">
 
 | Ambiente | Base URL | Quando usar |
-| --- | --- | --- |
+| --- |
 | Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validações e desenvolvimento. |
 | Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação do cliente. |
 
@@ -114,7 +114,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 ## Erros comuns
 
 | Situação | Como corrigir |
-| --- | --- |
+| --- |
 | Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |
 | Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |
 | Produto usa alias curto | Confirme no produto qual alias está liberado e envie esse valor no campo `service`. |

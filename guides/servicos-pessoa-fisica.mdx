@@ -23,7 +23,7 @@ POST /api/service-api
 Nos exemplos de `curl`, `{base_url}` representa a URL do ambiente escolhido:
 
 | Ambiente | Base URL |
-| --- | --- |
+| --- |
 | Homologação | `https://backoffice-hml.idcerberus.com` |
 | Produção | `https://backoffice.idcerberus.com` |
 
@@ -55,8 +55,8 @@ Passo rápido para evitar erro:
 3. Envie esse alias no campo `service`.
 4. Use os demais campos da tabela como entrada principal da consulta.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
+| Service |
+| --- |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
 | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
@@ -67,13 +67,13 @@ Passo rápido para evitar erro:
   OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64, URL ou
   `key` real para retornar dados completos. Payload curto ajuda a validar
   autenticação, acesso ao produto e formato básico da chamada, mas não valida o
-  retorno completo do parceiro.
+  retorno completo do processamento.
 </Info>
 
 ## Guias relacionados
 
 | Guia | Quando usar |
-| --- | --- |
+| --- |
 | [Escolha o serviço certo](/guides/escolha-o-servico-certo) | Para decidir o service pelo caso de uso. |
 | [Famílias de serviços](/guides/service-api/familias-de-servicos) | Para navegar por grupo de produto. |
 | [OCR via Service API](/guides/service-api/sobre-ocr-service-api) | Para payloads de documento, imagem, base64 e exemplos de retorno. |
@@ -101,7 +101,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Cadastro e identidade
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- | --- |
+| --- | --- |
 | Enriquecimento de dados de PF | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
 | Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
@@ -124,7 +124,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Biometria e documentos
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- | --- |
+| --- | --- |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
@@ -139,7 +139,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Risco, compliance e validações
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- | --- |
+| --- | --- |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
@@ -147,7 +147,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
-| Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
+| Score de risco inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
 | Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
@@ -178,14 +178,14 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 Alguns serviços retornam informações consolidadas ou análises derivadas de
 fontes complementares. Eles seguem o mesmo padrão de chamada do endpoint
 `POST /api/service-api`, mas podem ter respostas mais amplas conforme a
-disponibilidade dos dados no parceiro.
+disponibilidade dos dados na consulta.
 
 | Serviço | Quando usar | Exemplo de body |
-| --- | --- | --- |
+| --- | --- |
 | `SERVICE_RFB_PF_ON_DEMAND` | Buscar o CPF na Receita Federal em tempo de consulta | `{ "service": "SERVICE_RFB_PF_ON_DEMAND", "cpf": "cpf" }` |
 | `SERVICE_PERSON_DATA_MODELING` | Consolidar dados de modelagem, contatos, vínculos, processos e endereços | `{ "service": "SERVICE_PERSON_DATA_MODELING", "cpf": "cpf" }` |
 | `SERVICE_PERSON_AI_PROMPT` | Gerar resumo analítico textual a partir dos dados consolidados da pessoa | `{ "service": "SERVICE_PERSON_AI_PROMPT", "cpf": "cpf" }` |
-| `SERVICE_DATAVALID_CNH` | Validar CNH com apoio do DataValid/Serpro | `{ "service": "SERVICE_DATAVALID_CNH", "cpf": "cpf", "image1": "base64" }` |
+| `SERVICE_DATAVALID_CNH` | Validar CNH com apoio do validação documental | `{ "service": "SERVICE_DATAVALID_CNH", "cpf": "cpf", "image1": "base64" }` |
 | `SERVICE_FINANCIAL_RISK_SCORE` | Consultar score de risco financeiro | `{ "service": "SERVICE_FINANCIAL_RISK_SCORE", "cpf": "cpf" }` |
 | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | Combinar dados cadastrais, endereços e informações financeiras | `{ "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS", "cpf": "cpf" }` |
 | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | Retornar histórico profissional em que a pessoa aparece como titular ou sócia | `{ "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY", "cpf": "cpf" }` |
@@ -233,7 +233,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status na base da Receita Federal |
 | `result.statusDate` | Data do status na base da Receita Federal |
@@ -325,7 +325,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status na base da Receita Federal |
 | `result.statusDate` | Data do status na base da Receita Federal |
@@ -493,7 +493,7 @@ Body:
 Tipos de documento suportados:
 
 | Documento | Valor |
-| --- | --- |
+| --- |
 | CNH | `CNH` |
 | RG / CIN | `RG` |
 | OAB | `OAB` |
@@ -575,7 +575,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.status` | Status da similaridade facial das imagens |
 | `result.similarity` | Similaridade facial das imagens |
 | `status.code` | Código da mensagem de status |
@@ -636,7 +636,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.message` | Mensagem do resultado da verificação do Liveness 2D |
 | `result.likeRealPerson` | Resultado da verificação do Liveness 2D |
 | `status.code` | Código da mensagem de status |
@@ -682,7 +682,7 @@ Consulta o CPF de um indivíduo e retorna se a pessoa é politicamente exposta.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status indicando se a pessoa é politicamente exposta |
 | `status.code` | Código da mensagem de status |
@@ -730,7 +730,7 @@ sanções atuais e histórico de ocorrências encontradas nas bases consultadas.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF consultado |
 | `result.isPep` | Indica se a pessoa é politicamente exposta |
 | `result.isCurrentlySanctioned` | Indica se existe sanção vigente associada à pessoa |
@@ -773,7 +773,7 @@ relacionadas quando disponíveis.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF consultado |
 | `result.mediaExposureLevel` | Nível de exposição em mídia |
 | `result.celebrityLevel` | Nível de notoriedade pública |
@@ -829,7 +829,7 @@ Fazenda Nacional (PGFN).
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da dívida ativa |
 | `result.statusDate` | Data do status |
@@ -884,7 +884,7 @@ análise de risco.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.score` | Score de risco de fraude |
 | `result.factor` | Status de risco retornado pela DataRisk: `HIGH RISK`, `MEDIUM RISK` ou `LOW RISK` |
@@ -937,7 +937,7 @@ score normalizado e uma mensagem com a leitura resumida da análise.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF consultado |
 | `result.score` | Score calculado |
 | `result.message` | Mensagem com score e interpretação de risco |
@@ -976,7 +976,7 @@ o risco de inadimplência.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.score` | Score de inadimplência |
 | `result.origin` | Origem do score |
@@ -1030,7 +1030,7 @@ similaridade encontrado.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da consulta do score biométrico |
 | `result.message` | Mensagem da consulta |
@@ -1069,7 +1069,7 @@ Exemplo de resposta:
 
 ### Validação de CNH no DataValid
 
-Valida dados de CNH com apoio do DataValid/Serpro. O serviço recebe o CPF e a
+Valida dados de CNH com apoio do validação documental. O serviço recebe o CPF e a
 imagem de referência, normalmente em base64, para executar a validação
 disponível na integração.
 
@@ -1097,7 +1097,7 @@ Exemplo de resposta:
 
 <Note>
   Atualmente, o retorno exposto por este serviço pode ser mínimo e variar
-  conforme a disponibilidade da integração DataValid/Serpro. Use o status da
+  conforme a disponibilidade da integração validação documental. Use o status da
   chamada e os campos retornados em `result` como contrato efetivo da resposta.
 </Note>
 
@@ -1119,7 +1119,7 @@ eleitoral, a consulta está disponível apenas para fontes do TRF1 e TRF4.
 Parâmetros opcionais:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `court` | Tribunal: `TRF1`, `TRF2`, `TRF3`, `TRF4` ou `TRF5` |
 | `uf` | UF da federação brasileira |
 | `sphere` | Esfera: `CIVIL`, `CRIMINAL` ou `ELEITORAL` |
@@ -1127,7 +1127,7 @@ Parâmetros opcionais:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status do Nada Consta |
 | `result.origin` | Origem do Nada Consta |
@@ -1192,7 +1192,7 @@ há antecedentes, o status do resultado retorna como `NADA CONSTA`.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da certidão criminal |
 | `result.expirationDate` | Data de expiração da certidão |
@@ -1249,7 +1249,7 @@ retornada por essa consulta.
 Parâmetros aceitos:
 
 | Campo | Descrição | Valor aceito |
-| --- | --- | --- |
+| --- | --- |
 | `cpf` | Número do CPF | Qualquer texto |
 | `rg` | Número do RG da identidade | Qualquer texto |
 | `uf` | UF do estado | Qualquer texto |
@@ -1269,7 +1269,7 @@ Parâmetros aceitos:
 Obrigatoriedade de parâmetros por estado:
 
 | Estado | CPF | UF | RG | MOTHERNAME | FATHERNAME | RGISSUINGAGENCY | RGISSUINGUF | RGEXPEDITIONDATE | DATEFORMAT | PLACEOFBIRTH | ADDRESS | NUMBERADDRESS | NEIGHBORHOOD | CITY | ZIPCODE |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | MG | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
 | CE | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
 | RR | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
@@ -1290,7 +1290,7 @@ Estados disponíveis para consulta: `BA`, `CE`, `ES`, `MG`, `MS`, `MT`, `PA`,
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da certidão criminal |
 | `result.uf` | UF consultada |
@@ -1414,7 +1414,7 @@ envio de cobranças.
 Status possíveis:
 
 | Status | Descrição |
-| --- | --- |
+| --- |
 | `VALID` | O e-mail é válido e não apresenta restrições |
 | `INVALID` | O e-mail é inválido |
 | `UNKNOWN` | A validação não foi concluída no tempo limite |
@@ -1422,7 +1422,7 @@ Status possíveis:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.email` | E-mail |
 | `result.status` | Status do e-mail |
 | `result.normalizedEmail` | E-mail normalizado |
@@ -1504,7 +1504,7 @@ envios de mensagens.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.phone` | Telefone |
 | `result.operator` | Nome da operadora retornado no exemplo da API |
@@ -1562,7 +1562,7 @@ endereço informado e também apoia verificações relacionadas à localização
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.zipcode` | CEP |
 | `result.numberAddress` | Número do endereço |
@@ -1709,7 +1709,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da validação cadastral |
 | `result.message` | Mensagem da consulta |
@@ -1769,7 +1769,7 @@ bases do governo.
 Campos de entrada:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `key` | Chave usada para consultar o resultado da documentoscopia. Pode ser um UUID ou outra chave definida pela integração |
 | `image1` | Documento em base64, PDF ou imagem, com a parte frontal do RG ou CNH. Também pode conter a foto da CNH completa. Campo obrigatório |
 | `image2` | Documento em base64 com a parte de trás do RG ou CNH. Campo opcional |
@@ -1778,7 +1778,7 @@ Campos de entrada:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.name` | Nome |
 | `result.fatherName` | Nome do pai |
@@ -1849,7 +1849,7 @@ requisição de criação.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.name` | Nome |
 | `result.fatherName` | Nome do pai |
@@ -1920,7 +1920,7 @@ Consulta os MEIs que um CPF possui.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.meis` | Empresas MEI do CPF informado |
 | `result.meis.cpf` | CPF |
 | `result.meis.cnpj` | CNPJ do MEI |
@@ -2026,7 +2026,7 @@ Consulta vínculos relacionados a servidores públicos para o CPF informado.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.totalPublicPositions` | Total de vínculos ou posições públicas encontradas |
 | `result.inServiceServices` | Total de vínculos públicos em serviço |
 | `result.income` | Valor de renda retornado pela consulta |
@@ -2078,7 +2078,7 @@ Consulta endereços associados ao CPF informado.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.addresses` | Lista de endereços associados ao CPF |
 | `result.addresses.zipcode` | CEP |
 | `result.addresses.country` | País |
@@ -2206,7 +2206,7 @@ Consulta dados da pessoa a partir do telefone informado.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `cpf` | CPF |
 | `name` | Nome da pessoa |
 | `phone` | Telefone consultado |
@@ -2254,7 +2254,7 @@ Consulta mandado de prisão associado aos dados informados.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `message` | Mensagem de retorno |
 | `arrestWarrantFound` | Indica se existe mandado de prisão |
 
@@ -2270,7 +2270,7 @@ Consulta débitos ativos associados ao CPF informado.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.totalDebtValue` | Valor total dos débitos |
 | `result.totalDebts` | Quantidade total de débitos |
 | `result.debts` | Lista de débitos |
@@ -2291,7 +2291,7 @@ Consulta dados eleitorais associados a um candidato.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `hasRunForOffice` | Indica se o indivíduo já concorreu a algum cargo público |
 | `hasBeenElected` | Indica se o indivíduo já foi eleito |
 | `numberOfTimesRanForOffice` | Número de vezes que concorreu a cargos públicos |
@@ -2300,7 +2300,7 @@ Campos principais do retorno:
 | `electionData` | Dados detalhados sobre candidaturas e eleições |
 | `accountability` | Dados de prestação de contas |
 | `assetsList` | Lista de bens declarados |
-| `providersRanking` | Ranking de fornecedores |
+| `suppliersRanking` | Ranking de fornecedores |
 | `donorsRanking` | Ranking de doadores |
 
 Exemplo com `curl`:
@@ -2394,7 +2394,7 @@ Consulta doações eleitorais realizadas por uma pessoa.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `totalDonationsAmount` | Quantidade total de doações realizadas |
 | `totalDonatedValue` | Valor total doado |
 | `quantityOfDonationsLastElection` | Quantidade de doações na última eleição |
@@ -2487,7 +2487,7 @@ Consulta indicadores de envolvimento político de uma pessoa.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `electionsCount` | Número de eleições nas quais o indivíduo participou |
 | `isCurrentlyInOffice` | Indica se está atualmente em cargo público |
 | `wasFormerlyElected` | Indica se já foi eleito anteriormente |
@@ -2547,7 +2547,7 @@ Campos principais do retorno:
 </Note>
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `totalMembers` | Número total de membros da família |
 | `policalMembers` | Número de membros políticos na família |
 | `currentlyElectedMembers` | Número de membros atualmente eleitos |
@@ -2631,7 +2631,7 @@ Consulta prestadores de serviço eleitorais associados à pessoa.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `name` | Nome do indivíduo ou entidade |
 | `partiesThatReceivedProvision` | Lista dos partidos que receberam provisões |
 | `electionProvisionData` | Dados detalhados sobre provisões eleitorais |

@@ -16,7 +16,7 @@ Use este arquivo quando precisar de contexto rápido para integrar com a API idC
 ## Como escolher o arquivo certo
 
 | Necessidade | Use |
-| --- | --- |
+| --- |
 | Entender a estrutura da documentação | https://api-docs.idcerberus.com/llms.txt |
 | Gerar integração, curl ou escolher service | https://api-docs.idcerberus.com/llms-small.txt |
 | Consultar payloads e responses por service | https://api-docs.idcerberus.com/llms-api-reference.txt |
@@ -42,7 +42,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 ### Recursos que um MCP pode expor
 
 | Recurso | Uso no MCP |
-| --- | --- |
+| --- |
 | https://api-docs.idcerberus.com/llms.txt | Manifesto, regras, URLs principais e atalhos. |
 | https://api-docs.idcerberus.com/llms-small.txt | Contexto curto para gerar integração, curl e explicação. |
 | https://api-docs.idcerberus.com/llms-api-reference.txt | Payloads, responses e exemplos por service. |
@@ -75,7 +75,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 ## Atalhos de services mais usados
 
 | Caso | Service | Campos principais | Guia/API |
-| --- | --- | --- | --- |
+| --- | --- |
 | CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
@@ -102,12 +102,12 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 ## Diagnóstico rápido de erro
 
 | Sintoma | Interpretação provável | Ação recomendada |
-| --- | --- | --- |
+| --- |
 | `401 Unauthorized` | Token ausente, expirado ou inválido. | Gerar novo token em `/api/token-generate`. |
 | `Don't have access to the service` | Produto sem service ativo/API habilitada ou alias errado. | Conferir configuração do produto e alias de chamada. |
 | Imagem ausente | Payload não enviou `image1`, `image2`, URL ou `key` esperado. | Conferir o OCR chamado e montar o JSON novamente. |
 | `result: {}` | Consulta processou, mas não retornou dado útil. | Validar imagem, massa, configuração do produto e tipo correto do service. |
-| `onboardingStatus: ERROR` | Falha técnica no fluxo, storage, parceiro ou processamento. | Usar `externalId`, horário e ambiente para investigar. |
+| `onboardingStatus: ERROR` | Falha técnica , storage, processamento externo ou processamento. | Usar `externalId`, horário e ambiente para investigar. |
 | Campo esperado ausente | O campo pode não existir no documento/base ou não ter sido extraído. | Não inventar valor; explicar que o retorno traz apenas dados disponíveis. |
 
 ## Ambientes
@@ -145,8 +145,8 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 - Pessoa Física - Busca de face na base: `SERVICE_FACE_INDEX` | campos: image1 | busca: PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces
 - Pessoa Física - Certidão de Nada Consta: `SERVICE_NOTHING_RECORD_LAWSUITS` | campos: cpf, court, uf, sphere | busca: PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão
 - Pessoa Física - Certidão negativa de protesto: `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | campos: cpf | busca: PF - Certidão negativa de protesto
-- Pessoa Física - Certidão negativa de protesto PF (InfoSimples): `SERVICE_PROTEST_PF` | campos: cpf | busca: PF - Certidão negativa de protesto PF (InfoSimples)
-- Pessoa Física - Certidão negativa de protesto PF (Netrin): `SERVICE_PROTEST_PF` | campos: cpf | busca: PF - Certidão negativa de protesto PF (Netrin)
+- Pessoa Física - Certidão negativa de protesto PF: `SERVICE_PROTEST_PF` | campos: cpf | busca: PF - Certidão negativa de protesto PF
+- Pessoa Física - Certidão negativa de protesto PF: `SERVICE_PROTEST_PF` | campos: cpf | busca: PF - Certidão negativa de protesto PF
 - Pessoa Física - Consulta de MEI: `SERVICE_MEI` | campos: cpf | busca: PF - Consulta de MEI
 - Pessoa Física - CPF na Receita Federal on-demand: `SERVICE_RFB_PF_ON_DEMAND` | campos: cpf | busca: CPF Receita Federal, PF - CPF na Receita Federal on-demand
 - Pessoa Física - Dados demográficos: `SERVICE_DEMOGRAPHIC_DATA_CPF` | campos: cpf, birthDate | busca: CPF Receita Federal, PF - Dados demográficos
@@ -161,7 +161,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 - Pessoa Física - Endereços: `SERVICE_ADDRESS` | campos: cpf | busca: PF - Endereços
 - Pessoa Física - Enriquecimento de dados: `SERVICE_PERSON_DATA_ENRICHMENT` | campos: cpf | busca: PF - Enriquecimento de dados
 - Pessoa Física - Envolvimento político: `SERVICE_POLITICAL_INVOLVEMENT` | campos: cpf | busca: PF - Envolvimento político
-- Pessoa Física - Envolvimento político PF (BigDataCorp): `SERVICE_POLITICAL_INVOLVEMENT_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp)
+- Pessoa Física - Envolvimento político PF: `SERVICE_POLITICAL_INVOLVEMENT_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Envolvimento político PF
 - Pessoa Física - Exposição e perfil na mídia: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | campos: cpf | busca: PF - Exposição e perfil na mídia
 - Pessoa Física - FaceMatch: `SERVICE_FACE_MATCH` | campos: image1, image2 | busca: PF - FaceMatch, comparação facial biometria selfie rosto
 - Pessoa Física - Histórico de e-mails: `SERVICE_EMAILS_EXTENDED` | campos: cpf, limit | busca: PF - Histórico de e-mails, email validação contato

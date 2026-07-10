@@ -21,30 +21,29 @@ const serviceAliasRowsPessoaFisica = serviceAliasRows.filter(([documentedAlias])
 const serviceAliasRowsPessoaJuridica = serviceAliasRows.filter(([documentedAlias]) => documentedAlias.includes('SERVICE_PROTEST_PJ'));
 
 function pushServiceAliasNote(lines, { includeDocumentPayloadNote = false, rows = serviceAliasRows } = {}) {
+  const aliases = [...new Set(rows.map(([, callAlias]) => callAlias))].sort();
+
   lines.push('<Warning>');
-  lines.push('  Antes de executar a chamada, confirme qual alias está liberado no produto');
-  lines.push('  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns');
-  lines.push('  casos, ele é mais curto que o alias documentado no catálogo.');
+  lines.push(' Antes de executar a chamada, confirme qual service est\u00e1 liberado no produto');
+  lines.push(' do cliente. O campo `service` deve receber o alias p\u00fablico de chamada,');
+  lines.push(' exatamente como aparece no cat\u00e1logo abaixo.');
   lines.push('</Warning>');
   lines.push('');
-  lines.push('Na prática: se o alias configurado no produto for diferente do alias abaixo,');
-  lines.push('use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo');
-  lines.push('quando o produto está ativo.');
+  lines.push('Na pr\u00e1tica: copie o valor da coluna `Service` e envie esse valor no body.');
+  lines.push('A documenta\u00e7\u00e3o n\u00e3o exp\u00f5e aliases internos de integra\u00e7\u00e3o; o cliente deve');
+  lines.push('usar somente o service liberado no produto.');
   lines.push('');
-  lines.push('| Alias documentado | Alias de chamada quando configurado no produto |');
-  lines.push('| --- | --- |');
-  for (const [documentedAlias, callAlias] of rows) {
-    const documented = documentedAlias.split(', ').map((alias) => `\`${alias}\``).join(', ');
-    lines.push(`| ${documented} | \`${callAlias}\` |`);
-  }
+  lines.push('| Service |');
+  lines.push('| --- |');
+  for (const alias of aliases) lines.push(`| \`${alias}\` |`);
   lines.push('');
 
   if (includeDocumentPayloadNote) {
     lines.push('<Info>');
-    lines.push('  OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64,');
-    lines.push('  URL ou `key` real para retornar dados completos. Payload curto ajuda a');
-    lines.push('  validar autenticação, acesso ao produto e formato básico da chamada, mas');
-    lines.push('  não valida o retorno completo do parceiro.');
+    lines.push(' OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64,');
+    lines.push(' URL ou `key` real para retornar dados completos. Payload curto ajuda a');
+    lines.push(' validar autentica\u00e7\u00e3o, acesso ao produto e formato b\u00e1sico da chamada, mas');
+    lines.push(' n\u00e3o valida o retorno completo do processamento.');
     lines.push('</Info>');
     lines.push('');
   }
@@ -292,9 +291,9 @@ function extractOpenApiSummary(content) {
     lines.push(`- ${item.summary}: \`${item.service}\``);
     if (item.requestBody) {
       lines.push('');
-      lines.push('  ```yaml');
-      lines.push(item.requestBody.split('\n').map((line) => `  ${line}`).join('\n'));
-      lines.push('  ```');
+      lines.push(' ```yaml');
+      lines.push(item.requestBody.split('\n').map((line) => ` ${line}`).join('\n'));
+      lines.push(' ```');
       lines.push('');
     }
   }
@@ -357,84 +356,84 @@ function buildServicesCatalog(openApiServices) {
 }
 
 const partnerApiServices = [
-  ['SERVICE_ACTIVITIES_INDICATORS', 'Indicadores de atividades (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ACTIVITIES_INDICATORS', cpf: 'cpf' }],
-  ['SERVICE_ACTIVE_DEBT_PF', 'Débitos ativos PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ACTIVE_DEBT_PF', cpf: 'cpf' }],
-  ['SERVICE_ADDRESS', 'Endereços (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ADDRESS', cpf: 'cpf' }],
-  ['SERVICE_AWARDS_AND_CERTIFICATIONS_CPF', 'Prêmios e certificações PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_AWARDS_AND_CERTIFICATIONS_CPF', cpf: 'cpf' }],
-  ['SERVICE_CREDIT_SCORE', 'Score de crédito (Assertiva)', 'Pessoa Física', { service: 'SERVICE_CREDIT_SCORE', cpf: 'cpf' }],
-  ['SERVICE_CPF_ADDRESS_VALIDATION', 'Validação de CPF com endereço (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CPF_ADDRESS_VALIDATION', cpf: 'cpf', zipcode: '00000-000', numberAddress: 13 }],
-  ['SERVICE_CPF_PHONE_VALIDATION', 'Validação de CPF com telefone (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CPF_PHONE_VALIDATION', cpf: 'cpf', phone: '11900000000' }],
-  ['SERVICE_CPF_PHONE_VALIDATION', 'Validação de CPF com telefone (Facetec)', 'Pessoa Física', { service: 'SERVICE_CPF_PHONE_VALIDATION', cpf: 'cpf', phone: '11900000000' }],
-  ['SERVICE_CONFIRM_PHONE', 'Obtenção de dados pelo telefone (Facetec)', 'Pessoa Física', { service: 'SERVICE_CONFIRM_PHONE', phone: '+5561123456789' }],
-  ['SERVICE_CRIMINAL_RECORD_CIVIL', 'Antecedentes criminais civis (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CRIMINAL_RECORD_CIVIL', cpf: 'cpf', rg: 'rg', uf: 'uf' }],
-  ['SERVICE_CRIMINAL_RECORD_FEDERAL', 'Antecedentes criminais federais (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_CRIMINAL_RECORD_FEDERAL', cpf: 'cpf' }],
-  ['SERVICE_DEFAULT_RISK_SCORE', 'Score de inadimplência (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_DEFAULT_RISK_SCORE', cpf: 'cpf' }],
-  ['SERVICE_DEFAULT_RISK_SCORE', 'Score de risco de inadimplência Quantum (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_DEFAULT_RISK_SCORE', cpf: 'cpf' }],
-  ['SERVICE_DEMOGRAPHIC_DATA_CPF', 'Dados sociodemográficos PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_DEMOGRAPHIC_DATA_CPF', cpf: 'cpf', birthDate: 'yyyy-MM-dd (opcional)' }],
-  ['SERVICE_DIGITAL_DOCUMENTOSCOPY', 'Documentoscopia digital (Acertpix)', 'Pessoa Física', { service: 'SERVICE_DIGITAL_DOCUMENTOSCOPY', key: '{key}', image1: 'base64', image2: 'base64', selfie1: 'base64' }],
-  ['SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT', 'Consulta da documentoscopia digital (Acertpix)', 'Pessoa Física', { service: 'SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT', key: '{key}' }],
-  ['SERVICE_DOMAINS_CPF', 'Domínios PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_DOMAINS_CPF', cpf: 'cpf' }],
-  ['SERVICE_ECONOMIC_RELATIONSHIP', 'Relacionamentos econômicos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ECONOMIC_RELATIONSHIP', cpf: 'cpf' }],
-  ['SERVICE_ELECTION_CANDIDATE_DATA_CPF', 'Dados eleitorais de candidato PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ELECTION_CANDIDATE_DATA_CPF', cpf: 'cpf' }],
-  ['SERVICE_ELECTORAL_DONORS_CPF', 'Doações eleitorais PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ELECTORAL_DONORS_CPF', cpf: 'cpf' }],
-  ['SERVICE_ELECTORAL_PROVIDERS_CPF', 'Prestadores de serviços eleitorais PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ELECTORAL_PROVIDERS_CPF', cpf: 'cpf' }],
-  ['SERVICE_EMAILS_EXTENDED', 'Histórico de e-mails (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_EMAILS_EXTENDED', cpf: 'cpf' }],
-  ['SERVICE_EMAIL_VALIDATION', 'Validação de e-mail (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_EMAIL_VALIDATION', email: 'email@email.com' }],
-  ['SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', 'Qualificação cadastral no eSocial (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', cpf: 'cpf', nit: 'nit (opcional)' }],
-  ['SERVICE_FACE_INDEX', 'Busca de face na base (AWS)', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', cpf: 'cpf (opcional para busca)', image1: 'base64' }],
-  ['SERVICE_FACE_MATCH', 'FaceMatch (AWS)', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
-  ['SERVICE_FACE_MATCH', 'FaceMatch (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
-  ['SERVICE_FAMILY_SOCIAL_BENEFITS', 'Benefícios sociais familiares (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FAMILY_SOCIAL_BENEFITS', cpf: 'cpf' }],
-  ['SERVICE_FAMILY_POLITICAL_HISTORY_CPF', 'Histórico político familiar PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FAMILY_POLITICAL_HISTORY_CPF', cpf: 'cpf' }],
-  ['SERVICE_FINANCIAL_INFORMATION', 'Informações financeiras (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FINANCIAL_INFORMATION', cpf: 'cpf' }],
-  ['SERVICE_FRAUD_RISK_SCORE', 'Score de risco de fraude (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_FRAUD_RISK_SCORE', cpf: 'cpf', factor: 'minRisk or minattrition' }],
-  ['SERVICE_JURIDICAL_PROCESSES', 'Processos jurídicos e administrativos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_JURIDICAL_PROCESSES', cpf: 'cpf' }],
-  ['SERVICE_LIVENESS_2D', 'Liveness 2D (Facetec)', 'Pessoa Física', { service: 'SERVICE_LIVENESS_2D', image1: 'selfie' }],
-  ['SERVICE_MEDIA_PROFILE_EXPOSURE_PF', 'Exposição e perfil na mídia PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PF', cpf: 'cpf' }],
-  ['SERVICE_MEI', 'Consulta de MEI (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_MEI', cpf: 'cpf' }],
-  ['SERVICE_NOTHING_RECORD_LAWSUITS', 'Nada consta de ações judiciais (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_NOTHING_RECORD_LAWSUITS', cpf: 'cpf', court: 'TRF1', uf: 'uf', sphere: 'CIVIL' }],
+  ['SERVICE_ACTIVITIES_INDICATORS', 'Indicadores de atividades', 'Pessoa Física', { service: 'SERVICE_ACTIVITIES_INDICATORS', cpf: 'cpf' }],
+  ['SERVICE_ACTIVE_DEBT_PF', 'Débitos ativos PF', 'Pessoa Física', { service: 'SERVICE_ACTIVE_DEBT_PF', cpf: 'cpf' }],
+  ['SERVICE_ADDRESS', 'Endereços', 'Pessoa Física', { service: 'SERVICE_ADDRESS', cpf: 'cpf' }],
+  ['SERVICE_AWARDS_AND_CERTIFICATIONS_CPF', 'Prêmios e certificações PF', 'Pessoa Física', { service: 'SERVICE_AWARDS_AND_CERTIFICATIONS_CPF', cpf: 'cpf' }],
+  ['SERVICE_CREDIT_SCORE', 'Score de crédito', 'Pessoa Física', { service: 'SERVICE_CREDIT_SCORE', cpf: 'cpf' }],
+  ['SERVICE_CPF_ADDRESS_VALIDATION', 'Validação de CPF com endereço', 'Pessoa Física', { service: 'SERVICE_CPF_ADDRESS_VALIDATION', cpf: 'cpf', zipcode: '00000-000', numberAddress: 13 }],
+  ['SERVICE_CPF_PHONE_VALIDATION', 'Validação de CPF com telefone', 'Pessoa Física', { service: 'SERVICE_CPF_PHONE_VALIDATION', cpf: 'cpf', phone: '11900000000' }],
+  ['SERVICE_CPF_PHONE_VALIDATION', 'Validação de CPF com telefone', 'Pessoa Física', { service: 'SERVICE_CPF_PHONE_VALIDATION', cpf: 'cpf', phone: '11900000000' }],
+  ['SERVICE_CONFIRM_PHONE', 'Obtenção de dados pelo telefone', 'Pessoa Física', { service: 'SERVICE_CONFIRM_PHONE', phone: '+5561123456789' }],
+  ['SERVICE_CRIMINAL_RECORD_CIVIL', 'Antecedentes criminais civis', 'Pessoa Física', { service: 'SERVICE_CRIMINAL_RECORD_CIVIL', cpf: 'cpf', rg: 'rg', uf: 'uf' }],
+  ['SERVICE_CRIMINAL_RECORD_FEDERAL', 'Antecedentes criminais federais', 'Pessoa Física', { service: 'SERVICE_CRIMINAL_RECORD_FEDERAL', cpf: 'cpf' }],
+  ['SERVICE_DEFAULT_RISK_SCORE', 'Score de inadimplência', 'Pessoa Física', { service: 'SERVICE_DEFAULT_RISK_SCORE', cpf: 'cpf' }],
+  ['SERVICE_DEFAULT_RISK_SCORE', 'Score de inadimpl\u00eancia', 'Pessoa Física', { service: 'SERVICE_DEFAULT_RISK_SCORE', cpf: 'cpf' }],
+  ['SERVICE_DEMOGRAPHIC_DATA_CPF', 'Dados sociodemográficos PF', 'Pessoa Física', { service: 'SERVICE_DEMOGRAPHIC_DATA_CPF', cpf: 'cpf', birthDate: 'yyyy-MM-dd (opcional)' }],
+  ['SERVICE_DIGITAL_DOCUMENTOSCOPY', 'Documentoscopia digital', 'Pessoa Física', { service: 'SERVICE_DIGITAL_DOCUMENTOSCOPY', key: '{key}', image1: 'base64', image2: 'base64', selfie1: 'base64' }],
+  ['SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT', 'Consulta da documentoscopia digital', 'Pessoa Física', { service: 'SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT', key: '{key}' }],
+  ['SERVICE_DOMAINS_CPF', 'Domínios PF', 'Pessoa Física', { service: 'SERVICE_DOMAINS_CPF', cpf: 'cpf' }],
+  ['SERVICE_ECONOMIC_RELATIONSHIP', 'Relacionamentos econômicos', 'Pessoa Física', { service: 'SERVICE_ECONOMIC_RELATIONSHIP', cpf: 'cpf' }],
+  ['SERVICE_ELECTION_CANDIDATE_DATA_CPF', 'Dados eleitorais de candidato PF', 'Pessoa Física', { service: 'SERVICE_ELECTION_CANDIDATE_DATA_CPF', cpf: 'cpf' }],
+  ['SERVICE_ELECTORAL_DONORS_CPF', 'Doações eleitorais PF', 'Pessoa Física', { service: 'SERVICE_ELECTORAL_DONORS_CPF', cpf: 'cpf' }],
+  ['SERVICE_ELECTORAL_PROVIDERS_CPF', 'Prestadores de serviços eleitorais PF', 'Pessoa Física', { service: 'SERVICE_ELECTORAL_PROVIDERS_CPF', cpf: 'cpf' }],
+  ['SERVICE_EMAILS_EXTENDED', 'Histórico de e-mails', 'Pessoa Física', { service: 'SERVICE_EMAILS_EXTENDED', cpf: 'cpf' }],
+  ['SERVICE_EMAIL_VALIDATION', 'Validação de e-mail', 'Pessoa Física', { service: 'SERVICE_EMAIL_VALIDATION', email: 'email@email.com' }],
+  ['SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', 'Qualificação cadastral no eSocial', 'Pessoa Física', { service: 'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', cpf: 'cpf', nit: 'nit (opcional)' }],
+  ['SERVICE_FACE_INDEX', 'Busca de face na base', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', cpf: 'cpf (opcional para busca)', image1: 'base64' }],
+  ['SERVICE_FACE_MATCH', 'FaceMatch', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
+  ['SERVICE_FACE_MATCH', 'FaceMatch', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
+  ['SERVICE_FAMILY_SOCIAL_BENEFITS', 'Benefícios sociais familiares', 'Pessoa Física', { service: 'SERVICE_FAMILY_SOCIAL_BENEFITS', cpf: 'cpf' }],
+  ['SERVICE_FAMILY_POLITICAL_HISTORY_CPF', 'Histórico político familiar PF', 'Pessoa Física', { service: 'SERVICE_FAMILY_POLITICAL_HISTORY_CPF', cpf: 'cpf' }],
+  ['SERVICE_FINANCIAL_INFORMATION', 'Informações financeiras', 'Pessoa Física', { service: 'SERVICE_FINANCIAL_INFORMATION', cpf: 'cpf' }],
+  ['SERVICE_FRAUD_RISK_SCORE', 'Score de risco de fraude', 'Pessoa Física', { service: 'SERVICE_FRAUD_RISK_SCORE', cpf: 'cpf', factor: 'minRisk or minattrition' }],
+  ['SERVICE_JURIDICAL_PROCESSES', 'Processos jurídicos e administrativos', 'Pessoa Física', { service: 'SERVICE_JURIDICAL_PROCESSES', cpf: 'cpf' }],
+  ['SERVICE_LIVENESS_2D', 'Liveness 2D', 'Pessoa Física', { service: 'SERVICE_LIVENESS_2D', image1: 'selfie' }],
+  ['SERVICE_MEDIA_PROFILE_EXPOSURE_PF', 'Exposição e perfil na mídia PF', 'Pessoa Física', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PF', cpf: 'cpf' }],
+  ['SERVICE_MEI', 'Consulta de MEI', 'Pessoa Física', { service: 'SERVICE_MEI', cpf: 'cpf' }],
+  ['SERVICE_NOTHING_RECORD_LAWSUITS', 'Nada consta de ações judiciais', 'Pessoa Física', { service: 'SERVICE_NOTHING_RECORD_LAWSUITS', cpf: 'cpf', court: 'TRF1', uf: 'uf', sphere: 'CIVIL' }],
   ['SERVICE_OCR', 'OCR React', 'Pessoa Física', { service: 'SERVICE_OCR', documentType: 'RG, CNH, OAB, RNE, PASSAPORT ou IDENTIFICATION_DOCUMENT', image1: 'base64', image2: 'base64 (obrigatorio para documentos com frente e verso; opcional para identificacao automatica)' }],
   ['SERVICE_OCR_EMANCIPATION', 'OCR de documento de emancipação', 'Pessoa Física', { service: 'SERVICE_OCR_EMANCIPATION', image1: 'base64' }],
-  ['SERVICE_OCR_PROOF_OF_ADDRESS', 'OCR de comprovante de endereço (Textract)', 'Pessoa Física', { service: 'SERVICE_OCR_PROOF_OF_ADDRESS', image1: 'base64' }],
+  ['SERVICE_OCR_PROOF_OF_ADDRESS', 'OCR de comprovante de endereço', 'Pessoa Física', { service: 'SERVICE_OCR_PROOF_OF_ADDRESS', image1: 'base64' }],
   ['SERVICE_PEP', 'Pessoa politicamente exposta', 'Pessoa Física', { service: 'SERVICE_PEP', cpf: 'cpf' }],
-  ['SERVICE_PERSON_DATA_ENRICHMENT', 'Enriquecimento de dados PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PERSON_DATA_ENRICHMENT', cpf: 'cpf' }],
-  ['SERVICE_PHONE_HISTORY', 'Histórico de telefones (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PHONE_HISTORY', cpf: 'cpf' }],
-  ['SERVICE_PIS_CONSULTATION', 'Consulta do PIS (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PIS_CONSULTATION', cpf: 'cpf' }],
-  ['SERVICE_POLITICAL_INVOLVEMENT', 'Envolvimento político (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_POLITICAL_INVOLVEMENT', cpf: 'cpf' }],
-  ['SERVICE_POLITICAL_INVOLVEMENT_CPF', 'Envolvimento político PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_POLITICAL_INVOLVEMENT_CPF', cpf: 'cpf' }],
-  ['SERVICE_PROFESSIONAL_HISTORY', 'Histórico profissional (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PROFESSIONAL_HISTORY', cpf: 'cpf' }],
-  ['SERVICE_PROTEST_CLEARANCE_CERTIFICATE', 'Certidão negativa de protesto (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PROTEST_CLEARANCE_CERTIFICATE', cpf: 'cpf' }],
-  ['SERVICE_PROTEST_PF', 'Certidão negativa de protesto PF (InfoSimples)', 'Pessoa Física', { service: 'SERVICE_PROTEST_PF', cpf: 'cpf' }],
-  ['SERVICE_PROTEST_PF', 'Certidão negativa de protesto PF (Netrin)', 'Pessoa Física', { service: 'SERVICE_PROTEST_PF', cpf: 'cpf' }],
-  ['SERVICE_PUBLIC_SERVANTS', 'Servidores públicos (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_PUBLIC_SERVANTS', cpf: 'cpf' }],
-  ['SERVICE_RELATED_PEOPLE', 'Pessoas relacionadas (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_RELATED_PEOPLE', cpf: 'cpf' }],
-  ['SERVICE_RFB_PF', 'CPF na Receita Federal (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_RFB_PF', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' }],
-  ['SERVICE_SOCIAL_ASSISTANCE_EXTENDED', 'Benefícios sociais estendidos PF (BigDataCorp)', 'Pessoa Física', { service: 'SERVICE_SOCIAL_ASSISTANCE_EXTENDED', cpf: 'cpf' }],
-  ['SERVICE_ACTIVE_DEBT_PJ', 'Débitos ativos PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ACTIVE_DEBT_PJ', cnpj: 'cnpj' }],
-  ['SERVICE_ADDRESSES_EXTENDED_CNPJ', 'Endereços estendidos CNPJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ADDRESSES_EXTENDED_CNPJ', cnpj: 'cnpj' }],
-  ['SERVICE_COMPANY_KYC_OWNERS', 'KYC e compliance dos sócios (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_KYC_OWNERS', cnpj: 'cnpj' }],
-  ['SERVICE_COMPANY_RELATIONSHIP', 'Relacionamentos de empresa (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_RELATIONSHIP', cnpj: 'cnpj' }],
-  ['SERVICE_COMPANY_RFB_OWNERS', 'Sócios na Receita Federal (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_RFB_OWNERS', cnpj: 'cnpj' }],
-  ['SERVICE_COMPLIANCE_BET', 'Compliance de casas de apostas (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPLIANCE_BET', cnpj: 'cnpj' }],
-  ['SERVICE_COMPLIANCE_BET_PJ', 'Compliance de casas de apostas PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_COMPLIANCE_BET_PJ', cnpj: 'cnpj' }],
-  ['SERVICE_CORPORATE_DATA_ENRICHMENT', 'Enriquecimento de dados PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_CORPORATE_DATA_ENRICHMENT', cnpj: 'cnpj' }],
-  ['SERVICE_CREDIT_RISK_COMPANY', 'Risco de crédito PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_CREDIT_RISK_COMPANY', cnpj: 'cnpj' }],
-  ['SERVICE_CREDIT_RISK_COMPANY', 'Risco de crédito PJ Murabei (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_CREDIT_RISK_COMPANY', cnpj: 'cnpj' }],
-  ['SERVICE_DAS_MEI', 'DAS MEI na Receita (InfoSimples)', 'Pessoa Jurídica', { service: 'SERVICE_DAS_MEI', cnpj: 'cnpj' }],
-  ['SERVICE_DOMAINS_CNPJ', 'Domínios CNPJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_DOMAINS_CNPJ', cnpj: 'cnpj' }],
-  ['SERVICE_ELECTORAL_DONORS_CNPJ', 'Doações eleitorais PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ELECTORAL_DONORS_CNPJ', cnpj: 'cnpj' }],
-  ['SERVICE_ELECTORAL_PROVIDERS_CNPJ', 'Fornecedores eleitorais PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_ELECTORAL_PROVIDERS_CNPJ', cnpj: 'cnpj' }],
-  ['SERVICE_FIRST_LEVEL_PARTNER', 'Sócios de primeiro nível (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_FIRST_LEVEL_PARTNER', cnpj: 'cnpj' }],
-  ['SERVICE_JURIDICAL_PROCESSES_PJ', 'Processos jurídicos PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_JURIDICAL_PROCESSES_PJ', cnpj: 'cnpj' }],
-  ['SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS', 'Processos jurídicos dos sócios (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS', cnpj: 'cnpj' }],
-  ['SERVICE_MEDIA_PROFILE_EXPOSURE_PJ', 'Exposição e perfil na mídia PJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PJ', cnpj: 'cnpj' }],
-  ['SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ', 'Doações eleitorais dos sócios (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ', cnpj: 'cnpj' }],
-  ['SERVICE_PROTEST_PJ', 'Certidão negativa de protesto PJ (InfoSimples)', 'Pessoa Jurídica', { service: 'SERVICE_PROTEST_PJ', cnpj: 'cnpj' }],
-  ['SERVICE_PROTEST_PJ', 'Certidão negativa de protesto PJ (Netrin)', 'Pessoa Jurídica', { service: 'SERVICE_PROTEST_PJ', cnpj: 'cnpj' }],
-  ['SERVICE_OCR_CNPJ_CARD', 'OCR de cartão CNPJ (Textract)', 'Pessoa Jurídica', { service: 'SERVICE_OCR_CNPJ_CARD', image1: 'base64' }],
-  ['SERVICE_REGISTRATION_DATA_CNPJ', 'Dados cadastrais de CNPJ (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_REGISTRATION_DATA_CNPJ', cnpj: 'cnpj' }],
-  ['SERVICE_RFB_PJ', 'CNPJ na Receita Federal (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_RFB_PJ', cnpj: 'cnpj' }],
-  ['SERVICE_SINTEGRA_CONSULTATION', 'Consulta do SINTEGRA (BigDataCorp)', 'Pessoa Jurídica', { service: 'SERVICE_SINTEGRA_CONSULTATION', cnpj: 'cnpj', uf: 'uf (opcional)' }],
+  ['SERVICE_PERSON_DATA_ENRICHMENT', 'Enriquecimento de dados PF', 'Pessoa Física', { service: 'SERVICE_PERSON_DATA_ENRICHMENT', cpf: 'cpf' }],
+  ['SERVICE_PHONE_HISTORY', 'Histórico de telefones', 'Pessoa Física', { service: 'SERVICE_PHONE_HISTORY', cpf: 'cpf' }],
+  ['SERVICE_PIS_CONSULTATION', 'Consulta do PIS', 'Pessoa Física', { service: 'SERVICE_PIS_CONSULTATION', cpf: 'cpf' }],
+  ['SERVICE_POLITICAL_INVOLVEMENT', 'Envolvimento político', 'Pessoa Física', { service: 'SERVICE_POLITICAL_INVOLVEMENT', cpf: 'cpf' }],
+  ['SERVICE_POLITICAL_INVOLVEMENT_CPF', 'Envolvimento político PF', 'Pessoa Física', { service: 'SERVICE_POLITICAL_INVOLVEMENT_CPF', cpf: 'cpf' }],
+  ['SERVICE_PROFESSIONAL_HISTORY', 'Histórico profissional', 'Pessoa Física', { service: 'SERVICE_PROFESSIONAL_HISTORY', cpf: 'cpf' }],
+  ['SERVICE_PROTEST_CLEARANCE_CERTIFICATE', 'Certidão negativa de protesto', 'Pessoa Física', { service: 'SERVICE_PROTEST_CLEARANCE_CERTIFICATE', cpf: 'cpf' }],
+  ['SERVICE_PROTEST_PF', 'Certidão negativa de protesto PF', 'Pessoa Física', { service: 'SERVICE_PROTEST_PF', cpf: 'cpf' }],
+  ['SERVICE_PROTEST_PF', 'Certidão negativa de protesto PF', 'Pessoa Física', { service: 'SERVICE_PROTEST_PF', cpf: 'cpf' }],
+  ['SERVICE_PUBLIC_SERVANTS', 'Servidores públicos', 'Pessoa Física', { service: 'SERVICE_PUBLIC_SERVANTS', cpf: 'cpf' }],
+  ['SERVICE_RELATED_PEOPLE', 'Pessoas relacionadas', 'Pessoa Física', { service: 'SERVICE_RELATED_PEOPLE', cpf: 'cpf' }],
+  ['SERVICE_RFB_PF', 'CPF na Receita Federal', 'Pessoa Física', { service: 'SERVICE_RFB_PF', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' }],
+  ['SERVICE_SOCIAL_ASSISTANCE_EXTENDED', 'Benefícios sociais estendidos PF', 'Pessoa Física', { service: 'SERVICE_SOCIAL_ASSISTANCE_EXTENDED', cpf: 'cpf' }],
+  ['SERVICE_ACTIVE_DEBT_PJ', 'Débitos ativos PJ', 'Pessoa Jurídica', { service: 'SERVICE_ACTIVE_DEBT_PJ', cnpj: 'cnpj' }],
+  ['SERVICE_ADDRESSES_EXTENDED_CNPJ', 'Endereços estendidos CNPJ', 'Pessoa Jurídica', { service: 'SERVICE_ADDRESSES_EXTENDED_CNPJ', cnpj: 'cnpj' }],
+  ['SERVICE_COMPANY_KYC_OWNERS', 'KYC e compliance dos sócios', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_KYC_OWNERS', cnpj: 'cnpj' }],
+  ['SERVICE_COMPANY_RELATIONSHIP', 'Relacionamentos de empresa', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_RELATIONSHIP', cnpj: 'cnpj' }],
+  ['SERVICE_COMPANY_RFB_OWNERS', 'Sócios na Receita Federal', 'Pessoa Jurídica', { service: 'SERVICE_COMPANY_RFB_OWNERS', cnpj: 'cnpj' }],
+  ['SERVICE_COMPLIANCE_BET', 'Compliance de casas de apostas', 'Pessoa Jurídica', { service: 'SERVICE_COMPLIANCE_BET', cnpj: 'cnpj' }],
+  ['SERVICE_COMPLIANCE_BET_PJ', 'Compliance de casas de apostas PJ', 'Pessoa Jurídica', { service: 'SERVICE_COMPLIANCE_BET_PJ', cnpj: 'cnpj' }],
+  ['SERVICE_CORPORATE_DATA_ENRICHMENT', 'Enriquecimento de dados PJ', 'Pessoa Jurídica', { service: 'SERVICE_CORPORATE_DATA_ENRICHMENT', cnpj: 'cnpj' }],
+  ['SERVICE_CREDIT_RISK_COMPANY', 'Risco de crédito PJ', 'Pessoa Jurídica', { service: 'SERVICE_CREDIT_RISK_COMPANY', cnpj: 'cnpj' }],
+  ['SERVICE_CREDIT_RISK_COMPANY', 'Risco de crédito PJ ', 'Pessoa Jurídica', { service: 'SERVICE_CREDIT_RISK_COMPANY', cnpj: 'cnpj' }],
+  ['SERVICE_DAS_MEI', 'DAS MEI na Receita', 'Pessoa Jurídica', { service: 'SERVICE_DAS_MEI', cnpj: 'cnpj' }],
+  ['SERVICE_DOMAINS_CNPJ', 'Domínios CNPJ', 'Pessoa Jurídica', { service: 'SERVICE_DOMAINS_CNPJ', cnpj: 'cnpj' }],
+  ['SERVICE_ELECTORAL_DONORS_CNPJ', 'Doações eleitorais PJ', 'Pessoa Jurídica', { service: 'SERVICE_ELECTORAL_DONORS_CNPJ', cnpj: 'cnpj' }],
+  ['SERVICE_ELECTORAL_PROVIDERS_CNPJ', 'Fornecedores eleitorais PJ', 'Pessoa Jurídica', { service: 'SERVICE_ELECTORAL_PROVIDERS_CNPJ', cnpj: 'cnpj' }],
+  ['SERVICE_FIRST_LEVEL_PARTNER', 'Sócios de primeiro nível', 'Pessoa Jurídica', { service: 'SERVICE_FIRST_LEVEL_PARTNER', cnpj: 'cnpj' }],
+  ['SERVICE_JURIDICAL_PROCESSES_PJ', 'Processos jurídicos PJ', 'Pessoa Jurídica', { service: 'SERVICE_JURIDICAL_PROCESSES_PJ', cnpj: 'cnpj' }],
+  ['SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS', 'Processos jurídicos dos sócios', 'Pessoa Jurídica', { service: 'SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS', cnpj: 'cnpj' }],
+  ['SERVICE_MEDIA_PROFILE_EXPOSURE_PJ', 'Exposição e perfil na mídia PJ', 'Pessoa Jurídica', { service: 'SERVICE_MEDIA_PROFILE_EXPOSURE_PJ', cnpj: 'cnpj' }],
+  ['SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ', 'Doações eleitorais dos sócios', 'Pessoa Jurídica', { service: 'SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ', cnpj: 'cnpj' }],
+  ['SERVICE_PROTEST_PJ', 'Certidão negativa de protesto PJ', 'Pessoa Jurídica', { service: 'SERVICE_PROTEST_PJ', cnpj: 'cnpj' }],
+  ['SERVICE_PROTEST_PJ', 'Certidão negativa de protesto PJ', 'Pessoa Jurídica', { service: 'SERVICE_PROTEST_PJ', cnpj: 'cnpj' }],
+  ['SERVICE_OCR_CNPJ_CARD', 'OCR de cartão CNPJ', 'Pessoa Jurídica', { service: 'SERVICE_OCR_CNPJ_CARD', image1: 'base64' }],
+  ['SERVICE_REGISTRATION_DATA_CNPJ', 'Dados cadastrais de CNPJ', 'Pessoa Jurídica', { service: 'SERVICE_REGISTRATION_DATA_CNPJ', cnpj: 'cnpj' }],
+  ['SERVICE_RFB_PJ', 'CNPJ na Receita Federal', 'Pessoa Jurídica', { service: 'SERVICE_RFB_PJ', cnpj: 'cnpj' }],
+  ['SERVICE_SINTEGRA_CONSULTATION', 'Consulta do SINTEGRA', 'Pessoa Jurídica', { service: 'SERVICE_SINTEGRA_CONSULTATION', cnpj: 'cnpj', uf: 'uf (opcional)' }],
 ];
 
 function requestExampleFromBody(body) {
@@ -491,7 +490,7 @@ function callingAliasForService(service) {
   return aliasRowsForService(service)[0]?.[1] || service.service;
 }
 
-function partnerAliasesForService(service) {
+function servicesForService(service) {
   const aliases = aliasRowsForService(service)
     .flatMap(([documentedAlias]) => documentedAlias.split(', '))
     .filter((alias) => alias !== service.service);
@@ -661,7 +660,7 @@ function commonErrorsForService(service) {
   errors.push({
     statusCode: 500,
     message: 'Falha ao realizar consulta',
-    cause: 'Falha técnica no processamento, storage ou parceiro externo.',
+    cause: 'Falha t\u00e9cnica no processamento ou storage.',
     action: 'Investigar com `externalId`, horario, ambiente e service chamado.',
   });
 
@@ -707,7 +706,7 @@ function mcpHintsForService(service, curlExampleUrls) {
   }
 
   if (tags.has('bigdatacorp') || tags.has('assertiva') || tags.has('quantum') || tags.has('aws')) {
-    notes.push('Pode depender de provider externo, massa disponível e configuração do produto.');
+    notes.push('Pode depender de massa dispon\u00edvel e configura\u00e7\u00e3o do produto.');
   }
 
   return {
@@ -736,13 +735,13 @@ function mcpHintsForService(service, curlExampleUrls) {
 
 function enrichServiceForMcp(service, exampleFiles) {
   const callingAlias = callingAliasForService(service);
-  const partnerAliases = partnerAliasesForService(service);
+  const services = servicesForService(service);
   const curlExampleUrls = curlExamplesForService(service, exampleFiles);
 
   const enriched = {
     ...service,
     callingAlias,
-    partnerAliases,
+    services,
     requiredFields: requiredRequestFields(service),
     optionalFields: optionalRequestFields(service),
     payloadExample: payloadExampleForService(service),
@@ -766,7 +765,7 @@ function buildServicesCatalogMin(servicesCatalog) {
         service: service.service,
         name: service.name,
         callingAlias: service.callingAlias,
-        partnerAliases: service.partnerAliases,
+        services: service.services,
         category: service.category,
         tags: service.tags,
         requiredFields: service.requiredFields,
@@ -1137,8 +1136,8 @@ function renderApiReferenceText(servicesCatalog) {
   lines.push("curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \\");
   lines.push("--header 'Content-Type: application/json' \\");
   lines.push("--data '{");
-  lines.push('  "client": "{client}",');
-  lines.push('  "secret": "{secret}"');
+  lines.push(' "client": "{client}",');
+  lines.push(' "secret": "{secret}"');
   lines.push("}'");
   lines.push('```');
   lines.push('');
@@ -1195,24 +1194,24 @@ function pushSearchHowTo(lines) {
   lines.push('A busca funciona melhor quando o termo aparece como título, alias ou texto da página. Se não souber o alias exato, pesquise pelo tipo de documento, dado ou problema que quer resolver.');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push('  <Card title="Tenho um CPF" href="#pessoa-fisica">');
-  lines.push('    Pesquise por `cpf`, `receita`, `score`, `risco`, `telefone`, `email`, `ocr`, `face` ou `processos`.');
-  lines.push('  </Card>');
-  lines.push('  <Card title="Tenho um CNPJ" href="#pessoa-juridica">');
-  lines.push('    Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.');
-  lines.push('  </Card>');
-  lines.push('  <Card title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">');
-  lines.push('    Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.');
-  lines.push('  </Card>');
-  lines.push('  <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">');
-  lines.push('    Vá para o API Reference quando precisar de body, curl, response resumido e erro comum.');
-  lines.push('  </Card>');
+  lines.push(' <Card title="Tenho um CPF" href="#pessoa-fisica">');
+  lines.push(' Pesquise por `cpf`, `receita`, `score`, `risco`, `telefone`, `email`, `ocr`, `face` ou `processos`.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Tenho um CNPJ" href="#pessoa-juridica">');
+  lines.push(' Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">');
+  lines.push(' Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">');
+  lines.push(' Vá para o API Reference quando precisar de body, curl, response resumido e erro comum.');
+  lines.push(' </Card>');
   lines.push('</CardGroup>');
   lines.push('');
   lines.push('### Atalhos de busca');
   lines.push('');
   lines.push('| Digite na busca | O que deve aparecer |');
-  lines.push('| --- | --- |');
+  lines.push('| --- |');
   lines.push('| `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |');
   lines.push('| `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |');
   lines.push('| `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |');
@@ -1248,7 +1247,7 @@ function renderServicesIndex(catalog) {
       lines.push(`## ${currentCategory}`);
       lines.push('');
       lines.push('| Nome | Service | Campos principais | Termos de busca | Retorno principal |');
-      lines.push('| --- | --- | --- | --- | --- |');
+      lines.push('| --- | --- |');
     }
     const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
     lines.push(`| [${service.name}](${service.documentationUrl}) | \`${service.service}\` | ${fields} | ${escapeTable(displaySearchTerms(service))} | ${escapeTable(service.responseSummary)} |`);
@@ -1538,7 +1537,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', phone: '11900000000', match: true, confidence: 'HIGH', lineType: 'MOBILE' },
   },
   SERVICE_CPF_PHONE_VALIDATION: {
-    summary: 'Retorna validacao da associacao entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.',
+    summary: 'Retorna validacao da associacao entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta.',
     result: { cpf: 'cpf', phone: '11900000000', match: true, statusMessage: 'Telefone associado ao documento' },
   },
   SERVICE_CREDIT_RISK_COMPANY: {
@@ -1546,11 +1545,11 @@ const serviceReturnDetails = {
     result: { cnpj: 'cnpj', creditRisk: { status: 'APPROVED', score: '750', rating: 'A', expectedDefault: 'LOW', legalProcess: false } },
   },
   SERVICE_CREDIT_RISK_COMPANY: {
-    summary: 'Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.',
+    summary: 'Retorna dados de risco de cr\u00e9dito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.',
     result: { cnpj: 'cnpj', creditRisk: { status: 'APPROVED', score: '720', rating: 'B', expectedDefault: 'MEDIUM', legalProcess: false } },
   },
   SERVICE_CREDIT_SCORE: {
-    summary: 'Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.',
+    summary: 'Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.',
     result: { cpf: 'cpf', score: 750, riskLevel: 'LOW', message: 'Score calculado com sucesso' },
   },
   SERVICE_CRIMINAL_RECORD_CIVIL: {
@@ -1566,7 +1565,7 @@ const serviceReturnDetails = {
     result: { cnpj: 'cnpj', meiStatus: 'ACTIVE', periods: [{ period: '2026-01', paid: true }] },
   },
   SERVICE_DATAVALID_CNH: {
-    summary: 'Retorna validacao DataValid/Serpro da CNH, incluindo score biometrico, similaridade facial, status de validacao e campos conferidos.',
+    summary: 'Retorna validacao validação documental da CNH, incluindo score biometrico, similaridade facial, status de validacao e campos conferidos.',
     result: { cpf: 'cpf', biometricScore: 0.98, validated: true, validationStatus: 'APPROVED' },
   },
   SERVICE_DEFAULT_RISK_SCORE: {
@@ -1574,7 +1573,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', score: 742, riskLevel: 'LOW', defaultProbability: '3%' },
   },
   SERVICE_DEFAULT_RISK_SCORE: {
-    summary: 'Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.',
+    summary: 'Retorna score de risco de inadimpl\u00eancia para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.',
     result: { cpf: 'cpf', score: 690, riskLevel: 'MEDIUM', defaultProbability: '8%' },
   },
   SERVICE_DEMOGRAPHIC_DATA_CPF: {
@@ -1615,11 +1614,11 @@ const serviceReturnDetails = {
   },
   SERVICE_ELECTORAL_PROVIDERS_CNPJ: {
     summary: 'Retorna prestacoes de servico eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do servico.',
-    result: { cnpj: 'cnpj', providers: [{ year: 2024, campaign: 'Campanha', amount: '2500.00', serviceType: 'Servico' }] },
+    result: { cnpj: 'cnpj', campos: [{ year: 2024, campaign: 'Campanha', amount: '2500.00', serviceType: 'Servico' }] },
   },
   SERVICE_ELECTORAL_PROVIDERS_CPF: {
     summary: 'Retorna prestacoes de servico eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do servico.',
-    result: { cpf: 'cpf', providers: [{ year: 2024, campaign: 'Campanha', amount: '800.00', serviceType: 'Servico' }] },
+    result: { cpf: 'cpf', campos: [{ year: 2024, campaign: 'Campanha', amount: '800.00', serviceType: 'Servico' }] },
   },
   SERVICE_EMAILS_EXTENDED: {
     summary: 'Retorna e-mails associados ao CPF, incluindo prioridade, status de validacao, origem, data de atualizacao e sinais de uso quando disponiveis.',
@@ -1714,7 +1713,7 @@ const serviceReturnDetails = {
     result: { docType: 'EMANCIPATION_DOCUMENT', genericOcr: 'texto extraído', extractedFields: { cpf: 'cpf', dates: ['yyyy-MM-dd'] }, analysis: { isEmancipationRelated: true, confidence: 'MEDIUM' } },
   },
   SERVICE_OCR_PROOF_OF_ADDRESS: {
-    summary: 'Retorna dados extraidos do comprovante de endereco por Textract, como texto OCR, nome, endereco, tipo do documento, datas e valores quando encontrados.',
+    summary: 'Retorna dados extraidos do comprovante de endereco por OCR, como texto OCR, nome, endereco, tipo do documento, datas e valores quando encontrados.',
     result: { genericOcr: 'texto extraído', fullName: 'Nome extraído', fullAddress: 'Endereço extraído', docType: 'Conta de consumo', dueDate: 'yyyy-MM-dd', invoiceAmount: 'R$ 100,00' },
   },
   SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ: {
@@ -1774,19 +1773,19 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', hasProtests: false, protests: [] },
   },
   SERVICE_PROTEST_PF: {
-    summary: 'Retorna certidao/consulta de protestos para CPF via InfoSimples, com status, cartorios consultados, protestos e mensagens.',
+    summary: 'Retorna certidao/consulta de protestos para CPF, com status, cartorios consultados, protestos e mensagens.',
     result: { cpf: 'cpf', hasProtests: false, notaryOffices: [], protests: [] },
   },
   SERVICE_PROTEST_PF: {
-    summary: 'Retorna certidao/consulta de protestos para CPF via Netrin, com status, cartorios consultados, protestos e mensagens.',
+    summary: 'Retorna certidao/consulta de protestos para CPF, com status, cartorios consultados, protestos e mensagens.',
     result: { cpf: 'cpf', hasProtests: false, notaryOffices: [], protests: [] },
   },
   SERVICE_PROTEST_PJ: {
-    summary: 'Retorna certidao/consulta de protestos para CNPJ via InfoSimples, com status, cartorios consultados, protestos, valores e datas.',
+    summary: 'Retorna certidao/consulta de protestos para CNPJ, com status, cartorios consultados, protestos, valores e datas.',
     result: { cnpj: 'cnpj', hasProtests: false, notaryOffices: [], protests: [] },
   },
   SERVICE_PROTEST_PJ: {
-    summary: 'Retorna certidao/consulta de protestos para CNPJ via Netrin, com status, cartorios consultados, protestos, valores e datas.',
+    summary: 'Retorna certidao/consulta de protestos para CNPJ, com status, cartorios consultados, protestos, valores e datas.',
     result: { cnpj: 'cnpj', hasProtests: false, notaryOffices: [], protests: [] },
   },
   SERVICE_PUBLIC_SERVANTS: {
@@ -1974,7 +1973,7 @@ function serviceFieldDescription(service, fieldName) {
   if (field === 'court') return 'Tribunal ou orgao usado na consulta de certidao/processo.';
   if (field === 'sphere') return 'Esfera da consulta, como civil, criminal ou federal.';
   if (field === 'nit') return 'NIT/PIS/PASEP usado na qualificacao cadastral.';
-  if (field === 'factor') return 'Fator de risco solicitado pelo parceiro, como risco minimo ou atrito minimo.';
+  if (field === 'factor') return 'Fator de risco solicitado no payload, como risco minimo ou atrito minimo.';
   if (field === 'key') return serviceText.includes('documentoscopia') ? 'Chave da documentoscopia usada para iniciar ou consultar o processamento.' : 'Chave de identificacao usada pelo produto.';
   if (field === 'image1') return 'Primeira imagem enviada em base64 ou referencia equivalente, conforme o produto.';
   if (field === 'image2') return 'Segunda imagem enviada em base64 ou referencia equivalente, quando o produto compara duas imagens.';
@@ -2117,7 +2116,7 @@ function renderServiceRequestBlock(service) {
   lines.push('### Campos do body');
   lines.push('');
   lines.push('| Campo | Obrigatório | Descrição |');
-  lines.push('| --- | --- | --- |');
+  lines.push('| --- |');
   for (const field of fieldRows) {
     lines.push(`| \`${field.name}\` | ${field.required ? 'Sim' : 'Não'} | ${field.description} |`);
   }
@@ -2159,7 +2158,7 @@ function renderServiceQuickstartPage() {
   lines.push('<Step title="Escolha o ambiente">');
   lines.push('');
   lines.push('| Ambiente | Base URL | Quando usar |');
-  lines.push('| --- | --- | --- |');
+  lines.push('| --- |');
   lines.push('| Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validações e desenvolvimento. |');
   lines.push('| Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação do cliente. |');
   lines.push('');
@@ -2228,7 +2227,7 @@ function renderServiceQuickstartPage() {
   lines.push('## Erros comuns');
   lines.push('');
   lines.push('| Situação | Como corrigir |');
-  lines.push('| --- | --- |');
+  lines.push('| --- |');
   lines.push('| Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |');
   lines.push('| Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |');
   lines.push('| Produto usa alias curto | Confirme no produto qual alias está liberado e envie esse valor no campo `service`. |');
@@ -2263,15 +2262,15 @@ function renderUseCasePage(catalog) {
   lines.push('</Info>');
   lines.push('');
   lines.push('<CardGroup cols={3}>');
-  lines.push('  <Card title="Pessoa física" href="/api-reference/services-pessoa-fisica">');
-  lines.push('    CPF, dados cadastrais, OCR, biometria, risco, compliance e contatos.');
-  lines.push('  </Card>');
-  lines.push('  <Card title="Pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
-  lines.push('    CNPJ, Receita Federal, risco de crédito, sócios, domínios, compliance e OCR.');
-  lines.push('  </Card>');
-  lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
-  lines.push('    Fluxos prontos com payload, retorno esperado e erro comum.');
-  lines.push('  </Card>');
+  lines.push(' <Card title="Pessoa física" href="/api-reference/services-pessoa-fisica">');
+  lines.push(' CPF, dados cadastrais, OCR, biometria, risco, compliance e contatos.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
+  lines.push(' CNPJ, Receita Federal, risco de crédito, sócios, domínios, compliance e OCR.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Receitas prontas" href="/guides/receitas-prontas">');
+  lines.push(' Fluxos prontos com payload, retorno esperado e erro comum.');
+  lines.push(' </Card>');
   lines.push('</CardGroup>');
   lines.push('');
   lines.push('## Como escolher');
@@ -2287,7 +2286,7 @@ function renderUseCasePage(catalog) {
     lines.push(`## ${family}`);
     lines.push('');
     lines.push('| Objetivo | Service | Documento |');
-    lines.push('| --- | --- | --- |');
+    lines.push('| --- |');
     for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
       const doc = service.category === 'Pessoa Jurídica' ? 'CNPJ' : service.category === 'Pessoa Física' ? 'CPF' : '-';
       lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${doc} |`);
@@ -2328,26 +2327,26 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push('## Atalhos práticos');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push('  <Card title="Como executar um service" href="/api-reference/como-executar-service">');
-  lines.push('    Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.');
-  lines.push('  </Card>');
-  lines.push('  <Card title="Testar no Postman" href="/guides/postman-do-zero">');
-  lines.push('    Configure environment, gere token e rode `POST /api/service-api` em HML.');
-  lines.push('  </Card>');
+  lines.push(' <Card title="Como executar um service" href="/api-reference/como-executar-service">');
+  lines.push(' Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.');
+  lines.push(' </Card>');
+  lines.push(' <Card title="Testar no Postman" href="/guides/postman-do-zero">');
+  lines.push(' Configure environment, gere token e rode `POST /api/service-api` em HML.');
+  lines.push(' </Card>');
   if (category === 'Pessoa Jurídica') {
-    lines.push('  <Card title="OCR cartão CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
-    lines.push('    Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.');
-    lines.push('  </Card>');
-    lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
-    lines.push('    Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.');
-    lines.push('  </Card>');
+    lines.push(' <Card title="OCR cartão CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
+    lines.push(' Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.');
+    lines.push(' </Card>');
+    lines.push(' <Card title="Receitas prontas" href="/guides/receitas-prontas">');
+    lines.push(' Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.');
+    lines.push(' </Card>');
   } else {
-    lines.push('  <Card title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">');
-    lines.push('    Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.');
-    lines.push('  </Card>');
-    lines.push('  <Card title="Receitas prontas" href="/guides/receitas-prontas">');
-    lines.push('    Copie fluxos completos para CPF, OCR, Face Index, risco e score.');
-    lines.push('  </Card>');
+    lines.push(' <Card title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">');
+    lines.push(' Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.');
+    lines.push(' </Card>');
+    lines.push(' <Card title="Receitas prontas" href="/guides/receitas-prontas">');
+    lines.push(' Copie fluxos completos para CPF, OCR, Face Index, risco e score.');
+    lines.push(' </Card>');
   }
   lines.push('</CardGroup>');
   lines.push('');
@@ -2355,7 +2354,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push('');
   lines.push('- **Nome**: nome funcional do produto.');
   lines.push('- **Service**: valor exato que deve ser enviado no campo `service`.');
-  lines.push('- **Alias de chamada**: quando o produto estiver configurado com alias curto, envie esse alias no body, mesmo que o nome documentado do parceiro seja outro.');
+  lines.push('- **Service**: valor p\u00fablico que deve ser enviado no campo `service`.');
   lines.push('- **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.');
   lines.push('- **Campos**: parâmetros esperados no body além de `service`.');
   lines.push('- **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.');
@@ -2368,7 +2367,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
     lines.push(`### ${family}`);
     lines.push('');
     lines.push('| Nome | Service | Campos | Quando usar | Retorno principal |');
-    lines.push('| --- | --- | --- | --- | --- |');
+    lines.push('| --- | --- |');
     for (const service of services.sort((a, b) => a.name.localeCompare(b.name))) {
       const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
       lines.push(`| ${escapeTable(service.name)} | \`${service.service}\` | ${fields} | ${escapeTable(serviceUseCase(service))} | ${escapeTable(service.responseSummary)} |`);
@@ -2426,7 +2425,7 @@ function pushLlmFileMap(lines) {
   lines.push('## Como escolher o arquivo certo');
   lines.push('');
   lines.push('| Necessidade | Use |');
-  lines.push('| --- | --- |');
+  lines.push('| --- |');
   lines.push(`| Entender a estrutura da documentação | ${siteUrl}/llms.txt |`);
   lines.push(`| Gerar integração, curl ou escolher service | ${siteUrl}/llms-small.txt |`);
   lines.push(`| Consultar payloads e responses por service | ${siteUrl}/llms-api-reference.txt |`);
@@ -2455,7 +2454,7 @@ function pushMcpUsageNotes(lines) {
   lines.push('### Recursos que um MCP pode expor');
   lines.push('');
   lines.push('| Recurso | Uso no MCP |');
-  lines.push('| --- | --- |');
+  lines.push('| --- |');
   lines.push(`| ${siteUrl}/llms.txt | Manifesto, regras, URLs principais e atalhos. |`);
   lines.push(`| ${siteUrl}/llms-small.txt | Contexto curto para gerar integração, curl e explicação. |`);
   lines.push(`| ${siteUrl}/llms-api-reference.txt | Payloads, responses e exemplos por service. |`);
@@ -2508,13 +2507,12 @@ function pushOcrLlmNotes(lines) {
 function pushServiceAliasLlmNotes(lines) {
   lines.push('## Aliases importantes de chamada');
   lines.push('');
-  lines.push('Quando o alias documentado for diferente do alias liberado no produto, use o alias de chamada do produto no body.');
+  lines.push('Use o service p\u00fablico liberado no produto no campo `service`.');
   lines.push('');
-  lines.push('| Alias documentado | Alias de chamada |');
-  lines.push('| --- | --- |');
-  for (const [documentedAlias, callingAlias] of serviceAliasRows) {
-    const documented = documentedAlias.split(', ').map((alias) => `\`${alias}\``).join(', ');
-    lines.push(`| ${documented} | \`${callingAlias}\` |`);
+  lines.push('| Service |');
+  lines.push('| --- |');
+  for (const alias of [...new Set(serviceAliasRows.map(([, callingAlias]) => callingAlias))].sort()) {
+    lines.push(`| \`${alias}\` |`);
   }
   lines.push('');
 }
@@ -2523,7 +2521,7 @@ function pushFeaturedServiceShortcuts(lines, catalog) {
   lines.push('## Atalhos de services mais usados');
   lines.push('');
   lines.push('| Caso | Service | Campos principais | Guia/API |');
-  lines.push('| --- | --- | --- | --- |');
+  lines.push('| --- | --- |');
   const aliases = [
     ['CPF na Receita Federal', 'SERVICE_RFB_PF'],
     ['CNPJ na Receita Federal', 'SERVICE_RFB_PJ'],
@@ -2549,12 +2547,12 @@ function pushLlmCommonErrors(lines) {
   lines.push('## Diagnóstico rápido de erro');
   lines.push('');
   lines.push('| Sintoma | Interpretação provável | Ação recomendada |');
-  lines.push('| --- | --- | --- |');
+  lines.push('| --- |');
   lines.push('| `401 Unauthorized` | Token ausente, expirado ou inválido. | Gerar novo token em `/api/token-generate`. |');
   lines.push('| `Don\'t have access to the service` | Produto sem service ativo/API habilitada ou alias errado. | Conferir configuração do produto e alias de chamada. |');
   lines.push('| Imagem ausente | Payload não enviou `image1`, `image2`, URL ou `key` esperado. | Conferir o OCR chamado e montar o JSON novamente. |');
   lines.push('| `result: {}` | Consulta processou, mas não retornou dado útil. | Validar imagem, massa, configuração do produto e tipo correto do service. |');
-  lines.push('| `onboardingStatus: ERROR` | Falha técnica no fluxo, storage, parceiro ou processamento. | Usar `externalId`, horário e ambiente para investigar. |');
+  lines.push('| `onboardingStatus: ERROR` | Falha técnica , storage, processamento externo ou processamento. | Usar `externalId`, horário e ambiente para investigar. |');
   lines.push('| Campo esperado ausente | O campo pode não existir no documento/base ou não ter sido extraído. | Não inventar valor; explicar que o retorno traz apenas dados disponíveis. |');
   lines.push('');
 }
@@ -2708,7 +2706,7 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
       'Não afirmar que Face Index valida identidade definitiva; ele busca correspondência na base de faces.',
       'Não tratar `fieldsOutput` como contrato público da API.',
       'Não dizer que OCR garante extração de todos os campos; o retorno depende da imagem e do documento.',
-      'Não inventar retorno de provider quando o campo não aparece na documentação.',
+      'Não inventar retorno de campo quando o campo não aparece na documentação.',
       'Não pedir CPF, CNPJ, token, client, secret ou imagem real para montar exemplo.',
       'Não sugerir chamada real em HML/produção; este MCP é fonte de documentação.',
     ],
@@ -2726,7 +2724,7 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
         action: 'Ler `status.message`, conferir imagem/massa e não tratar como falha técnica automaticamente.',
       },
       ERROR: {
-        meaning: 'Falha técnica no fluxo, storage, processamento ou provider externo.',
+        meaning: 'Falha técnica , storage, processamento ou processamento externo.',
         action: 'Investigar com `externalId`, horário, ambiente e service chamado.',
       },
       'result:{}': {

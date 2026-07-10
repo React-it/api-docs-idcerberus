@@ -94,7 +94,6 @@ function compactService(service) {
     service: service.service,
     name: service.name,
     callingAlias: service.callingAlias,
-    partnerAliases: service.partnerAliases || [],
     category: service.category,
     requiredFields: service.requiredFields || [],
     optionalFields: service.optionalFields || [],
@@ -110,7 +109,6 @@ function serviceSearchText(service) {
       service.service,
       service.name,
       service.callingAlias,
-      ...(service.partnerAliases || []),
       service.category,
       service.summary,
       service.searchText,
@@ -124,7 +122,7 @@ function serviceSearchText(service) {
 function findService(catalog, alias) {
   const target = normalize(alias);
   return catalog.find((service) => {
-    const aliases = [service.service, service.callingAlias, service.documentedAlias, ...(service.partnerAliases || [])];
+    const aliases = [service.service, service.callingAlias, service.documentedAlias];
     return aliases.some((item) => normalize(item) === target);
   });
 }
@@ -302,7 +300,11 @@ export function createIdCerberusDocsMcpServer() {
         );
       }
 
-      const fullPath = path.join(root, normalizedPath);
+      const aliases = {
+        'guides/service-api/ocr-service-api.mdx': 'guides/service-api/sobre-ocr-service-api.mdx',
+      };
+      const resolvedPath = aliases[normalizedPath] || normalizedPath;
+      const fullPath = path.join(root, resolvedPath);
       if (!fs.existsSync(fullPath) || fs.statSync(fullPath).isDirectory()) {
         return textResult(
           JSON.stringify(
@@ -320,9 +322,10 @@ export function createIdCerberusDocsMcpServer() {
       return textResult(
         JSON.stringify(
           {
-            path: normalizedPath,
-            url: `${publicBaseUrl}/${normalizedPath.replace(/\.mdx$/, '')}`,
-            content: readText(normalizedPath),
+            path: resolvedPath,
+            requestedPath: normalizedPath,
+            url: `${publicBaseUrl}/${resolvedPath.replace(/\.mdx$/, '')}`,
+            content: readText(resolvedPath),
           },
           null,
           2,

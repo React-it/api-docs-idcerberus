@@ -57,8 +57,8 @@ usam `cnpj` e algumas certidões exigem dados complementares como `uf`, `rg` ou
 Antes de testar com o cliente, confirme o alias no produto, copie esse valor
 para o body e depois complete os campos obrigatórios da família escolhida.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
+| Service |
+| --- |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
 | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
@@ -82,7 +82,7 @@ Neste caso, a API entende que deve executar o serviço de enriquecimento de dado
 de pessoa física. Se o `service` mudar, o produto executado também muda.
 
 | Tipo de consulta | Documento principal | Observação |
-| --- | --- | --- |
+| --- | --- |
 | Pessoa física | `cpf` | Pode exigir dados adicionais em certidões, validações ou biometria |
 | Pessoa jurídica | `cnpj` | Pode exigir `uf` em consultas estaduais ou documentos complementares |
 | Documento e biometria | `image1`, `image2`, `selfie1` ou URLs | Use base64 ou URL conforme o produto |
@@ -96,7 +96,7 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 ## Cadastro e identidade PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Enriquecimento de pessoa física | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
 | Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
@@ -122,7 +122,7 @@ prefixo ou alias incorreto podem fazer a chamada autenticar e mesmo assim não
 produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
@@ -137,14 +137,14 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Risco, validações e compliance PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
 | Score de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
-| Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
+| Score de risco inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
 | Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
 | Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF`, `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
 | Validação de e-mail | `SERVICE_EMAIL_VALIDATION` | `email` |
@@ -158,7 +158,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Certidões e judicial PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` |
@@ -169,7 +169,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Político e eleitoral
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` |
 | Doações eleitorais PF | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` |
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
@@ -179,7 +179,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Cadastro e regularidade PJ
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Enriquecimento de pessoa jurídica | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` |
 | Status do CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` |
@@ -194,7 +194,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Sócios, relacionamentos e compliance PJ
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Relacionamentos de empresa | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` |
 | Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
 | Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` |
@@ -208,5 +208,5 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Compliance de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` |
 | Compliance de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
 | Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
-| Risco de crédito PJ Murabei | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+| Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` |

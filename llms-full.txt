@@ -21,7 +21,7 @@ Base URLs:
 ## Como escolher o arquivo certo
 
 | Necessidade | Use |
-| --- | --- |
+| --- |
 | Entender a estrutura da documentação | https://api-docs.idcerberus.com/llms.txt |
 | Gerar integração, curl ou escolher service | https://api-docs.idcerberus.com/llms-small.txt |
 | Consultar payloads e responses por service | https://api-docs.idcerberus.com/llms-api-reference.txt |
@@ -47,7 +47,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 ### Recursos que um MCP pode expor
 
 | Recurso | Uso no MCP |
-| --- | --- |
+| --- |
 | https://api-docs.idcerberus.com/llms.txt | Manifesto, regras, URLs principais e atalhos. |
 | https://api-docs.idcerberus.com/llms-small.txt | Contexto curto para gerar integração, curl e explicação. |
 | https://api-docs.idcerberus.com/llms-api-reference.txt | Payloads, responses e exemplos por service. |
@@ -79,21 +79,21 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 ## Aliases importantes de chamada
 
-Quando o alias documentado for diferente do alias liberado no produto, use o alias de chamada do produto no body.
+Use o service público liberado no produto no campo `service`.
 
-| Alias documentado | Alias de chamada |
-| --- | --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
-| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| Service |
+| --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| `economic_relationships` |
 
 ## Atalhos de services mais usados
 
 | Caso | Service | Campos principais | Guia/API |
-| --- | --- | --- | --- |
+| --- | --- |
 | CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance |
@@ -120,12 +120,12 @@ Quando o alias documentado for diferente do alias liberado no produto, use o ali
 ## Diagnóstico rápido de erro
 
 | Sintoma | Interpretação provável | Ação recomendada |
-| --- | --- | --- |
+| --- |
 | `401 Unauthorized` | Token ausente, expirado ou inválido. | Gerar novo token em `/api/token-generate`. |
 | `Don't have access to the service` | Produto sem service ativo/API habilitada ou alias errado. | Conferir configuração do produto e alias de chamada. |
 | Imagem ausente | Payload não enviou `image1`, `image2`, URL ou `key` esperado. | Conferir o OCR chamado e montar o JSON novamente. |
 | `result: {}` | Consulta processou, mas não retornou dado útil. | Validar imagem, massa, configuração do produto e tipo correto do service. |
-| `onboardingStatus: ERROR` | Falha técnica no fluxo, storage, parceiro ou processamento. | Usar `externalId`, horário e ambiente para investigar. |
+| `onboardingStatus: ERROR` | Falha técnica , storage, processamento externo ou processamento. | Usar `externalId`, horário e ambiente para investigar. |
 | Campo esperado ausente | O campo pode não existir no documento/base ou não ter sido extraído. | Não inventar valor; explicar que o retorno traz apenas dados disponíveis. |
 
 ---
@@ -142,6 +142,7 @@ Use esta página quando não souber por onde começar. Ela indica o caminho mais
 curto de acordo com o seu objetivo.
 
 
+
     Gere token, execute um service e entenda o formato básico da resposta.
 
 
@@ -152,6 +153,7 @@ curto de acordo com o seu objetivo.
 
 
     Copie requests, responses e exemplos por endpoint.
+
 
 
 ## Por perfil
@@ -182,6 +184,7 @@ curto de acordo com o seu objetivo.
 | Copiar request e response | [API Reference](/api-reference/autorização/gerar-token-de-api) |
 
 ## Caminho recomendado
+
 
 
     Entenda o fluxo básico: gerar token, executar serviço e ler resposta.
@@ -232,7 +235,7 @@ Use esta página quando não souber exatamente onde procurar. Ela concentra os t
 | --- | --- | --- |
 | Gerar token | `token`, `client`, `secret`, `Authorization` | [Autenticação](/guides/autenticacao) |
 | Executar service | `POST /api/service-api`, `service`, `payload`, `result` | [Como executar um service](/api-reference/como-executar-service) |
-| Descobrir alias | `alias`, `callingAlias`, `partnerAliases`, `catálogo` | [Índice de services](/guides/indice-de-services) |
+| Descobrir alias | `alias`, `callingAlias`, `services`, `catálogo` | [Índice de services](/guides/indice-de-services) |
 | Escolher service por objetivo | `caso de uso`, `qual service`, `CPF`, `CNPJ`, `OCR` | [Services por caso de uso](/api-reference/services-por-caso-de-uso) |
 | Testar no Postman | `Postman`, `HML`, `curl`, `jwt_token` | [Postman do zero](/guides/postman-do-zero) |
 | Diagnosticar erro | `status.code`, `status.message`, `onboardingStatus`, `externalId` | [Erros comuns](/guides/erros-comuns-integracao) |
@@ -253,14 +256,14 @@ Use esta página quando não souber exatamente onde procurar. Ela concentra os t
 | --- | --- | --- |
 | Busca de face na base | `Face Index`, `selfie`, `rosto`, `busca facial`, `SERVICE_FACE_INDEX` | `SERVICE_FACE_INDEX` |
 | Comparar duas faces | `FaceMatch`, `comparação facial`, `image1 image2` | `SERVICE_FACE_MATCH` |
-| Validação facial AWS | `FaceMatch AWS`, `selfie`, `AWS`, `SERVICE_FACE_MATCH` | `SERVICE_FACE_MATCH` |
+| Validação facial | `FaceMatch`, `selfie`, `rosto`, `SERVICE_FACE_MATCH` | `SERVICE_FACE_MATCH` |
 
 ## CPF
 
 | Objetivo | Termos bons para busca |
 | --- | --- |
 | Dados cadastrais | `CPF`, `Receita Federal`, `RFB PF`, `dados cadastrais`, `SERVICE_RFB_PF` |
-| Score de crédito | `score`, `crédito`, `Assertiva`, `SERVICE_CREDIT_SCORE` |
+| Score de crédito | `score`, `crédito`, `motor de score`, `SERVICE_CREDIT_SCORE` |
 | Benefícios sociais | `benefícios sociais`, `Bolsa Família`, `assistência social` |
 | Processos e risco | `processos`, `antecedentes`, `protesto`, `compliance`, `jurídico` |
 | Contato | `telefone`, `email`, `histórico`, `validação de contato` |
@@ -322,6 +325,7 @@ Você pode testar de três formas:
   Se você nunca executou um `curl`, comece pelo Postman. Depois que a chamada
   funcionar, copie o mesmo padrão para o terminal ou para o código da aplicação.
 
+
 ## Antes de começar
 
 Você precisa ter:
@@ -344,6 +348,7 @@ headers e body iguais e troque apenas a URL.
 > Atencao:
   Não misture ambientes. Token gerado em homologação deve ser usado com URL de
   homologação. Token gerado em produção deve ser usado com URL de produção.
+
 
 ## 1. Escolha onde vai testar
 
@@ -518,6 +523,7 @@ curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
   para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
   de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
 
+
 Substitua:
 
 | Valor | O que colocar |
@@ -525,6 +531,7 @@ Substitua:
 | `{jwt_token}` | Token retornado no passo anterior |
 | `cpf` | CPF usado para teste |
 | `SERVICE_PERSON_DATA_ENRICHMENT` | Código do serviço que deseja executar |
+
 
 
     Use quando quiser validar o fluxo com um service simples de pessoa física.
@@ -537,6 +544,7 @@ Substitua:
 
 
     Use para navegar pelos grupos de produtos do `POST /api/service-api`.
+
 
 
 ## 4. Leia o resultado
@@ -856,6 +864,7 @@ base usada na chamada.
   homologação deve ser usado com a URL de homologação. Um token gerado em
   produção deve ser usado com a URL de produção.
 
+
 ## Como trocar de ambiente
 
 Para trocar de homologação para produção, altere somente a URL base.
@@ -1104,7 +1113,7 @@ e os erros comuns. Não diga que OCR garante extrair todos os campos.
 - Não dizer que Face Index valida identidade definitiva. Ele busca correspondência na base de faces.
 - Não tratar `fieldsOutput` como contrato público.
 - Não prometer que OCR sempre extrai todos os campos.
-- Não inventar retorno de provider quando o campo não aparece na documentação.
+- Não inventar retorno de campo quando o campo não aparece na documentação.
 - Não pedir CPF, CNPJ, token, client, secret ou imagem real para montar exemplo.
 - Não sugerir chamada real em HML ou produção; esta base é somente leitura.
 
@@ -1171,6 +1180,7 @@ coleção grande de requests sem contexto.
 ## O caminho mais comum
 
 
+
     Use o [Quickstart](/guides/quickstart) para validar credenciais, gerar token
     e executar uma primeira chamada com Postman, Windows, macOS ou Linux.
 
@@ -1185,6 +1195,7 @@ coleção grande de requests sem contexto.
 
     Use a [API Reference](/api-reference/autorização/gerar-token-de-api) para copiar payloads,
     conferir parâmetros e mapear responses.
+
 
 
 ## Se você não sabe por onde executar
@@ -1267,6 +1278,7 @@ O objetivo é sair com dois requests funcionando:
 - `POST /api/service-api`
 
 
+
     Sem token válido, nenhum service protegido deve ser testado.
 
 
@@ -1277,6 +1289,7 @@ O objetivo é sair com dois requests funcionando:
 
 
     Veja o que olhar quando vier falta de acesso, imagem ausente, `{}` ou `ERROR`.
+
 
 
 ## 1. Crie uma collection
@@ -1338,6 +1351,7 @@ https://backoffice-hml.idcerberus.com
 
 > Nota:
   Se preferir, configure um script de teste no request de token para salvar o token automaticamente:
+
 
 ```js
 const data = pm.response.json();
@@ -1413,6 +1427,7 @@ Leia assim:
 > Atencao:
   Não use apenas o HTTP status para decidir se deu certo. A API pode responder HTTP 200 e o body indicar `REFUSED` ou `ERROR`.
 
+
 ## 6. Exemplos prontos
 
 Se quiser copiar um curl já montado, use:
@@ -1430,6 +1445,7 @@ Se quiser copiar um curl já montado, use:
 
 > Nota:
   Se quiser payload, retorno esperado e erro comum no mesmo lugar, abra [Receitas prontas](/guides/receitas-prontas).
+
 
 ## 7. Testar OCR com imagem
 
@@ -1558,7 +1574,7 @@ integrações, leia os dois.
 | Campo `service` ausente | Payload não informou qual produto executar | Inclua o campo `service` no body |
 | CPF ou CNPJ inválido | Documento incompleto, mascarado ou fora do padrão esperado | Revise o valor enviado antes de chamar a API |
 | Serviço sem permissão | Produto não liberado para a conta | Confirme a liberação do serviço com o time responsável |
-| Fonte externa indisponível | Consulta depende de órgão, base ou parceiro externo | Faça retry controlado ou tente novamente depois |
+| Fonte externa indisponível | Consulta depende de órgão, base ou processamento externo | Faça retry controlado ou tente novamente depois |
 | URL de ambiente errada | Token de HML usado em produção, ou o contrário | Confira se a URL base e o token são do mesmo ambiente |
 
 ## Exemplos de erro
@@ -1721,6 +1737,7 @@ Use esta página quando uma chamada falhar, retornar vazio ou parecer diferente 
 A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, não só o HTTP status. Uma chamada pode retornar HTTP 200 e mesmo assim o processamento vir como `REFUSED` ou `ERROR`.
 
 
+
     `401`, `403`, token vencido ou produto sem permissão para o service.
 
 
@@ -1731,6 +1748,7 @@ A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, n�
 
 
     `ERROR`, `500`, falha externa, timeout ou investigação por `externalId`.
+
 
 
 ## Diagnóstico rápido
@@ -3053,7 +3071,7 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Comparar selfie e documento | `SERVICE_FACE_MATCH` | Validar se duas imagens pertencem à mesma pessoa |
 | Validar prova de vida | `SERVICE_LIVENESS_2D` | Reduzir risco de foto, tela ou tentativa de fraude simples |
 | Consultar biometria governamental | `SERVICE_DATAVALID_CNH` | Obter score de similaridade com bases governamentais |
-| Validar CNH no DataValid | `SERVICE_DATAVALID_CNH` | Apoiar validação documental com integração DataValid/Serpro |
+| Validar CNH no DataValid | `SERVICE_DATAVALID_CNH` | Apoiar validação documental com integração validação documental |
 | Fazer análise documental completa | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Extrair dados e combinar documento com selfie em um fluxo único |
 
 ## Montar um onboarding completo
@@ -3602,6 +3620,7 @@ Use credenciais, token e base URL do mesmo ambiente. Token de homologação não
 deve ser usado em produção, e token de produção não deve ser usado em
 homologação.
 
+
 ## URLs base
 
 | Ambiente | Base URL | Quando usar |
@@ -3610,6 +3629,9 @@ homologação.
 | Produção | `https://backoffice.idcerberus.com` | Operação real, com credenciais produtivas |
 
 ## Gerar token
+
+
+
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
@@ -3620,6 +3642,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
 }'
 ```
 
+
+
+
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
 --header 'Content-Type: application/json' \
@@ -3629,7 +3654,13 @@ curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
 }'
 ```
 
+
+
+
 ## Consulta de CPF
+
+
+
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -3642,6 +3673,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+
+
+
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -3652,9 +3686,15 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
 }'
 ```
+
+
+
 
 ## Consulta de CNPJ
 
+
+
+
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -3665,6 +3705,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+
+
+
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -3674,6 +3717,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
   "cnpj": "cnpj"
 }'
 ```
+
+
+
 
 ## Arquivos prontos
 
@@ -4037,12 +4083,12 @@ payload completo no API Reference.
 | Buscar face na base | `SERVICE_FACE_INDEX` | `image1` | Procurar rosto em base indexada e retornar CPF/similaridade quando houver |
 | Comparar faces | `SERVICE_FACE_MATCH` | `image1`, `image2` | Comparar selfie com documento ou outra imagem |
 | Validar presença real | `SERVICE_LIVENESS_2D` | `image1` | Verificar se a selfie aparenta ser de pessoa real |
-| Validar CNH no DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Validar dados de CNH com apoio do DataValid/Serpro |
+| Validar CNH no DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Validar dados de CNH com apoio do validação documental |
 | Consultar PEP | `SERVICE_PEP` | `cpf` | Avaliar exposição política |
 | Consultar KYC/compliance PF | `SERVICE_PERSON_KYC` | `cpf` | Análise mais ampla de compliance |
 | Consultar risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` | Obter score e leitura resumida de risco financeiro |
-| Consultar score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` | Obter score de crédito via Assertiva |
-| Consultar score Quantum | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | Avaliar risco de inadimplência |
+| Consultar score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` | Obter score de crédito |
+| Consultar score inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | Avaliar risco de inadimplência |
 | Consultar dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | Obter indicadores demográficos do CPF |
 | Consultar indicadores de atividades | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | Obter sinais profissionais e de atividade |
 | Consultar domínios PF | `SERVICE_DOMAINS_CPF` | `cpf` | Buscar domínios e sinais digitais associados ao CPF |
@@ -4085,7 +4131,7 @@ payload completo no API Reference.
 | Consultar compliance de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` | Avaliar exposição relacionada a apostas |
 | Consultar compliance de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Avaliar exposição relacionada a apostas |
 | Consultar risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Obter score, rating e risco esperado |
-| Consultar risco de crédito PJ Murabei | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Obter risco de crédito no fluxo Murabei |
+| Consultar risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Obter risco de crédito no fluxo |
 
 ## Fluxos fora do service-api
 
@@ -4122,22 +4168,22 @@ Todas as consultas abaixo usam `POST /api/service-api`. O produto executado é d
 A busca funciona melhor quando o termo aparece como título, alias ou texto da página. Se não souber o alias exato, pesquise pelo tipo de documento, dado ou problema que quer resolver.
 
 
-    Pesquise por `cpf`, `receita`, `score`, `risco`, `telefone`, `email`, `ocr`, `face` ou `processos`.
+ Pesquise por `cpf`, `receita`, `score`, `risco`, `telefone`, `email`, `ocr`, `face` ou `processos`.
 
 
-    Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.
+ Pesquise por `cnpj`, `receita`, `risco de crédito`, `sócios`, `domínios`, `cartão CNPJ` ou `compliance`.
 
 
-    Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.
+ Pesquise por `OCR`, `CNH`, `RG`, `cartão CNPJ`, `comprovante de endereço`, `base64` ou `image1`.
 
 
-    Vá para o API Reference quando precisar de body, curl, response resumido e erro comum.
+ Vá para o API Reference quando precisar de body, curl, response resumido e erro comum.
 
 
 ### Atalhos de busca
 
 | Digite na busca | O que deve aparecer |
-| --- | --- |
+| --- |
 | `SERVICE_OCR` ou `OCR React` | OCR React para documentos de identificação e guia de OCR. |
 | `cartão CNPJ` | OCR de cartão CNPJ e payload com `SERVICE_OCR_CNPJ_CARD`. |
 | `comprovante de endereço` | OCR de comprovante e diagnóstico de imagem. |
@@ -4147,27 +4193,27 @@ A busca funciona melhor quando o termo aparece como título, alias ou texto da p
 | `telefone` ou `email` | Validações e histórico de contato. |
 
 > Atencao:
-  Antes de executar a chamada, confirme qual alias está liberado no produto
-  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias documentado no catálogo.
+ Antes de executar a chamada, confirme qual service está liberado no produto
+ do cliente. O campo `service` deve receber o alias público de chamada,
+ exatamente como aparece no catálogo abaixo.
 
-Na prática: se o alias configurado no produto for diferente do alias abaixo,
-use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
-quando o produto está ativo.
+Na prática: copie o valor da coluna `Service` e envie esse valor no body.
+A documentação não expõe aliases internos de integração; o cliente deve
+usar somente o service liberado no produto.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
-| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| Service |
+| --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| `economic_relationships` |
 
 ## Pessoa Física
 
 | Nome | Service | Campos principais | Termos de busca | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | [Antecedentes criminais civis](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` | PF - Antecedentes criminais civis | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
 | [Antecedentes criminais federais](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` | PF - Antecedentes criminais federais | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
 | [Benefícios sociais estendidos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | PF - Benefícios sociais estendidos | Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis. |
@@ -4175,8 +4221,8 @@ quando o produto está ativo.
 | [Busca de face na base](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_INDEX` | `image1` | PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces | Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis. |
 | [Certidão de Nada Consta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` | PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
 | [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` | PF - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
-| [Certidão negativa de protesto PF (InfoSimples)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF (InfoSimples) | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
-| [Certidão negativa de protesto PF (Netrin)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF (Netrin) | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
+| [Certidão negativa de protesto PF](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF | Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens. |
+| [Certidão negativa de protesto PF](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PF` | `cpf` | PF - Certidão negativa de protesto PF | Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens. |
 | [Consulta de MEI](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEI` | `cpf` | PF - Consulta de MEI | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
 | [CPF na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` | CPF Receita Federal, PF - CPF na Receita Federal on-demand | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
 | [Dados demográficos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | CPF Receita Federal, PF - Dados demográficos | Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada. |
@@ -4191,7 +4237,7 @@ quando o produto está ativo.
 | [Endereços](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ADDRESS` | `cpf` | PF - Endereços | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
 | [Enriquecimento de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` | PF - Enriquecimento de dados | Retorna dados cadastrais do CPF, incluindo nome, nascimento, situação cadastral, filiação, óbito, idade, gênero e atributos disponíveis. |
 | [Envolvimento político](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | PF - Envolvimento político | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| [Envolvimento político PF (BigDataCorp)](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp) | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| [Envolvimento político PF](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | CPF Receita Federal, PF - Envolvimento político PF | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
 | [Exposição e perfil na mídia](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | PF - Exposição e perfil na mídia | Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
 | [FaceMatch](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FACE_MATCH` | `image1`, `image2` | PF - FaceMatch, comparação facial biometria selfie rosto | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
 | [Histórico de e-mails](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | PF - Histórico de e-mails, email validação contato | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
@@ -4205,7 +4251,7 @@ quando o produto está ativo.
 | [Liveness 2D](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_LIVENESS_2D` | `image1` | PF - Liveness 2D, prova de vida selfie liveness | Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples. |
 | [Mandado de prisão](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | PF - Mandado de prisão | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
 | [Modelagem de dados](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PERSON_DATA_MODELING` | `cpf` | PF - Modelagem de dados | Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, endereços, vínculos, indicadores e resumos derivados. |
-| [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
+| [OCR de comprovante de endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço | Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
 | [OCR de emancipação](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR_EMANCIPATION` | `image1` | OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
 | [OCR React](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_OCR` | `documentType`, `image1`, `image2` | OCR documento imagem base64 leitura extração, PF - OCR React | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
 | [Pessoa politicamente exposta](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PEP` | `cpf` | PF - Pessoa politicamente exposta | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
@@ -4218,21 +4264,21 @@ quando o produto está ativo.
 | [Relacionamentos econômicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` | PF - Relacionamentos econômicos | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento. |
 | [Resultado da documentoscopia digital](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` | PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
 | [Risco financeiro](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` | PF - Risco financeiro, score risco crédito rating inadimplência | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
-| [Score biométrico](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | PF - Score biométrico, score risco crédito rating inadimplência | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
-| [Score de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_SCORE` | `cpf` | PF - Score de crédito, score risco crédito rating inadimplência | Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis. |
-| [Score de inadimplência](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | PF - Score de inadimplência, score risco crédito rating inadimplência | Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
+| [Score biométrico](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | PF - Score biométrico, score risco crédito rating inadimplência | Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
+| [Score de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_SCORE` | `cpf` | PF - Score de crédito, score risco crédito rating inadimplência | Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis. |
+| [Score de inadimplência](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | PF - Score de inadimplência, score risco crédito rating inadimplência | Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
 | [Score de risco de fraude](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` | PF - Score de risco de fraude, score risco crédito rating inadimplência | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
 | [Servidores públicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PUBLIC_SERVANTS` | `cpf` | PF - Servidores públicos | Retorna registros de servidor publico associados ao CPF, incluindo órgão, cargo, vinculo, remuneracao/faixa e período quando disponíveis. |
 | [Status do CPF na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | CPF Receita Federal, PF - Status do CPF na Receita Federal | Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis. |
 | [Validação de CPF com endereço](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` | CPF Receita Federal, PF - Validação de CPF com endereço | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
-| [Validação de CPF com telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
+| [Validação de CPF com telefone](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta. |
 | [Validação de e-mail](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_EMAIL_VALIDATION` | `email` | PF - Validação de e-mail, email validação contato | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
 | [Validação do E-Social](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf`, `nit` | PF - Validação do E-Social | Retorna qualificação cadastral no eSocial, com status de consistencia entre CPF, NIT/PIS e dados cadastrais informados. |
 ## Pessoa Jurídica
 
 | Nome | Service | Campos principais | Termos de busca | Retorno principal |
-| --- | --- | --- | --- | --- |
-| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ` | `cnpj` | PJ - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
+| --- | --- |
+| [Certidão negativa de protesto](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_PROTEST_PJ` | `cnpj` | PJ - Certidão negativa de protesto | Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas. |
 | [CNPJ na Receita Federal on-demand](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` | CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
 | [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 | [Compliance de casas de apostas](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | PJ - Compliance de casas de apostas, apostas bets compliance bet | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
@@ -4251,7 +4297,7 @@ quando o produto está ativo.
 | [Processos jurídicos](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
 | [Processos jurídicos dos sócios](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | `cnpj` | PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão | Retorna processos jurídicos associados aos sócios da empresa, com sócio relacionado, tribunal, classe, assunto, status e datas. |
 | [Relacionamentos da empresa](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` | PJ - Relacionamentos da empresa | Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados. |
-| [Risco de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | PJ - Risco de crédito, score risco crédito rating inadimplência | Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
+| [Risco de crédito](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | PJ - Risco de crédito, score risco crédito rating inadimplência | Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
 | [SINTEGRA](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_SINTEGRA_CONSULTATION` | `cnpj`, `uf` | PJ - SINTEGRA | Retorna dados do SINTEGRA, incluindo inscrição estadual, UF, situação, regime, atividades, endereço e mensagens da consulta. |
 | [Sócios de primeiro nível](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` | PJ - Sócios de primeiro nível | Retorna sócios de primeiro nível da empresa, com nome, documento, participação, qualificação e vínculos diretos ao CNPJ. |
 | [Sócios na Receita Federal](https://api-docs.idcerberus.com/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance) | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` | CPF Receita Federal, PJ - Sócios na Receita Federal | Retorna o quadro societario na Receita Federal, com nome dos sócios, documentos mascarados, qualificação, participação e data de entrada quando disponível. |
@@ -4572,11 +4618,11 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PROTEST_PF`
 
-**Termos de busca:** PF - Certidão negativa de protesto PF (InfoSimples)
+**Termos de busca:** PF - Certidão negativa de protesto PF
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 **Passo a passo:**
 
@@ -4614,11 +4660,11 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_PROTEST_PF`
 
-**Termos de busca:** PF - Certidão negativa de protesto PF (Netrin)
+**Termos de busca:** PF - Certidão negativa de protesto PF
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 **Passo a passo:**
 
@@ -5304,9 +5350,9 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF`
 
-**Termos de busca:** CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp)
+**Termos de busca:** CPF Receita Federal, PF - Envolvimento político PF
 
-**Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API.
+**Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF" via API.
 
 **O que retorna:** Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
 
@@ -5940,7 +5986,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
+**O que retorna:** Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
 
 **Passo a passo:**
 
@@ -6218,7 +6264,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 1. Gere um token em `POST /api/token-generate`.
 2. Envie `cpf` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CPF` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cpf`, `providers`.
+4. Leia `result`, que neste service costuma trazer: `cpf`, `campos`.
 
 **Body exemplo:**
 
@@ -6235,7 +6281,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 {
   "result": {
     "cpf": "cpf",
-    "providers": [
+    "campos": [
       {
         "year": 2024,
         "campaign": "Campanha",
@@ -6533,7 +6579,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.
 
-**O que retorna:** Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
+**O que retorna:** Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
 
 **Passo a passo:**
 
@@ -6576,7 +6622,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
+**O que retorna:** Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
 
 **Passo a passo:**
 
@@ -6618,7 +6664,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
+**O que retorna:** Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 **Passo a passo:**
 
@@ -6839,7 +6885,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
-**O que retorna:** Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.
+**O que retorna:** Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta.
 
 **Passo a passo:**
 
@@ -6970,7 +7016,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
+**O que retorna:** Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
 **Passo a passo:**
 
@@ -7565,7 +7611,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 1. Gere um token em `POST /api/token-generate`.
 2. Envie `cnpj` junto com `service: SERVICE_ELECTORAL_PROVIDERS_CNPJ` em `POST /api/service-api`.
 3. Confira `status.code` e `status.message` para saber se a consulta processou.
-4. Leia `result`, que neste service costuma trazer: `cnpj`, `providers`.
+4. Leia `result`, que neste service costuma trazer: `cnpj`, `campos`.
 
 **Body exemplo:**
 
@@ -7582,7 +7628,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 {
   "result": {
     "cnpj": "cnpj",
-    "providers": [
+    "campos": [
       {
         "year": 2024,
         "campaign": "Campanha",
@@ -7834,7 +7880,7 @@ Use esta parte quando precisar explicar para o cliente exatamente o que enviar e
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
-**O que retorna:** Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+**O que retorna:** Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 **Passo a passo:**
 
@@ -8122,8 +8168,8 @@ usam `cnpj` e algumas certidões exigem dados complementares como `uf`, `rg` ou
 Antes de testar com o cliente, confirme o alias no produto, copie esse valor
 para o body e depois complete os campos obrigatórios da família escolhida.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
+| Service |
+| --- |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
 | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
@@ -8147,7 +8193,7 @@ Neste caso, a API entende que deve executar o serviço de enriquecimento de dado
 de pessoa física. Se o `service` mudar, o produto executado também muda.
 
 | Tipo de consulta | Documento principal | Observação |
-| --- | --- | --- |
+| --- | --- |
 | Pessoa física | `cpf` | Pode exigir dados adicionais em certidões, validações ou biometria |
 | Pessoa jurídica | `cnpj` | Pode exigir `uf` em consultas estaduais ou documentos complementares |
 | Documento e biometria | `image1`, `image2`, `selfie1` ou URLs | Use base64 ou URL conforme o produto |
@@ -8160,7 +8206,7 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 ## Cadastro e identidade PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Enriquecimento de pessoa física | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
 | Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
@@ -8186,7 +8232,7 @@ prefixo ou alias incorreto podem fazer a chamada autenticar e mesmo assim não
 produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
@@ -8201,14 +8247,14 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Risco, validações e compliance PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
 | Score de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
-| Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
+| Score de risco inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
 | Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
 | Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF`, `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
 | Validação de e-mail | `SERVICE_EMAIL_VALIDATION` | `email` |
@@ -8222,7 +8268,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Certidões e judicial PF
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` |
@@ -8233,7 +8279,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Político e eleitoral
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` |
 | Doações eleitorais PF | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` |
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
@@ -8243,7 +8289,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Cadastro e regularidade PJ
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Enriquecimento de pessoa jurídica | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` |
 | Status do CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` |
@@ -8258,7 +8304,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 ## Sócios, relacionamentos e compliance PJ
 
 | Produto | Código `service` | Entrada principal |
-| --- | --- | --- |
+| --- | --- |
 | Relacionamentos de empresa | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` |
 | Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
 | Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` |
@@ -8272,7 +8318,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Compliance de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` |
 | Compliance de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
 | Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
-| Risco de crédito PJ Murabei | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+| Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` |
 
 ---
@@ -8445,7 +8491,7 @@ Use estes serviços quando precisar:
 | FaceMatch | `SERVICE_FACE_MATCH` | Compara duas imagens e retorna status e percentual de similaridade facial |
 | Liveness 2D | `SERVICE_LIVENESS_2D` | Verifica se a selfie enviada provavelmente representa uma pessoa real |
 | Score biométrico | `SERVICE_DATAVALID_CNH` | Compara CPF e selfie com bases oficiais e retorna similaridade |
-| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | Valida dados de CNH com apoio do DataValid/Serpro |
+| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | Valida dados de CNH com apoio do validação documental |
 | Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Processa documento, extrai dados e executa FaceMatch quando houver selfie |
 | Resultado da documentoscopia | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | Consulta o resultado de uma documentoscopia usando a chave enviada na criação |
 
@@ -9043,7 +9089,7 @@ POST /api/service-api
 Nos exemplos de `curl`, `{base_url}` representa a URL do ambiente escolhido:
 
 | Ambiente | Base URL |
-| --- | --- |
+| --- |
 | Homologação | `https://backoffice-hml.idcerberus.com` |
 | Produção | `https://backoffice.idcerberus.com` |
 
@@ -9074,8 +9120,8 @@ Passo rápido para evitar erro:
 3. Envie esse alias no campo `service`.
 4. Use os demais campos da tabela como entrada principal da consulta.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
+| Service |
+| --- |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
 | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
@@ -9086,12 +9132,12 @@ Passo rápido para evitar erro:
   OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64, URL ou
   `key` real para retornar dados completos. Payload curto ajuda a validar
   autenticação, acesso ao produto e formato básico da chamada, mas não valida o
-  retorno completo do parceiro.
+  retorno completo do processamento.
 
 ## Guias relacionados
 
 | Guia | Quando usar |
-| --- | --- |
+| --- |
 | [Escolha o serviço certo](/guides/escolha-o-servico-certo) | Para decidir o service pelo caso de uso. |
 | [Famílias de serviços](/guides/service-api/familias-de-servicos) | Para navegar por grupo de produto. |
 | [OCR via Service API](/guides/service-api/sobre-ocr-service-api) | Para payloads de documento, imagem, base64 e exemplos de retorno. |
@@ -9119,7 +9165,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Cadastro e identidade
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- | --- |
+| --- | --- |
 | Enriquecimento de dados de PF | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
 | Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
@@ -9142,7 +9188,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Biometria e documentos
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- | --- |
+| --- | --- |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
@@ -9157,7 +9203,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 ### Risco, compliance e validações
 
 | Serviço | Código `service` | Campos principais |
-| --- | --- | --- |
+| --- | --- |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
@@ -9165,7 +9211,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
-| Score de risco Quantum | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
+| Score de risco inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
 | Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
@@ -9196,14 +9242,14 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 Alguns serviços retornam informações consolidadas ou análises derivadas de
 fontes complementares. Eles seguem o mesmo padrão de chamada do endpoint
 `POST /api/service-api`, mas podem ter respostas mais amplas conforme a
-disponibilidade dos dados no parceiro.
+disponibilidade dos dados na consulta.
 
 | Serviço | Quando usar | Exemplo de body |
-| --- | --- | --- |
+| --- | --- |
 | `SERVICE_RFB_PF_ON_DEMAND` | Buscar o CPF na Receita Federal em tempo de consulta | `{ "service": "SERVICE_RFB_PF_ON_DEMAND", "cpf": "cpf" }` |
 | `SERVICE_PERSON_DATA_MODELING` | Consolidar dados de modelagem, contatos, vínculos, processos e endereços | `{ "service": "SERVICE_PERSON_DATA_MODELING", "cpf": "cpf" }` |
 | `SERVICE_PERSON_AI_PROMPT` | Gerar resumo analítico textual a partir dos dados consolidados da pessoa | `{ "service": "SERVICE_PERSON_AI_PROMPT", "cpf": "cpf" }` |
-| `SERVICE_DATAVALID_CNH` | Validar CNH com apoio do DataValid/Serpro | `{ "service": "SERVICE_DATAVALID_CNH", "cpf": "cpf", "image1": "base64" }` |
+| `SERVICE_DATAVALID_CNH` | Validar CNH com apoio do validação documental | `{ "service": "SERVICE_DATAVALID_CNH", "cpf": "cpf", "image1": "base64" }` |
 | `SERVICE_FINANCIAL_RISK_SCORE` | Consultar score de risco financeiro | `{ "service": "SERVICE_FINANCIAL_RISK_SCORE", "cpf": "cpf" }` |
 | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | Combinar dados cadastrais, endereços e informações financeiras | `{ "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS", "cpf": "cpf" }` |
 | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | Retornar histórico profissional em que a pessoa aparece como titular ou sócia | `{ "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY", "cpf": "cpf" }` |
@@ -9250,7 +9296,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status na base da Receita Federal |
 | `result.statusDate` | Data do status na base da Receita Federal |
@@ -9342,7 +9388,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status na base da Receita Federal |
 | `result.statusDate` | Data do status na base da Receita Federal |
@@ -9510,7 +9556,7 @@ Body:
 Tipos de documento suportados:
 
 | Documento | Valor |
-| --- | --- |
+| --- |
 | CNH | `CNH` |
 | RG / CIN | `RG` |
 | OAB | `OAB` |
@@ -9592,7 +9638,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.status` | Status da similaridade facial das imagens |
 | `result.similarity` | Similaridade facial das imagens |
 | `status.code` | Código da mensagem de status |
@@ -9653,7 +9699,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.message` | Mensagem do resultado da verificação do Liveness 2D |
 | `result.likeRealPerson` | Resultado da verificação do Liveness 2D |
 | `status.code` | Código da mensagem de status |
@@ -9699,7 +9745,7 @@ Consulta o CPF de um indivíduo e retorna se a pessoa é politicamente exposta.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status indicando se a pessoa é politicamente exposta |
 | `status.code` | Código da mensagem de status |
@@ -9747,7 +9793,7 @@ sanções atuais e histórico de ocorrências encontradas nas bases consultadas.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF consultado |
 | `result.isPep` | Indica se a pessoa é politicamente exposta |
 | `result.isCurrentlySanctioned` | Indica se existe sanção vigente associada à pessoa |
@@ -9790,7 +9836,7 @@ relacionadas quando disponíveis.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF consultado |
 | `result.mediaExposureLevel` | Nível de exposição em mídia |
 | `result.celebrityLevel` | Nível de notoriedade pública |
@@ -9846,7 +9892,7 @@ Fazenda Nacional (PGFN).
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da dívida ativa |
 | `result.statusDate` | Data do status |
@@ -9901,7 +9947,7 @@ análise de risco.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.score` | Score de risco de fraude |
 | `result.factor` | Status de risco retornado pela DataRisk: `HIGH RISK`, `MEDIUM RISK` ou `LOW RISK` |
@@ -9954,7 +10000,7 @@ score normalizado e uma mensagem com a leitura resumida da análise.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF consultado |
 | `result.score` | Score calculado |
 | `result.message` | Mensagem com score e interpretação de risco |
@@ -9993,7 +10039,7 @@ o risco de inadimplência.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.score` | Score de inadimplência |
 | `result.origin` | Origem do score |
@@ -10047,7 +10093,7 @@ similaridade encontrado.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da consulta do score biométrico |
 | `result.message` | Mensagem da consulta |
@@ -10086,7 +10132,7 @@ Exemplo de resposta:
 
 ### Validação de CNH no DataValid
 
-Valida dados de CNH com apoio do DataValid/Serpro. O serviço recebe o CPF e a
+Valida dados de CNH com apoio do validação documental. O serviço recebe o CPF e a
 imagem de referência, normalmente em base64, para executar a validação
 disponível na integração.
 
@@ -10114,7 +10160,7 @@ Exemplo de resposta:
 
 > Nota:
   Atualmente, o retorno exposto por este serviço pode ser mínimo e variar
-  conforme a disponibilidade da integração DataValid/Serpro. Use o status da
+  conforme a disponibilidade da integração validação documental. Use o status da
   chamada e os campos retornados em `result` como contrato efetivo da resposta.
 
 ### Certidão de Nada Consta - Ações Judiciais
@@ -10135,7 +10181,7 @@ eleitoral, a consulta está disponível apenas para fontes do TRF1 e TRF4.
 Parâmetros opcionais:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `court` | Tribunal: `TRF1`, `TRF2`, `TRF3`, `TRF4` ou `TRF5` |
 | `uf` | UF da federação brasileira |
 | `sphere` | Esfera: `CIVIL`, `CRIMINAL` ou `ELEITORAL` |
@@ -10143,7 +10189,7 @@ Parâmetros opcionais:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status do Nada Consta |
 | `result.origin` | Origem do Nada Consta |
@@ -10208,7 +10254,7 @@ há antecedentes, o status do resultado retorna como `NADA CONSTA`.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da certidão criminal |
 | `result.expirationDate` | Data de expiração da certidão |
@@ -10265,7 +10311,7 @@ retornada por essa consulta.
 Parâmetros aceitos:
 
 | Campo | Descrição | Valor aceito |
-| --- | --- | --- |
+| --- | --- |
 | `cpf` | Número do CPF | Qualquer texto |
 | `rg` | Número do RG da identidade | Qualquer texto |
 | `uf` | UF do estado | Qualquer texto |
@@ -10285,7 +10331,7 @@ Parâmetros aceitos:
 Obrigatoriedade de parâmetros por estado:
 
 | Estado | CPF | UF | RG | MOTHERNAME | FATHERNAME | RGISSUINGAGENCY | RGISSUINGUF | RGEXPEDITIONDATE | DATEFORMAT | PLACEOFBIRTH | ADDRESS | NUMBERADDRESS | NEIGHBORHOOD | CITY | ZIPCODE |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | MG | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
 | CE | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
 | RR | Obrigatório | Obrigatório | Obrigatório | Semi-obrigatório | - | - | - | - | - | - | - | - | - | - | - |
@@ -10306,7 +10352,7 @@ Estados disponíveis para consulta: `BA`, `CE`, `ES`, `MG`, `MS`, `MT`, `PA`,
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da certidão criminal |
 | `result.uf` | UF consultada |
@@ -10430,7 +10476,7 @@ envio de cobranças.
 Status possíveis:
 
 | Status | Descrição |
-| --- | --- |
+| --- |
 | `VALID` | O e-mail é válido e não apresenta restrições |
 | `INVALID` | O e-mail é inválido |
 | `UNKNOWN` | A validação não foi concluída no tempo limite |
@@ -10438,7 +10484,7 @@ Status possíveis:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.email` | E-mail |
 | `result.status` | Status do e-mail |
 | `result.normalizedEmail` | E-mail normalizado |
@@ -10520,7 +10566,7 @@ envios de mensagens.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.phone` | Telefone |
 | `result.operator` | Nome da operadora retornado no exemplo da API |
@@ -10578,7 +10624,7 @@ endereço informado e também apoia verificações relacionadas à localização
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.zipcode` | CEP |
 | `result.numberAddress` | Número do endereço |
@@ -10725,7 +10771,7 @@ Body:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.status` | Status da validação cadastral |
 | `result.message` | Mensagem da consulta |
@@ -10785,7 +10831,7 @@ bases do governo.
 Campos de entrada:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `key` | Chave usada para consultar o resultado da documentoscopia. Pode ser um UUID ou outra chave definida pela integração |
 | `image1` | Documento em base64, PDF ou imagem, com a parte frontal do RG ou CNH. Também pode conter a foto da CNH completa. Campo obrigatório |
 | `image2` | Documento em base64 com a parte de trás do RG ou CNH. Campo opcional |
@@ -10794,7 +10840,7 @@ Campos de entrada:
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.name` | Nome |
 | `result.fatherName` | Nome do pai |
@@ -10865,7 +10911,7 @@ requisição de criação.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.cpf` | CPF |
 | `result.name` | Nome |
 | `result.fatherName` | Nome do pai |
@@ -10936,7 +10982,7 @@ Consulta os MEIs que um CPF possui.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.meis` | Empresas MEI do CPF informado |
 | `result.meis.cpf` | CPF |
 | `result.meis.cnpj` | CNPJ do MEI |
@@ -11042,7 +11088,7 @@ Consulta vínculos relacionados a servidores públicos para o CPF informado.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.totalPublicPositions` | Total de vínculos ou posições públicas encontradas |
 | `result.inServiceServices` | Total de vínculos públicos em serviço |
 | `result.income` | Valor de renda retornado pela consulta |
@@ -11094,7 +11140,7 @@ Consulta endereços associados ao CPF informado.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.addresses` | Lista de endereços associados ao CPF |
 | `result.addresses.zipcode` | CEP |
 | `result.addresses.country` | País |
@@ -11222,7 +11268,7 @@ Consulta dados da pessoa a partir do telefone informado.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `cpf` | CPF |
 | `name` | Nome da pessoa |
 | `phone` | Telefone consultado |
@@ -11270,7 +11316,7 @@ Consulta mandado de prisão associado aos dados informados.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `message` | Mensagem de retorno |
 | `arrestWarrantFound` | Indica se existe mandado de prisão |
 
@@ -11286,7 +11332,7 @@ Consulta débitos ativos associados ao CPF informado.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `result.totalDebtValue` | Valor total dos débitos |
 | `result.totalDebts` | Quantidade total de débitos |
 | `result.debts` | Lista de débitos |
@@ -11307,7 +11353,7 @@ Consulta dados eleitorais associados a um candidato.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `hasRunForOffice` | Indica se o indivíduo já concorreu a algum cargo público |
 | `hasBeenElected` | Indica se o indivíduo já foi eleito |
 | `numberOfTimesRanForOffice` | Número de vezes que concorreu a cargos públicos |
@@ -11316,7 +11362,7 @@ Campos principais do retorno:
 | `electionData` | Dados detalhados sobre candidaturas e eleições |
 | `accountability` | Dados de prestação de contas |
 | `assetsList` | Lista de bens declarados |
-| `providersRanking` | Ranking de fornecedores |
+| `suppliersRanking` | Ranking de fornecedores |
 | `donorsRanking` | Ranking de doadores |
 
 Exemplo com `curl`:
@@ -11410,7 +11456,7 @@ Consulta doações eleitorais realizadas por uma pessoa.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `totalDonationsAmount` | Quantidade total de doações realizadas |
 | `totalDonatedValue` | Valor total doado |
 | `quantityOfDonationsLastElection` | Quantidade de doações na última eleição |
@@ -11503,7 +11549,7 @@ Consulta indicadores de envolvimento político de uma pessoa.
 ```
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `electionsCount` | Número de eleições nas quais o indivíduo participou |
 | `isCurrentlyInOffice` | Indica se está atualmente em cargo público |
 | `wasFormerlyElected` | Indica se já foi eleito anteriormente |
@@ -11562,7 +11608,7 @@ Campos principais do retorno:
   contrato real do response.
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `totalMembers` | Número total de membros da família |
 | `policalMembers` | Número de membros políticos na família |
 | `currentlyElectedMembers` | Número de membros atualmente eleitos |
@@ -11646,7 +11692,7 @@ Consulta prestadores de serviço eleitorais associados à pessoa.
 Campos principais do retorno:
 
 | Campo | Descrição |
-| --- | --- |
+| --- |
 | `name` | Nome do indivíduo ou entidade |
 | `partiesThatReceivedProvision` | Lista dos partidos que receberam provisões |
 | `electionProvisionData` | Dados detalhados sobre provisões eleitorais |
@@ -11768,7 +11814,7 @@ Passo rápido para evitar erro:
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` |
 | Compliance de casas de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
 | Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
-| Risco de crédito PJ Murabei | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+| Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` |
 
 ## Consulta on-demand de CNPJ
@@ -12667,27 +12713,27 @@ Esta página explica o fluxo padrão para executar qualquer produto documentado 
 A maior parte das consultas usa o endpoint `POST /api/service-api`. O campo `service` define qual produto será executado.
 
 > Atencao:
-  Antes de executar a chamada, confirme qual alias está liberado no produto
-  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias documentado no catálogo.
+ Antes de executar a chamada, confirme qual service está liberado no produto
+ do cliente. O campo `service` deve receber o alias público de chamada,
+ exatamente como aparece no catálogo abaixo.
 
-Na prática: se o alias configurado no produto for diferente do alias abaixo,
-use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
-quando o produto está ativo.
+Na prática: copie o valor da coluna `Service` e envie esse valor no body.
+A documentação não expõe aliases internos de integração; o cliente deve
+usar somente o service liberado no produto.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
-| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| Service |
+| --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| `economic_relationships` |
 
 ## Passo a passo
 
 | Ambiente | Base URL | Quando usar |
-| --- | --- | --- |
+| --- |
 | Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validações e desenvolvimento. |
 | Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação do cliente. |
 
@@ -12746,7 +12792,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 ## Erros comuns
 
 | Situação | Como corrigir |
-| --- | --- |
+| --- |
 | Token ausente, expirado ou inválido | Gere um novo token e envie `Authorization: Bearer {jwt_token}`. |
 | Campo `service` escrito errado | Copie o service pelo catálogo do API Reference. |
 | Produto usa alias curto | Confirme no produto qual alias está liberado e envie esse valor no campo `service`. |
@@ -12771,13 +12817,13 @@ Use esta página quando souber o objetivo da integração, mas ainda não souber
 Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurídica para copiar o request completo.
 
 
-    CPF, dados cadastrais, OCR, biometria, risco, compliance e contatos.
+ CPF, dados cadastrais, OCR, biometria, risco, compliance e contatos.
 
 
-    CNPJ, Receita Federal, risco de crédito, sócios, domínios, compliance e OCR.
+ CNPJ, Receita Federal, risco de crédito, sócios, domínios, compliance e OCR.
 
 
-    Fluxos prontos com payload, retorno esperado e erro comum.
+ Fluxos prontos com payload, retorno esperado e erro comum.
 
 
 ## Como escolher
@@ -12791,7 +12837,7 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## Biometria e documentos
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | Busca de face na base | `SERVICE_FACE_INDEX` | CPF |
 | Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | CPF |
 | FaceMatch | `SERVICE_FACE_MATCH` | CPF |
@@ -12805,7 +12851,7 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## Contatos, sites e relacionamentos
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | Dados financeiros e endereços | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | CPF |
 | Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | CPF |
 | Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | CNPJ |
@@ -12831,7 +12877,7 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## Dados cadastrais e Receita Federal
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | CNPJ |
 | Consulta de MEI | `SERVICE_MEI` | CPF |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | CPF |
@@ -12850,12 +12896,12 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## Dados eleitorais e PEP
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | CPF |
 | Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CPF` | CPF |
 | Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CNPJ` | CNPJ |
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | CPF |
-| Envolvimento político PF (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | CPF |
+| Envolvimento político PF | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | CPF |
 | Fornecedores eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | CNPJ |
 | Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | CPF |
 | KYC e compliance | `SERVICE_PERSON_KYC` | CPF |
@@ -12865,14 +12911,14 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## Jurídico, certidões e protestos
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | CPF |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | CPF |
 | Certidão de Nada Consta | `SERVICE_NOTHING_RECORD_LAWSUITS` | CPF |
 | Certidão negativa de protesto | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | CPF |
 | Certidão negativa de protesto | `SERVICE_PROTEST_PJ` | CNPJ |
-| Certidão negativa de protesto PF (InfoSimples) | `SERVICE_PROTEST_PF` | CPF |
-| Certidão negativa de protesto PF (Netrin) | `SERVICE_PROTEST_PF` | CPF |
+| Certidão negativa de protesto PF | `SERVICE_PROTEST_PF` | CPF |
+| Certidão negativa de protesto PF | `SERVICE_PROTEST_PF` | CPF |
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` | CPF |
 | Processos jurídicos | `SERVICE_JURIDICAL_PROCESSES_PJ` | CNPJ |
 | Processos jurídicos e administrativos | `SERVICE_JURIDICAL_PROCESSES` | CPF |
@@ -12880,7 +12926,7 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## KYC, compliance e exposição
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | CNPJ |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | CNPJ |
 | Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | CPF |
@@ -12889,7 +12935,7 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## Outros services
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | Benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | CPF |
 | Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | CPF |
 | Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY` | CPF |
@@ -12902,7 +12948,7 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 ## Risco, crédito e dívidas
 
 | Objetivo | Service | Documento |
-| --- | --- | --- |
+| --- |
 | Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ` | CNPJ |
 | Dívida ativa | `SERVICE_ACTIVE_DEBT_PF` | CPF |
 | Informações financeiras | `SERVICE_FINANCIAL_INFORMATION` | CPF |
@@ -12928,48 +12974,48 @@ Catálogo explícito dos services de pessoa física disponíveis via API, com ca
 Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produto executado é definido pelo campo `service` no body da requisição.
 
 > Atencao:
-  Antes de executar a chamada, confirme qual alias está liberado no produto
-  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias documentado no catálogo.
+ Antes de executar a chamada, confirme qual service está liberado no produto
+ do cliente. O campo `service` deve receber o alias público de chamada,
+ exatamente como aparece no catálogo abaixo.
 
-Na prática: se o alias configurado no produto for diferente do alias abaixo,
-use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
-quando o produto está ativo.
+Na prática: copie o valor da coluna `Service` e envie esse valor no body.
+A documentação não expõe aliases internos de integração; o cliente deve
+usar somente o service liberado no produto.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
-| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
-| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
-| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| Service |
+| --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `economic_relationships` |
 
 > Info:
-  OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64,
-  URL ou `key` real para retornar dados completos. Payload curto ajuda a
-  validar autenticação, acesso ao produto e formato básico da chamada, mas
-  não valida o retorno completo do parceiro.
+ OCR, documentoscopia, FaceMatch e Liveness precisam de imagem/base64,
+ URL ou `key` real para retornar dados completos. Payload curto ajuda a
+ validar autenticação, acesso ao produto e formato básico da chamada, mas
+ não valida o retorno completo do processamento.
 
 ## Atalhos práticos
 
 
-    Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
+ Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
 
 
-    Configure environment, gere token e rode `POST /api/service-api` em HML.
+ Configure environment, gere token e rode `POST /api/service-api` em HML.
 
 
-    Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.
+ Use este guia para CNH, RG, comprovante, cartão CNPJ, base64 e erros de imagem.
 
 
-    Copie fluxos completos para CPF, OCR, Face Index, risco e score.
+ Copie fluxos completos para CPF, OCR, Face Index, risco e score.
 
 
 ## Como ler esta referência
 
 - **Nome**: nome funcional do produto.
 - **Service**: valor exato que deve ser enviado no campo `service`.
-- **Alias de chamada**: quando o produto estiver configurado com alias curto, envie esse alias no body, mesmo que o nome documentado do parceiro seja outro.
+- **Service**: valor público que deve ser enviado no campo `service`.
 - **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.
 - **Campos**: parâmetros esperados no body além de `service`.
 - **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.
@@ -12980,7 +13026,7 @@ quando o produto está ativo.
 ### Biometria e documentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Busca de face na base | `SERVICE_FACE_INDEX` | `image1` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis. |
 | Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao. |
 | FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` | Use para comparar duas imagens faciais e retornar a similaridade entre elas. | Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao. |
@@ -12988,29 +13034,29 @@ quando o produto está ativo.
 | OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis. |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica. |
 | Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` | Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia. | Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias. |
-| Score biométrico | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade. | Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
+| Score biométrico | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade. | Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos. |
 
 ### Contatos, sites e relacionamentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Dados financeiros e endereços | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna dados financeiros e endereços do CPF em uma consulta combinada, incluindo renda estimada, indicadores financeiros e endereços encontrados. |
 | Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna dados associados ao telefone informado, como possível titular, documento relacionado, status de confirmacao e atributos disponíveis. |
 | Domínios | `SERVICE_DOMAINS_CPF` | `cpf` | Use para consultar dados de sites vinculados à pessoa. | Retorna domínios, sites e sinais digitais associados ao CPF, incluindo quantidade e registros encontrados quando disponíveis. |
 | Endereços | `SERVICE_ADDRESS` | `cpf` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis. |
 | Histórico de e-mails | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna e-mails associados ao CPF, incluindo prioridade, status de validação, origem, data de atualização e sinais de uso quando disponíveis. |
 | Histórico de telefones | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna histórico de telefones associados ao CPF, incluindo número, tipo de linha, operadora, prioridade, status e recência quando disponíveis. |
-| OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
+| OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados. |
 | Pessoas relacionadas | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna pessoas relacionadas ao CPF, com nome, documento mascarado, tipo de relação, nível de proximidade e origem do vinculo. |
 | Relacionamentos econômicos | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` | Use para consultar vínculos, sócios ou relacionamentos associados à pessoa. | Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento. |
 | Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` | Use para consultar ou validar endereços associados ao documento. | Retorna se o endereço informado tem associação com o CPF, incluindo nível de match, endereço normalizado e sinais usados na validação. |
-| Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro. |
+| Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | Use para consultar, validar ou enriquecer dados de telefone. | Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta. |
 | Validação de e-mail | `SERVICE_EMAIL_VALIDATION` | `email` | Use para validar ou consultar histórico de e-mails relacionados ao documento. | Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco. |
 
 ### Dados cadastrais e Receita Federal
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Consulta de MEI | `SERVICE_MEI` | `cpf` | Use este service quando precisar executar a consulta "Consulta de MEI" via API. | Retorna empresas MEI associadas ao CPF, incluindo CNPJ, razão social, situação, atividades, endereço e datas cadastrais quando disponíveis. |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` | Use para consultar ou validar dados cadastrais da pessoa em bases da Receita Federal. | Retorna situação atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo. |
 | Dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | Use para consultar dados demograficos associados à pessoa. | Retorna dados demograficos associados ao CPF, com dados regionais, estimativas e indicadores retornados pela base consultada. |
@@ -13023,11 +13069,11 @@ quando o produto está ativo.
 ### Dados eleitorais e PEP
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna histórico de candidaturas eleitorais do CPF, incluindo cargo, partido, ano, unidade eleitoral, bens declarados e situação quando disponível. |
 | Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` | Use para consultar informações eleitorais relacionadas à pessoa. | Retorna doações eleitorais realizadas pelo CPF, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
-| Envolvimento político PF (BigDataCorp) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
+| Envolvimento político PF | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | Use este service quando precisar executar a consulta "Envolvimento político PF" via API. | Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos. |
 | Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` | Use este service quando precisar executar a consulta "Histórico familiar político" via API. | Retorna histórico político familiar do CPF, incluindo familiares com candidaturas, doações, cargos, partidos e vínculos eleitorais quando encontrados. |
 | KYC e compliance | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` | Use para executar checagens de KYC e compliance da pessoa. | Retorna checagem de KYC da pessoa, incluindo PEP, sanções, mídia, processos, alertas de compliance e sinais de risco. |
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` | Use para verificar exposição política ou vínculo com Pessoa Politicamente Exposta. | Retorna se o CPF e PEP ou relacionado a PEP, com cargo, órgão, nível de exposição, período e vínculos encontrados quando disponíveis. |
@@ -13036,27 +13082,27 @@ quando o produto está ativo.
 ### Jurídico, certidões e protestos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna resultado de antecedentes criminais civis, com status da certidão, ocorrências encontradas, UF, RG e mensagens da consulta. |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna resultado de antecedentes criminais federais, com status da certidão, ocorrências encontradas e mensagens da consulta. |
 | Certidão de Nada Consta | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna certidão de nada consta para a esfera/tribunal informado, com status, mensagem, ocorrências e dados usados na consulta. |
 | Certidão negativa de protesto | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas. |
-| Certidão negativa de protesto PF (InfoSimples) | `SERVICE_PROTEST_PF` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
-| Certidão negativa de protesto PF (Netrin) | `SERVICE_PROTEST_PF` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens. |
+| Certidão negativa de protesto PF | `SERVICE_PROTEST_PF` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens. |
+| Certidão negativa de protesto PF | `SERVICE_PROTEST_PF` | `cpf` | Use para consultar protestos associados ao documento da pessoa. | Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens. |
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | Use este service quando precisar executar a consulta "Mandado de prisão" via API. | Retorna indicativos de mandado de prisão para os dados informados, com situação, órgão, processo e detalhes encontrados quando houver ocorrência. |
 | Processos jurídicos e administrativos | `SERVICE_JURIDICAL_PROCESSES` | `cpf` | Use para consultar certidões, processos ou informações jurídicas da pessoa. | Retorna processos jurídicos e administrativos vinculados ao CPF, com tribunal, classe, assunto, partes, status e datas quando disponíveis. |
 
 ### KYC, compliance e exposição
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | Use este service quando precisar executar a consulta "Exposição e perfil na mídia" via API. | Retorna exposição e perfil de mídia da pessoa, com notícias, fontes, categorias, sentimento, relevância e alertas encontrados. |
 | Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` | Use este service quando precisar executar a consulta "Propensão a apostas online" via API. | Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. |
 
 ### Outros services
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | Use este service quando precisar executar a consulta "Benefícios sociais estendidos" via API. | Retorna benefícios sociais estendidos vinculados ao CPF, com programas, indicadores, situação e detalhes encontrados quando disponíveis. |
 | Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | Use este service quando precisar executar a consulta "Benefícios sociais familiares" via API. | Retorna benefícios sociais familiares vinculados ao CPF, com programas, situação, quantidade e registros encontrados quando disponíveis. |
 | Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` | Use este service quando precisar executar a consulta "Histórico profissional" via API. | Retorna histórico profissional do CPF, incluindo empresas, cargos, datas, vínculos empregaticios ou societários e indicadores profissionais. |
@@ -13069,12 +13115,12 @@ quando o produto está ativo.
 ### Risco, crédito e dívidas
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Dívida ativa | `SERVICE_ACTIVE_DEBT_PF` | `cpf` | Use para consultar débitos ou dívidas associadas à pessoa. | Retorna dívidas ativas vinculadas ao CPF, com origem do débito, valores, situação, órgão credor e status da consulta. |
 | Informações financeiras | `SERVICE_FINANCIAL_INFORMATION` | `cpf` | Use para consultar informações financeiras associadas à pessoa. | Retorna informações financeiras estimadas do CPF, como renda presumida, poder aquisitivo, classe econômica e indicadores financeiros disponíveis. |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` | Use para consultar informações financeiras associadas à pessoa. | Retorna score de risco financeiro do CPF, faixa de risco, recomendação resumida e fatores que influenciam a avaliação. |
-| Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis. |
-| Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
+| Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis. |
+| Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível. |
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` | Use para avaliar risco, score ou propensão associada à pessoa. | Retorna score de risco de fraude do CPF, fator analisado, nível de risco, score numérico e sinais que suportam a decisão. |
 
 ## Requests completos
@@ -13137,7 +13183,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 
@@ -13225,7 +13271,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
@@ -13319,7 +13365,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 | `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
@@ -13399,7 +13445,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 
@@ -13531,7 +13577,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 
@@ -13673,7 +13719,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
@@ -13757,7 +13803,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
 
@@ -13795,7 +13841,7 @@ Neste service, o objeto `result` representa: Retorna o resultado ja processado d
 
 **Quando usar:** Use para comparar a imagem enviada com bases biométricas disponíveis e retornar a similaridade.
 
-**O que retorna:** Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
+**O que retorna:** Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -13850,7 +13896,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
@@ -13873,7 +13919,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
+Neste service, o objeto `result` representa: Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
 
 ### Contatos, sites e relacionamentos
 
@@ -13936,7 +13982,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -14022,7 +14068,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `phone` | Sim | Telefone usado para consulta ou validação, de preferência com DDD. |
 
@@ -14104,7 +14150,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -14188,7 +14234,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -14279,7 +14325,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `limit` | Sim | Quantidade máxima de registros que devem ser retornados quando o produto suporta limite. |
@@ -14371,7 +14417,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -14406,7 +14452,7 @@ Neste service, o objeto `result` representa: Retorna histórico de telefones ass
 
 **Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
 
-**O que retorna:** Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
+**O que retorna:** Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -14505,7 +14551,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 
@@ -14529,7 +14575,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
+Neste service, o objeto `result` representa: Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
 
 **Service:** `SERVICE_RELATED_PEOPLE`
 
@@ -14590,7 +14636,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -14675,7 +14721,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -14765,7 +14811,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `zipcode` | Sim | CEP usado na validação de endereço. |
@@ -14796,7 +14842,7 @@ Neste service, o objeto `result` representa: Retorna se o endereço informado te
 
 **Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
 
-**O que retorna:** Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.
+**O que retorna:** Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -14851,7 +14897,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `phone` | Sim | Telefone usado para consulta ou validação, de preferência com DDD. |
@@ -14874,7 +14920,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.
+Neste service, o objeto `result` representa: Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta.
 
 **Service:** `SERVICE_EMAIL_VALIDATION`
 
@@ -14932,7 +14978,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `email` | Sim | E-mail que será validado ou consultado. |
 
@@ -15015,7 +15061,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15099,7 +15145,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15183,7 +15229,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -15268,7 +15314,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15347,7 +15393,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15428,7 +15474,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15512,7 +15558,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `dataDeNascimento` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -15597,7 +15643,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `nit` | Não | NIT/PIS/PASEP usado na qualificação cadastral. |
@@ -15680,7 +15726,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15765,7 +15811,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15849,7 +15895,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -15879,7 +15925,7 @@ Neste service, o objeto `result` representa: Retorna envolvimento político do C
 
 **Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF`
 
-**Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF (BigDataCorp)" via API.
+**Quando usar:** Use este service quando precisar executar a consulta "Envolvimento político PF" via API.
 
 **O que retorna:** Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
 
@@ -15933,7 +15979,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16017,7 +16063,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16104,7 +16150,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -16186,7 +16232,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16265,7 +16311,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16275,7 +16321,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "cpf": "cpf",
-    "providers": [
+    "campos": [
       {
         "year": 2024,
         "campaign": "Campanha",
@@ -16358,7 +16404,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `rg` | Sim | Numero do RG usado em certidões ou validações documentais. |
@@ -16441,7 +16487,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16529,7 +16575,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `court` | Sim | Tribunal ou órgão usado na consulta de certidão/processo. |
@@ -16613,7 +16659,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16640,7 +16686,7 @@ Neste service, o objeto `result` representa: Retorna certidão/consulta de prote
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -16692,7 +16738,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16714,13 +16760,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 **Service:** `SERVICE_PROTEST_PF`
 
 **Quando usar:** Use para consultar protestos associados ao documento da pessoa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -16772,7 +16818,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -16794,7 +16840,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 **Service:** `SERVICE_ARREST_WARRANT`
 
@@ -16864,7 +16910,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `nome` | Sim | Nome completo usado na consulta quando não ha documento suficiente. |
 | `motherName` | Sim | Nome da mãe usado para aumentar a assertividade da consulta. |
@@ -16947,7 +16993,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17034,7 +17080,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17119,7 +17165,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17203,7 +17249,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17288,7 +17334,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17372,7 +17418,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17459,7 +17505,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -17544,7 +17590,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17628,7 +17674,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17709,7 +17755,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17790,7 +17836,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17876,7 +17922,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -17962,7 +18008,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -18045,7 +18091,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 | `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
@@ -18074,7 +18120,7 @@ Neste service, o objeto `result` representa: Retorna score de risco financeiro d
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
+**O que retorna:** Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -18126,7 +18172,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -18148,13 +18194,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
+Neste service, o objeto `result` representa: Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
 
 **Service:** `SERVICE_DEFAULT_RISK_SCORE`
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
 
-**O que retorna:** Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
+**O que retorna:** Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -18206,7 +18252,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
 
@@ -18228,7 +18274,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
+Neste service, o objeto `result` representa: Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 **Service:** `SERVICE_FRAUD_RISK_SCORE`
 
@@ -18289,10 +18335,10 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
-| `factor` | Sim | Fator de risco solicitado pelo parceiro, como risco mínimo ou atrito mínimo. |
+| `factor` | Sim | Fator de risco solicitado no payload, como risco mínimo ou atrito mínimo. |
 
 ### Response resumido
 
@@ -18362,38 +18408,38 @@ Catálogo explícito dos services de pessoa jurídica disponíveis via API, com 
 Todos os services abaixo usam o mesmo endpoint: `POST /api/service-api`. O produto executado é definido pelo campo `service` no body da requisição.
 
 > Atencao:
-  Antes de executar a chamada, confirme qual alias está liberado no produto
-  do cliente. O campo `service` deve receber esse alias de chamada. Em alguns
-  casos, ele é mais curto que o alias documentado no catálogo.
+ Antes de executar a chamada, confirme qual service está liberado no produto
+ do cliente. O campo `service` deve receber o alias público de chamada,
+ exatamente como aparece no catálogo abaixo.
 
-Na prática: se o alias configurado no produto for diferente do alias abaixo,
-use o alias do produto no body. Isso evita erro de acesso ao serviço mesmo
-quando o produto está ativo.
+Na prática: copie o valor da coluna `Service` e envie esse valor no body.
+A documentação não expõe aliases internos de integração; o cliente deve
+usar somente o service liberado no produto.
 
-| Alias documentado | Alias de chamada quando configurado no produto |
-| --- | --- |
-| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+| Service |
+| --- |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
 
 ## Atalhos práticos
 
 
-    Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
+ Veja token, headers, contrato base e leitura de `result`, `status` e `externalId`.
 
 
-    Configure environment, gere token e rode `POST /api/service-api` em HML.
+ Configure environment, gere token e rode `POST /api/service-api` em HML.
 
 
-    Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.
+ Veja payload, imagem esperada, retorno limpo e erros comuns para cartão CNPJ.
 
 
-    Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.
+ Copie fluxos completos para CNPJ, cartão CNPJ e risco de crédito PJ.
 
 
 ## Como ler esta referência
 
 - **Nome**: nome funcional do produto.
 - **Service**: valor exato que deve ser enviado no campo `service`.
-- **Alias de chamada**: quando o produto estiver configurado com alias curto, envie esse alias no body, mesmo que o nome documentado do parceiro seja outro.
+- **Service**: valor público que deve ser enviado no campo `service`.
 - **Família**: agrupamento por objetivo de uso, como dados cadastrais, risco, jurídico ou biometria.
 - **Campos**: parâmetros esperados no body além de `service`.
 - **Retorno principal**: resumo dos dados esperados no objeto `result` para aquele service.
@@ -18404,13 +18450,13 @@ quando o produto está ativo.
 ### Biometria e documentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | Use para extrair dados de documentos enviados em base64 ou por URL. | Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível. |
 
 ### Contatos, sites e relacionamentos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais feitas pelos sócios da empresa, com sócio relacionado, ano, candidato/partido, valor e detalhes eleitorais. |
 | Domínios CNPJ | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Use para consultar dados de sites vinculados à empresa. | Retorna domínios, sites e sinais digitais associados ao CNPJ, incluindo quantidade e registros encontrados quando disponíveis. |
 | Endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | Use para consultar ou validar endereços associados ao documento. | Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis. |
@@ -18424,7 +18470,7 @@ quando o produto está ativo.
 ### Dados cadastrais e Receita Federal
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna situação atualizada do CNPJ consultada sob demanda na Receita Federal, com razão social, status cadastral, CNAEs e endereço. |
 | Dados cadastrais de CNPJ | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | Use este service quando precisar executar a consulta "Dados cadastrais de CNPJ" via API. | Retorna dados cadastrais do CNPJ, incluindo razão social, nome fantasia, situação, abertura, CNAEs, natureza jurídica e endereço quando disponíveis. |
 | DAS MEI na Receita | `SERVICE_DAS_MEI` | `cnpj` | Use para consultar ou validar dados cadastrais da empresa em bases da Receita Federal. | Retorna informações de DAS MEI e situação fiscal relacionada ao CNPJ, incluindo períodos, pagamentos, pendências e status quando disponíveis. |
@@ -18435,30 +18481,30 @@ quando o produto está ativo.
 ### Dados eleitorais e PEP
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Doações eleitorais | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna doações eleitorais realizadas pela empresa, com ano, candidato/partido, valor, cargo, UF e detalhes da prestacao de contas. |
 | Fornecedores eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` | Use para consultar informações eleitorais relacionadas à empresa. | Retorna prestações de serviço eleitorais vinculadas ao CNPJ, com campanha, candidato/partido, valor, ano e natureza do serviço. |
 
 ### Jurídico, certidões e protestos
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
-| Certidão negativa de protesto | `SERVICE_PROTEST_PJ` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas. |
+| --- | --- |
+| Certidão negativa de protesto | `SERVICE_PROTEST_PJ` | `cnpj` | Use para consultar protestos associados ao documento da empresa. | Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas. |
 | Processos jurídicos | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | Use para consultar certidões, processos ou informações jurídicas da empresa. | Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis. |
 
 ### KYC, compliance e exposição
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Use para executar checagens de KYC e compliance da empresa. | Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas. |
 
 ### Risco, crédito e dívidas
 
 | Nome | Service | Campos | Quando usar | Retorno principal |
-| --- | --- | --- | --- | --- |
+| --- | --- |
 | Débitos ativos | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | Use para consultar débitos ou dívidas associadas à empresa. | Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta. |
-| Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
+| Risco de crédito | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Use para avaliar risco, score ou propensão associada à empresa. | Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis. |
 
 ## Requests completos
 
@@ -18564,7 +18610,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
 
@@ -18645,7 +18691,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -18730,7 +18776,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -18814,7 +18860,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -18901,7 +18947,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -18986,7 +19032,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19072,7 +19118,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19156,7 +19202,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19241,7 +19287,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19326,7 +19372,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19412,7 +19458,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19493,7 +19539,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19574,7 +19620,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19658,7 +19704,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19742,7 +19788,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 | `uf` | Não | UF usada para limitar a consulta estadual ou jurídica. |
@@ -19824,7 +19870,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19907,7 +19953,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -19991,7 +20037,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -20001,7 +20047,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 {
   "result": {
     "cnpj": "cnpj",
-    "providers": [
+    "campos": [
       {
         "year": 2024,
         "campaign": "Campanha",
@@ -20026,7 +20072,7 @@ Neste service, o objeto `result` representa: Retorna prestações de serviço el
 
 **Quando usar:** Use para consultar protestos associados ao documento da empresa.
 
-**O que retorna:** Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
+**O que retorna:** Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -20078,7 +20124,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -20100,7 +20146,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
+Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
 **Service:** `SERVICE_JURIDICAL_PROCESSES_PJ`
 
@@ -20158,7 +20204,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -20245,7 +20291,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -20327,7 +20373,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -20411,7 +20457,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -20445,7 +20491,7 @@ Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas 
 
 **Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
 
-**O que retorna:** Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+**O que retorna:** Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 **Endpoint:** `POST /api/service-api`
 
@@ -20497,7 +20543,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ### Campos do body
 
 | Campo | Obrigatório | Descrição |
-| --- | --- | --- |
+| --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cnpj` | Sim | CNPJ da empresa consultada. |
 
@@ -20523,7 +20569,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+Neste service, o objeto `result` representa: Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 ## Padrões de erro
 
@@ -20569,602 +20615,602 @@ A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo c
 
 - PF - Antecedentes criminais civis: `SERVICE_CRIMINAL_RECORD_CIVIL`
 
-  ```yaml
-  service: SERVICE_CRIMINAL_RECORD_CIVIL
-  cpf: cpf
-  rg: rg
-  uf: uf
-  ```
+ ```yaml
+ service: SERVICE_CRIMINAL_RECORD_CIVIL
+ cpf: cpf
+ rg: rg
+ uf: uf
+ ```
 
 - PF - Antecedentes criminais federais: `SERVICE_CRIMINAL_RECORD_FEDERAL`
 
-  ```yaml
-  service: SERVICE_CRIMINAL_RECORD_FEDERAL
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_CRIMINAL_RECORD_FEDERAL
+ cpf: cpf
+ ```
 
 - PF - Benefícios sociais estendidos: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
 
-  ```yaml
-  service: SERVICE_SOCIAL_ASSISTANCE_EXTENDED
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_SOCIAL_ASSISTANCE_EXTENDED
+ cpf: cpf
+ ```
 
 - PF - Benefícios sociais familiares: `SERVICE_FAMILY_SOCIAL_BENEFITS`
 
-  ```yaml
-  service: SERVICE_FAMILY_SOCIAL_BENEFITS
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_FAMILY_SOCIAL_BENEFITS
+ cpf: cpf
+ ```
 
 - PF - Busca de face na base: `SERVICE_FACE_INDEX`
 
-  ```yaml
-  service: SERVICE_FACE_INDEX
-  image1: base64
-  ```
+ ```yaml
+ service: SERVICE_FACE_INDEX
+ image1: base64
+ ```
 
 - PF - Certidão de Nada Consta: `SERVICE_NOTHING_RECORD_LAWSUITS`
 
-  ```yaml
-  service: SERVICE_NOTHING_RECORD_LAWSUITS
-  cpf: cpf
-  court: TRF1
-  uf: uf
-  sphere: CIVIL
-  ```
+ ```yaml
+ service: SERVICE_NOTHING_RECORD_LAWSUITS
+ cpf: cpf
+ court: TRF1
+ uf: uf
+ sphere: CIVIL
+ ```
 
 - PF - Certidão negativa de protesto: `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`
 
-  ```yaml
-  service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE
+ cpf: cpf
+ ```
 
 - PF - Consulta de MEI: `SERVICE_MEI`
 
-  ```yaml
-  service: SERVICE_MEI
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_MEI
+ cpf: cpf
+ ```
 
 - PF - CPF na Receita Federal on-demand: `SERVICE_RFB_PF_ON_DEMAND`
 
-  ```yaml
-  service: SERVICE_RFB_PF_ON_DEMAND
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_RFB_PF_ON_DEMAND
+ cpf: cpf
+ ```
 
 - PF - Dados demográficos: `SERVICE_DEMOGRAPHIC_DATA_CPF`
 
-  ```yaml
-  service: SERVICE_DEMOGRAPHIC_DATA_CPF
-  cpf: cpf
-  birthDate: yyyy-MM-dd (opcional)
-  ```
+ ```yaml
+ service: SERVICE_DEMOGRAPHIC_DATA_CPF
+ cpf: cpf
+ birthDate: yyyy-MM-dd (opcional)
+ ```
 
 - PF - Dados eleitorais de candidato: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`
 
-  ```yaml
-  service: SERVICE_ELECTION_CANDIDATE_DATA_CPF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ELECTION_CANDIDATE_DATA_CPF
+ cpf: cpf
+ ```
 
 - PF - Dados financeiros e endereços: `SERVICE_PF_FINANCIAL_AND_ADDRESS`
 
-  ```yaml
-  service: SERVICE_PF_FINANCIAL_AND_ADDRESS
-  cpf: cpf
-  birthDate: yyyy-MM-dd (opcional)
-  ```
+ ```yaml
+ service: SERVICE_PF_FINANCIAL_AND_ADDRESS
+ cpf: cpf
+ birthDate: yyyy-MM-dd (opcional)
+ ```
 
 - PF - Dados pelo telefone: `SERVICE_CONFIRM_PHONE`
 
-  ```yaml
-  service: SERVICE_CONFIRM_PHONE
-  phone: "+5561123456789"
-  ```
+ ```yaml
+ service: SERVICE_CONFIRM_PHONE
+ phone: "+5561123456789"
+ ```
 
 - PF - Dados PIS: `SERVICE_PIS_CONSULTATION`
 
-  ```yaml
-  service: SERVICE_PIS_CONSULTATION
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PIS_CONSULTATION
+ cpf: cpf
+ ```
 
 - PF - Dívida ativa: `SERVICE_ACTIVE_DEBT_PF`
 
-  ```yaml
-  service: SERVICE_ACTIVE_DEBT_PF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ACTIVE_DEBT_PF
+ cpf: cpf
+ ```
 
 - PF - Doações eleitorais: `SERVICE_ELECTORAL_DONORS_CPF`
 
-  ```yaml
-  service: SERVICE_ELECTORAL_DONORS_CPF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ELECTORAL_DONORS_CPF
+ cpf: cpf
+ ```
 
 - PF - Documentoscopia digital: `SERVICE_DIGITAL_DOCUMENTOSCOPY`
 
-  ```yaml
-  service: SERVICE_DIGITAL_DOCUMENTOSCOPY
-  key: 84bfcd2e-2336-4e30-bcab-15348b7890b5
-  image1: base64
-  image2: base64
-  selfie1: base64
-  ```
+ ```yaml
+ service: SERVICE_DIGITAL_DOCUMENTOSCOPY
+ key: 84bfcd2e-2336-4e30-bcab-15348b7890b5
+ image1: base64
+ image2: base64
+ selfie1: base64
+ ```
 
 - PF - Domínios: `SERVICE_DOMAINS_CPF`
 
-  ```yaml
-  service: SERVICE_DOMAINS_CPF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_DOMAINS_CPF
+ cpf: cpf
+ ```
 
 - PF - Endereços: `SERVICE_ADDRESS`
 
-  ```yaml
-  service: SERVICE_ADDRESS
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ADDRESS
+ cpf: cpf
+ ```
 
 - PF - Enriquecimento de dados: `SERVICE_PERSON_DATA_ENRICHMENT`
 
-  ```yaml
-  service: SERVICE_PERSON_DATA_ENRICHMENT
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PERSON_DATA_ENRICHMENT
+ cpf: cpf
+ ```
 
 - PF - Envolvimento político: `SERVICE_POLITICAL_INVOLVEMENT`
 
-  ```yaml
-  service: SERVICE_POLITICAL_INVOLVEMENT
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_POLITICAL_INVOLVEMENT
+ cpf: cpf
+ ```
 
 - PF - Exposição e perfil na mídia: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
 
-  ```yaml
-  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF
+ cpf: cpf
+ ```
 
 - PF - FaceMatch: `SERVICE_FACE_MATCH`
 
-  ```yaml
-  service: SERVICE_FACE_MATCH
-  image1: base64
-  image2: base64
-  ```
+ ```yaml
+ service: SERVICE_FACE_MATCH
+ image1: base64
+ image2: base64
+ ```
 
 - PF - Histórico de e-mails: `SERVICE_EMAILS_EXTENDED`
 
-  ```yaml
-  service: SERVICE_EMAILS_EXTENDED
-  cpf: cpf
-  limit: 10
-  ```
+ ```yaml
+ service: SERVICE_EMAILS_EXTENDED
+ cpf: cpf
+ limit: 10
+ ```
 
 - PF - Histórico de telefones: `SERVICE_PHONE_HISTORY`
 
-  ```yaml
-  service: SERVICE_PHONE_HISTORY
-  cpf: cpf
-  birthDate: yyyy-MM-dd (opcional)
-  limit: 10
-  ```
+ ```yaml
+ service: SERVICE_PHONE_HISTORY
+ cpf: cpf
+ birthDate: yyyy-MM-dd (opcional)
+ limit: 10
+ ```
 
 - PF - Histórico familiar político: `SERVICE_FAMILY_POLITICAL_HISTORY_CPF`
 
-  ```yaml
-  service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF
+ cpf: cpf
+ ```
 
 - PF - Histórico profissional: `SERVICE_PROFESSIONAL_HISTORY`
 
-  ```yaml
-  service: SERVICE_PROFESSIONAL_HISTORY
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PROFESSIONAL_HISTORY
+ cpf: cpf
+ ```
 
 - PF - Histórico profissional do titular: `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY`
 
-  ```yaml
-  service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY
-  cpf: cpf
-  birthDate: yyyy-MM-dd (opcional)
-  ```
+ ```yaml
+ service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY
+ cpf: cpf
+ birthDate: yyyy-MM-dd (opcional)
+ ```
 
 - PF - Indicadores de atividades: `SERVICE_ACTIVITIES_INDICATORS`
 
-  ```yaml
-  service: SERVICE_ACTIVITIES_INDICATORS
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ACTIVITIES_INDICATORS
+ cpf: cpf
+ ```
 
 - PF - Informações financeiras: `SERVICE_FINANCIAL_INFORMATION`
 
-  ```yaml
-  service: SERVICE_FINANCIAL_INFORMATION
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_FINANCIAL_INFORMATION
+ cpf: cpf
+ ```
 
 - PF - KYC e compliance: `SERVICE_PERSON_KYC`
 
-  ```yaml
-  service: SERVICE_PERSON_KYC
-  cpf: cpf
-  birthDate: yyyy-MM-dd (opcional)
-  ```
+ ```yaml
+ service: SERVICE_PERSON_KYC
+ cpf: cpf
+ birthDate: yyyy-MM-dd (opcional)
+ ```
 
 - PF - Liveness 2D: `SERVICE_LIVENESS_2D`
 
-  ```yaml
-  service: SERVICE_LIVENESS_2D
-  image1: selfie
-  ```
+ ```yaml
+ service: SERVICE_LIVENESS_2D
+ image1: selfie
+ ```
 
 - PF - Mandado de prisão: `SERVICE_ARREST_WARRANT`
 
-  ```yaml
-  service: SERVICE_ARREST_WARRANT
-  nome: nome
-  motherName: nome da mãe
-  fatherName: nome do pai
-  birthDate: dd/MM/yyyy
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ARREST_WARRANT
+ nome: nome
+ motherName: nome da mãe
+ fatherName: nome do pai
+ birthDate: dd/MM/yyyy
+ cpf: cpf
+ ```
 
 - PF - Modelagem de dados: `SERVICE_PERSON_DATA_MODELING`
 
-  ```yaml
-  service: SERVICE_PERSON_DATA_MODELING
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PERSON_DATA_MODELING
+ cpf: cpf
+ ```
 
 - PF - OCR de comprovante de endereço: `SERVICE_OCR_PROOF_OF_ADDRESS`
 
-  ```yaml
-  service: SERVICE_OCR_PROOF_OF_ADDRESS
-  image1: base64
-  ```
+ ```yaml
+ service: SERVICE_OCR_PROOF_OF_ADDRESS
+ image1: base64
+ ```
 
 - PF - OCR de emancipação: `SERVICE_OCR_EMANCIPATION`
 
-  ```yaml
-  service: SERVICE_OCR_EMANCIPATION
-  image1: base64
-  ```
+ ```yaml
+ service: SERVICE_OCR_EMANCIPATION
+ image1: base64
+ ```
 
 - PF - OCR React: `SERVICE_OCR`
 
-  ```yaml
-  service: SERVICE_OCR
-  documentType: IDENTIFICATION_DOCUMENT
-  image1: base64
-  image2: base64 (opcional)
-  ```
+ ```yaml
+ service: SERVICE_OCR
+ documentType: IDENTIFICATION_DOCUMENT
+ image1: base64
+ image2: base64 (opcional)
+ ```
 
 - PF - Pessoa politicamente exposta: `SERVICE_PEP`
 
-  ```yaml
-  service: SERVICE_PEP
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PEP
+ cpf: cpf
+ ```
 
 - PF - Pessoas relacionadas: `SERVICE_RELATED_PEOPLE`
 
-  ```yaml
-  service: SERVICE_RELATED_PEOPLE
-  cpf: cpf
-  birthDate: yyyy-MM-dd (opcional)
-  ```
+ ```yaml
+ service: SERVICE_RELATED_PEOPLE
+ cpf: cpf
+ birthDate: yyyy-MM-dd (opcional)
+ ```
 
 - PF - Prêmios e certificações: `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
 
-  ```yaml
-  service: SERVICE_AWARDS_AND_CERTIFICATIONS_CPF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_AWARDS_AND_CERTIFICATIONS_CPF
+ cpf: cpf
+ ```
 
 - PF - Prestadores de serviço eleitorais: `SERVICE_ELECTORAL_PROVIDERS_CPF`
 
-  ```yaml
-  service: SERVICE_ELECTORAL_PROVIDERS_CPF
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ELECTORAL_PROVIDERS_CPF
+ cpf: cpf
+ ```
 
 - PF - Processos jurídicos e administrativos: `SERVICE_JURIDICAL_PROCESSES`
 
-  ```yaml
-  service: SERVICE_JURIDICAL_PROCESSES
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_JURIDICAL_PROCESSES
+ cpf: cpf
+ ```
 
 - PF - Prompt de IA para pessoa: `SERVICE_PERSON_AI_PROMPT`
 
-  ```yaml
-  service: SERVICE_PERSON_AI_PROMPT
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PERSON_AI_PROMPT
+ cpf: cpf
+ ```
 
 - PF - Propensão a apostas online: `SEVICE_ONLINE_BETTING_PROPENSITY`
 
-  ```yaml
-  service: SEVICE_ONLINE_BETTING_PROPENSITY
-  cpf: cpf
-  ```
+ ```yaml
+ service: SEVICE_ONLINE_BETTING_PROPENSITY
+ cpf: cpf
+ ```
 
 - PF - Relacionamentos econômicos: `SERVICE_ECONOMIC_RELATIONSHIP`
 
-  ```yaml
-  service: SERVICE_ECONOMIC_RELATIONSHIP
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_ECONOMIC_RELATIONSHIP
+ cpf: cpf
+ ```
 
 - PF - Resultado da documentoscopia digital: `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
 
-  ```yaml
-  service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT
-  key: de0cd562-5962-40bd-8f94-5a7184ecde0e
-  ```
+ ```yaml
+ service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT
+ key: de0cd562-5962-40bd-8f94-5a7184ecde0e
+ ```
 
 - PF - Risco financeiro: `SERVICE_FINANCIAL_RISK_SCORE`
 
-  ```yaml
-  service: SERVICE_FINANCIAL_RISK_SCORE
-  cpf: cpf
-  birthDate: yyyy-MM-dd (opcional)
-  ```
+ ```yaml
+ service: SERVICE_FINANCIAL_RISK_SCORE
+ cpf: cpf
+ birthDate: yyyy-MM-dd (opcional)
+ ```
 
 - PF - Score biométrico: `SERVICE_DATAVALID_CNH`
 
-  ```yaml
-  service: SERVICE_DATAVALID_CNH
-  cpf: cpf
-  image1: "{base64Image}"
-  ```
+ ```yaml
+ service: SERVICE_DATAVALID_CNH
+ cpf: cpf
+ image1: "{base64Image}"
+ ```
 
 - PF - Score de crédito: `SERVICE_CREDIT_SCORE`
 
-  ```yaml
-  service: SERVICE_CREDIT_SCORE
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_CREDIT_SCORE
+ cpf: cpf
+ ```
 
 - PF - Score de inadimplência: `SERVICE_DEFAULT_RISK_SCORE`
 
-  ```yaml
-  service: SERVICE_DEFAULT_RISK_SCORE
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_DEFAULT_RISK_SCORE
+ cpf: cpf
+ ```
 
 - PF - Score de risco de fraude: `SERVICE_FRAUD_RISK_SCORE`
 
-  ```yaml
-  service: SERVICE_FRAUD_RISK_SCORE
-  cpf: cpf
-  factor: minRisk or minattrition
-  ```
+ ```yaml
+ service: SERVICE_FRAUD_RISK_SCORE
+ cpf: cpf
+ factor: minRisk or minattrition
+ ```
 
 - PF - Servidores públicos: `SERVICE_PUBLIC_SERVANTS`
 
-  ```yaml
-  service: SERVICE_PUBLIC_SERVANTS
-  cpf: cpf
-  ```
+ ```yaml
+ service: SERVICE_PUBLIC_SERVANTS
+ cpf: cpf
+ ```
 
 - PF - Status do CPF na Receita Federal: `SERVICE_RFB_PF`
 
-  ```yaml
-  service: SERVICE_RFB_PF
-  cpf: cpf
-  dataDeNascimento: yyyy-MM-dd (opcional)
-  ```
+ ```yaml
+ service: SERVICE_RFB_PF
+ cpf: cpf
+ dataDeNascimento: yyyy-MM-dd (opcional)
+ ```
 
 - PF - Validação de CPF com endereço: `SERVICE_CPF_ADDRESS_VALIDATION`
 
-  ```yaml
-  service: SERVICE_CPF_ADDRESS_VALIDATION
-  cpf: cpf
-  zipcode: 00000-000
-  numberAddress: 13
-  ```
+ ```yaml
+ service: SERVICE_CPF_ADDRESS_VALIDATION
+ cpf: cpf
+ zipcode: 00000-000
+ numberAddress: 13
+ ```
 
 - PF - Validação de CPF com telefone: `SERVICE_CPF_PHONE_VALIDATION`
 
-  ```yaml
-  service: SERVICE_CPF_PHONE_VALIDATION
-  cpf: cpf
-  phone: "11900000000"
-  ```
+ ```yaml
+ service: SERVICE_CPF_PHONE_VALIDATION
+ cpf: cpf
+ phone: "11900000000"
+ ```
 
 - PF - Validação de e-mail: `SERVICE_EMAIL_VALIDATION`
 
-  ```yaml
-  service: SERVICE_EMAIL_VALIDATION
-  email: email@email.com
-  ```
+ ```yaml
+ service: SERVICE_EMAIL_VALIDATION
+ email: email@email.com
+ ```
 
 - PF - Validação do E-Social: `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION`
 
-  ```yaml
-  service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION
-  cpf: cpf
-  nit: "(opcional)"
-  ```
+ ```yaml
+ service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION
+ cpf: cpf
+ nit: "(opcional)"
+ ```
 
 - PJ - Certidão negativa de protesto: `SERVICE_PROTEST_PJ`
 
-  ```yaml
-  service: SERVICE_PROTEST_PJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_PROTEST_PJ
+ cnpj: cnpj
+ ```
 
 - PJ - CNPJ na Receita Federal on-demand: `SERVICE_RFB_PJ_ON_DEMAND`
 
-  ```yaml
-  service: SERVICE_RFB_PJ_ON_DEMAND
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_RFB_PJ_ON_DEMAND
+ cnpj: cnpj
+ ```
 
 - PJ - Compliance de casas de apostas: `SERVICE_COMPLIANCE_BET`
 
-  ```yaml
-  service: SERVICE_COMPLIANCE_BET
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_COMPLIANCE_BET
+ cnpj: cnpj
+ ```
 
 - PJ - Compliance de casas de apostas: `SERVICE_COMPLIANCE_BET_PJ`
 
-  ```yaml
-  service: SERVICE_COMPLIANCE_BET_PJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_COMPLIANCE_BET_PJ
+ cnpj: cnpj
+ ```
 
 - PJ - Dados cadastrais de CNPJ: `SERVICE_REGISTRATION_DATA_CNPJ`
 
-  ```yaml
-  service: SERVICE_REGISTRATION_DATA_CNPJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_REGISTRATION_DATA_CNPJ
+ cnpj: cnpj
+ ```
 
 - PJ - DAS MEI na Receita: `SERVICE_DAS_MEI`
 
-  ```yaml
-  service: SERVICE_DAS_MEI
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_DAS_MEI
+ cnpj: cnpj
+ ```
 
 - PJ - Débitos ativos: `SERVICE_ACTIVE_DEBT_PJ`
 
-  ```yaml
-  service: SERVICE_ACTIVE_DEBT_PJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_ACTIVE_DEBT_PJ
+ cnpj: cnpj
+ ```
 
 - PJ - Doações eleitorais: `SERVICE_ELECTORAL_DONORS_CNPJ`
 
-  ```yaml
-  service: SERVICE_ELECTORAL_DONORS_CNPJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_ELECTORAL_DONORS_CNPJ
+ cnpj: cnpj
+ ```
 
 - PJ - Doações eleitorais dos sócios: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
 
-  ```yaml
-  service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ
+ cnpj: cnpj
+ ```
 
 - PJ - Domínios CNPJ: `SERVICE_DOMAINS_CNPJ`
 
-  ```yaml
-  service: SERVICE_DOMAINS_CNPJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_DOMAINS_CNPJ
+ cnpj: cnpj
+ ```
 
 - PJ - Endereços estendidos: `SERVICE_ADDRESSES_EXTENDED_CNPJ`
 
-  ```yaml
-  service: SERVICE_ADDRESSES_EXTENDED_CNPJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_ADDRESSES_EXTENDED_CNPJ
+ cnpj: cnpj
+ ```
 
 - PJ - Enriquecimento de dados: `SERVICE_CORPORATE_DATA_ENRICHMENT`
 
-  ```yaml
-  service: SERVICE_CORPORATE_DATA_ENRICHMENT
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_CORPORATE_DATA_ENRICHMENT
+ cnpj: cnpj
+ ```
 
 - PJ - Exposição e perfil na mídia dos sócios: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
 
-  ```yaml
-  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ
+ cnpj: cnpj
+ ```
 
 - PJ - Fornecedores eleitorais: `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
 
-  ```yaml
-  service: SERVICE_ELECTORAL_PROVIDERS_CNPJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_ELECTORAL_PROVIDERS_CNPJ
+ cnpj: cnpj
+ ```
 
 - PJ - KYC e compliance dos sócios: `SERVICE_COMPANY_KYC_OWNERS`
 
-  ```yaml
-  service: SERVICE_COMPANY_KYC_OWNERS
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_COMPANY_KYC_OWNERS
+ cnpj: cnpj
+ ```
 
 - PJ - OCR de cartão CNPJ: `SERVICE_OCR_CNPJ_CARD`
 
-  ```yaml
-  service: SERVICE_OCR_CNPJ_CARD
-  image1: base64
-  ```
+ ```yaml
+ service: SERVICE_OCR_CNPJ_CARD
+ image1: base64
+ ```
 
 - PJ - Processos jurídicos: `SERVICE_JURIDICAL_PROCESSES_PJ`
 
-  ```yaml
-  service: SERVICE_JURIDICAL_PROCESSES_PJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_JURIDICAL_PROCESSES_PJ
+ cnpj: cnpj
+ ```
 
 - PJ - Processos jurídicos dos sócios: `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS`
 
-  ```yaml
-  service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS
+ cnpj: cnpj
+ ```
 
 - PJ - Relacionamentos da empresa: `SERVICE_COMPANY_RELATIONSHIP`
 
-  ```yaml
-  service: SERVICE_COMPANY_RELATIONSHIP
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_COMPANY_RELATIONSHIP
+ cnpj: cnpj
+ ```
 
 - PJ - Risco de crédito: `SERVICE_CREDIT_RISK_COMPANY`
 
-  ```yaml
-  service: SERVICE_CREDIT_RISK_COMPANY
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_CREDIT_RISK_COMPANY
+ cnpj: cnpj
+ ```
 
 - PJ - SINTEGRA: `SERVICE_SINTEGRA_CONSULTATION`
 
-  ```yaml
-  service: SERVICE_SINTEGRA_CONSULTATION
-  cnpj: cnpj
-  uf: uf (opcional)
-  ```
+ ```yaml
+ service: SERVICE_SINTEGRA_CONSULTATION
+ cnpj: cnpj
+ uf: uf (opcional)
+ ```
 
 - PJ - Sócios de primeiro nível: `SERVICE_FIRST_LEVEL_PARTNER`
 
-  ```yaml
-  service: SERVICE_FIRST_LEVEL_PARTNER
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_FIRST_LEVEL_PARTNER
+ cnpj: cnpj
+ ```
 
 - PJ - Sócios na Receita Federal: `SERVICE_COMPANY_RFB_OWNERS`
 
-  ```yaml
-  service: SERVICE_COMPANY_RFB_OWNERS
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_COMPANY_RFB_OWNERS
+ cnpj: cnpj
+ ```
 
 - PJ - Status do CNPJ na Receita Federal: `SERVICE_RFB_PJ`
 
-  ```yaml
-  service: SERVICE_RFB_PJ
-  cnpj: cnpj
-  ```
+ ```yaml
+ service: SERVICE_RFB_PJ
+ cnpj: cnpj
+ ```
 
 
 ## API Reference operacional para LLM
@@ -21187,8 +21233,8 @@ Use este arquivo para gerar exemplos de request, explicar chamadas da API e esco
 curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
 --header 'Content-Type: application/json' \
 --data '{
-  "client": "{client}",
-  "secret": "{secret}"
+ "client": "{client}",
+ "secret": "{secret}"
 }'
 ```
 
@@ -21473,13 +21519,13 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### Certidão negativa de protesto PF (InfoSimples)
+### Certidão negativa de protesto PF
 
 - Service: `SERVICE_PROTEST_PF`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
-- Termos de busca: PF - Certidão negativa de protesto PF (InfoSimples)
-- Retorno principal: Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+- Termos de busca: PF - Certidão negativa de protesto PF
+- Retorno principal: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 Response resumido:
 
@@ -21511,13 +21557,13 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### Certidão negativa de protesto PF (Netrin)
+### Certidão negativa de protesto PF
 
 - Service: `SERVICE_PROTEST_PF`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
-- Termos de busca: PF - Certidão negativa de protesto PF (Netrin)
-- Retorno principal: Retorna certidão/consulta de protestos para CPF via Netrin, com status, cartórios consultados, protestos e mensagens.
+- Termos de busca: PF - Certidão negativa de protesto PF
+- Retorno principal: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
 Response resumido:
 
@@ -22141,12 +22187,12 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### Envolvimento político PF (BigDataCorp)
+### Envolvimento político PF
 
 - Service: `SERVICE_POLITICAL_INVOLVEMENT_CPF`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
-- Termos de busca: CPF Receita Federal, PF - Envolvimento político PF (BigDataCorp)
+- Termos de busca: CPF Receita Federal, PF - Envolvimento político PF
 - Retorno principal: Retorna envolvimento político do CPF, incluindo candidaturas, cargos, doações, prestações de serviço, partidos e vínculos políticos.
 
 Response resumido:
@@ -22723,7 +22769,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `image1`
 - Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço
-- Retorno principal: Retorna dados extraídos do comprovante de endereço por Textract, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
+- Retorno principal: Retorna dados extraídos do comprovante de endereço por OCR, como texto OCR, nome, endereço, tipo do documento, datas e valores quando encontrados.
 
 Response resumido:
 
@@ -22978,7 +23024,7 @@ Response resumido:
 {
   "result": {
     "cpf": "cpf",
-    "providers": [
+    "campos": [
       {
         "year": 2024,
         "campaign": "Campanha",
@@ -23264,7 +23310,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `image1`
 - Termos de busca: PF - Score biométrico, score risco crédito rating inadimplência
-- Retorno principal: Retorna validação DataValid/Serpro da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
+- Retorno principal: Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
 
 Response resumido:
 
@@ -23303,7 +23349,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
 - Termos de busca: PF - Score de crédito, score risco crédito rating inadimplência
-- Retorno principal: Retorna score de crédito associado ao CPF via Assertiva, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
+- Retorno principal: Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
 
 Response resumido:
 
@@ -23341,7 +23387,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
 - Termos de busca: PF - Score de inadimplência, score risco crédito rating inadimplência
-- Retorno principal: Retorna score de risco de inadimplência Quantum para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
+- Retorno principal: Retorna score de risco de inadimplência para CPF, com pontuação, faixa de risco e probabilidade estimada quando disponível.
 
 Response resumido:
 
@@ -23542,7 +23588,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`, `phone`
 - Termos de busca: CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato
-- Retorno principal: Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados pelo parceiro.
+- Retorno principal: Retorna validação da associação entre CPF e telefone, com status de match, mensagem da consulta e dados retornados na consulta.
 
 Response resumido:
 
@@ -23661,7 +23707,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
 - Termos de busca: PJ - Certidão negativa de protesto
-- Retorno principal: Retorna certidão/consulta de protestos para CNPJ via Netrin, com status, cartórios consultados, protestos, valores e datas.
+- Retorno principal: Retorna certidão/consulta de protestos para CNPJ, com status, cartórios consultados, protestos, valores e datas.
 
 Response resumido:
 
@@ -24205,7 +24251,7 @@ Response resumido:
 {
   "result": {
     "cnpj": "cnpj",
-    "providers": [
+    "campos": [
       {
         "year": 2024,
         "campaign": "Campanha",
@@ -24449,7 +24495,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
 - Termos de busca: PJ - Risco de crédito, score risco crédito rating inadimplência
-- Retorno principal: Retorna dados de risco de crédito PJ no fluxo Murabei, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
+- Retorno principal: Retorna dados de risco de crédito PJ, com score, rating, risco esperado e sinais jurídicos quando disponíveis.
 
 Response resumido:
 
@@ -24677,7 +24723,7 @@ info:
 
     O valor enviado em `service` precisa existir no produto liberado para o
     cliente. Em alguns produtos, o alias de chamada configurado no produto é
-    mais curto que o alias do parceiro exibido no catálogo. Nesses casos, envie
+    mais curto que outro alias exibido no catálogo. Nesses casos, envie
     o alias de chamada no body.
 
     - Serviços de pessoa física normalmente usam `cpf`.
@@ -24745,7 +24791,7 @@ paths:
         Ambientes disponíveis:
 
         | Ambiente | URL |
-        | --- | --- |
+        | --- |
         | Homologação | `https://backoffice-hml.idcerberus.com/api/token-generate` |
         | Produção | `https://backoffice.idcerberus.com/api/token-generate` |
       requestBody:
@@ -24935,8 +24981,8 @@ paths:
 
         Exemplos comuns de alias de chamada:
 
-        | Alias documentado | Alias de chamada |
-        | --- | --- |
+        | Service |
+        | --- |
         | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
         | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
         | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
@@ -24951,7 +24997,7 @@ paths:
         Campos mais comuns:
 
         | Campo | Uso |
-        | --- | --- |
+        | --- |
         | `service` | Código do produto que será executado |
         | `cpf` | Documento principal em serviços de pessoa física |
         | `cnpj` | Documento principal em serviços de pessoa jurídica |
@@ -25269,8 +25315,8 @@ paths:
                 value:
                   service: SERVICE_CREDIT_SCORE
                   cpf: cpf
-              scoreRiscoQuantum:
-                summary: PF - Score de risco Quantum
+              scoreRiscoinadimplência:
+                summary: PF - Score de inadimplência
                 value:
                   service: SERVICE_DEFAULT_RISK_SCORE
                   cpf: cpf
@@ -25334,11 +25380,6 @@ paths:
                   cnpj: cnpj
               riscoCreditoEmpresa:
                 summary: PJ - Risco de crédito
-                value:
-                  service: SERVICE_CREDIT_RISK_COMPANY
-                  cnpj: cnpj
-              riscoCreditoEmpresaMurabei:
-                summary: PJ - Risco de crédito Murabei
                 value:
                   service: SERVICE_CREDIT_RISK_COMPANY
                   cnpj: cnpj
@@ -25972,7 +26013,7 @@ paths:
                               expensesThreshold: 122565.82
                               totalExpensesContracted: 9230
                               totalExpensesPaid: 9230
-                            providersRanking:
+                            suppliersRanking:
                               - docNumber: 123********102
                                 name: A.J*****************************RIA
                                 numberDonations: "9"
