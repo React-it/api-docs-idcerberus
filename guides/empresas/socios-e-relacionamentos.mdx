@@ -30,12 +30,12 @@ Use esta categoria quando precisar:
 
 | Serviço | Código `service` | Uso principal |
 | --- | --- | --- |
-| Relacionamentos de uma empresa | `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` | Retorna vínculos da empresa, incluindo proprietários, empregados, empresas possuídas e relacionamentos com pessoas |
-| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP` | Retorna dados cadastrais dos sócios identificados na Receita Federal |
-| Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` | Resume círculos de pessoas físicas relacionadas ao CNPJ, com métricas de idade, renda, localização, processos e distribuições |
-| Processos jurídicos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` | Consulta processos associados aos sócios e agrupa indicadores por documento |
-| KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP` | Consulta exposição a PEP, sanções atuais e históricas, e ocorrências relevantes no quadro societário |
-| Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP` | Consulta doações eleitorais realizadas por sócios vinculados ao CNPJ |
+| Relacionamentos de uma empresa | `SERVICE_COMPANY_RELATIONSHIP` | Retorna vínculos da empresa, incluindo proprietários, empregados, empresas possuídas e relacionamentos com pessoas |
+| Sócios na Receita Federal | `SERVICE_COMPANY_RFB_OWNERS` | Retorna dados cadastrais dos sócios identificados na Receita Federal |
+| Sócios de primeiro nível | `SERVICE_FIRST_LEVEL_PARTNER` | Resume círculos de pessoas físicas relacionadas ao CNPJ, com métricas de idade, renda, localização, processos e distribuições |
+| Processos jurídicos dos sócios | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | Consulta processos associados aos sócios e agrupa indicadores por documento |
+| KYC e compliance dos sócios | `SERVICE_COMPANY_KYC_OWNERS` | Consulta exposição a PEP, sanções atuais e históricas, e ocorrências relevantes no quadro societário |
+| Doações eleitorais dos sócios | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | Consulta doações eleitorais realizadas por sócios vinculados ao CNPJ |
 
 ## Exemplo rápido
 
@@ -46,7 +46,7 @@ curl --location '{base_url}/api/service-api' \
   --header 'Authorization: Bearer {jwt_token}' \
   --header 'Content-Type: application/json' \
   --data '{
-    "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+    "service": "SERVICE_COMPANY_RELATIONSHIP",
     "cnpj": "cnpj"
   }'
 ```
@@ -55,7 +55,7 @@ Payload:
 
 ```json
 {
-  "service": "SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP",
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
   "cnpj": "cnpj"
 }
 ```
@@ -87,10 +87,10 @@ Resposta esperada:
 
 ## Como combinar os serviços
 
-Uma análise PJ costuma começar com `SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP` para entender a
-estrutura da empresa. Em seguida, `SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP` ajuda a resumir o
+Uma análise PJ costuma começar com `SERVICE_COMPANY_RELATIONSHIP` para entender a
+estrutura da empresa. Em seguida, `SERVICE_FIRST_LEVEL_PARTNER` ajuda a resumir o
 entorno societário. Quando houver necessidade de aprofundar risco, use
-`SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP` e `SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP`.
+`SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` e `SERVICE_COMPANY_KYC_OWNERS`.
 
 Para campos, exemplos completos e responses, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api) ou o

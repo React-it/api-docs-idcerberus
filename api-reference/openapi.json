@@ -277,19 +277,18 @@ paths:
 
         O valor de `service` é validado contra os services liberados no produto
         do cliente. Se o produto estiver configurado com alias curto, use esse
-        alias no body, mesmo que o catálogo mostre o alias completo do parceiro.
+        alias no body, mesmo que o catálogo mostre outro alias documentado.
 
         Exemplos comuns de alias de chamada:
 
-        | Alias documentado/parceiro | Alias de chamada |
+        | Alias documentado | Alias de chamada |
         | --- | --- |
-        | `SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX` | `SERVICE_DOCUMENTOSCOPY` |
-        | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
-        | `SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP` | `economic_relationships` |
-        | `SERVICE_EMAIL_VALIDATION_BIGDATACORP` | `SERVICE_EMAIL_VALIDATION1` |
-        | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP`, `SERVICE_PROTEST_PF_INFOSIMPLES`, `SERVICE_PROTEST_PF_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
-        | `SERVICE_PROTEST_PJ_INFOSIMPLES`, `SERVICE_PROTEST_PJ_NETRIN` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
-        | `SERVICE_PERSON_AI_PROMPT_OPENAI` | `SERVICE_PERSON_AI_PROMPT` |
+        | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
+        | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+        | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
+        | `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
+        | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+        | `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
 
         Este endpoint atende serviços de pessoa física e pessoa jurídica. Nos
         exemplos, use os itens com prefixo `PF -` para consultas por CPF e os
@@ -344,28 +343,28 @@ paths:
               enriquecimentoPessoaFisica:
                 summary: PF - Enriquecimento de dados
                 value:
-                  service: SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP
+                  service: SERVICE_PERSON_DATA_ENRICHMENT
                   cpf: cpf
               statusCpfReceitaFederal:
                 summary: PF - Status do CPF na Receita Federal
                 value:
-                  service: SERVICE_RFB_PF_BIGDATACORP
+                  service: SERVICE_RFB_PF
                   cpf: cpf
                   dataDeNascimento: yyyy-MM-dd (opcional)
               statusCpfReceitaFederalOnDemand:
                 summary: PF - CPF na Receita Federal on-demand
                 value:
-                  service: SERVICE_RFB_PF_ON_DEMAND_BIGDATACORP
+                  service: SERVICE_RFB_PF_ON_DEMAND
                   cpf: cpf
               modelagemDadosPessoa:
                 summary: PF - Modelagem de dados
                 value:
-                  service: SERVICE_PERSON_DATA_MODELING_BIGDATACORP
+                  service: SERVICE_PERSON_DATA_MODELING
                   cpf: cpf
               promptIaPessoa:
                 summary: PF - Prompt de IA para pessoa
                 value:
-                  service: SERVICE_PERSON_AI_PROMPT_OPENAI
+                  service: SERVICE_PERSON_AI_PROMPT
                   cpf: cpf
               ocrDocumentos:
                 summary: PF - OCR React
@@ -377,13 +376,13 @@ paths:
               faceMatch:
                 summary: PF - FaceMatch
                 value:
-                  service: SERVICE_FACE_MATCH_BIGDATACORP
+                  service: SERVICE_FACE_MATCH
                   image1: base64
                   image2: base64
               liveness2d:
                 summary: PF - Liveness 2D
                 value:
-                  service: SERVICE_LIVENESS_2D_FACETEC
+                  service: SERVICE_LIVENESS_2D
                   image1: selfie
               pessoaPoliticamenteExposta:
                 summary: PF - Pessoa politicamente exposta
@@ -393,41 +392,41 @@ paths:
               dividaAtivaPessoaFisica:
                 summary: PF - Dívida ativa
                 value:
-                  service: SERVICE_ACTIVE_DEBT_PF_BIGDATACORP
+                  service: SERVICE_ACTIVE_DEBT_PF
                   cpf: cpf
               scoreRiscoFraude:
                 summary: PF - Score de risco de fraude
                 value:
-                  service: SERVICE_FRAUD_RISK_SCORE_BIGDATACORP
+                  service: SERVICE_FRAUD_RISK_SCORE
                   cpf: cpf
                   factor: minRisk or minattrition
               riscoFinanceiro:
                 summary: PF - Risco financeiro
                 value:
-                  service: SERVICE_FINANCIAL_RISK_SCORE_BIGDATACORP
+                  service: SERVICE_FINANCIAL_RISK_SCORE
                   cpf: cpf
                   birthDate: yyyy-MM-dd (opcional)
               scoreInadimplencia:
                 summary: PF - Score de inadimplência
                 value:
-                  service: SERVICE_DEFAULT_RISK_SCORE_BIGDATACORP
+                  service: SERVICE_DEFAULT_RISK_SCORE
                   cpf: cpf
               scoreBiometrico:
                 summary: PF - Score biométrico
                 value:
-                  service: SERVICE_DATAVALID_CNH_SERPRO
+                  service: SERVICE_DATAVALID_CNH
                   cpf: cpf
                   image1: "{base64Image}"
               validacaoCnhDatavalid:
                 summary: PF - Validação de CNH no DataValid
                 value:
-                  service: SERVICE_DATAVALID_CNH_SERPRO
+                  service: SERVICE_DATAVALID_CNH
                   cpf: cpf
                   image1: base64
               nadaConstaAcoesJudiciais:
                 summary: PF - Certidão de Nada Consta
                 value:
-                  service: SERVICE_NOTHING_RECORD_LAWSUITS_BIGDATACORP
+                  service: SERVICE_NOTHING_RECORD_LAWSUITS
                   cpf: cpf
                   court: TRF1
                   uf: uf
@@ -435,42 +434,42 @@ paths:
               antecedentesCriminaisFederal:
                 summary: PF - Antecedentes criminais federais
                 value:
-                  service: SERVICE_CRIMINAL_RECORD_FEDERAL_BIGDATACORP
+                  service: SERVICE_CRIMINAL_RECORD_FEDERAL
                   cpf: cpf
               antecedentesCriminaisCivil:
                 summary: PF - Antecedentes criminais civis
                 value:
-                  service: SERVICE_CRIMINAL_RECORD_CIVIL_BIGDATACORP
+                  service: SERVICE_CRIMINAL_RECORD_CIVIL
                   cpf: cpf
                   rg: rg
                   uf: uf
               certidaoNegativaProtesto:
                 summary: PF - Certidão negativa de protesto
                 value:
-                  service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE_BIGDATACORP
+                  service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE
                   cpf: cpf
               validacaoEmail:
                 summary: PF - Validação de e-mail
                 value:
-                  service: SERVICE_EMAIL_VALIDATION_BIGDATACORP
+                  service: SERVICE_EMAIL_VALIDATION
                   email: email@email.com
               validacaoCpfTelefone:
                 summary: PF - Validação de CPF com telefone
                 value:
-                  service: SERVICE_CPF_PHONE_VALIDATION_BIGDATACORP
+                  service: SERVICE_CPF_PHONE_VALIDATION
                   cpf: cpf
                   phone: "11900000000"
               validacaoCpfEndereco:
                 summary: PF - Validação de CPF com endereço
                 value:
-                  service: SERVICE_CPF_ADDRESS_VALIDATION_BIGDATACORP
+                  service: SERVICE_CPF_ADDRESS_VALIDATION
                   cpf: cpf
                   zipcode: 00000-000
                   numberAddress: 13
               documentoscopiaDigital:
                 summary: PF - Documentoscopia digital
                 value:
-                  service: SERVICE_DIGITAL_DOCUMENTOSCOPY_ACERTPIX
+                  service: SERVICE_DIGITAL_DOCUMENTOSCOPY
                   key: 84bfcd2e-2336-4e30-bcab-15348b7890b5
                   image1: base64
                   image2: base64
@@ -478,78 +477,78 @@ paths:
               resultadoDocumentoscopiaDigital:
                 summary: PF - Resultado da documentoscopia digital
                 value:
-                  service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT_ACERTPIX
+                  service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT
                   key: de0cd562-5962-40bd-8f94-5a7184ecde0e
               consultaMei:
                 summary: PF - Consulta de MEI
                 value:
-                  service: SERVICE_MEI_BIGDATACORP
+                  service: SERVICE_MEI
                   cpf: cpf
               processosJuridicosAdministrativos:
                 summary: PF - Processos jurídicos e administrativos
                 value:
-                  service: SERVICE_JURIDICAL_PROCESSES_BIGDATACORP
+                  service: SERVICE_JURIDICAL_PROCESSES
                   cpf: cpf
               servidoresPublicos:
                 summary: PF - Servidores públicos
                 value:
-                  service: SERVICE_PUBLIC_SERVANTS_BIGDATACORP
+                  service: SERVICE_PUBLIC_SERVANTS
                   cpf: cpf
               consultaEnderecos:
                 summary: PF - Endereços
                 value:
-                  service: SERVICE_ADDRESS_BIGDATACORP
+                  service: SERVICE_ADDRESS
                   cpf: cpf
               historicoTelefones:
                 summary: PF - Histórico de telefones
                 value:
-                  service: SERVICE_PHONE_HISTORY_BIGDATACORP
+                  service: SERVICE_PHONE_HISTORY
                   cpf: cpf
                   birthDate: yyyy-MM-dd (opcional)
                   limit: 10
               pessoasRelacionadas:
                 summary: PF - Pessoas relacionadas
                 value:
-                  service: SERVICE_RELATED_PEOPLE_BIGDATACORP
+                  service: SERVICE_RELATED_PEOPLE
                   cpf: cpf
                   birthDate: yyyy-MM-dd (opcional)
               historicoEmails:
                 summary: PF - Histórico de e-mails
                 value:
-                  service: SERVICE_EMAILS_EXTENDED_BIGDATACORP
+                  service: SERVICE_EMAILS_EXTENDED
                   cpf: cpf
                   limit: 10
               relacionamentosEconomicos:
                 summary: PF - Relacionamentos econômicos
                 value:
-                  service: SERVICE_ECONOMIC_RELATIONSHIP_BIGDATACORP
+                  service: SERVICE_ECONOMIC_RELATIONSHIP
                   cpf: cpf
               historicoProfissional:
                 summary: PF - Histórico profissional
                 value:
-                  service: SERVICE_PROFESSIONAL_HISTORY_BIGDATACORP
+                  service: SERVICE_PROFESSIONAL_HISTORY
                   cpf: cpf
               historicoProfissionalTitular:
                 summary: PF - Histórico profissional do titular
                 value:
-                  service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY_BIGDATACORP
+                  service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY
                   cpf: cpf
                   birthDate: yyyy-MM-dd (opcional)
               dadosFinanceirosEnderecosPf:
                 summary: PF - Dados financeiros e endereços
                 value:
-                  service: SERVICE_PF_FINANCIAL_AND_ADDRESS_BIGDATACORP
+                  service: SERVICE_PF_FINANCIAL_AND_ADDRESS
                   cpf: cpf
                   birthDate: yyyy-MM-dd (opcional)
               propensaoApostasOnline:
                 summary: PF - Propensão a apostas online
                 value:
-                  service: SEVICE_ONLINE_BETTING_PROPENSITY_BIGDATACORP
+                  service: SEVICE_ONLINE_BETTING_PROPENSITY
                   cpf: cpf
               dadosPeloTelefone:
                 summary: PF - Dados pelo telefone
                 value:
-                  service: SERVICE_CONFIRM_PHONE_FACETEC
+                  service: SERVICE_CONFIRM_PHONE
                   phone: "+5561123456789"
               mandadoPrisao:
                 summary: PF - Mandado de prisão
@@ -563,43 +562,43 @@ paths:
               debitosAtivosPf:
                 summary: PF - Débitos ativos
                 value:
-                  service: SERVICE_ACTIVE_DEBT_PF_BIGDATACORP
+                  service: SERVICE_ACTIVE_DEBT_PF
                   cpf: cpf
               dadosEleitoraisCandidato:
                 summary: PF - Dados eleitorais de candidato
                 value:
-                  service: SERVICE_ELECTION_CANDIDATE_DATA_CPF_BIGDATACORP
+                  service: SERVICE_ELECTION_CANDIDATE_DATA_CPF
                   cpf: cpf
               doacoesEleitorais:
                 summary: PF - Doações eleitorais
                 value:
-                  service: SERVICE_ELECTORAL_DONORS_CPF_BIGDATACORP
+                  service: SERVICE_ELECTORAL_DONORS_CPF
                   cpf: cpf
               envolvimentoPolitico:
                 summary: PF - Envolvimento político
                 value:
-                  service: SERVICE_POLITICAL_INVOLVEMENT_BIGDATACORP
+                  service: SERVICE_POLITICAL_INVOLVEMENT
                   cpf: cpf
               kycCompliancePessoaFisica:
                 summary: PF - KYC e compliance
                 value:
-                  service: SERVICE_PERSON_KYC_BIGDATACORP
+                  service: SERVICE_PERSON_KYC
                   cpf: cpf
                   birthDate: yyyy-MM-dd (opcional)
               exposicaoPerfilMidiaPf:
                 summary: PF - Exposição e perfil na mídia
                 value:
-                  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF_BIGDATACORP
+                  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF
                   cpf: cpf
               historicoFamiliarPolitico:
                 summary: PF - Histórico familiar político
                 value:
-                  service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF_BIGDATACORP
+                  service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF
                   cpf: cpf
               prestadoresServicoEleitorais:
                 summary: PF - Prestadores de serviço eleitorais
                 value:
-                  service: SERVICE_ELECTORAL_PROVIDERS_CPF_BIGDATACORP
+                  service: SERVICE_ELECTORAL_PROVIDERS_CPF
                   cpf: cpf
               indicadoresAtividades:
                 summary: PF - Indicadores de atividades
@@ -619,7 +618,7 @@ paths:
               scoreRiscoQuantum:
                 summary: PF - Score de risco Quantum
                 value:
-                  service: SERVICE_DEFAULT_RISK_SCORE_QUANTUM
+                  service: SERVICE_DEFAULT_RISK_SCORE
                   cpf: cpf
               dadosDemograficos:
                 summary: PF - Dados demográficos
@@ -667,12 +666,12 @@ paths:
               dasMeiReceita:
                 summary: PJ - DAS MEI na Receita
                 value:
-                  service: SERVICE_DAS_MEI_INFOSIMPLES
+                  service: SERVICE_DAS_MEI
                   cnpj: cnpj
               processosJuridicosSocios:
                 summary: PJ - Processos jurídicos dos sócios
                 value:
-                  service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS_BIGDATACORP
+                  service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS
                   cnpj: cnpj
               complianceBet:
                 summary: PJ - Compliance de casas de apostas
@@ -687,7 +686,7 @@ paths:
               riscoCreditoEmpresaMurabei:
                 summary: PJ - Risco de crédito Murabei
                 value:
-                  service: SERVICE_CREDIT_RISK_COMPANY_MURABEI
+                  service: SERVICE_CREDIT_RISK_COMPANY
                   cnpj: cnpj
               dominiosCnpj:
                 summary: PJ - Domínios CNPJ
@@ -712,98 +711,98 @@ paths:
               enriquecimentoPessoaJuridica:
                 summary: PJ - Enriquecimento de dados
                 value:
-                  service: SERVICE_CORPORATE_DATA_ENRICHMENT_BIGDATACORP
+                  service: SERVICE_CORPORATE_DATA_ENRICHMENT
                   cnpj: cnpj
               statusCnpjReceitaFederal:
                 summary: PJ - Status do CNPJ na Receita Federal
                 value:
-                  service: SERVICE_RFB_PJ_BIGDATACORP
+                  service: SERVICE_RFB_PJ
                   cnpj: cnpj
               statusCnpjReceitaFederalOnDemand:
                 summary: PJ - CNPJ na Receita Federal on-demand
                 value:
-                  service: SERVICE_RFB_PJ_ON_DEMAND_BIGDATACORP
+                  service: SERVICE_RFB_PJ_ON_DEMAND
                   cnpj: cnpj
               relacionamentosEmpresa:
                 summary: PJ - Relacionamentos da empresa
                 value:
-                  service: SERVICE_COMPANY_RELATIONSHIP_BIGDATACORP
+                  service: SERVICE_COMPANY_RELATIONSHIP
                   cnpj: cnpj
               sociosReceitaFederal:
                 summary: PJ - Sócios na Receita Federal
                 value:
-                  service: SERVICE_COMPANY_RFB_OWNERS_BIGDATACORP
+                  service: SERVICE_COMPANY_RFB_OWNERS
                   cnpj: cnpj
               doacoesEleitoraisPj:
                 summary: PJ - Doações eleitorais
                 value:
-                  service: SERVICE_ELECTORAL_DONORS_CNPJ_BIGDATACORP
+                  service: SERVICE_ELECTORAL_DONORS_CNPJ
                   cnpj: cnpj
               doacoesEleitoraisSocios:
                 summary: PJ - Doações eleitorais dos sócios
                 value:
-                  service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ_BIGDATACORP
+                  service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ
                   cnpj: cnpj
               fornecedoresEleitoraisPj:
                 summary: PJ - Fornecedores eleitorais
                 value:
-                  service: SERVICE_ELECTORAL_PROVIDERS_CNPJ_BIGDATACORP
+                  service: SERVICE_ELECTORAL_PROVIDERS_CNPJ
                   cnpj: cnpj
               sintegra:
                 summary: PJ - SINTEGRA
                 value:
-                  service: SERVICE_SINTEGRA_CONSULTATION_BIGDATACORP
+                  service: SERVICE_SINTEGRA_CONSULTATION
                   cnpj: cnpj
                   uf: uf (opcional)
               enderecosEstendidosEmpresa:
                 summary: PJ - Endereços estendidos
                 value:
-                  service: SERVICE_ADDRESSES_EXTENDED_CNPJ_BIGDATACORP
+                  service: SERVICE_ADDRESSES_EXTENDED_CNPJ
                   cnpj: cnpj
               sociosPrimeiroNivel:
                 summary: PJ - Sócios de primeiro nível
                 value:
-                  service: SERVICE_FIRST_LEVEL_PARTNER_BIGDATACORP
+                  service: SERVICE_FIRST_LEVEL_PARTNER
                   cnpj: cnpj
               kycComplianceSocios:
                 summary: PJ - KYC e compliance dos sócios
                 value:
-                  service: SERVICE_COMPANY_KYC_OWNERS_BIGDATACORP
+                  service: SERVICE_COMPANY_KYC_OWNERS
                   cnpj: cnpj
               exposicaoPerfilMidiaPj:
                 summary: PJ - Exposição e perfil na mídia dos sócios
                 value:
-                  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ_BIGDATACORP
+                  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ
                   cnpj: cnpj
               debitosAtivosPj:
                 summary: PJ - Débitos ativos
                 value:
-                  service: SERVICE_ACTIVE_DEBT_PJ_BIGDATACORP
+                  service: SERVICE_ACTIVE_DEBT_PJ
                   cnpj: cnpj
               certidaoNegativaProtestoPj:
                 summary: PJ - Certidão negativa de protesto
                 value:
-                  service: SERVICE_PROTEST_PJ_INFOSIMPLES
+                  service: SERVICE_PROTEST_PJ
                   cnpj: cnpj
               complianceCasasApostasPj:
                 summary: PJ - Compliance de casas de apostas
                 value:
-                  service: SERVICE_COMPLIANCE_BET_PJ_BIGDATACORP
+                  service: SERVICE_COMPLIANCE_BET_PJ
                   cnpj: cnpj
               informacoesFinanceiras:
                 summary: PF - Informações financeiras
                 value:
-                  service: SERVICE_FINANCIAL_INFORMATION_BIGDATACORP
+                  service: SERVICE_FINANCIAL_INFORMATION
                   cpf: cpf
               dadosPis:
                 summary: PF - Dados PIS
                 value:
-                  service: SERVICE_PIS_CONSULTATION_BIGDATACORP
+                  service: SERVICE_PIS_CONSULTATION
                   cpf: cpf
               validacaoEsocial:
                 summary: PF - Validação do E-Social
                 value:
-                  service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION_BIGDATACORP
+                  service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION
                   cpf: cpf
                   nit: "(opcional)"
       responses:
@@ -2437,7 +2436,7 @@ components:
         service:
           type: string
           description: Código do serviço que será executado.
-          example: SERVICE_PERSON_DATA_ENRICHMENT_BIGDATACORP
+          example: SERVICE_PERSON_DATA_ENRICHMENT
         cpf:
           type: string
           description: CPF usado em consultas de pessoa física.
