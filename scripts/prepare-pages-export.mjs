@@ -162,6 +162,9 @@ function saveRecent(query){
     localStorage.setItem(RECENT_KEY,JSON.stringify(arr.slice(0,4)));
   }catch(e){}
 }
+function clearRecent(){
+  try{localStorage.removeItem(RECENT_KEY)}catch(e){}
+}
 function norm(s){return(s||"").toString().toLowerCase().normalize("NFD").replace(/\\p{Diacritic}/gu,"")}
 function tokenize(s){return norm(s).split(/[^a-z0-9]+/).filter(Boolean)}
 function levenshtein(a,c){
@@ -305,13 +308,38 @@ function renderChips(label,items,onPick){
   });
   listEl.appendChild(chipsWrap);
 }
+function renderRecentChips(items,onPick){
+  var hint=document.createElement("div");
+  hint.className="cs-hint cs-hint-row";
+  var label=document.createElement("span");
+  label.textContent="Buscas recentes:";
+  var clearBtn=document.createElement("button");
+  clearBtn.type="button";
+  clearBtn.className="cs-clear";
+  clearBtn.textContent="Limpar";
+  clearBtn.addEventListener("click",function(){clearRecent();renderSuggestions()});
+  hint.appendChild(label);
+  hint.appendChild(clearBtn);
+  listEl.appendChild(hint);
+  var chipsWrap=document.createElement("div");
+  chipsWrap.className="cs-chips";
+  items.forEach(function(s){
+    var chip=document.createElement("button");
+    chip.type="button";
+    chip.className="cs-chip";
+    chip.textContent=s;
+    chip.addEventListener("click",function(){onPick(s)});
+    chipsWrap.appendChild(chip);
+  });
+  listEl.appendChild(chipsWrap);
+}
 function renderSuggestions(){
   listEl.innerHTML="";
   currentResults=[];
   activeIndex=-1;
   var recent=getRecent();
   var pick=function(s){inputEl.value=s;doSearch(s);inputEl.focus()};
-  if(recent.length)renderChips("Buscas recentes:",recent,pick);
+  if(recent.length)renderRecentChips(recent,pick);
   renderChips("Digite para buscar um service ou guia. Sugestões:",SUGGESTIONS,pick);
 }
 function renderGroup(title,entries,queryTokens,startIndex){
@@ -391,6 +419,9 @@ function themeVarsStyle(){
   "#custom-search-input{width:100%;box-sizing:border-box;padding:16px 18px;background:transparent;border:none;border-bottom:1px solid var(--cs-border);color:var(--cs-fg);font-size:15px;outline:none}"+
   "#custom-search-list{max-height:calc(70vh - 56px);overflow-y:auto;padding:8px}"+
   ".cs-hint{padding:10px 12px;color:var(--cs-muted);font-size:13px}"+
+  ".cs-hint-row{display:flex;align-items:center;justify-content:space-between;gap:8px}"+
+  ".cs-clear{border:none;background:transparent;color:var(--cs-mark-fg);font-size:12px;cursor:pointer;padding:2px 4px}"+
+  ".cs-clear:hover{text-decoration:underline}"+
   ".cs-chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 12px}"+
   ".cs-chip{border:1px solid var(--cs-border);background:var(--cs-chip-bg);color:var(--cs-fg);border-radius:999px;padding:5px 12px;font-size:12px;cursor:pointer}"+
   ".cs-chip:hover{background:var(--cs-hover)}"+
