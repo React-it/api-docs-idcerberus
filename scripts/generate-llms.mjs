@@ -314,11 +314,12 @@ function buildServicesCatalog(openApiServices) {
     .slice()
     .sort((a, b) => a.summary.localeCompare(b.summary))
     .map((item) => {
+      const category = serviceCategory(item.summary, item.service);
       return {
         service: item.service,
         documentedAlias: item.service,
         name: item.summary.replace(/^(PF|PJ)\s+-\s+/i, ''),
-        category: serviceCategory(item.summary, item.service),
+        category,
         documented: true,
         endpoint: 'POST /api/service-api',
         method: 'POST',
@@ -329,14 +330,14 @@ function buildServicesCatalog(openApiServices) {
         },
         requestFields: requestFieldsFromYaml(item.requestBody),
         requestExample: item.requestBody || `service: ${item.service}`,
-        documentationUrl: apiReferenceServiceUrl(item),
-        guideUrl: guideUrlForCategory(serviceCategory(item.summary, item.service)),
+        documentationUrl: apiReferenceServiceUrl(item, category),
+        guideUrl: guideUrlForCategory(category),
         apiReferenceSection: item.summary,
         searchTerms: buildSearchTerms(item),
         responseSummary: serviceResponseSummary({
           name: item.summary.replace(/^(PF|PJ)\s+-\s+/i, ''),
           service: item.service,
-          category: serviceCategory(item.summary, item.service),
+          category,
         }),
       };
     });
@@ -455,7 +456,7 @@ function mergeAdditionalPublicApiServices(catalog) {
       },
       requestFields: Object.keys(body).filter((field) => field !== 'service'),
       requestExample: item.requestBody,
-      documentationUrl: apiReferenceServiceUrl(item),
+      documentationUrl: apiReferenceServiceUrl(item, category),
       guideUrl: guideUrlForCategory(category),
       apiReferenceSection: item.summary,
       searchTerms: buildSearchTerms(item),
@@ -888,9 +889,9 @@ function buildSearchTerms(item) {
   return [...terms].sort();
 }
 
-function apiReferenceServiceUrl(item) {
-  const base = `${siteUrl}/api-reference/servi%C3%A7os--pessoas/executar-servi%C3%A7o-de-dados-risco-ou-compliance`;
-  return base;
+function apiReferenceServiceUrl(item, category) {
+  const page = category === 'Pessoa Jurídica' ? 'services-pessoa-juridica' : 'services-pessoa-fisica';
+  return `${siteUrl}/api-reference/${page}#${item.service}`;
 }
 
 function guideUrlForCategory(category) {
@@ -2258,7 +2259,7 @@ function renderServiceRequestBlock(service) {
   const prodCurl = renderCurl({ baseUrl: 'https://backoffice.idcerberus.com', path: '/api/service-api', body });
   const lines = [];
 
-  lines.push(`<Accordion title="${escapeAttribute(service.name)}">`);
+  lines.push(`<Accordion title="${escapeAttribute(service.name)}" id="${escapeAttribute(service.service)}">`);
   lines.push('');
   lines.push(`**Service:** \`${service.service}\``);
   lines.push('');

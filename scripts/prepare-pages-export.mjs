@@ -111,28 +111,24 @@ var CATALOG_URL=b+"/services-catalog.min.json";
 var GUIDES_URL=b+"/guides-search-index.json";
 var RECENT_KEY="idcerberus-docs-recent-searches";
 var dataPromise=null,dataLoaded=false,modalEl=null,inputEl=null,listEl=null,currentResults=[],activeIndex=-1;
-var SUGGESTIONS=["Score de crédito","OCR","CNPJ","Biometria","Autenticação"];
+var SUGGESTIONS=["Score de crédito","OCR","CNPJ","FaceMatch","Autenticação"];
 function fetchJson(url,pick,label){
   return fetch(url).then(function(r){return r.json()}).then(function(d){return pick(d)||[]}).catch(function(e){
     if(typeof console!=="undefined"&&console.warn)console.warn("[custom-search] failed to load "+label+" from "+url,e);
     return[];
   });
 }
-function precomputeService(item){
-  return{item:item,kind:"service",fields:[
-    {words:tokenize(item.name),weight:4},
-    {words:tokenize(item.service),weight:3},
-    {words:tokenize(item.category),weight:1},
-    {words:tokenize((item.tags||[]).join(" ")),weight:1}
-  ]};
-}
-function precomputeGuide(item){
-  return{item:item,kind:"guide",fields:[
-    {words:tokenize(item.title),weight:4},
-    {words:tokenize(item.description),weight:2},
-    {words:tokenize(item.group),weight:1},
-    {words:tokenize(item.body),weight:1}
-  ]};
+var SERVICE_FIELD_WEIGHTS={name:4,service:3,category:1,tags:1};
+var GUIDE_FIELD_WEIGHTS={title:4,description:2,group:1,body:1};
+var serviceIndex=null,guideIndex=null,serviceItems=[],guideItems=[];
+function buildIndex(items,fieldWeights,textOf){
+  var index=new FlexSearch.Document({document:{id:"id",index:Object.keys(fieldWeights).map(function(f){return{field:f,tokenize:"full"}})}});
+  items.forEach(function(item,i){
+    var doc={id:i};
+    Object.keys(fieldWeights).forEach(function(f){doc[f]=norm(textOf(item,f))});
+    index.add(doc);
+  });
+  return index;
 }
 function loadData(){
   if(!dataPromise){
@@ -140,11 +136,15 @@ function loadData(){
       fetchJson(CATALOG_URL,function(d){return d.services},"services catalog"),
       fetchJson(GUIDES_URL,function(d){return d.guides},"guides index")
     ]).then(function(res){
+      serviceItems=res[0];
+      guideItems=res[1];
+      serviceIndex=buildIndex(serviceItems,SERVICE_FIELD_WEIGHTS,function(item,f){
+        if(f==="tags")return(item.tags||[]).join(" ");
+        return item[f];
+      });
+      guideIndex=buildIndex(guideItems,GUIDE_FIELD_WEIGHTS,function(item,f){return item[f]});
       dataLoaded=true;
-      return{
-        services:res[0].map(precomputeService),
-        guides:res[1].map(precomputeGuide)
-      };
+      return true;
     });
   }
   return dataPromise;
@@ -185,32 +185,43 @@ function levenshtein(a,c){
   }
   return prev[bl];
 }
-function tokenMatchScore(token,words){
-  var best=0;
-  for(var j=0;j<words.length;j++){
-    var w=words[j];
-    if(w===token){best=Math.max(best,5)}
-    else if(w.indexOf(token)===0){best=Math.max(best,4)}
-    else if(w.indexOf(token)!==-1){best=Math.max(best,3)}
-    else if(token.length>=3){
-      var maxDist=token.length<=5?1:2;
-      if(levenshtein(token,w)<=maxDist)best=Math.max(best,2);
-    }
-  }
-  return best;
+function weightedFlexSearch(index,query,fieldWeights,limit){
+  var fields=Object.keys(fieldWeights);
+  var groups=index.search(query,{index:fields,limit:50});
+  var scores={};
+  groups.forEach(function(g){
+    var weight=fieldWeights[g.field]||1;
+    g.result.forEach(function(id,rank){
+      var base=Math.max(50-rank,1);
+      scores[id]=(scores[id]||0)+base*weight;
+    });
+  });
+  return Object.keys(scores).map(Number).sort(function(a,b){return scores[b]-scores[a]}).slice(0,limit);
 }
-function scoreItem(queryTokens,fields){
-  var total=0;
-  for(var i=0;i<queryTokens.length;i++){
-    var token=queryTokens[i],tokenBest=0;
-    for(var f=0;f<fields.length;f++){
-      var s=tokenMatchScore(token,fields[f].words);
-      if(s>0)tokenBest=Math.max(tokenBest,s*fields[f].weight);
+function fuzzyIds(items,fieldWeights,textOf,queryTokens,exclude,limit){
+  var fieldNames=Object.keys(fieldWeights);
+  var scored=[];
+  for(var i=0;i<items.length;i++){
+    if(exclude[i])continue;
+    var ok=true,total=0;
+    for(var t=0;t<queryTokens.length;t++){
+      var token=queryTokens[t];
+      if(token.length<3){ok=false;break}
+      var maxDist=token.length<=5?1:2;
+      var best=0;
+      for(var f=0;f<fieldNames.length;f++){
+        var words=tokenize(textOf(items[i],fieldNames[f]));
+        for(var w=0;w<words.length;w++){
+          if(levenshtein(token,words[w])<=maxDist){best=Math.max(best,fieldWeights[fieldNames[f]]);break}
+        }
+      }
+      if(best===0){ok=false;break}
+      total+=best;
     }
-    if(tokenBest===0)return -1;
-    total+=tokenBest;
+    if(ok)scored.push([i,total]);
   }
-  return total;
+  scored.sort(function(a,b){return b[1]-a[1]});
+  return scored.slice(0,limit).map(function(x){return x[0]});
 }
 function escapeHtml(s){
   return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]});
@@ -247,14 +258,39 @@ function highlight(text,tokens){
   out+=escapeHtml(raw.slice(cursor));
   return out;
 }
-function searchEntries(entries,queryTokens,limit){
-  var scored=[];
-  entries.forEach(function(entry){
-    var s=scoreItem(queryTokens,entry.fields);
-    if(s>0)scored.push({item:entry.item,score:s,kind:entry.kind});
-  });
-  scored.sort(function(x,y){return y.score-x.score});
-  return scored.slice(0,limit);
+function searchServices(query,queryTokens,limit){
+  var ids=weightedFlexSearch(serviceIndex,query,SERVICE_FIELD_WEIGHTS,limit);
+  if(ids.length<3){
+    var exclude={};ids.forEach(function(id){exclude[id]=true});
+    var extra=fuzzyIds(serviceItems,SERVICE_FIELD_WEIGHTS,function(item,f){
+      if(f==="tags")return(item.tags||[]).join(" ");
+      return item[f];
+    },queryTokens,exclude,limit-ids.length);
+    ids=ids.concat(extra);
+  }
+  return ids.map(function(id){return{item:serviceItems[id],kind:"service"}});
+}
+function searchGuides(query,queryTokens,limit){
+  var ids=weightedFlexSearch(guideIndex,query,GUIDE_FIELD_WEIGHTS,limit);
+  if(ids.length<2){
+    var exclude={};ids.forEach(function(id){exclude[id]=true});
+    var extra=fuzzyIds(guideItems,GUIDE_FIELD_WEIGHTS,function(item,f){return item[f]},queryTokens,exclude,limit-ids.length);
+    ids=ids.concat(extra);
+  }
+  return ids.map(function(id){return{item:guideItems[id],kind:"guide"}});
+}
+function bodySnippet(text,queryTokens){
+  if(!text)return"";
+  var lower=norm(text);
+  for(var t=0;t<queryTokens.length;t++){
+    var pos=lower.indexOf(queryTokens[t]);
+    if(pos!==-1){
+      var start=Math.max(0,pos-40);
+      var end=Math.min(text.length,pos+queryTokens[t].length+60);
+      return(start>0?"...":"")+text.slice(start,end)+(end<text.length?"...":"");
+    }
+  }
+  return"";
 }
 function toLocalUrl(url){
   try{
@@ -291,7 +327,10 @@ function buildResultRow(entry,queryTokens,index){
   if(entry.kind==="service"){
     meta.innerHTML=escapeHtml(entry.item.service||"")+' <span class="cs-tag">'+escapeHtml(entry.item.category||"")+"</span>";
   }else{
-    meta.innerHTML=highlight(entry.item.description||"",queryTokens);
+    var description=entry.item.description||"";
+    var descMatches=norm(description).indexOf(queryTokens[0]||"")!==-1;
+    var snippet=descMatches?"":bodySnippet(entry.item.body,queryTokens);
+    meta.innerHTML=highlight(snippet||description,queryTokens);
   }
   a.appendChild(title);
   a.appendChild(meta);
@@ -391,11 +430,12 @@ function doSearch(q){
   if(!query){searchSeq++;renderSuggestions();return}
   var seq=++searchSeq;
   if(!dataLoaded)renderLoading();
-  loadData().then(function(data){
+  loadData().then(function(){
     if(seq!==searchSeq)return;
     var tokens=tokenize(query);
     if(!tokens.length){renderSuggestions();return}
-    renderResults(searchEntries(data.services,tokens,6),searchEntries(data.guides,tokens,4),tokens);
+    var normQuery=norm(query);
+    renderResults(searchServices(normQuery,tokens,6),searchGuides(normQuery,tokens,4),tokens);
   });
 }
 function debounce(fn,wait){
@@ -497,6 +537,11 @@ else{new MutationObserver(interceptTriggers).observe(document.documentElement,{c
 
 const searchWidgetContent = buildSearchWidgetJs();
 const searchWidgetHash = createHash('sha256').update(searchWidgetContent).digest('hex').slice(0, 10);
+const flexSearchContent = await readFile(
+  path.join(process.cwd(), 'node_modules', 'flexsearch', 'dist', 'flexsearch.bundle.min.js'),
+  'utf8',
+);
+const flexSearchHash = createHash('sha256').update(flexSearchContent).digest('hex').slice(0, 10);
 
 function normalizeHtml(html, route) {
   let next = html
@@ -540,8 +585,9 @@ function normalizeHtml(html, route) {
   }
 
   if (!out.includes('data-custom-search')) {
+    const flexSearchTag = `<script defer data-flexsearch src="${basePath}/flexsearch.min.js?v=${flexSearchHash}"></script>`;
     const searchWidgetTag = `<script defer data-custom-search src="${basePath}/search-widget.js?v=${searchWidgetHash}"></script>`;
-    out = out.replace('</body>', `${searchWidgetTag}</body>`);
+    out = out.replace('</body>', `${flexSearchTag}${searchWidgetTag}</body>`);
   }
 
   return out;
@@ -553,6 +599,7 @@ function normalizeJs(js) {
 
 await mkdir(distDir, { recursive: true });
 await writeFile(path.join(distDir, 'search-widget.js'), searchWidgetContent);
+await writeFile(path.join(distDir, 'flexsearch.min.js'), flexSearchContent);
 
 const files = await walk(distDir);
 
