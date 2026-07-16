@@ -1,5 +1,6 @@
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 
 const [distDir, rawBasePath, customDomain] = process.argv.slice(2);
 
@@ -272,11 +273,16 @@ function entryUrl(entry){
   var raw=entry.kind==="service"?(entry.item.documentationUrl||"#"):(entry.item.url||"#");
   return toLocalUrl(raw);
 }
+function commitCurrentQuery(){
+  var q=(inputEl.value||"").trim();
+  if(q)saveRecent(q);
+}
 function buildResultRow(entry,queryTokens,index){
   var a=document.createElement("a");
   a.className="cs-result";
   a.dataset.index=String(index);
   a.href=entryUrl(entry);
+  a.addEventListener("click",commitCurrentQuery);
   var title=document.createElement("div");
   title.className="cs-result-title";
   title.innerHTML=highlight(entry.item.name||entry.item.title,queryTokens);
@@ -291,35 +297,18 @@ function buildResultRow(entry,queryTokens,index){
   a.appendChild(meta);
   return a;
 }
-function renderChips(label,items,onPick){
+function renderChips(label,items,onPick,headerExtra){
   var hint=document.createElement("div");
-  hint.className="cs-hint";
-  hint.textContent=label;
-  listEl.appendChild(hint);
-  var chipsWrap=document.createElement("div");
-  chipsWrap.className="cs-chips";
-  items.forEach(function(s){
-    var chip=document.createElement("button");
-    chip.type="button";
-    chip.className="cs-chip";
-    chip.textContent=s;
-    chip.addEventListener("click",function(){onPick(s)});
-    chipsWrap.appendChild(chip);
-  });
-  listEl.appendChild(chipsWrap);
-}
-function renderRecentChips(items,onPick){
-  var hint=document.createElement("div");
-  hint.className="cs-hint cs-hint-row";
-  var label=document.createElement("span");
-  label.textContent="Buscas recentes:";
-  var clearBtn=document.createElement("button");
-  clearBtn.type="button";
-  clearBtn.className="cs-clear";
-  clearBtn.textContent="Limpar";
-  clearBtn.addEventListener("click",function(){clearRecent();renderSuggestions()});
-  hint.appendChild(label);
-  hint.appendChild(clearBtn);
+  if(headerExtra){
+    hint.className="cs-hint cs-hint-row";
+    var labelEl=document.createElement("span");
+    labelEl.textContent=label;
+    hint.appendChild(labelEl);
+    hint.appendChild(headerExtra);
+  }else{
+    hint.className="cs-hint";
+    hint.textContent=label;
+  }
   listEl.appendChild(hint);
   var chipsWrap=document.createElement("div");
   chipsWrap.className="cs-chips";
@@ -339,7 +328,14 @@ function renderSuggestions(){
   activeIndex=-1;
   var recent=getRecent();
   var pick=function(s){inputEl.value=s;doSearch(s);inputEl.focus()};
-  if(recent.length)renderRecentChips(recent,pick);
+  if(recent.length){
+    var clearBtn=document.createElement("button");
+    clearBtn.type="button";
+    clearBtn.className="cs-clear";
+    clearBtn.textContent="Limpar";
+    clearBtn.addEventListener("click",function(){clearRecent();renderSuggestions();inputEl.focus()});
+    renderChips("Buscas recentes:",recent,pick,clearBtn);
+  }
   renderChips("Digite para buscar um service ou guia. Sugestões:",SUGGESTIONS,pick);
 }
 function renderGroup(title,entries,queryTokens,startIndex){
@@ -359,7 +355,7 @@ function renderLoading(){
   hint.textContent="Carregando...";
   listEl.appendChild(hint);
 }
-function renderResults(serviceEntries,guideEntries,queryTokens,query){
+function renderResults(serviceEntries,guideEntries,queryTokens){
   listEl.innerHTML="";
   currentResults=serviceEntries.concat(guideEntries);
   activeIndex=-1;
@@ -370,7 +366,6 @@ function renderResults(serviceEntries,guideEntries,queryTokens,query){
     listEl.appendChild(empty);
     return;
   }
-  if(query)saveRecent(query);
   var count=document.createElement("div");
   count.className="cs-count";
   count.textContent=currentResults.length+(currentResults.length===1?" resultado":" resultados");
@@ -400,7 +395,7 @@ function doSearch(q){
     if(seq!==searchSeq)return;
     var tokens=tokenize(query);
     if(!tokens.length){renderSuggestions();return}
-    renderResults(searchEntries(data.services,tokens,6),searchEntries(data.guides,tokens,4),tokens,query);
+    renderResults(searchEntries(data.services,tokens,6),searchEntries(data.guides,tokens,4),tokens);
   });
 }
 function debounce(fn,wait){
@@ -461,9 +456,11 @@ function buildModal(){
     if(e.key==="ArrowDown"){e.preventDefault();if(currentResults.length)setActive(activeIndex<currentResults.length-1?activeIndex+1:0);return}
     if(e.key==="ArrowUp"){e.preventDefault();if(currentResults.length)setActive(activeIndex>0?activeIndex-1:currentResults.length-1);return}
     if(e.key==="Enter"){
-      if(activeIndex>=0&&currentResults[activeIndex]){
+      var idx=activeIndex>=0?activeIndex:0;
+      if(currentResults[idx]){
         e.preventDefault();
-        window.location.href=entryUrl(currentResults[activeIndex]);
+        commitCurrentQuery();
+        window.location.href=entryUrl(currentResults[idx]);
       }
     }
   });
@@ -474,6 +471,7 @@ function openModal(){
   var overlay=buildModal();
   overlay.style.display="flex";
   inputEl.value="";
+  searchSeq++;
   renderSuggestions();
   setTimeout(function(){inputEl.focus()},0);
 }
@@ -496,6 +494,9 @@ if(window.__mintDocsHooks){window.__mintDocsHooks.push(interceptTriggers)}
 else{new MutationObserver(interceptTriggers).observe(document.documentElement,{childList:true,subtree:true})}
 })();`;
 }
+
+const searchWidgetContent = buildSearchWidgetJs();
+const searchWidgetHash = createHash('sha256').update(searchWidgetContent).digest('hex').slice(0, 10);
 
 function normalizeHtml(html, route) {
   let next = html
@@ -539,7 +540,7 @@ function normalizeHtml(html, route) {
   }
 
   if (!out.includes('data-custom-search')) {
-    const searchWidgetTag = `<script defer data-custom-search src="${basePath}/search-widget.js"></script>`;
+    const searchWidgetTag = `<script defer data-custom-search src="${basePath}/search-widget.js?v=${searchWidgetHash}"></script>`;
     out = out.replace('</body>', `${searchWidgetTag}</body>`);
   }
 
@@ -551,7 +552,7 @@ function normalizeJs(js) {
 }
 
 await mkdir(distDir, { recursive: true });
-await writeFile(path.join(distDir, 'search-widget.js'), buildSearchWidgetJs());
+await writeFile(path.join(distDir, 'search-widget.js'), searchWidgetContent);
 
 const files = await walk(distDir);
 

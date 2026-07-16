@@ -3001,7 +3001,7 @@ mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
 function searchBodyText(body, maxLen) {
   const collapsed = (body || '')
     .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/[#*_`>|-]/g, ' ')
+    .replace(/[#*_`<>|-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   return collapsed.length > maxLen ? `${collapsed.slice(0, maxLen)}...` : collapsed;

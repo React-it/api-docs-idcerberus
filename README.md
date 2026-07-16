@@ -114,6 +114,7 @@ O projeto gera arquivos em texto simples e JSON para ChatGPT, Claude, Cursor, Wi
 - `services-catalog.json`: catálogo estruturado dos services documentados.
 - `services-catalog.min.json`: índice leve para busca rápida por service, categoria, tag e campos.
 - `mcp-manifest.json`: manifesto para MCPs e agentes com recursos, regras e ferramentas sugeridas.
+- `guides-search-index.json`: índice dos guias (título, descrição, grupo, url e trecho do corpo) usado pela busca do site publicado.
 - `examples/*.curl`: chamadas prontas para homologação e produção.
 
 Arquivos publicados:
@@ -125,6 +126,7 @@ Arquivos publicados:
 - `https://api-docs.idcerberus.com/services-catalog.json`
 - `https://api-docs.idcerberus.com/services-catalog.min.json`
 - `https://api-docs.idcerberus.com/mcp-manifest.json`
+- `https://api-docs.idcerberus.com/guides-search-index.json`
 
 ## MCP Local
 
@@ -246,6 +248,7 @@ api-docs-idcerberus/
 |-- services-catalog.json
 |-- services-catalog.min.json
 |-- mcp-manifest.json
+|-- guides-search-index.json
 |-- package.json
 `-- README.md
 ```
@@ -334,6 +337,8 @@ O arquivo `CNAME` publicado no artifact do GitHub Pages aponta para:
 ```txt
 api-docs.idcerberus.com
 ```
+
+A busca do site publicado é própria (não depende da conta da Mintlify): `scripts/prepare-pages-export.mjs` gera `search-widget.js` no build e injeta uma tag `<script defer>` em cada página exportada, apontando para esse arquivo. Ele consulta `services-catalog.min.json` e `guides-search-index.json` para montar os resultados.
 
 ## Cuidados Antes de Commitar
 
