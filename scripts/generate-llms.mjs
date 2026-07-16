@@ -2998,6 +2998,27 @@ mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
   ...getPageMeta(page.slug),
 }));
 
+function searchBodyText(body, maxLen) {
+  const collapsed = (body || '')
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/[#*_`>|-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return collapsed.length > maxLen ? `${collapsed.slice(0, maxLen)}...` : collapsed;
+}
+
+const guidesSearchIndex = mdxPages
+  .filter((page) => page.tab === 'Guias')
+  .map((page) => ({
+    title: page.title,
+    description: page.description,
+    group: page.group,
+    url: slugToUrl(page.slug),
+    body: searchBodyText(page.body, 2000),
+  }));
+
+write(path.join(root, 'guides-search-index.json'), `${JSON.stringify({ generatedBy, artifactVersion, guides: guidesSearchIndex }, null, 2)}\n`);
+
 const llmsLines = [];
 llmsLines.push('# idCerberus API Docs');
 llmsLines.push('');
@@ -3173,6 +3194,7 @@ console.log('Generated llms-api-reference.txt.');
 console.log('Generated services-catalog.json.');
 console.log('Generated services-catalog.min.json.');
 console.log('Generated mcp-manifest.json.');
+console.log(`Generated guides-search-index.json with ${guidesSearchIndex.length} guides.`);
 console.log('Generated guides/indice-de-services.mdx.');
 console.log('Generated api-reference/como-executar-service.mdx.');
 console.log('Generated api-reference/services-por-caso-de-uso.mdx.');
