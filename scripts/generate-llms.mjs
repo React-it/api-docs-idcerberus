@@ -523,7 +523,7 @@ function serviceTags(service) {
 
   addTag(tags, fields.includes('cpf') || /\bcpf\b/.test(searchable), 'cpf');
   addTag(tags, fields.includes('cnpj') || /\bcnpj\b/.test(searchable), 'cnpj');
-  addTag(tags, /ocr|image|base64|documento|cartao|comprovante|emancipacao/.test(searchable), 'imagem');
+  addTag(tags, /ocr|image|base64|documento|comprovante|emancipacao/.test(searchable), 'imagem');
   addTag(tags, /ocr/.test(searchable), 'ocr');
   addTag(tags, /rg/.test(searchable), 'rg');
   addTag(tags, /cnh/.test(searchable), 'cnh');
@@ -1732,7 +1732,7 @@ const serviceReturnDetails = {
     result: { genericOcr: 'texto extraído', fullName: 'Nome extraído', fullAddress: 'Endereço extraído', docType: 'Conta de consumo', dueDate: 'yyyy-MM-dd', invoiceAmount: 'R$ 100,00' },
   },
   SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF: {
-    summary: 'Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.',
+    summary: 'Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de evidência disponível e um resumo da consulta.',
     result: {
       cpf: 'cpf',
       sus_card_success: 'Sim',
