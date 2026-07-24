@@ -1,7 +1,7 @@
 {
   "generatedBy": "scripts/generate-llms.mjs",
   "artifactVersion": "2026-06",
-  "totalServices": 84,
+  "totalServices": 85,
   "services": [
     {
       "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
@@ -529,6 +529,114 @@
         "imagem"
       ],
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-face-index.hml.curl"
+    },
+    {
+      "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+      "documentedAlias": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+      "name": "Cartão SUS",
+      "category": "Pessoa Física",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cpf"
+      ],
+      "requestExample": "service: SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF\ncpf: cpf",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-fisica",
+      "apiReferenceSection": "PF - Cartão SUS",
+      "searchTerms": [
+        "CPF Receita Federal",
+        "Cartão SUS",
+        "PF - Cartão SUS",
+        "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF"
+      ],
+      "responseSummary": "Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.",
+      "callingAlias": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+      "services": [],
+      "requiredFields": [
+        "cpf"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+        "cpf": "cpf"
+      },
+      "successResponseExample": {
+        "result": {
+          "cpf": "00000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 400,
+          "message": "Imagem obrigatória não encontrada",
+          "cause": "Payload sem `image1`, `image2`, `selfie1`, URL ou `key` esperado pelo service.",
+          "action": "Enviar base64 puro, URL válida ou key existente conforme o guia do service."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": true,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": true,
+        "needsCnpj": false,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cadastral",
+        "cpf",
+        "imagem"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl"
     },
     {
       "service": "SERVICE_NOTHING_RECORD_LAWSUITS",

@@ -69,7 +69,7 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  12 services: `SERVICE_PF_FINANCIAL_AND_ADDRESS`, `SERVICE_CONFIRM_PHONE`, `SERVICE_DOMAINS_CPF` e mais 9.
  </Card>
  <Card title="Dados cadastrais e Receita Federal">
- 8 services: `SERVICE_MEI`, `SERVICE_RFB_PF_ON_DEMAND`, `SERVICE_DEMOGRAPHIC_DATA_CPF` e mais 5.
+ 9 services: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`, `SERVICE_MEI`, `SERVICE_RFB_PF_ON_DEMAND` e mais 6.
  </Card>
  <Card title="Dados eleitorais e PEP">
  8 services: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`, `SERVICE_ELECTORAL_DONORS_CPF`, `SERVICE_POLITICAL_INVOLVEMENT` e mais 5.
@@ -3056,6 +3056,157 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco.
+
+</Accordion>
+
+<Accordion title="Cartão SUS" id="SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF">
+
+**Service:** `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Cartão SUS" via API.
+
+**O que retorna:** Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `sus_card_success`, `sus_card_number`, `sus_card_source`, `sus_card_capture_date`, `sus_card_birth_date` e mais 6.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.sus_card_success` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_number` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_source` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_capture_date` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.sus_card_birth_date` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.sus_card_birth_city` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_birth_state` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_has_evidence` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_raw_result_file` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_raw_result_file_type` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_summary` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "sus_card_success": "Sim",
+    "sus_card_number": "126000000000009",
+    "sus_card_source": "BA",
+    "sus_card_capture_date": "08/25/2025 20:07:36",
+    "sus_card_birth_date": "03/13/1980 00:00:00",
+    "sus_card_birth_city": "CHORROCHO",
+    "sus_card_birth_state": "BA",
+    "sus_card_has_evidence": "Não",
+    "sus_card_raw_result_file": "https://example.com/documents/sus-card.pdf",
+    "sus_card_raw_result_file_type": "pdf",
+    "sus_card_summary": "Cartão SUS localizado"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.
 
 </Accordion>
 

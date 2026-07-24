@@ -822,6 +822,7 @@ const activeServiceApiAliases = new Set([
   'SERVICE_OCR_CNPJ_CARD',
   'SERVICE_OCR_EMANCIPATION',
   'SERVICE_OCR_PROOF_OF_ADDRESS',
+  'SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF',
   'SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ',
   'SERVICE_PEP',
   'SERVICE_PERSON_AI_PROMPT',
@@ -1729,6 +1730,23 @@ const serviceReturnDetails = {
   SERVICE_OCR_PROOF_OF_ADDRESS: {
     summary: 'Retorna dados extraidos do comprovante de endereco por OCR, como texto OCR, nome, endereco, tipo do documento, datas e valores quando encontrados.',
     result: { genericOcr: 'texto extraído', fullName: 'Nome extraído', fullAddress: 'Endereço extraído', docType: 'Conta de consumo', dueDate: 'yyyy-MM-dd', invoiceAmount: 'R$ 100,00' },
+  },
+  SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF: {
+    summary: 'Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.',
+    result: {
+      cpf: 'cpf',
+      sus_card_success: 'Sim',
+      sus_card_number: '126000000000009',
+      sus_card_source: 'BA',
+      sus_card_capture_date: '08/25/2025 20:07:36',
+      sus_card_birth_date: '03/13/1980 00:00:00',
+      sus_card_birth_city: 'CHORROCHO',
+      sus_card_birth_state: 'BA',
+      sus_card_has_evidence: 'Não',
+      sus_card_raw_result_file: 'https://example.com/documents/sus-card.pdf',
+      sus_card_raw_result_file_type: 'pdf',
+      sus_card_summary: 'Cartão SUS localizado',
+    },
   },
   SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ: {
     summary: 'Retorna doacoes eleitorais feitas pelos socios da empresa, com socio relacionado, ano, candidato/partido, valor e detalhes eleitorais.',

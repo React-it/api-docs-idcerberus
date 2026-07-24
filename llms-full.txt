@@ -4211,7 +4211,7 @@ Na prática: copie o valor de `Service` no card ou no accordion do produto e env
 ## Services por tipo de pessoa
 
 
- 60 services para CPF, biometria, OCR, contatos, risco, crédito, compliance e dados eleitorais.
+ 61 services para CPF, biometria, OCR, contatos, risco, crédito, compliance e dados eleitorais.
 
 
  24 services para CNPJ, Receita Federal, sócios, contatos, risco, compliance, OCR e dados societários.
@@ -4280,6 +4280,18 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 **Retorno principal:** Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
 
 [Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX)
+
+**Service:** `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+
+**Campos principais:** `cpf`
+
+**Termos de busca:** CPF Receita Federal, PF - Cartão SUS
+
+**Quando usar:** Use este service quando precisar executar a consulta "Cartão SUS" via API.
+
+**Retorno principal:** Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.
+
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF)
 
 **Service:** `SERVICE_NOTHING_RECORD_LAWSUITS`
 
@@ -5494,8 +5506,8 @@ Use esta categoria quando precisar:
 - validar se um CPF está regular na Receita Federal;
 - enriquecer dados cadastrais de uma pessoa física;
 - confirmar dados associados a telefone, endereço ou e-mail;
-- consultar informações complementares como MEI, PIS, E-Social, endereços e
-  relacionamentos econômicos.
+- consultar informações complementares como MEI, PIS, E-Social, Cartão SUS,
+  endereços e relacionamentos econômicos.
 
 ## Serviços disponíveis
 
@@ -5511,6 +5523,7 @@ Use esta categoria quando precisar:
 | Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION` | Verifica associação entre CPF, CEP e número do endereço |
 | Consulta de MEI | `SERVICE_MEI` | Retorna empresas MEI associadas ao CPF |
 | Dados PIS | `SERVICE_PIS_CONSULTATION` | Consulta dados do Programa de Integração Social quando disponível |
+| Cartão SUS | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | Retorna os dados do Cartão Nacional de Saúde localizados para o CPF, com número do cartão, data de captura e dados de nascimento |
 | Validação E-Social | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | Valida qualificação cadastral no E-Social, com CPF, nome, nascimento e PIS |
 | Consulta de endereços | `SERVICE_ADDRESS` | Retorna endereços associados ao CPF |
 | Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | Retorna dados de pessoa a partir de telefone |
@@ -10008,6 +10021,7 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 
 | Objetivo | Service | Documento |
 | --- | --- | --- |
+| Cartão SUS | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | CPF |
 | CNPJ na Receita Federal on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | CNPJ |
 | Consulta de MEI | `SERVICE_MEI` | CPF |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | CPF |
@@ -10153,7 +10167,7 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  12 services: `SERVICE_PF_FINANCIAL_AND_ADDRESS`, `SERVICE_CONFIRM_PHONE`, `SERVICE_DOMAINS_CPF` e mais 9.
 
 
- 8 services: `SERVICE_MEI`, `SERVICE_RFB_PF_ON_DEMAND`, `SERVICE_DEMOGRAPHIC_DATA_CPF` e mais 5.
+ 9 services: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`, `SERVICE_MEI`, `SERVICE_RFB_PF_ON_DEMAND` e mais 6.
 
 
  8 services: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`, `SERVICE_ELECTORAL_DONORS_CPF`, `SERVICE_POLITICAL_INVOLVEMENT` e mais 5.
@@ -12740,6 +12754,137 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna validação do e-mail informado, incluindo formato, existencia provável, domínio, entregabilidade e indicadores de risco.
+
+**Service:** `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Cartão SUS" via API.
+
+**O que retorna:** Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.
+
+
+ Campos obrigatórios: `service`, `cpf`.
+
+
+ Principais campos em `result`: `cpf`, `sus_card_success`, `sus_card_number`, `sus_card_source`, `sus_card_capture_date`, `sus_card_birth_date` e mais 6.
+
+
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+
+
+ Nenhum campo opcional mapeado neste exemplo.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.sus_card_success` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_number` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_source` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_capture_date` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.sus_card_birth_date` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.sus_card_birth_city` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_birth_state` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_has_evidence` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_raw_result_file` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_raw_result_file_type` | Campo retornado no objeto result para consumo do cliente. |
+| `result.sus_card_summary` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+
+
+ Status técnico da chamada, com `code` e `message`.
+
+
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+
+
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "sus_card_success": "Sim",
+    "sus_card_number": "126000000000009",
+    "sus_card_source": "BA",
+    "sus_card_capture_date": "08/25/2025 20:07:36",
+    "sus_card_birth_date": "03/13/1980 00:00:00",
+    "sus_card_birth_city": "CHORROCHO",
+    "sus_card_birth_state": "BA",
+    "sus_card_has_evidence": "Não",
+    "sus_card_raw_result_file": "https://example.com/documents/sus-card.pdf",
+    "sus_card_raw_result_file_type": "pdf",
+    "sus_card_summary": "Cartão SUS localizado"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.
 
 **Service:** `SERVICE_MEI`
 
@@ -20561,6 +20706,13 @@ A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo c
  image1: base64
  ```
 
+- PF - Cartão SUS: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+
+ ```yaml
+ service: SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF
+ cpf: cpf
+ ```
+
 - PF - Certidão de Nada Consta: `SERVICE_NOTHING_RECORD_LAWSUITS`
 
  ```yaml
@@ -21348,6 +21500,52 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
   "image1": "base64"
+}'
+```
+
+### Cartão SUS
+
+- Service: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Cartão SUS
+- Retorno principal: Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "sus_card_success": "Sim",
+    "sus_card_number": "126000000000009",
+    "sus_card_source": "BA",
+    "sus_card_capture_date": "08/25/2025 20:07:36",
+    "sus_card_birth_date": "03/13/1980 00:00:00",
+    "sus_card_birth_city": "CHORROCHO",
+    "sus_card_birth_state": "BA",
+    "sus_card_has_evidence": "Não",
+    "sus_card_raw_result_file": "https://example.com/documents/sus-card.pdf",
+    "sus_card_raw_result_file_type": "pdf",
+    "sus_card_summary": "Cartão SUS localizado"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
 }'
 ```
 
@@ -24966,6 +25164,11 @@ paths:
                 summary: PF - CPF na Receita Federal on-demand
                 value:
                   service: SERVICE_RFB_PF_ON_DEMAND
+                  cpf: cpf
+              cartaoSus:
+                summary: PF - Cartão SUS
+                value:
+                  service: SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF
                   cpf: cpf
               modelagemDadosPessoa:
                 summary: PF - Modelagem de dados

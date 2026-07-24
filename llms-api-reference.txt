@@ -223,6 +223,52 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Cartão SUS
+
+- Service: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: CPF Receita Federal, PF - Cartão SUS
+- Retorno principal: Retorna os dados do Cartão Nacional de Saúde (Cartão SUS) localizados para o CPF informado, com número do cartão, fonte e data da captura, dados de nascimento, indicação de documento de evidência e um resumo da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "sus_card_success": "Sim",
+    "sus_card_number": "126000000000009",
+    "sus_card_source": "BA",
+    "sus_card_capture_date": "08/25/2025 20:07:36",
+    "sus_card_birth_date": "03/13/1980 00:00:00",
+    "sus_card_birth_city": "CHORROCHO",
+    "sus_card_birth_state": "BA",
+    "sus_card_has_evidence": "Não",
+    "sus_card_raw_result_file": "https://example.com/documents/sus-card.pdf",
+    "sus_card_raw_result_file_type": "pdf",
+    "sus_card_summary": "Cartão SUS localizado"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}'
+```
+
 ### Certidão de Nada Consta
 
 - Service: `SERVICE_NOTHING_RECORD_LAWSUITS`
