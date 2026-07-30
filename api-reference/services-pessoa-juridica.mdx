@@ -547,16 +547,16 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 
 **Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ`
 
-**Quando usar:** Use para consultar ou validar endereços associados ao documento.
+**Quando usar:** Use para consultar todos os endereços associados a um CNPJ, incluindo os endereços atuais, os históricos e indicadores de qualidade de cada um (quão validado e quão recente é o endereço).
 
-**O que retorna:** Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
+**O que retorna:** Retorna a lista completa de endereços encontrados para a empresa (`addresses`) e um resumo agregado com totais e datas (quantos endereços ativos, quantos são comerciais x pessoais, data da primeira e da última passagem confirmada em cada endereço).
 
 <CardGroup cols={2}>
  <Card title="Entrada">
  Campos obrigatórios: `service`, `cnpj`.
  </Card>
  <Card title="Resultado">
- Principais campos em `result`: `cnpj`, `totalAddresses`, `addresses`.
+ Principais campos em `result`: `cnpj`, `addresses`, `addressesExtendedTotal`, `addressesExtendedTotalActive`.
  </Card>
  <Card title="Status da chamada">
  Use `status.code` e `status.message` para entender se a consulta processou corretamente.
@@ -578,7 +578,7 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
 3. Execute `POST /api/service-api` no ambiente escolhido.
 4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+5. Percorra a lista `result.addresses` e, se precisar de uma visão geral rápida, use os totais agregados (`addressesExtendedTotal*`) sem precisar somar o array manualmente.
 
 ### Copiar e testar
 
@@ -590,7 +590,7 @@ Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de tes
 ```json
 {
   "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }
 ```
 
@@ -603,7 +603,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }'
 ```
 
@@ -616,7 +616,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }'
 ```
 
@@ -628,15 +628,45 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cnpj` | Sim | CNPJ da empresa consultada. |
+| `cnpj` | Sim | CNPJ da empresa consultada, com ou sem máscara. |
 
 ### Campos principais do result
 
 | Campo | Descrição |
 | --- | --- |
-| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
-| `result.totalAddresses` | Endereço, lista de endereços ou validação de endereço retornada pela consulta. |
-| `result.addresses` | Endereço, lista de endereços ou validação de endereço retornada pela consulta. |
+| `result.cnpj` | CNPJ consultado, sem máscara. |
+| `result.addresses` | Lista com todos os endereços encontrados para a empresa. Ver campos de cada item logo abaixo. |
+| `result.addressesExtendedTotal` | Total de endereços encontrados. |
+| `result.addressesExtendedTotalActive` | Quantos desses endereços estão ativos atualmente. |
+| `result.addressesExtendedTotalWork` | Quantos são endereços comerciais/de trabalho. |
+| `result.addressesExtendedTotalPersonal` | Quantos são endereços pessoais/residenciais. |
+| `result.addressesExtendedTotalUnique` | Quantidade de endereços únicos (sem duplicidade). |
+| `result.addressesExtendedTotalPassages` | Total de "passagens" (confirmações) registradas em todos os endereços. |
+| `result.addressesExtendedTotalBadPassages` | Quantas dessas passagens são consideradas de baixa confiabilidade. |
+| `result.addressesExtendedOldestPassageDate` | Data da passagem mais antiga entre todos os endereços. |
+| `result.addressesExtendedNewestPassageDate` | Data da passagem mais recente entre todos os endereços. |
+
+**Campos de cada item de `result.addresses[]`:**
+
+| Campo | Descrição |
+| --- | --- |
+| `address` | Logradouro (rua/avenida) do endereço. |
+| `number` | Número do endereço. |
+| `complement` | Complemento (sala, andar, bloco), quando existir. |
+| `neighborhood` | Bairro. |
+| `city` | Cidade. |
+| `state` | UF. |
+| `country` | País. |
+| `zipcode` | CEP, sem máscara. |
+| `addressType` | Tipo do endereço (ex.: `COMMERCIAL`, `RESIDENTIAL`). |
+| `isActive` | `"true"`/`"false"` — se o endereço está ativo atualmente. |
+| `isMainForEntity` | `"true"`/`"false"` — se é o endereço principal da empresa. |
+| `priority` | Prioridade/relevância do endereço em relação aos demais (quanto menor, mais relevante). |
+| `lastValidationDate` | Data da última validação desse endereço específico. |
+
+<Info>
+Todos os valores dentro de `addresses[]` são retornados como texto (string), inclusive os booleanos (`"true"`/`"false"`) e números (`"1"`). Faça o parse no seu lado antes de comparar com `true`/`false` ou usar em cálculos.
+</Info>
 
 ### Como consumir o retorno
 
@@ -660,17 +690,47 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
-    "cnpj": "cnpj",
-    "totalAddresses": 1,
+    "cnpj": "12345678000190",
     "addresses": [
       {
-        "address": "Av Exemplo",
+        "address": "Avenida Paulista",
+        "number": "1000",
+        "complement": "Sala 10",
+        "neighborhood": "Bela Vista",
         "city": "Sao Paulo",
         "state": "SP",
-        "zipcode": "01001000",
-        "addressType": "COMMERCIAL"
+        "country": "Brasil",
+        "zipcode": "01310100",
+        "addressType": "COMMERCIAL",
+        "isActive": "true",
+        "isMainForEntity": "true",
+        "priority": "1",
+        "lastValidationDate": "2026-05-12"
+      },
+      {
+        "address": "Rua das Industrias",
+        "number": "250",
+        "neighborhood": "Distrito Industrial",
+        "city": "Campinas",
+        "state": "SP",
+        "country": "Brasil",
+        "zipcode": "13035000",
+        "addressType": "INDUSTRIAL",
+        "isActive": "true",
+        "isMainForEntity": "false",
+        "priority": "2",
+        "lastValidationDate": "2026-03-02"
       }
-    ]
+    ],
+    "addressesExtendedTotal": 2,
+    "addressesExtendedTotalActive": 2,
+    "addressesExtendedTotalWork": 1,
+    "addressesExtendedTotalPersonal": 0,
+    "addressesExtendedTotalUnique": 2,
+    "addressesExtendedTotalPassages": 14,
+    "addressesExtendedTotalBadPassages": 0,
+    "addressesExtendedOldestPassageDate": "2018-02-10",
+    "addressesExtendedNewestPassageDate": "2026-05-12"
   },
   "status": {
     "code": 200,
@@ -680,7 +740,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
+Neste service, o objeto `result` representa: a lista completa de endereços da empresa em `addresses`, mais um resumo agregado (`addressesExtendedTotal*`) para você decidir rapidamente se vale a pena olhar o detalhe de cada endereço.
 
 </Accordion>
 
@@ -827,16 +887,16 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 
 **Service:** `SERVICE_COMPANY_KYC_OWNERS`
 
-**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
+**Quando usar:** Use para checar exposição política (PEP) e sanções (listas restritivas nacionais e internacionais) de todos os sócios de uma empresa em uma única chamada — pessoas físicas e jurídicas.
 
-**O que retorna:** Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
+**O que retorna:** Retorna um resumo agregado por empresa (quantos sócios são PEP hoje, quantos já foram, quantos estão sancionados) e o detalhamento individual de cada sócio, incluindo o histórico completo de sanções e de exposição política encontrado para ele.
 
 <CardGroup cols={2}>
  <Card title="Entrada">
  Campos obrigatórios: `service`, `cnpj`.
  </Card>
  <Card title="Resultado">
- Principais campos em `result`: `cnpj`, `ownersChecked`, `owners`.
+ Principais campos em `result`: `cnpj`, `totalCurrentPep`, `totalCurrentSanctioned`, `companyOwners`, `peopleOwners`, `kycOwners`.
  </Card>
  <Card title="Status da chamada">
  Use `status.code` e `status.message` para entender se a consulta processou corretamente.
@@ -855,10 +915,12 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 ### Passo a passo
 
 1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+2. Monte o body com o `service` exato e o campo obrigatório `cnpj`.
 3. Execute `POST /api/service-api` no ambiente escolhido.
 4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+5. Use os contadores no topo de `result` (`totalCurrentPep`, `totalCurrentSanctioned`, etc.) para uma decisão rápida de compliance, sem precisar percorrer a lista de sócios.
+6. Se precisar do detalhe por sócio, percorra `result.kycOwners` (lista combinada) — ou `result.companyOwners`/`result.peopleOwners` se quiser separar sócios PJ de sócios PF.
+7. Para decidir se uma sanção é confiável o suficiente para reprovar automaticamente, use `highConfidenceSanctionsHistory` em vez de `sanctionsHistory` — veja a explicação na tabela de campos por sócio, logo abaixo.
 
 ### Copiar e testar
 
@@ -870,7 +932,7 @@ Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de tes
 ```json
 {
   "service": "SERVICE_COMPANY_KYC_OWNERS",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }
 ```
 
@@ -883,7 +945,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPANY_KYC_OWNERS",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }'
 ```
 
@@ -896,7 +958,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPANY_KYC_OWNERS",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }'
 ```
 
@@ -908,15 +970,59 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cnpj` | Sim | CNPJ da empresa consultada. |
+| `cnpj` | Sim | CNPJ da empresa consultada, com ou sem máscara. |
 
-### Campos principais do result
+### Campos principais do result (resumo agregado)
 
 | Campo | Descrição |
 | --- | --- |
-| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
-| `result.ownersChecked` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
-| `result.owners` | Vínculos, pessoas, sócios ou relacionamentos retornados pela consulta. |
+| `result.cnpj` | CNPJ consultado, sem máscara. |
+| `result.totalCurrentPep` | Quantidade de sócios **atualmente** classificados como PEP (Pessoa Politicamente Exposta). |
+| `result.totalHistoricallyPEP` | Quantidade de sócios com histórico de PEP (inclui quem já foi PEP e não é mais). |
+| `result.totalCurrentSanctioned` | Quantidade de sócios **atualmente** presentes em alguma lista de sanções/restritiva. |
+| `result.totalHistoricallySanctioned` | Quantidade de sócios com histórico de sanções (mesmo que não estejam mais sancionados hoje). |
+| `result.averageSanctionsPerOwner` | Média de sanções por sócio, arredondada para inteiro. |
+| `result.averageSanctionsPerOwnerExact` | A mesma média, sem arredondamento. |
+| `result.pepPercentage` | Percentual de sócios da empresa classificados como PEP. |
+| `result.ownerMaxSanctions` / `result.ownerMinSanctions` | Maior e menor número de sanções entre os sócios da empresa. |
+| `result.activeOwners` / `result.inactiveOwners` | Lista de CPF/CNPJ dos sócios ativos e inativos considerados na consulta. |
+| `result.companyOwners` | Sócios que são pessoas jurídicas, cada um com o detalhamento completo de KYC (ver tabela abaixo). |
+| `result.peopleOwners` | Sócios que são pessoas físicas, cada um com o detalhamento completo de KYC. |
+| `result.kycOwners` | Lista combinada — pessoas físicas e jurídicas juntas — com o mesmo detalhamento de KYC de cada sócio. |
+
+<Info>
+`companyOwners`, `peopleOwners` e `kycOwners` trazem os **mesmos sócios**, só que organizados de formas diferentes: separados por tipo de pessoa (`companyOwners`/`peopleOwners`) ou combinados em uma única lista (`kycOwners`). Use a que for mais conveniente para o seu fluxo — não é necessário consumir as três.
+</Info>
+
+**Campos de cada sócio em `companyOwners[]` / `peopleOwners[]` / `kycOwners[]`:**
+
+| Campo | Descrição |
+| --- | --- |
+| `cpf` / `cnpj` | Documento do sócio — vem preenchido em um ou outro campo, conforme o sócio seja pessoa física ou jurídica. |
+| `isPep` | `true`/`false` — se o sócio está **atualmente** classificado como PEP. |
+| `isCurrentlySanctioned` | `true`/`false` — se o sócio está **atualmente** presente em alguma lista de sanções. |
+| `wasPreviouslySanctioned` | `true`/`false` — se o sócio já esteve sancionado no passado, mesmo que não esteja mais. |
+| `sanctionsHistory` | Histórico **completo** de sanções encontradas para o sócio (todas as fontes e níveis de confiança de match). |
+| `highConfidenceSanctionsHistory` | O mesmo histórico, mas filtrado apenas para sanções com `matchRate` acima de 90 — ou seja, alta confiança de que a sanção pertence de fato a este sócio. **Use esta lista para decisões automáticas de aprovação/reprovação**, e `sanctionsHistory` apenas para auditoria/revisão manual. |
+| `pepHistories` | Histórico de cargos e exposição política do sócio (nível, cargo, órgão, datas). |
+| `firstSanctionDate` / `lastSanctionDate` | Data da primeira e da última sanção encontrada para o sócio. |
+| `firstPepOccurrenceDate` / `lastPepOccurrenceDate` | Data da primeira e da última ocorrência de PEP para o sócio. |
+| `isCurrentlyElectoralDonor` / `isHistoricalElectoralDonor` | Se o sócio é ou já foi doador eleitoral. |
+| `totalElectoralDonations` / `totalElectoralDonationAmount` | Quantidade e valor total de doações eleitorais feitas pelo sócio. |
+| `electoralDonationsByYear` | Doações eleitorais do sócio, quebradas por ano (`year`, `donationsCount`, `amountDonated`). |
+
+**Campos de cada item em `sanctionsHistory[]` / `highConfidenceSanctionsHistory[]`:**
+
+| Campo | Descrição |
+| --- | --- |
+| `source` | Fonte da sanção (ex.: `interpol`, `ofac`, listas nacionais). |
+| `type` | Tipo da sanção conforme reportado pela fonte original. |
+| `standardizedSanctionType` | Tipo da sanção padronizado, para facilitar comparação entre fontes diferentes. |
+| `matchRate` | Confiança do match entre a sanção e o sócio, de 0 a 100. Valores acima de 90 já vêm agregados em `highConfidenceSanctionsHistory`. |
+| `details` | Detalhes brutos da sanção, no idioma/formato original da fonte (pode vir em inglês ou outro idioma). |
+| `normalizedDetails` | Os mesmos detalhes, quando disponível uma versão padronizada/traduzida. |
+| `startDate` / `endDate` | Início e fim da sanção, quando aplicável. |
+| `isCurrentlyPresentOnSource` | Se a sanção ainda consta ativa na fonte original. |
 
 ### Como consumir o retorno
 
@@ -940,14 +1046,88 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
-    "cnpj": "cnpj",
-    "ownersChecked": 2,
-    "owners": [
+    "cnpj": "12345678000190",
+    "totalCurrentPep": 1,
+    "totalHistoricallyPEP": 1,
+    "totalCurrentSanctioned": 1,
+    "totalHistoricallySanctioned": 1,
+    "averageSanctionsPerOwner": 1,
+    "averageSanctionsPerOwnerExact": 0.5,
+    "pepPercentage": 50.0,
+    "ownerMaxSanctions": 1,
+    "ownerMinSanctions": 0,
+    "activeOwners": ["11122233344", "55566677788"],
+    "inactiveOwners": [],
+    "kycOwners": [
       {
-        "name": "Nome do sócio",
+        "cpf": "11122233344",
+        "isPep": true,
+        "isCurrentlySanctioned": true,
+        "wasPreviouslySanctioned": true,
+        "firstSanctionDate": "2021-03-15",
+        "lastSanctionDate": "2024-08-02",
+        "firstPepOccurrenceDate": "2019-01-10",
+        "lastPepOccurrenceDate": "2024-08-02",
+        "sanctionsHistory": [
+          {
+            "source": "interpol",
+            "type": "RED_NOTICE",
+            "standardizedSanctionType": "INTERNATIONAL_ALERT",
+            "matchRate": 96,
+            "details": {
+              "Charge": "Fraud",
+              "IssuingCountry": "Brazil"
+            },
+            "normalizedDetails": {
+              "acusacao": "Fraude",
+              "paisEmissor": "Brasil"
+            },
+            "startDate": "2021-03-15",
+            "endDate": null,
+            "isCurrentlyPresentOnSource": true
+          }
+        ],
+        "highConfidenceSanctionsHistory": [
+          {
+            "source": "interpol",
+            "type": "RED_NOTICE",
+            "standardizedSanctionType": "INTERNATIONAL_ALERT",
+            "matchRate": 96,
+            "details": {
+              "Charge": "Fraud",
+              "IssuingCountry": "Brazil"
+            },
+            "normalizedDetails": {
+              "acusacao": "Fraude",
+              "paisEmissor": "Brasil"
+            },
+            "startDate": "2021-03-15",
+            "endDate": null,
+            "isCurrentlyPresentOnSource": true
+          }
+        ],
+        "pepHistories": [
+          {
+            "level": "FEDERAL",
+            "jobTitle": "Secretario",
+            "department": "Ministerio Exemplo",
+            "startDate": "2019-01-10",
+            "endDate": null
+          }
+        ],
+        "isCurrentlyElectoralDonor": false,
+        "isHistoricalElectoralDonor": true,
+        "totalElectoralDonations": 2,
+        "totalElectoralDonationAmount": 15000.0
+      },
+      {
+        "cpf": "55566677788",
         "isPep": false,
-        "sanctions": [],
-        "riskAlerts": []
+        "isCurrentlySanctioned": false,
+        "wasPreviouslySanctioned": false,
+        "sanctionsHistory": [],
+        "highConfidenceSanctionsHistory": [],
+        "pepHistories": []
       }
     ]
   },
@@ -959,7 +1139,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
+Neste service, o objeto `result` representa: um resumo agregado de KYC/compliance da empresa (contadores de PEP e sanções) mais o detalhamento individual de cada sócio em `kycOwners` (ou `companyOwners`/`peopleOwners`, se preferir já separado por tipo de pessoa).
 
 </Accordion>
 

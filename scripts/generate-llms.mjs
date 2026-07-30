@@ -877,7 +877,8 @@ function buildSearchTerms(item) {
   if (text.includes('face_index') || text.includes('face_match') || text.includes('facematch') || text.includes('busca de face') || text.includes('comparacao facial') || text.includes('comparação facial')) terms.add('comparação facial biometria selfie rosto');
   if (text.includes('liveness')) terms.add('prova de vida selfie liveness');
   if (text.includes('documentoscopia')) terms.add('documentoscopia documento selfie validação');
-  if (text.includes('kyc')) terms.add('compliance KYC sanções PEP mídia');
+  if (text.includes('company_kyc_owners')) terms.add('compliance KYC sanções PEP sancionado interpol ofac');
+  else if (text.includes('kyc')) terms.add('compliance KYC sanções PEP mídia');
   if (text.includes('bet')) terms.add('apostas bets compliance bet');
   if (text.includes('debt') || text.includes('débito') || text.includes('debito')) terms.add('dívida ativa débito cobrança inadimplência');
   if (text.includes('score') || text.includes('risco') || text.includes('credito')) terms.add('score risco crédito rating inadimplência');
@@ -1504,8 +1505,24 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', totalAddresses: 2, addresses: [{ address: 'Rua Exemplo', number: '100', neighborhood: 'Centro', city: 'Sao Paulo', state: 'SP', zipcode: '01001000' }] },
   },
   SERVICE_ADDRESSES_EXTENDED_CNPJ: {
-    summary: 'Retorna enderecos associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, pais, tipo de endereco e dados complementares quando disponiveis.',
-    result: { cnpj: 'cnpj', totalAddresses: 1, addresses: [{ address: 'Av Exemplo', city: 'Sao Paulo', state: 'SP', zipcode: '01001000', addressType: 'COMMERCIAL' }] },
+    summary: 'Retorna a lista completa de enderecos do CNPJ em result.addresses (logradouro, numero, complemento, bairro, cidade, UF, pais, CEP, tipo, se esta ativo e se e o principal), alem de um resumo agregado em result.addressesExtendedTotal* com totais e datas da primeira/ultima passagem confirmada.',
+    result: {
+      cnpj: 'cnpj',
+      addresses: [{
+        address: 'Av Exemplo', number: '1000', complement: 'Sala 10', neighborhood: 'Centro', city: 'Sao Paulo', state: 'SP',
+        country: 'Brasil', zipcode: '01001000', addressType: 'COMMERCIAL', isActive: 'true', isMainForEntity: 'true',
+        priority: '1', lastValidationDate: '2026-05-12',
+      }],
+      addressesExtendedTotal: 1,
+      addressesExtendedTotalActive: 1,
+      addressesExtendedTotalWork: 1,
+      addressesExtendedTotalPersonal: 0,
+      addressesExtendedTotalUnique: 1,
+      addressesExtendedTotalPassages: 7,
+      addressesExtendedTotalBadPassages: 0,
+      addressesExtendedOldestPassageDate: '2018-02-10',
+      addressesExtendedNewestPassageDate: '2026-05-12',
+    },
   },
   SERVICE_ARREST_WARRANT: {
     summary: 'Retorna indicativos de mandado de prisao para os dados informados, com situacao, orgao, processo e detalhes encontrados quando houver ocorrencia.',
@@ -1516,8 +1533,57 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', totalAwards: 0, totalCertifications: 0, awards: [], certifications: [] },
   },
   SERVICE_COMPANY_KYC_OWNERS: {
-    summary: 'Retorna checagens de KYC e compliance dos socios da empresa, incluindo PEP, sancoes, midia, risco e alertas encontrados por socio.',
-    result: { cnpj: 'cnpj', ownersChecked: 2, owners: [{ name: 'Nome do socio', isPep: false, sanctions: [], riskAlerts: [] }] },
+    summary: 'Retorna um resumo agregado de KYC/compliance da empresa (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) e o detalhamento individual de cada socio em result.kycOwners/companyOwners/peopleOwners, incluindo sanctionsHistory (historico completo) e highConfidenceSanctionsHistory (apenas sancoes com matchRate acima de 90) e pepHistories.',
+    result: {
+      cnpj: 'cnpj',
+      totalCurrentPep: 1,
+      totalHistoricallyPEP: 1,
+      totalCurrentSanctioned: 1,
+      totalHistoricallySanctioned: 1,
+      averageSanctionsPerOwner: 1,
+      averageSanctionsPerOwnerExact: 0.5,
+      pepPercentage: 50.0,
+      ownerMaxSanctions: 1,
+      ownerMinSanctions: 0,
+      activeOwners: ['11122233344', '55566677788'],
+      inactiveOwners: [],
+      kycOwners: [
+        {
+          cpf: '11122233344',
+          isPep: true,
+          isCurrentlySanctioned: true,
+          wasPreviouslySanctioned: true,
+          firstSanctionDate: '2021-03-15',
+          lastSanctionDate: '2024-08-02',
+          firstPepOccurrenceDate: '2019-01-10',
+          lastPepOccurrenceDate: '2024-08-02',
+          sanctionsHistory: [{
+            source: 'interpol', type: 'RED_NOTICE', standardizedSanctionType: 'INTERNATIONAL_ALERT', matchRate: 96,
+            details: { Charge: 'Fraud', IssuingCountry: 'Brazil' }, normalizedDetails: { acusacao: 'Fraude', paisEmissor: 'Brasil' },
+            startDate: '2021-03-15', endDate: null, isCurrentlyPresentOnSource: true,
+          }],
+          highConfidenceSanctionsHistory: [{
+            source: 'interpol', type: 'RED_NOTICE', standardizedSanctionType: 'INTERNATIONAL_ALERT', matchRate: 96,
+            details: { Charge: 'Fraud', IssuingCountry: 'Brazil' }, normalizedDetails: { acusacao: 'Fraude', paisEmissor: 'Brasil' },
+            startDate: '2021-03-15', endDate: null, isCurrentlyPresentOnSource: true,
+          }],
+          pepHistories: [{ level: 'FEDERAL', jobTitle: 'Secretario', department: 'Ministerio Exemplo', startDate: '2019-01-10', endDate: null }],
+          isCurrentlyElectoralDonor: false,
+          isHistoricalElectoralDonor: true,
+          totalElectoralDonations: 2,
+          totalElectoralDonationAmount: 15000.0,
+        },
+        {
+          cpf: '55566677788',
+          isPep: false,
+          isCurrentlySanctioned: false,
+          wasPreviouslySanctioned: false,
+          sanctionsHistory: [],
+          highConfidenceSanctionsHistory: [],
+          pepHistories: [],
+        },
+      ],
+    },
   },
   SERVICE_COMPANY_RELATIONSHIP: {
     summary: 'Retorna relacionamentos da empresa, como sócios, proprietários, empresas relacionadas, participações e vínculos societários identificados.',

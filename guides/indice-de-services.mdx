@@ -1227,9 +1227,9 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 
 **Termos de busca:** CNPJ Receita Federal, PJ - Endereços estendidos
 
-**Quando usar:** Use para consultar ou validar endereços associados ao documento.
+**Quando usar:** Use para consultar todos os endereços associados a um CNPJ, incluindo os endereços atuais, os históricos e indicadores de qualidade de cada um.
 
-**Retorno principal:** Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
+**Retorno principal:** Retorna a lista completa de endereços em `result.addresses` (logradouro, número, complemento, bairro, cidade, UF, país, CEP, tipo, se está ativo e se é o principal), além de um resumo agregado em `result.addressesExtendedTotal*` com totais e datas da primeira/última passagem confirmada.
 
 [Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_ADDRESSES_EXTENDED_CNPJ)
 
@@ -1289,11 +1289,11 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 
 **Campos principais:** `cnpj`
 
-**Termos de busca:** PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia
+**Termos de busca:** PJ - KYC e compliance dos sócios, compliance KYC sanções PEP interpol ofac
 
-**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
+**Quando usar:** Use para checar exposição política (PEP) e sanções de todos os sócios de uma empresa em uma única chamada, pessoas físicas e jurídicas.
 
-**Retorno principal:** Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
+**Retorno principal:** Retorna um resumo agregado (`totalCurrentPep`, `totalCurrentSanctioned`, `averageSanctionsPerOwner`, `pepPercentage`) e o detalhamento por sócio em `result.kycOwners`/`companyOwners`/`peopleOwners`, incluindo `sanctionsHistory` completo, `highConfidenceSanctionsHistory` (apenas `matchRate` acima de 90) e `pepHistories`.
 
 [Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_COMPANY_KYC_OWNERS)
 

@@ -7488,7 +7488,7 @@
         "PJ - Endereços estendidos",
         "SERVICE_ADDRESSES_EXTENDED_CNPJ"
       ],
-      "responseSummary": "Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.",
+      "responseSummary": "Retorna a lista completa de endereços do CNPJ em result.addresses (logradouro, número, complemento, bairro, cidade, UF, país, CEP, tipo, se está ativo e se é o principal), além de um resumo agregado em result.addressesExtendedTotal* com totais e datas da primeira/última passagem confirmada.",
       "callingAlias": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
       "services": [],
       "requiredFields": [
@@ -7497,11 +7497,37 @@
       "optionalFields": [],
       "payloadExample": {
         "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-        "cnpj": "cnpj"
+        "cnpj": "12345678000190"
       },
       "successResponseExample": {
         "result": {
-          "cnpj": "00000000000000"
+          "cnpj": "12345678000190",
+          "addresses": [
+            {
+              "address": "Avenida Paulista",
+              "number": "1000",
+              "complement": "Sala 10",
+              "neighborhood": "Bela Vista",
+              "city": "Sao Paulo",
+              "state": "SP",
+              "country": "Brasil",
+              "zipcode": "01310100",
+              "addressType": "COMMERCIAL",
+              "isActive": "true",
+              "isMainForEntity": "true",
+              "priority": "1",
+              "lastValidationDate": "2026-05-12"
+            }
+          ],
+          "addressesExtendedTotal": 1,
+          "addressesExtendedTotalActive": 1,
+          "addressesExtendedTotalWork": 1,
+          "addressesExtendedTotalPersonal": 0,
+          "addressesExtendedTotalUnique": 1,
+          "addressesExtendedTotalPassages": 7,
+          "addressesExtendedTotalBadPassages": 0,
+          "addressesExtendedOldestPassageDate": "2018-02-10",
+          "addressesExtendedNewestPassageDate": "2026-05-12"
         },
         "status": {
           "code": 200,
@@ -7896,9 +7922,9 @@
         "KYC e compliance dos sócios",
         "PJ - KYC e compliance dos sócios",
         "SERVICE_COMPANY_KYC_OWNERS",
-        "compliance KYC sanções PEP mídia"
+        "compliance KYC sanções PEP sancionado interpol ofac"
       ],
-      "responseSummary": "Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.",
+      "responseSummary": "Retorna um resumo agregado de KYC/compliance da empresa (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) e o detalhamento individual de cada sócio em result.kycOwners/companyOwners/peopleOwners, incluindo sanctionsHistory (histórico completo) e highConfidenceSanctionsHistory (apenas sanções com matchRate acima de 90) e pepHistories.",
       "callingAlias": "SERVICE_COMPANY_KYC_OWNERS",
       "services": [],
       "requiredFields": [
@@ -7907,11 +7933,70 @@
       "optionalFields": [],
       "payloadExample": {
         "service": "SERVICE_COMPANY_KYC_OWNERS",
-        "cnpj": "cnpj"
+        "cnpj": "12345678000190"
       },
       "successResponseExample": {
         "result": {
-          "cnpj": "00000000000000"
+          "cnpj": "12345678000190",
+          "totalCurrentPep": 1,
+          "totalHistoricallyPEP": 1,
+          "totalCurrentSanctioned": 1,
+          "totalHistoricallySanctioned": 1,
+          "averageSanctionsPerOwner": 1,
+          "averageSanctionsPerOwnerExact": 0.5,
+          "pepPercentage": 50.0,
+          "ownerMaxSanctions": 1,
+          "ownerMinSanctions": 0,
+          "activeOwners": ["11122233344", "55566677788"],
+          "inactiveOwners": [],
+          "kycOwners": [
+            {
+              "cpf": "11122233344",
+              "isPep": true,
+              "isCurrentlySanctioned": true,
+              "wasPreviouslySanctioned": true,
+              "firstSanctionDate": "2021-03-15",
+              "lastSanctionDate": "2024-08-02",
+              "sanctionsHistory": [
+                {
+                  "source": "interpol",
+                  "type": "RED_NOTICE",
+                  "standardizedSanctionType": "INTERNATIONAL_ALERT",
+                  "matchRate": 96,
+                  "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
+                  "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
+                  "startDate": "2021-03-15",
+                  "endDate": null,
+                  "isCurrentlyPresentOnSource": true
+                }
+              ],
+              "highConfidenceSanctionsHistory": [
+                {
+                  "source": "interpol",
+                  "type": "RED_NOTICE",
+                  "standardizedSanctionType": "INTERNATIONAL_ALERT",
+                  "matchRate": 96,
+                  "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
+                  "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
+                  "startDate": "2021-03-15",
+                  "endDate": null,
+                  "isCurrentlyPresentOnSource": true
+                }
+              ],
+              "pepHistories": [
+                { "level": "FEDERAL", "jobTitle": "Secretario", "department": "Ministerio Exemplo", "startDate": "2019-01-10", "endDate": null }
+              ]
+            },
+            {
+              "cpf": "55566677788",
+              "isPep": false,
+              "isCurrentlySanctioned": false,
+              "wasPreviouslySanctioned": false,
+              "sanctionsHistory": [],
+              "highConfidenceSanctionsHistory": [],
+              "pepHistories": []
+            }
+          ]
         },
         "status": {
           "code": 200,

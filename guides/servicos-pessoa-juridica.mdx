@@ -377,10 +377,11 @@ Exemplo de resposta:
 
 ### Endereços estendidos de empresa
 
-Retorna endereços associados ao CNPJ consultado, com dados normalizados de
-logradouro, bairro, cidade, UF, país, CEP e tipo de endereço quando disponível.
-Use esta consulta quando a análise cadastral precisar ir além do endereço
-principal retornado por consultas básicas de CNPJ.
+Retorna a lista completa de endereços associados ao CNPJ consultado (atuais e
+históricos), com dados normalizados de logradouro, bairro, cidade, UF, país,
+CEP e tipo de endereço, além de um resumo agregado com totais e datas de
+passagem. Use esta consulta quando a análise cadastral precisar ir além do
+endereço principal retornado por consultas básicas de CNPJ.
 
 ```json
 {
@@ -394,14 +395,21 @@ Campos principais do retorno:
 | Campo | Descrição |
 | --- | --- |
 | `result.cnpj` | CNPJ consultado |
-| `result.addresses` | Lista de endereços associados à empresa |
+| `result.addresses` | Lista de endereços associados à empresa (todos os valores vêm como texto/string) |
 | `result.addresses.address` | Logradouro |
+| `result.addresses.number` | Número |
+| `result.addresses.complement` | Complemento, quando existir |
 | `result.addresses.neighborhood` | Bairro |
 | `result.addresses.city` | Cidade |
 | `result.addresses.state` | UF |
 | `result.addresses.country` | País |
 | `result.addresses.zipcode` | CEP |
-| `result.addresses.addressType` | Tipo de endereço |
+| `result.addresses.addressType` | Tipo de endereço (ex.: `COMMERCIAL`, `RESIDENTIAL`) |
+| `result.addresses.isActive` | `"true"`/`"false"` — se o endereço está ativo atualmente |
+| `result.addresses.isMainForEntity` | `"true"`/`"false"` — se é o endereço principal da empresa |
+| `result.addressesExtendedTotal` | Total de endereços encontrados |
+| `result.addressesExtendedTotalActive` | Quantos estão ativos |
+| `result.addressesExtendedOldestPassageDate` / `result.addressesExtendedNewestPassageDate` | Data da passagem mais antiga e mais recente entre todos os endereços |
 | `status.code` | Código da mensagem de status |
 | `status.message` | Mensagem do código de status |
 
@@ -414,14 +422,21 @@ Exemplo de resposta:
     "addresses": [
       {
         "address": "AVENIDA EXEMPLO",
+        "number": "1000",
         "neighborhood": "CENTRO",
         "city": "SAO PAULO",
         "state": "SP",
         "country": "BRASIL",
         "zipcode": "01001000",
-        "addressType": "COMMERCIAL"
+        "addressType": "COMMERCIAL",
+        "isActive": "true",
+        "isMainForEntity": "true"
       }
-    ]
+    ],
+    "addressesExtendedTotal": 1,
+    "addressesExtendedTotalActive": 1,
+    "addressesExtendedOldestPassageDate": "2018-02-10",
+    "addressesExtendedNewestPassageDate": "2026-05-12"
   },
   "status": {
     "code": 200,
@@ -709,8 +724,9 @@ Campos principais do retorno:
 
 ### Consulta de KYC e compliance dos sócios
 
-Consulta informações de KYC e compliance dos sócios da empresa, incluindo PEP e
-sanções.
+Consulta informações de KYC e compliance de todos os sócios da empresa em uma
+única chamada (pessoas físicas e jurídicas), incluindo exposição política
+(PEP) e sanções em listas restritivas nacionais e internacionais.
 
 ```json
 {
@@ -723,14 +739,22 @@ Campos principais do retorno:
 
 | Campo | Descrição |
 | --- | --- |
-| `result.totalCurrentPep` | Total de PEP atual |
-| `result.totalHistoricalPep` | Total histórico de PEP |
-| `result.totalCurrentSanctioned` | Total atual de sancionados |
-| `result.totalHistoricalSanctioned` | Total histórico de sancionados |
-| `result.partnersHistory` | Histórico de compliance por sócio |
-| `partnersHistory.IsCurrentlyPEP` | Indica se o sócio é PEP atualmente |
-| `partnersHistory.IsCurrentlySanctioned` | Indica se o sócio está sancionado atualmente |
-| `partnersHistory.SanctionsHistory` | Histórico de sanções |
+| `result.totalCurrentPep` | Quantidade de sócios atualmente classificados como PEP |
+| `result.totalHistoricallyPEP` | Quantidade de sócios com histórico de PEP (inclui quem já foi PEP e não é mais) |
+| `result.totalCurrentSanctioned` | Quantidade de sócios atualmente sancionados |
+| `result.totalHistoricallySanctioned` | Quantidade de sócios com histórico de sanções |
+| `result.averageSanctionsPerOwner` | Média de sanções por sócio (arredondada) |
+| `result.pepPercentage` | Percentual de sócios classificados como PEP |
+| `result.kycOwners` | Lista combinada com o detalhamento de KYC de cada sócio (pessoas físicas e jurídicas) |
+| `result.companyOwners` / `result.peopleOwners` | O mesmo detalhamento de `kycOwners`, mas já separado por sócios pessoa jurídica e pessoa física |
+| `kycOwners[].isPep` | Indica se o sócio é PEP atualmente |
+| `kycOwners[].isCurrentlySanctioned` | Indica se o sócio está sancionado atualmente |
+| `kycOwners[].sanctionsHistory` | Histórico completo de sanções do sócio |
+| `kycOwners[].highConfidenceSanctionsHistory` | O mesmo histórico, filtrado para `matchRate` acima de 90 — use esta lista para decisões automáticas |
+| `kycOwners[].pepHistories` | Histórico de cargos e exposição política do sócio |
+
+Não existe um campo `partnersHistory` no retorno deste service — o detalhamento
+por sócio vem em `kycOwners` (ou `companyOwners`/`peopleOwners`).
 
 ### Exposição e perfil na mídia dos sócios
 

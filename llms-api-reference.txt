@@ -2945,24 +2945,40 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
 - Termos de busca: CNPJ Receita Federal, PJ - Endereços estendidos
-- Retorno principal: Retorna endereços associados ao CNPJ, incluindo logradouro, bairro, cidade, UF, CEP, país, tipo de endereço e dados complementares quando disponíveis.
+- Retorno principal: Retorna a lista completa de endereços do CNPJ em `result.addresses` (logradouro, número, complemento, bairro, cidade, UF, país, CEP, tipo, se está ativo e se é o principal), além de um resumo agregado em `result.addressesExtendedTotal*` com totais e datas da primeira/última passagem confirmada. Todos os valores dentro de cada item de `addresses[]` vêm como texto (string), inclusive booleanos e números.
 
 Response resumido:
 
 ```json
 {
   "result": {
-    "cnpj": "cnpj",
-    "totalAddresses": 1,
+    "cnpj": "12345678000190",
     "addresses": [
       {
-        "address": "Av Exemplo",
+        "address": "Avenida Paulista",
+        "number": "1000",
+        "complement": "Sala 10",
+        "neighborhood": "Bela Vista",
         "city": "Sao Paulo",
         "state": "SP",
-        "zipcode": "01001000",
-        "addressType": "COMMERCIAL"
+        "country": "Brasil",
+        "zipcode": "01310100",
+        "addressType": "COMMERCIAL",
+        "isActive": "true",
+        "isMainForEntity": "true",
+        "priority": "1",
+        "lastValidationDate": "2026-05-12"
       }
-    ]
+    ],
+    "addressesExtendedTotal": 1,
+    "addressesExtendedTotalActive": 1,
+    "addressesExtendedTotalWork": 1,
+    "addressesExtendedTotalPersonal": 0,
+    "addressesExtendedTotalUnique": 1,
+    "addressesExtendedTotalPassages": 7,
+    "addressesExtendedTotalBadPassages": 0,
+    "addressesExtendedOldestPassageDate": "2018-02-10",
+    "addressesExtendedNewestPassageDate": "2026-05-12"
   },
   "status": {
     "code": 200,
@@ -2980,7 +2996,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }'
 ```
 
@@ -3114,22 +3130,72 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Service: `SERVICE_COMPANY_KYC_OWNERS`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
-- Termos de busca: PJ - KYC e compliance dos sócios, compliance KYC sanções PEP mídia
-- Retorno principal: Retorna checagens de KYC e compliance dos sócios da empresa, incluindo PEP, sanções, mídia, risco e alertas encontrados por sócio.
+- Termos de busca: PJ - KYC e compliance dos sócios, compliance KYC sanções PEP interpol ofac
+- Retorno principal: Retorna um resumo agregado de KYC/compliance da empresa (`totalCurrentPep`, `totalCurrentSanctioned`, `averageSanctionsPerOwner`, `pepPercentage`) e o detalhamento individual de cada sócio em `result.kycOwners`/`companyOwners`/`peopleOwners`, incluindo `sanctionsHistory` (histórico completo), `highConfidenceSanctionsHistory` (apenas sanções com `matchRate` acima de 90 — use esta lista para decisões automáticas) e `pepHistories`.
 
 Response resumido:
 
 ```json
 {
   "result": {
-    "cnpj": "cnpj",
-    "ownersChecked": 2,
-    "owners": [
+    "cnpj": "12345678000190",
+    "totalCurrentPep": 1,
+    "totalHistoricallyPEP": 1,
+    "totalCurrentSanctioned": 1,
+    "totalHistoricallySanctioned": 1,
+    "averageSanctionsPerOwner": 1,
+    "averageSanctionsPerOwnerExact": 0.5,
+    "pepPercentage": 50.0,
+    "ownerMaxSanctions": 1,
+    "ownerMinSanctions": 0,
+    "activeOwners": ["11122233344", "55566677788"],
+    "inactiveOwners": [],
+    "kycOwners": [
       {
-        "name": "Nome do sócio",
+        "cpf": "11122233344",
+        "isPep": true,
+        "isCurrentlySanctioned": true,
+        "wasPreviouslySanctioned": true,
+        "firstSanctionDate": "2021-03-15",
+        "lastSanctionDate": "2024-08-02",
+        "sanctionsHistory": [
+          {
+            "source": "interpol",
+            "type": "RED_NOTICE",
+            "standardizedSanctionType": "INTERNATIONAL_ALERT",
+            "matchRate": 96,
+            "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
+            "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
+            "startDate": "2021-03-15",
+            "endDate": null,
+            "isCurrentlyPresentOnSource": true
+          }
+        ],
+        "highConfidenceSanctionsHistory": [
+          {
+            "source": "interpol",
+            "type": "RED_NOTICE",
+            "standardizedSanctionType": "INTERNATIONAL_ALERT",
+            "matchRate": 96,
+            "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
+            "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
+            "startDate": "2021-03-15",
+            "endDate": null,
+            "isCurrentlyPresentOnSource": true
+          }
+        ],
+        "pepHistories": [
+          { "level": "FEDERAL", "jobTitle": "Secretario", "department": "Ministerio Exemplo", "startDate": "2019-01-10", "endDate": null }
+        ]
+      },
+      {
+        "cpf": "55566677788",
         "isPep": false,
-        "sanctions": [],
-        "riskAlerts": []
+        "isCurrentlySanctioned": false,
+        "wasPreviouslySanctioned": false,
+        "sanctionsHistory": [],
+        "highConfidenceSanctionsHistory": [],
+        "pepHistories": []
       }
     ]
   },
@@ -3149,7 +3215,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPANY_KYC_OWNERS",
-  "cnpj": "cnpj"
+  "cnpj": "12345678000190"
 }'
 ```
 
