@@ -1505,7 +1505,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', totalAddresses: 2, addresses: [{ address: 'Rua Exemplo', number: '100', neighborhood: 'Centro', city: 'Sao Paulo', state: 'SP', zipcode: '01001000' }] },
   },
   SERVICE_ADDRESSES_EXTENDED_CNPJ: {
-    summary: 'Retorna a lista completa de enderecos do CNPJ em result.addresses (logradouro, numero, complemento, bairro, cidade, UF, pais, CEP, tipo, se esta ativo e se e o principal), alem de um resumo agregado em result.addressesExtendedTotal* com totais e datas da primeira/ultima passagem confirmada.',
+    summary: 'Retorna a lista completa de endereços do CNPJ em result.addresses (logradouro, número, complemento, bairro, cidade, UF, país, CEP, tipo, se está ativo e se é o principal), além de um resumo agregado em result.addressesExtendedTotal* com totais e datas da primeira/última passagem confirmada.',
     result: {
       cnpj: 'cnpj',
       addresses: [{
@@ -1533,7 +1533,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', totalAwards: 0, totalCertifications: 0, awards: [], certifications: [] },
   },
   SERVICE_COMPANY_KYC_OWNERS: {
-    summary: 'Retorna um resumo agregado de KYC/compliance da empresa (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) e o detalhamento individual de cada socio em result.kycOwners/companyOwners/peopleOwners, incluindo sanctionsHistory (historico completo) e highConfidenceSanctionsHistory (apenas sancoes com matchRate acima de 90) e pepHistories.',
+    summary: 'Retorna um resumo agregado de KYC/compliance da empresa (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) e o detalhamento individual de cada sócio em result.kycOwners/companyOwners/peopleOwners, incluindo sanctionsHistory (histórico completo), highConfidenceSanctionsHistory (apenas sanções com matchRate acima de 90) e pepHistories.',
     result: {
       cnpj: 'cnpj',
       totalCurrentPep: 1,
