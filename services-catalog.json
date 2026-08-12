@@ -1,7 +1,7 @@
 {
   "generatedBy": "scripts/generate-llms.mjs",
   "artifactVersion": "2026-06",
-  "totalServices": 85,
+  "totalServices": 107,
   "services": [
     {
       "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
@@ -6428,6 +6428,615 @@
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl"
     },
     {
+      "service": "SERVICE_LABOR_LAWSUITS",
+      "documentedAlias": "SERVICE_LABOR_LAWSUITS",
+      "name": "Ações Trabalhistas",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_LABOR_LAWSUITS\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_LABOR_LAWSUITS",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Ações Trabalhistas",
+      "searchTerms": [
+        "Ações Trabalhistas",
+        "PJ - Ações Trabalhistas",
+        "SERVICE_LABOR_LAWSUITS",
+        "processos judiciais jurídicos tribunal certidão"
+      ],
+      "responseSummary": "Retorna certidão on-demand informando se há processos trabalhistas tramitando relacionados à empresa consultada, físicos ou eletrônicos.",
+      "callingAlias": "SERVICE_LABOR_LAWSUITS",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_LABOR_LAWSUITS",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_SYNDICATE_AGREEMENTS",
+      "documentedAlias": "SERVICE_SYNDICATE_AGREEMENTS",
+      "name": "Acordos Sindicais",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_SYNDICATE_AGREEMENTS\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_SYNDICATE_AGREEMENTS",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Acordos Sindicais",
+      "searchTerms": [
+        "Acordos Sindicais",
+        "PJ - Acordos Sindicais",
+        "SERVICE_SYNDICATE_AGREEMENTS"
+      ],
+      "responseSummary": "Retorna os acordos sindicais firmados entre a empresa e os sindicatos que representam seus funcionários, com totais e detalhamento.",
+      "callingAlias": "SERVICE_SYNDICATE_AGREEMENTS",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_SYNDICATE_AGREEMENTS",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_ONLINE_ADS",
+      "documentedAlias": "SERVICE_ONLINE_ADS",
+      "name": "Anúncios Online",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_ONLINE_ADS\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_ONLINE_ADS",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Anúncios Online",
+      "searchTerms": [
+        "Anúncios Online",
+        "PJ - Anúncios Online",
+        "SERVICE_ONLINE_ADS"
+      ],
+      "responseSummary": "Retorna anúncios online vinculados à empresa, identificando perfis de vendedor em portais de classificados e marketplaces peer-to-peer por telefone.",
+      "callingAlias": "SERVICE_ONLINE_ADS",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_ONLINE_ADS",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "contato",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_PGMEI",
+      "documentedAlias": "SERVICE_PGMEI",
+      "name": "Arrecadação Simples Nacional - MEI",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_PGMEI\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_PGMEI",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Arrecadação Simples Nacional - MEI",
+      "searchTerms": [
+        "Arrecadação Simples Nacional - MEI",
+        "PJ - Arrecadação Simples Nacional - MEI",
+        "SERVICE_PGMEI"
+      ],
+      "responseSummary": "Retorna o Documento de Arrecadação do Simples Nacional (DAS) para Microempreendedores Individuais (MEI), com situação, ano de referência, guias pendentes e histórico mensal de arrecadação.",
+      "callingAlias": "SERVICE_PGMEI",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_PGMEI",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 400,
+          "message": "Imagem obrigatória não encontrada",
+          "cause": "Payload sem `image1`, `image2`, `selfie1`, URL ou `key` esperado pelo service.",
+          "action": "Enviar base64 puro, URL válida ou key existente conforme o guia do service."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": true,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "imagem",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_REPUTATIONS_AND_REVIEWS",
+      "documentedAlias": "SERVICE_REPUTATIONS_AND_REVIEWS",
+      "name": "Avaliações e Reputação",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_REPUTATIONS_AND_REVIEWS\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_REPUTATIONS_AND_REVIEWS",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Avaliações e Reputação",
+      "searchTerms": [
+        "Avaliações e Reputação",
+        "PJ - Avaliações e Reputação",
+        "SERVICE_REPUTATIONS_AND_REVIEWS"
+      ],
+      "responseSummary": "Retorna a reputação da empresa em diferentes plataformas de avaliação de serviços, com visão consolidada, detalhamento por fonte e histórico de evolução.",
+      "callingAlias": "SERVICE_REPUTATIONS_AND_REVIEWS",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_REPUTATIONS_AND_REVIEWS",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_MERCHANT_CATEGORY_DATA",
+      "documentedAlias": "SERVICE_MERCHANT_CATEGORY_DATA",
+      "name": "Categoria Comercial",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_MERCHANT_CATEGORY_DATA\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_MERCHANT_CATEGORY_DATA",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Categoria Comercial",
+      "searchTerms": [
+        "Categoria Comercial",
+        "PJ - Categoria Comercial",
+        "SERVICE_MERCHANT_CATEGORY_DATA"
+      ],
+      "responseSummary": "Retorna a categorização da empresa de acordo com o MCC (Merchant Category Code), por associação direta com a Abecs ou inferido pelo CNAE.",
+      "callingAlias": "SERVICE_MERCHANT_CATEGORY_DATA",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_MERCHANT_CATEGORY_DATA",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
       "service": "SERVICE_PROTEST_PJ",
       "documentedAlias": "SERVICE_PROTEST_PJ",
       "name": "Certidão negativa de protesto",
@@ -6943,6 +7552,211 @@
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
     {
+      "service": "SERVICE_INVESTMENT_FUND_DATA",
+      "documentedAlias": "SERVICE_INVESTMENT_FUND_DATA",
+      "name": "Dados de Fundos de Investimento",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_INVESTMENT_FUND_DATA\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_INVESTMENT_FUND_DATA",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Dados de Fundos de Investimento",
+      "searchTerms": [
+        "Dados de Fundos de Investimento",
+        "PJ - Dados de Fundos de Investimento",
+        "SERVICE_INVESTMENT_FUND_DATA"
+      ],
+      "responseSummary": "Retorna informações cadastrais e operacionais de fundos de investimento associados ao CNPJ, conforme registros da CVM.",
+      "callingAlias": "SERVICE_INVESTMENT_FUND_DATA",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_INVESTMENT_FUND_DATA",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cadastral",
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+      "documentedAlias": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+      "name": "Dados Restritivos PJ",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Dados Restritivos PJ",
+      "searchTerms": [
+        "Dados Restritivos PJ",
+        "PJ - Dados Restritivos PJ",
+        "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+        "score risco crédito rating inadimplência"
+      ],
+      "responseSummary": "Retorna dados restritivos de crédito de pessoa jurídica pelo CNPJ informado, incluindo score, indicativo e quantidade de restrições encontradas.",
+      "callingAlias": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": [
+          "Explique score, rating e risco apenas quando esses campos aparecerem no result."
+        ]
+      },
+      "tags": [
+        "cnpj",
+        "juridico",
+        "risco-credito"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
       "service": "SERVICE_DAS_MEI",
       "documentedAlias": "SERVICE_DAS_MEI",
       "name": "DAS MEI na Receita",
@@ -7148,6 +7962,208 @@
         "juridico",
         "rg",
         "risco-credito"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+      "documentedAlias": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+      "name": "Distribuição de Processos dos Sócios",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_OWNERS_LAWSUITS_DISTRIBUTION\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Distribuição de Processos dos Sócios",
+      "searchTerms": [
+        "Distribuição de Processos dos Sócios",
+        "PJ - Distribuição de Processos dos Sócios",
+        "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+        "processos judiciais jurídicos tribunal certidão"
+      ],
+      "responseSummary": "Retorna dados agregados sobre a distribuição de processos judiciais nos quais os sócios da empresa consultada estão envolvidos, com estatísticas por período e papel na ação.",
+      "callingAlias": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+      "documentedAlias": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+      "name": "Distribuição de Processos Judiciais",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Distribuição de Processos Judiciais",
+      "searchTerms": [
+        "Distribuição de Processos Judiciais",
+        "PJ - Distribuição de Processos Judiciais",
+        "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+        "processos judiciais jurídicos tribunal certidão"
+      ],
+      "responseSummary": "Retorna dados agregados sobre a distribuição de processos judiciais nos quais a empresa consultada está envolvida, com estatísticas por período.",
+      "callingAlias": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
       ],
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
@@ -7497,37 +8513,11 @@
       "optionalFields": [],
       "payloadExample": {
         "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-        "cnpj": "12345678000190"
+        "cnpj": "cnpj"
       },
       "successResponseExample": {
         "result": {
-          "cnpj": "12345678000190",
-          "addresses": [
-            {
-              "address": "Avenida Paulista",
-              "number": "1000",
-              "complement": "Sala 10",
-              "neighborhood": "Bela Vista",
-              "city": "Sao Paulo",
-              "state": "SP",
-              "country": "Brasil",
-              "zipcode": "01310100",
-              "addressType": "COMMERCIAL",
-              "isActive": "true",
-              "isMainForEntity": "true",
-              "priority": "1",
-              "lastValidationDate": "2026-05-12"
-            }
-          ],
-          "addressesExtendedTotal": 1,
-          "addressesExtendedTotalActive": 1,
-          "addressesExtendedTotalWork": 1,
-          "addressesExtendedTotalPersonal": 0,
-          "addressesExtendedTotalUnique": 1,
-          "addressesExtendedTotalPassages": 7,
-          "addressesExtendedTotalBadPassages": 0,
-          "addressesExtendedOldestPassageDate": "2018-02-10",
-          "addressesExtendedNewestPassageDate": "2026-05-12"
+          "cnpj": "00000000000000"
         },
         "status": {
           "code": 200,
@@ -7696,6 +8686,106 @@
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
     {
+      "service": "SERVICE_COMPANY_EVOLUTION",
+      "documentedAlias": "SERVICE_COMPANY_EVOLUTION",
+      "name": "Evolução da Empresa",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_COMPANY_EVOLUTION\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_COMPANY_EVOLUTION",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Evolução da Empresa",
+      "searchTerms": [
+        "Evolução da Empresa",
+        "PJ - Evolução da Empresa",
+        "SERVICE_COMPANY_EVOLUTION"
+      ],
+      "responseSummary": "Retorna a evolução temporal de capital, quantidade de funcionários, filiais e sócios da empresa, com tendência de crescimento.",
+      "callingAlias": "SERVICE_COMPANY_EVOLUTION",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_COMPANY_EVOLUTION",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
       "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
       "documentedAlias": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
       "name": "Exposição e perfil na mídia dos sócios",
@@ -7792,6 +8882,209 @@
       "tags": [
         "cnpj",
         "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_FGTS",
+      "documentedAlias": "SERVICE_FGTS",
+      "name": "FGTS",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_FGTS\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_FGTS",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - FGTS",
+      "searchTerms": [
+        "FGTS",
+        "PJ - FGTS",
+        "SERVICE_FGTS"
+      ],
+      "responseSummary": "Retorna a certidão de regularidade do empregador perante o FGTS, com status, número e validade da certidão e conteúdo textual emitido.",
+      "callingAlias": "SERVICE_FGTS",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_FGTS",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+      "documentedAlias": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+      "name": "Flags Negativos PJ",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_QUOD_CREDIT_RISK_COMPANY\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_RISK_COMPANY",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Flags Negativos PJ",
+      "searchTerms": [
+        "Flags Negativos PJ",
+        "PJ - Flags Negativos PJ",
+        "SERVICE_QUOD_CREDIT_RISK_COMPANY"
+      ],
+      "responseSummary": "Retorna flags negativos de crédito de pessoa jurídica pelo CNPJ informado, com nível e classificação de risco, indicativo de restrições e quantidade de flags negativos.",
+      "callingAlias": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": [
+          "Explique score, rating e risco apenas quando esses campos aparecerem no result."
+        ]
+      },
+      "tags": [
+        "cnpj",
+        "juridico",
+        "risco-credito"
       ],
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
@@ -7899,9 +9192,9 @@
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
     {
-      "service": "SERVICE_COMPANY_KYC_OWNERS",
-      "documentedAlias": "SERVICE_COMPANY_KYC_OWNERS",
-      "name": "KYC e compliance dos sócios",
+      "service": "SERVICE_HISTORY_BASIC_DATA",
+      "documentedAlias": "SERVICE_HISTORY_BASIC_DATA",
+      "name": "Histórico de Dados Básicos",
       "category": "Pessoa Jurídica",
       "documented": true,
       "endpoint": "POST /api/service-api",
@@ -7914,89 +9207,29 @@
       "requestFields": [
         "cnpj"
       ],
-      "requestExample": "service: SERVICE_COMPANY_KYC_OWNERS\ncnpj: cnpj",
-      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_COMPANY_KYC_OWNERS",
+      "requestExample": "service: SERVICE_HISTORY_BASIC_DATA\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_HISTORY_BASIC_DATA",
       "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
-      "apiReferenceSection": "PJ - KYC e compliance dos sócios",
+      "apiReferenceSection": "PJ - Histórico de Dados Básicos",
       "searchTerms": [
-        "KYC e compliance dos sócios",
-        "PJ - KYC e compliance dos sócios",
-        "SERVICE_COMPANY_KYC_OWNERS",
-        "compliance KYC sanções PEP sancionado interpol ofac"
+        "Histórico de Dados Básicos",
+        "PJ - Histórico de Dados Básicos",
+        "SERVICE_HISTORY_BASIC_DATA"
       ],
-      "responseSummary": "Retorna um resumo agregado de KYC/compliance da empresa (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) e o detalhamento individual de cada sócio em result.kycOwners/companyOwners/peopleOwners, incluindo sanctionsHistory (histórico completo) e highConfidenceSanctionsHistory (apenas sanções com matchRate acima de 90) e pepHistories.",
-      "callingAlias": "SERVICE_COMPANY_KYC_OWNERS",
+      "responseSummary": "Retorna o histórico de alterações cadastrais básicas do CNPJ: nome, regime tributário, situação cadastral, CNAE e capital social.",
+      "callingAlias": "SERVICE_HISTORY_BASIC_DATA",
       "services": [],
       "requiredFields": [
         "cnpj"
       ],
       "optionalFields": [],
       "payloadExample": {
-        "service": "SERVICE_COMPANY_KYC_OWNERS",
-        "cnpj": "12345678000190"
+        "service": "SERVICE_HISTORY_BASIC_DATA",
+        "cnpj": "cnpj"
       },
       "successResponseExample": {
         "result": {
-          "cnpj": "12345678000190",
-          "totalCurrentPep": 1,
-          "totalHistoricallyPEP": 1,
-          "totalCurrentSanctioned": 1,
-          "totalHistoricallySanctioned": 1,
-          "averageSanctionsPerOwner": 1,
-          "averageSanctionsPerOwnerExact": 0.5,
-          "pepPercentage": 50.0,
-          "ownerMaxSanctions": 1,
-          "ownerMinSanctions": 0,
-          "activeOwners": ["11122233344", "55566677788"],
-          "inactiveOwners": [],
-          "kycOwners": [
-            {
-              "cpf": "11122233344",
-              "isPep": true,
-              "isCurrentlySanctioned": true,
-              "wasPreviouslySanctioned": true,
-              "firstSanctionDate": "2021-03-15",
-              "lastSanctionDate": "2024-08-02",
-              "sanctionsHistory": [
-                {
-                  "source": "interpol",
-                  "type": "RED_NOTICE",
-                  "standardizedSanctionType": "INTERNATIONAL_ALERT",
-                  "matchRate": 96,
-                  "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
-                  "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
-                  "startDate": "2021-03-15",
-                  "endDate": null,
-                  "isCurrentlyPresentOnSource": true
-                }
-              ],
-              "highConfidenceSanctionsHistory": [
-                {
-                  "source": "interpol",
-                  "type": "RED_NOTICE",
-                  "standardizedSanctionType": "INTERNATIONAL_ALERT",
-                  "matchRate": 96,
-                  "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
-                  "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
-                  "startDate": "2021-03-15",
-                  "endDate": null,
-                  "isCurrentlyPresentOnSource": true
-                }
-              ],
-              "pepHistories": [
-                { "level": "FEDERAL", "jobTitle": "Secretario", "department": "Ministerio Exemplo", "startDate": "2019-01-10", "endDate": null }
-              ]
-            },
-            {
-              "cpf": "55566677788",
-              "isPep": false,
-              "isCurrentlySanctioned": false,
-              "wasPreviouslySanctioned": false,
-              "sanctionsHistory": [],
-              "highConfidenceSanctionsHistory": [],
-              "pepHistories": []
-            }
-          ]
+          "cnpj": "00000000000000"
         },
         "status": {
           "code": 200,
@@ -8050,15 +9283,417 @@
           "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
           "Não chamar HML ou produção; usar apenas a documentação como fonte."
         ],
-        "notes": [
-          "Explique score, rating e risco apenas quando esses campos aparecerem no result."
-        ]
+        "notes": []
+      },
+      "tags": [
+        "beneficios-sociais",
+        "cadastral",
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_OWNERS_INFLUENCE",
+      "documentedAlias": "SERVICE_OWNERS_INFLUENCE",
+      "name": "Influência do Quadro Societário",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_OWNERS_INFLUENCE\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_OWNERS_INFLUENCE",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Influência do Quadro Societário",
+      "searchTerms": [
+        "Influência do Quadro Societário",
+        "PJ - Influência do Quadro Societário",
+        "SERVICE_OWNERS_INFLUENCE"
+      ],
+      "responseSummary": "Retorna o nível de influência inferido do quadro societário da empresa, considerando exposição na mídia, envolvimento político e histórico de processos dos sócios.",
+      "callingAlias": "SERVICE_OWNERS_INFLUENCE",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_OWNERS_INFLUENCE",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_EMPLOYEES_KYC",
+      "documentedAlias": "SERVICE_EMPLOYEES_KYC",
+      "name": "KYC e Compliance dos Funcionários",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_EMPLOYEES_KYC\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_EMPLOYEES_KYC",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - KYC e Compliance dos Funcionários",
+      "searchTerms": [
+        "KYC e Compliance dos Funcionários",
+        "PJ - KYC e Compliance dos Funcionários",
+        "SERVICE_EMPLOYEES_KYC",
+        "compliance KYC sanções PEP mídia"
+      ],
+      "responseSummary": "Retorna indicadores de KYC e compliance regulatório dos funcionários vinculados à empresa, incluindo classificações de PEP e sanções nacionais e internacionais.",
+      "callingAlias": "SERVICE_EMPLOYEES_KYC",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_EMPLOYEES_KYC",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
       },
       "tags": [
         "cnpj",
         "compliance",
-        "juridico",
-        "risco-credito"
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_COMPANY_KYC_OWNERS",
+      "documentedAlias": "SERVICE_COMPANY_KYC_OWNERS",
+      "name": "KYC e compliance dos sócios",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_COMPANY_KYC_OWNERS\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_COMPANY_KYC_OWNERS",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - KYC e compliance dos sócios",
+      "searchTerms": [
+        "KYC e compliance dos sócios",
+        "PJ - KYC e compliance dos sócios",
+        "SERVICE_COMPANY_KYC_OWNERS",
+        "compliance KYC sanções PEP sancionado interpol ofac"
+      ],
+      "responseSummary": "Retorna um resumo agregado de KYC/compliance da empresa (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) e o detalhamento individual de cada sócio em result.kycOwners/companyOwners/peopleOwners, incluindo sanctionsHistory (histórico completo), highConfidenceSanctionsHistory (apenas sanções com matchRate acima de 90) e pepHistories.",
+      "callingAlias": "SERVICE_COMPANY_KYC_OWNERS",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_COMPANY_KYC_OWNERS",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "compliance",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_MARKETPLACE_DATA",
+      "documentedAlias": "SERVICE_MARKETPLACE_DATA",
+      "name": "Marketplaces",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_MARKETPLACE_DATA\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_MARKETPLACE_DATA",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Marketplaces",
+      "searchTerms": [
+        "Marketplaces",
+        "PJ - Marketplaces",
+        "SERVICE_MARKETPLACE_DATA"
+      ],
+      "responseSummary": "Retorna a presença da empresa em marketplaces, incluindo lojas operadas, produtos listados, marketplace com mais produtos e melhor avaliação.",
+      "callingAlias": "SERVICE_MARKETPLACE_DATA",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_MARKETPLACE_DATA",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
       ],
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
@@ -8390,6 +10025,110 @@
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
     {
+      "service": "SERVICE_RF_QSA",
+      "documentedAlias": "SERVICE_RF_QSA",
+      "name": "Receita Federal - QSA",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_RF_QSA\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_RF_QSA",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Receita Federal - QSA",
+      "searchTerms": [
+        "CPF Receita Federal",
+        "PJ - Receita Federal - QSA",
+        "Receita Federal - QSA",
+        "SERVICE_RF_QSA"
+      ],
+      "responseSummary": "Retorna o quadro societário-administrativo (QSA) do CNPJ informado, com dados cadastrais da matriz (porte, capital, CNAE, natureza jurídica, situação cadastral) e a lista de sócios e administradores.",
+      "callingAlias": "SERVICE_RF_QSA",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_RF_QSA",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cpf": "00000000000",
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cadastral",
+        "cnpj",
+        "cpf",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
       "service": "SERVICE_COMPANY_RELATIONSHIP",
       "documentedAlias": "SERVICE_COMPANY_RELATIONSHIP",
       "name": "Relacionamentos da empresa",
@@ -8423,6 +10162,106 @@
       "optionalFields": [],
       "payloadExample": {
         "service": "SERVICE_COMPANY_RELATIONSHIP",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+      "documentedAlias": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+      "name": "Relacionamentos do Grupo Econômico",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_ECONOMIC_GROUP_RELATIONSHIPS\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Relacionamentos do Grupo Econômico",
+      "searchTerms": [
+        "PJ - Relacionamentos do Grupo Econômico",
+        "Relacionamentos do Grupo Econômico",
+        "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS"
+      ],
+      "responseSummary": "Retorna as entidades (pessoas e empresas) que integram o mesmo grupo econômico do CNPJ consultado, com relacionamentos atuais, históricos e estatísticas agregadas.",
+      "callingAlias": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
         "cnpj": "cnpj"
       },
       "successResponseExample": {
@@ -8598,6 +10437,214 @@
         "risco-credito"
       ],
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-credit-risk-company.hml.curl"
+    },
+    {
+      "service": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+      "documentedAlias": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+      "name": "Score de Crédito Multidados PJ",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_BOAVISTA_ONE_SCORE_COMPANY\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Score de Crédito Multidados PJ",
+      "searchTerms": [
+        "PJ - Score de Crédito Multidados PJ",
+        "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+        "Score de Crédito Multidados PJ",
+        "score risco crédito rating inadimplência"
+      ],
+      "responseSummary": "Retorna score de crédito multidados de pessoa jurídica pelo CNPJ informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.",
+      "callingAlias": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": [
+          "Explique score, rating e risco apenas quando esses campos aparecerem no result."
+        ]
+      },
+      "tags": [
+        "cnpj",
+        "juridico",
+        "risco-credito"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+      "documentedAlias": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+      "name": "Score de Crédito PJ",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_QUOD_CREDIT_SCORE_COMPANY\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Score de Crédito PJ",
+      "searchTerms": [
+        "PJ - Score de Crédito PJ",
+        "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+        "Score de Crédito PJ",
+        "score risco crédito rating inadimplência"
+      ],
+      "responseSummary": "Retorna score de crédito de pessoa jurídica pelo CNPJ informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.",
+      "callingAlias": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": [
+          "Explique score, rating e risco apenas quando esses campos aparecerem no result."
+        ]
+      },
+      "tags": [
+        "cnpj",
+        "juridico",
+        "risco-credito"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
     },
     {
       "service": "SERVICE_SINTEGRA_CONSULTATION",
@@ -9025,6 +11072,108 @@
         "cnpj",
         "comprovante-endereco",
         "cpf",
+        "juridico"
+      ],
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+    },
+    {
+      "service": "SERVICE_PHONES_EXTENDED_COMPANY",
+      "documentedAlias": "SERVICE_PHONES_EXTENDED_COMPANY",
+      "name": "Telefones",
+      "category": "Pessoa Jurídica",
+      "documented": true,
+      "endpoint": "POST /api/service-api",
+      "method": "POST",
+      "requiresAuth": true,
+      "environments": {
+        "homologation": "https://backoffice-hml.idcerberus.com",
+        "production": "https://backoffice.idcerberus.com"
+      },
+      "requestFields": [
+        "cnpj"
+      ],
+      "requestExample": "service: SERVICE_PHONES_EXTENDED_COMPANY\ncnpj: cnpj",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_PHONES_EXTENDED_COMPANY",
+      "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-juridica",
+      "apiReferenceSection": "PJ - Telefones",
+      "searchTerms": [
+        "PJ - Telefones",
+        "SERVICE_PHONES_EXTENDED_COMPANY",
+        "Telefones",
+        "telefone celular validação contato"
+      ],
+      "responseSummary": "Retorna os telefones associados à empresa, com indicadores de validade, prioridade e origem.",
+      "callingAlias": "SERVICE_PHONES_EXTENDED_COMPANY",
+      "services": [],
+      "requiredFields": [
+        "cnpj"
+      ],
+      "optionalFields": [],
+      "payloadExample": {
+        "service": "SERVICE_PHONES_EXTENDED_COMPANY",
+        "cnpj": "cnpj"
+      },
+      "successResponseExample": {
+        "result": {
+          "cnpj": "00000000000000"
+        },
+        "status": {
+          "code": 200,
+          "message": "Consulta realizada com sucesso"
+        },
+        "onboardingStatus": "APPROVED",
+        "externalId": "{externalId}"
+      },
+      "commonErrors": [
+        {
+          "statusCode": 400,
+          "message": "Don't have access to the service",
+          "cause": "Produto sem service ativo/API habilitada ou alias de chamada incorreto.",
+          "action": "Conferir produto, alias configurado e flag de API antes de testar de novo."
+        },
+        {
+          "statusCode": 500,
+          "message": "Falha ao realizar consulta",
+          "cause": "Falha técnica no processamento ou storage.",
+          "action": "Investigar com `externalId`, horario, ambiente e service chamado."
+        }
+      ],
+      "curlExampleUrls": [
+        "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      ],
+      "mcpHints": {
+        "bestContext": "llms-api-reference.txt",
+        "readBeforeAnswering": [
+          "services-catalog.json",
+          "examples/*.curl",
+          "llms-api-reference.txt"
+        ],
+        "useCurlExample": true,
+        "needsImage": false,
+        "needsRealDocument": false,
+        "needsSelfie": false,
+        "needsCpf": false,
+        "needsCnpj": true,
+        "publicResponseField": "result",
+        "avoidFields": [
+          "fieldsOutput",
+          "required",
+          "enabled",
+          "valid",
+          "callService",
+          "nextStep",
+          "services"
+        ],
+        "doNotDo": [
+          "Não inventar payload, retorno ou service fora do catálogo.",
+          "Não solicitar token, client, secret, CPF, CNPJ ou imagem real.",
+          "Não chamar HML ou produção; usar apenas a documentação como fonte."
+        ],
+        "notes": []
+      },
+      "tags": [
+        "cnpj",
+        "contato",
         "juridico"
       ],
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"

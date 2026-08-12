@@ -2530,6 +2530,247 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 ## Pessoa Jurídica
 
+### Ações Trabalhistas
+
+- Service: `SERVICE_LABOR_LAWSUITS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Ações Trabalhistas, processos judiciais jurídicos tribunal certidão
+- Retorno principal: Retorna certidão on-demand informando se há processos trabalhistas tramitando relacionados à empresa consultada, físicos ou eletrônicos.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "laborLawsuitsStatus": "NADA CONSTA",
+    "laborLawsuitsProtocol": "2026000000000",
+    "laborLawsuitsCertificateNumber": "00000000/2026",
+    "laborLawsuitsIssuedDate": "2026-08-01",
+    "laborLawsuitsContent": "Certifica-se que nada consta em nome da empresa quanto a ações trabalhistas",
+    "laborLawsuitsProcessesCount": 0,
+    "laborLawsuitsSummary": "Nada consta de ações trabalhistas",
+    "laborLawsuitsProcesses": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_LABOR_LAWSUITS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Acordos Sindicais
+
+- Service: `SERVICE_SYNDICATE_AGREEMENTS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Acordos Sindicais
+- Retorno principal: Retorna os acordos sindicais firmados entre a empresa e os sindicatos que representam seus funcionários, com totais e detalhamento.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "syndicateAgreementsTotal": 1,
+    "syndicateAgreementsTotalActive": 1,
+    "syndicateAgreementsSummary": "Empresa com 1 acordo sindical ativo",
+    "syndicateAgreementsStats": [],
+    "syndicateAgreements": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SYNDICATE_AGREEMENTS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Anúncios Online
+
+- Service: `SERVICE_ONLINE_ADS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Anúncios Online
+- Retorno principal: Retorna anúncios online vinculados à empresa, identificando perfis de vendedor em portais de classificados e marketplaces peer-to-peer por telefone.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "onlineAdsTotalPhones": 0,
+    "onlineAdsSummary": "Nenhum anúncio online encontrado",
+    "onlineAds": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONLINE_ADS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Arrecadação Simples Nacional - MEI
+
+- Service: `SERVICE_PGMEI`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Arrecadação Simples Nacional - MEI
+- Retorno principal: Retorna o Documento de Arrecadação do Simples Nacional (DAS) para Microempreendedores Individuais (MEI), com situação, ano de referência, guias pendentes e histórico mensal de arrecadação.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pgmeiStatus": "Optante",
+    "pgmeiReferenceYear": "2026",
+    "pgmeiPendingGuides": 0,
+    "pgmeiSummary": "MEI optante e regular no ano de referência",
+    "pgmeiGuides": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PGMEI",
+  "cnpj": "cnpj"
+}'
+```
+
+### Avaliações e Reputação
+
+- Service: `SERVICE_REPUTATIONS_AND_REVIEWS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Avaliações e Reputação
+- Retorno principal: Retorna a reputação da empresa em diferentes plataformas de avaliação de serviços, com visão consolidada, detalhamento por fonte e histórico de evolução.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalReputationSources": 2,
+    "reputationSummary": "Empresa possui avaliações em 2 plataformas",
+    "reputationAndReviews": [],
+    "reputationSummaryDetails": {},
+    "reputationSummaryByDataSources": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_REPUTATIONS_AND_REVIEWS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Categoria Comercial
+
+- Service: `SERVICE_MERCHANT_CATEGORY_DATA`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Categoria Comercial
+- Retorno principal: Retorna a categorização da empresa de acordo com o MCC (Merchant Category Code), por associação direta com a Abecs ou inferido pelo CNAE.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "merchantCategoryHasDirectAssociation": "false",
+    "merchantCategoryHasMultipleCodes": "false",
+    "merchantCategorySummary": "Categoria comercial inferida pelo CNAE",
+    "merchantCategoryCategories": [],
+    "merchantCategoryCnaeCategories": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MERCHANT_CATEGORY_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
 ### Certidão negativa de protesto
 
 - Service: `SERVICE_PROTEST_PJ`
@@ -2726,6 +2967,86 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Dados de Fundos de Investimento
+
+- Service: `SERVICE_INVESTMENT_FUND_DATA`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Dados de Fundos de Investimento
+- Retorno principal: Retorna informações cadastrais e operacionais de fundos de investimento associados ao CNPJ, conforme registros da CVM.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalMovimentations": 0,
+    "investmentFundDataSummary": "Nenhuma movimentação de fundo de investimento encontrada",
+    "investmentFundData": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_INVESTMENT_FUND_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
+### Dados Restritivos PJ
+
+- Service: `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Dados Restritivos PJ, score risco crédito rating inadimplência
+- Retorno principal: Retorna dados restritivos de crédito de pessoa jurídica pelo CNPJ informado, incluindo score, indicativo e quantidade de restrições encontradas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 720,
+    "hasRestrictions": false,
+    "restrictionCount": 0,
+    "creditBureauSummary": "Nenhuma restrição de crédito encontrada",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
 ### DAS MEI na Receita
 
 - Service: `SERVICE_DAS_MEI`
@@ -2808,6 +3129,103 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ACTIVE_DEBT_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Distribuição de Processos dos Sócios
+
+- Service: `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Distribuição de Processos dos Sócios, processos judiciais jurídicos tribunal certidão
+- Retorno principal: Retorna dados agregados sobre a distribuição de processos judiciais nos quais os sócios da empresa consultada estão envolvidos, com estatísticas por período e papel na ação.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "companyOwnersLawsuitsTotalOwners": 2,
+    "companyOwnersLawsuitsMaxPerOwner": 3,
+    "companyOwnersLawsuitsAvgPerOwner": 1.5,
+    "companyOwnersLawsuitsMinPerOwner": 0,
+    "companyOwnersLawsuitsAsAuthor": 1,
+    "companyOwnersLawsuitsAsDefendant": 2,
+    "companyOwnersLawsuitsAsOther": 0,
+    "companyOwnersLawsuitsTotal": 3,
+    "companyOwnersLawsuitsRelatedToLawyers": false,
+    "companyOwnersLawsuitsRelatedToJudges": false,
+    "companyOwnersLawsuitsFirstDate": "2015-01-01",
+    "companyOwnersLawsuitsLastDate": "2026-01-01",
+    "companyOwnersLawsuitsLast30Days": 0,
+    "companyOwnersLawsuitsLast90Days": 0,
+    "companyOwnersLawsuitsLast180Days": 0,
+    "companyOwnersLawsuitsLast365Days": 1,
+    "companyOwnersLawsuitsSummary": "Sócios com 3 processos judiciais encontrados",
+    "companyOwnersLawsuitsDistribution": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+  "cnpj": "cnpj"
+}'
+```
+
+### Distribuição de Processos Judiciais
+
+- Service: `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Distribuição de Processos Judiciais, processos judiciais jurídicos tribunal certidão
+- Retorno principal: Retorna dados agregados sobre a distribuição de processos judiciais nos quais a empresa consultada está envolvida, com estatísticas por período.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "companyLawsuitsTotal": 5,
+    "companyLawsuitsFirstDate": "2016-03-10",
+    "companyLawsuitsLastDate": "2026-02-20",
+    "companyLawsuitsLast30Days": 0,
+    "companyLawsuitsLast90Days": 1,
+    "companyLawsuitsLast180Days": 1,
+    "companyLawsuitsLast365Days": 2,
+    "companyLawsuitsSummary": "Empresa com 5 processos judiciais encontrados",
+    "companyLawsuitsDistribution": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
   "cnpj": "cnpj"
 }'
 ```
@@ -2945,24 +3363,24 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
 - Termos de busca: CNPJ Receita Federal, PJ - Endereços estendidos
-- Retorno principal: Retorna a lista completa de endereços do CNPJ em `result.addresses` (logradouro, número, complemento, bairro, cidade, UF, país, CEP, tipo, se está ativo e se é o principal), além de um resumo agregado em `result.addressesExtendedTotal*` com totais e datas da primeira/última passagem confirmada. Todos os valores dentro de cada item de `addresses[]` vêm como texto (string), inclusive booleanos e números.
+- Retorno principal: Retorna a lista completa de endereços do CNPJ em result.addresses (logradouro, número, complemento, bairro, cidade, UF, país, CEP, tipo, se está ativo e se é o principal), além de um resumo agregado em result.addressesExtendedTotal* com totais e datas da primeira/última passagem confirmada.
 
 Response resumido:
 
 ```json
 {
   "result": {
-    "cnpj": "12345678000190",
+    "cnpj": "cnpj",
     "addresses": [
       {
-        "address": "Avenida Paulista",
+        "address": "Av Exemplo",
         "number": "1000",
         "complement": "Sala 10",
-        "neighborhood": "Bela Vista",
+        "neighborhood": "Centro",
         "city": "Sao Paulo",
         "state": "SP",
         "country": "Brasil",
-        "zipcode": "01310100",
+        "zipcode": "01001000",
         "addressType": "COMMERCIAL",
         "isActive": "true",
         "isMainForEntity": "true",
@@ -2996,7 +3414,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
-  "cnpj": "12345678000190"
+  "cnpj": "cnpj"
 }'
 ```
 
@@ -3035,6 +3453,43 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+  "cnpj": "cnpj"
+}'
+```
+
+### Evolução da Empresa
+
+- Service: `SERVICE_COMPANY_EVOLUTION`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Evolução da Empresa
+- Retorno principal: Retorna a evolução temporal de capital, quantidade de funcionários, filiais e sócios da empresa, com tendência de crescimento.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "companyEvolutionSummary": "Empresa com tendência de crescimento estável",
+    "companyEvolutionStats": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPANY_EVOLUTION",
   "cnpj": "cnpj"
 }'
 ```
@@ -3082,6 +3537,90 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### FGTS
+
+- Service: `SERVICE_FGTS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - FGTS
+- Retorno principal: Retorna a certidão de regularidade do empregador perante o FGTS, com status, número e validade da certidão e conteúdo textual emitido.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "fgtsStatus": "REGULAR",
+    "fgtsCertificateNumber": "2026000000000000",
+    "fgtsCertificateValidity": "01/08/2026 a 29/08/2026",
+    "fgtsCertificateText": "Certificado que a empresa encontra-se em situação regular perante o FGTS",
+    "fgtsSummary": "Empresa regular perante o FGTS",
+    "fgtsDetails": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FGTS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Flags Negativos PJ
+
+- Service: `SERVICE_QUOD_CREDIT_RISK_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Flags Negativos PJ
+- Retorno principal: Retorna flags negativos de crédito de pessoa jurídica pelo CNPJ informado, com nível e classificação de risco, indicativo de restrições e quantidade de flags negativos.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "hasRestrictions": false,
+    "negativeFlagsCount": 0,
+    "creditBureauSummary": "Nenhum flag negativo encontrado",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
 ### Fornecedores eleitorais
 
 - Service: `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
@@ -3125,30 +3664,158 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### KYC e compliance dos sócios
+### Histórico de Dados Básicos
 
-- Service: `SERVICE_COMPANY_KYC_OWNERS`
+- Service: `SERVICE_HISTORY_BASIC_DATA`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
-- Termos de busca: PJ - KYC e compliance dos sócios, compliance KYC sanções PEP interpol ofac
-- Retorno principal: Retorna um resumo agregado de KYC/compliance da empresa (`totalCurrentPep`, `totalCurrentSanctioned`, `averageSanctionsPerOwner`, `pepPercentage`) e o detalhamento individual de cada sócio em `result.kycOwners`/`companyOwners`/`peopleOwners`, incluindo `sanctionsHistory` (histórico completo), `highConfidenceSanctionsHistory` (apenas sanções com `matchRate` acima de 90 — use esta lista para decisões automáticas) e `pepHistories`.
+- Termos de busca: PJ - Histórico de Dados Básicos
+- Retorno principal: Retorna o histórico de alterações cadastrais básicas do CNPJ: nome, regime tributário, situação cadastral, CNAE e capital social.
 
 Response resumido:
 
 ```json
 {
   "result": {
-    "cnpj": "12345678000190",
+    "cnpj": "cnpj",
+    "historyBasicDataCurrentName": "EMPRESA EXEMPLO LTDA",
+    "historyBasicDataAge": 6,
+    "historyBasicDataTotalChanges": 2,
+    "historyBasicDataSummary": "Empresa com 2 alterações cadastrais encontradas",
+    "historyBasicDataStats": [],
+    "historyBasicDataNameHistory": [],
+    "historyBasicDataTaxRegimeHistory": [],
+    "historyBasicDataTaxIdStatusHistory": [],
+    "historyBasicDataCnaeHistory": [],
+    "historyBasicDataCapitalHistory": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_HISTORY_BASIC_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
+### Influência do Quadro Societário
+
+- Service: `SERVICE_OWNERS_INFLUENCE`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Influência do Quadro Societário
+- Retorno principal: Retorna o nível de influência inferido do quadro societário da empresa, considerando exposição na mídia, envolvimento político e histórico de processos dos sócios.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "influenceScore": 0,
+    "ownersInfluenceSummary": "Baixa influência do quadro societário",
+    "ownersInfluence": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OWNERS_INFLUENCE",
+  "cnpj": "cnpj"
+}'
+```
+
+### KYC e Compliance dos Funcionários
+
+- Service: `SERVICE_EMPLOYEES_KYC`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - KYC e Compliance dos Funcionários, compliance KYC sanções PEP mídia
+- Retorno principal: Retorna indicadores de KYC e compliance regulatório dos funcionários vinculados à empresa, incluindo classificações de PEP e sanções nacionais e internacionais.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "employeesKycTotalEmployees": 5,
+    "employeesKycCurrentlyPepCount": 0,
+    "employeesKycCurrentlySanctionedCount": 0,
+    "employeesKycPreviouslySanctionedCount": 0,
+    "employeesKycFlaggedCount": 0,
+    "employeesKycSummary": "Nenhum funcionário sinalizado como PEP ou sancionado",
+    "employeesKycFlagged": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_EMPLOYEES_KYC",
+  "cnpj": "cnpj"
+}'
+```
+
+### KYC e compliance dos sócios
+
+- Service: `SERVICE_COMPANY_KYC_OWNERS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - KYC e compliance dos sócios, compliance KYC sanções PEP sancionado interpol ofac
+- Retorno principal: Retorna um resumo agregado de KYC/compliance da empresa (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) e o detalhamento individual de cada sócio em result.kycOwners/companyOwners/peopleOwners, incluindo sanctionsHistory (histórico completo), highConfidenceSanctionsHistory (apenas sanções com matchRate acima de 90) e pepHistories.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
     "totalCurrentPep": 1,
     "totalHistoricallyPEP": 1,
     "totalCurrentSanctioned": 1,
     "totalHistoricallySanctioned": 1,
     "averageSanctionsPerOwner": 1,
     "averageSanctionsPerOwnerExact": 0.5,
-    "pepPercentage": 50.0,
+    "pepPercentage": 50,
     "ownerMaxSanctions": 1,
     "ownerMinSanctions": 0,
-    "activeOwners": ["11122233344", "55566677788"],
+    "activeOwners": [
+      "11122233344",
+      "55566677788"
+    ],
     "inactiveOwners": [],
     "kycOwners": [
       {
@@ -3158,14 +3825,22 @@ Response resumido:
         "wasPreviouslySanctioned": true,
         "firstSanctionDate": "2021-03-15",
         "lastSanctionDate": "2024-08-02",
+        "firstPepOccurrenceDate": "2019-01-10",
+        "lastPepOccurrenceDate": "2024-08-02",
         "sanctionsHistory": [
           {
             "source": "interpol",
             "type": "RED_NOTICE",
             "standardizedSanctionType": "INTERNATIONAL_ALERT",
             "matchRate": 96,
-            "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
-            "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
+            "details": {
+              "Charge": "Fraud",
+              "IssuingCountry": "Brazil"
+            },
+            "normalizedDetails": {
+              "acusacao": "Fraude",
+              "paisEmissor": "Brasil"
+            },
             "startDate": "2021-03-15",
             "endDate": null,
             "isCurrentlyPresentOnSource": true
@@ -3177,16 +3852,32 @@ Response resumido:
             "type": "RED_NOTICE",
             "standardizedSanctionType": "INTERNATIONAL_ALERT",
             "matchRate": 96,
-            "details": { "Charge": "Fraud", "IssuingCountry": "Brazil" },
-            "normalizedDetails": { "acusacao": "Fraude", "paisEmissor": "Brasil" },
+            "details": {
+              "Charge": "Fraud",
+              "IssuingCountry": "Brazil"
+            },
+            "normalizedDetails": {
+              "acusacao": "Fraude",
+              "paisEmissor": "Brasil"
+            },
             "startDate": "2021-03-15",
             "endDate": null,
             "isCurrentlyPresentOnSource": true
           }
         ],
         "pepHistories": [
-          { "level": "FEDERAL", "jobTitle": "Secretario", "department": "Ministerio Exemplo", "startDate": "2019-01-10", "endDate": null }
-        ]
+          {
+            "level": "FEDERAL",
+            "jobTitle": "Secretario",
+            "department": "Ministerio Exemplo",
+            "startDate": "2019-01-10",
+            "endDate": null
+          }
+        ],
+        "isCurrentlyElectoralDonor": false,
+        "isHistoricalElectoralDonor": true,
+        "totalElectoralDonations": 2,
+        "totalElectoralDonationAmount": 15000
       },
       {
         "cpf": "55566677788",
@@ -3215,7 +3906,49 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPANY_KYC_OWNERS",
-  "cnpj": "12345678000190"
+  "cnpj": "cnpj"
+}'
+```
+
+### Marketplaces
+
+- Service: `SERVICE_MARKETPLACE_DATA`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Marketplaces
+- Retorno principal: Retorna a presença da empresa em marketplaces, incluindo lojas operadas, produtos listados, marketplace com mais produtos e melhor avaliação.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalMarketplacesUsed": 1,
+    "totalStoresOperated": 1,
+    "marketplaceWithMostProducts": "Mercado Livre",
+    "marketplaceWithBestRating": "Mercado Livre",
+    "totalProductsListed": 0,
+    "marketplaceSummary": "Empresa presente em 1 marketplace",
+    "marketplaceDetails": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MARKETPLACE_DATA",
+  "cnpj": "cnpj"
 }'
 ```
 
@@ -3341,6 +4074,56 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Receita Federal - QSA
+
+- Service: `SERVICE_RF_QSA`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: CPF Receita Federal, PJ - Receita Federal - QSA
+- Retorno principal: Retorna o quadro societário-administrativo (QSA) do CNPJ informado, com dados cadastrais da matriz (porte, capital, CNAE, natureza jurídica, situação cadastral) e a lista de sócios e administradores.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "qsaCompanyType": "MATRIZ",
+    "qsaCompanySize": "DEMAIS",
+    "qsaCapital": "DEZ MIL REAIS",
+    "qsaCapitalValue": "10000.00",
+    "qsaCnae": "62.09-1-00",
+    "qsaMainEconomicActivity": "SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO",
+    "qsaSecondaryActivity": "DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA",
+    "qsaLegalNatureCode": "2062",
+    "qsaLegalNature": "SOCIEDADE EMPRESARIA LIMITADA",
+    "qsaIrsStatus": "ATIVA",
+    "qsaIsActive": "true",
+    "qsaStatusDate": "2018-04-04",
+    "qsaPartnersCount": 1,
+    "qsaSummary": "Empresa ativa com 1 sócio encontrado no QSA",
+    "qsaPartners": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RF_QSA",
+  "cnpj": "cnpj"
+}'
+```
+
 ### Relacionamentos da empresa
 
 - Service: `SERVICE_COMPANY_RELATIONSHIP`
@@ -3384,6 +4167,47 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Relacionamentos do Grupo Econômico
+
+- Service: `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Relacionamentos do Grupo Econômico
+- Retorno principal: Retorna as entidades (pessoas e empresas) que integram o mesmo grupo econômico do CNPJ consultado, com relacionamentos atuais, históricos e estatísticas agregadas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalEconomicGroupRelationships": 3,
+    "economicGroupRelationshipsSummary": "Empresa possui 3 relacionamentos de grupo econômico",
+    "economicGroupRelationships": [],
+    "economicGroupCurrentRelationships": [],
+    "economicGroupHistoricalRelationships": [],
+    "economicGroupRelationshipsStats": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+  "cnpj": "cnpj"
+}'
+```
+
 ### Risco de crédito
 
 - Service: `SERVICE_CREDIT_RISK_COMPANY`
@@ -3422,6 +4246,97 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Score de Crédito Multidados PJ
+
+- Service: `SERVICE_BOAVISTA_ONE_SCORE_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Score de Crédito Multidados PJ, score risco crédito rating inadimplência
+- Retorno principal: Retorna score de crédito multidados de pessoa jurídica pelo CNPJ informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 700,
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "reasonCodes": [
+      "Bom histórico de pagamentos"
+    ],
+    "creditBureauSummary": "Score de crédito multidados acima da média do setor",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Score de Crédito PJ
+
+- Service: `SERVICE_QUOD_CREDIT_SCORE_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Score de Crédito PJ, score risco crédito rating inadimplência
+- Retorno principal: Retorna score de crédito de pessoa jurídica pelo CNPJ informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 650,
+    "riskLevel": "MEDIO",
+    "riskClassification": "B",
+    "reasonCodes": [
+      "Tempo de mercado",
+      "Capital social baixo"
+    ],
+    "creditBureauSummary": "Score de crédito dentro da média do setor",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
   "cnpj": "cnpj"
 }'
 ```
@@ -3586,6 +4501,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_RFB_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Telefones
+
+- Service: `SERVICE_PHONES_EXTENDED_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Telefones, telefone celular validação contato
+- Retorno principal: Retorna os telefones associados à empresa, com indicadores de validade, prioridade e origem.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "phonesExtendedCompanyTotal": 2,
+    "phonesExtendedCompanyTotalActive": 1,
+    "phonesExtendedCompanySummary": "Empresa com 2 telefones encontrados, 1 ativo",
+    "phonesExtendedCompanyStats": [],
+    "phonesExtendedCompany": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PHONES_EXTENDED_COMPANY",
   "cnpj": "cnpj"
 }'
 ```
