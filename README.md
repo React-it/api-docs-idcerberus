@@ -105,7 +105,7 @@ https://api-docs.idcerberus.com/examples/NOME_DO_ARQUIVO.curl
 
 ## Arquivos Para LLMs
 
-O projeto gera arquivos em texto simples e JSON para ChatGPT, Claude, Cursor, Windsurf e outros assistentes.
+O projeto gera arquivos em texto simples e JSON para ChatGPT, Cursor, Windsurf e outros assistentes.
 
 - `llms.txt`: índice curto da documentação, com links principais e exemplos curl.
 - `llms-small.txt`: resumo operacional com ambientes, autenticação, service-api, erros comuns e services documentados.
@@ -130,7 +130,7 @@ Arquivos publicados:
 
 ## MCP Local
 
-O projeto também entrega um servidor MCP real, somente leitura, para usar a documentação em Claude Desktop, Cursor, Windsurf ou outro cliente compatível.
+O projeto também entrega um servidor MCP real, somente leitura, para usar a documentação em Cursor, Windsurf ou outro cliente compatível.
 
 Ele expõe:
 
