@@ -384,11 +384,48 @@ paths:
                   service: SERVICE_FACE_MATCH
                   image1: base64
                   image2: base64
-              liveness2d:
-                summary: PF - Liveness 2D
+              emailsPessoasRelacionadas:
+                summary: PF - E-mails de Pessoas Relacionadas
                 value:
-                  service: SERVICE_LIVENESS_2D
-                  image1: selfie
+                  service: SERVICE_RELATED_PEOPLE_EMAILS
+                  cpf: cpf
+              telefonesPessoasRelacionadas:
+                summary: PF - Telefones de Pessoas Relacionadas
+                value:
+                  service: SERVICE_RELATED_PEOPLE_PHONES
+                  cpf: cpf
+              enderecosPessoasRelacionadas:
+                summary: PF - Endereços de Pessoas Relacionadas
+                value:
+                  service: SERVICE_RELATED_PEOPLE_ADDRESSES
+                  cnpj: cnpj
+              scoreCreditoPf:
+                summary: PF - Score de Crédito
+                value:
+                  service: SERVICE_QUOD_CREDIT_SCORE_PERSON
+                  cpf: cpf
+              scoreCreditoMultidadosPf:
+                summary: PF - Score de Crédito Multidados
+                value:
+                  service: SERVICE_BOAVISTA_ONE_SCORE_PERSON
+                  cpf: cpf
+              dadosRestritivosPf:
+                summary: PF - Dados Restritivos
+                value:
+                  service: SERVICE_BOAVISTA_CREDIT_SCORE_PERSON
+                  cpf: cpf
+              flagsNegativosPf:
+                summary: PF - Flags Negativos
+                value:
+                  service: SERVICE_QUOD_CREDIT_RISK_PERSON
+                  cpf: cpf
+              tseLocalVotacao:
+                summary: PF - TSE - Local de votação
+                value:
+                  service: SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (opcional)
+                  motherName: nome da mãe (opcional)
               pessoaPoliticamenteExposta:
                 summary: PF - Pessoa politicamente exposta
                 value:
@@ -809,6 +846,66 @@ paths:
                 value:
                   service: SERVICE_QUOD_CREDIT_RISK_COMPANY
                   cnpj: cnpj
+              scoreCreditoQuantumPj:
+                summary: PJ - Score de Crédito Quantum PJ
+                value:
+                  service: SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY
+                  cnpj: cnpj
+              beneficiariosFinais:
+                summary: PJ - Beneficiários Finais
+                value:
+                  service: SERVICE_ULTIMATE_BENEFICIAL_OWNERS
+                  cnpj: cnpj
+              percentualParticipacaoSocietaria:
+                summary: PJ - Percentual de Participação Societária
+                value:
+                  service: SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY
+                  cnpj: cnpj
+              projetosPublicos:
+                summary: PJ - Projetos Públicos
+                value:
+                  service: SERVICE_PUBLIC_PROJECTS
+                  cnpj: cnpj
+              obrasCivis:
+                summary: PJ - Obras Civis
+                value:
+                  service: SERVICE_CIVIL_CONSTRUCTION
+                  cnpj: cnpj
+              debitosPgfn:
+                summary: PJ - Débitos com a PGFN
+                value:
+                  service: SERVICE_PGFN_COMPANY
+                  cnpj: cnpj
+              cotaPcd:
+                summary: PJ - Cota de PCD
+                value:
+                  service: SERVICE_PCD_COMPANY
+                  cnpj: cnpj
+              certidaoCgu:
+                summary: PJ - Certidão Negativa Correcional CGU
+                value:
+                  service: SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY
+                  cnpj: cnpj
+              certidaoCnj:
+                summary: PJ - Certidão Negativa CNJ
+                value:
+                  service: SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY
+                  cnpj: cnpj
+              certidaoDebitosEstaduais:
+                summary: PJ - Certidão Negativa de Débitos Estaduais
+                value:
+                  service: SERVICE_STATE_DEBT_CERTIFICATE_COMPANY
+                  cnpj: cnpj
+              optanteSimples:
+                summary: PJ - Optante pelo Simples Nacional
+                value:
+                  service: SERVICE_SIMPLES_COMPANY
+                  cnpj: cnpj
+              kycGrupoEconomico:
+                summary: PJ - KYC e Compliance do Grupo Econômico
+                value:
+                  service: SERVICE_ECONOMIC_GROUP_KYC_COMPANY
+                  cnpj: cnpj
               relacionamentosGrupoEconomico:
                 summary: PJ - Relacionamentos do Grupo Econômico
                 value:
@@ -1031,15 +1128,161 @@ paths:
                     status:
                       code: 200
                       message: Success
-                liveness2d:
-                  summary: PF - Liveness 2D
+                emailsPessoasRelacionadas:
+                  summary: PF - E-mails de Pessoas Relacionadas
                   value:
                     result:
-                      message: The subject in the submitted Image is likely a Real Human.
-                      likeRealPerson: true
+                      cpf: "06319423196"
+                      totalRelatedPeopleEmails: 2
+                      relatedPeopleEmailsList: "nome@email.com - NOME DA PESSOA - 00000000000 - CONJUGE"
+                      relatedPeopleEmails:
+                        - relatedCpf: "00000000000"
+                          relatedName: NOME DA PESSOA
+                          relationship: CONJUGE
+                          type: PESSOAL
+                          isMain: true
+                          isRecent: true
+                          isActive: true
+                          email: nome@email.com
+                          domain: email.com
+                          validationStatus: VALID
                     status:
                       code: 200
-                      message: Success
+                      message: Consulta de API Realizada com Sucesso
+                telefonesPessoasRelacionadas:
+                  summary: PF - Telefones de Pessoas Relacionadas
+                  value:
+                    result:
+                      cpf: "06319423196"
+                      totalRelatedPeoplePhones: 1
+                      relatedPeoplePhonesList: "11900000000 - NOME DA PESSOA - 00000000000 - FILHO"
+                      relatedPeoplePhones:
+                        - relatedCpf: "00000000000"
+                          relatedName: NOME DA PESSOA
+                          relationship: FILHO
+                          type: CELULAR
+                          isMain: true
+                          isRecent: true
+                          isActive: true
+                          areaCode: "11"
+                          number: "900000000"
+                          phone: "11900000000"
+                          isInDoNotCallList: false
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                enderecosPessoasRelacionadas:
+                  summary: PF - Endereços de Pessoas Relacionadas
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      totalRelatedPeopleAddresses: 1
+                      relatedPeopleAddressesList: "RUA EXEMPLO, 100 - NOME DA PESSOA - 00000000000 - SOCIO"
+                      relatedPeopleAddresses:
+                        - relatedCpf: "00000000000"
+                          relatedName: NOME DA PESSOA
+                          relationship: SOCIO
+                          type: RESIDENCIAL
+                          isMain: true
+                          isRecent: true
+                          isActive: true
+                          address: RUA EXEMPLO
+                          zipcode: "00000000"
+                          state: SP
+                          city: SAO PAULO
+                          neighborhood: CENTRO
+                          number: "100"
+                          complement: ""
+                          isRatified: true
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                scoreCreditoPf:
+                  summary: PF - Score de Crédito
+                  value:
+                    result:
+                      cpf: "06319423196"
+                      score: 680
+                      riskLevel: MEDIO
+                      riskClassification: B
+                      reasonCodes:
+                        - Tempo de relacionamento com o mercado
+                        - Renda declarada baixa
+                      creditBureauSummary: Score de crédito dentro da média do perfil
+                      creditBureauDetails: {}
+                      origin: Quod
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                scoreCreditoMultidadosPf:
+                  summary: PF - Score de Crédito Multidados
+                  value:
+                    result:
+                      cpf: "06319423196"
+                      score: 710
+                      riskLevel: BAIXO
+                      riskClassification: A
+                      reasonCodes:
+                        - Bom histórico de pagamentos
+                      creditBureauSummary: Score de crédito multidados acima da média do perfil
+                      creditBureauDetails: {}
+                      origin: Boa Vista
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                dadosRestritivosPf:
+                  summary: PF - Dados Restritivos
+                  value:
+                    result:
+                      cpf: "06319423196"
+                      score: 705
+                      hasRestrictions: false
+                      restrictionCount: 0
+                      creditBureauSummary: Nenhuma restrição de crédito encontrada
+                      creditBureauDetails: {}
+                      origin: Boa Vista
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                flagsNegativosPf:
+                  summary: PF - Flags Negativos
+                  value:
+                    result:
+                      cpf: "06319423196"
+                      riskLevel: BAIXO
+                      riskClassification: A
+                      hasRestrictions: false
+                      negativeFlagsCount: 0
+                      creditBureauSummary: Nenhum flag negativo encontrado
+                      creditBureauDetails: {}
+                      origin: Quod
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                tseLocalVotacao:
+                  summary: PF - TSE - Local de votação
+                  value:
+                    result:
+                      cpf: "06319423196"
+                      status: REGULAR
+                      pollingPlace: ESCOLA CLASSE 01
+                      pollingPlaceAddress: QUADRA 01, BRASILIA - DF
+                      city: BRASILIA
+                      uf: DF
+                      zipcode: "70000000"
+                      electoralZone: "001"
+                      electoralSection: "0001"
+                      hasBiometrics: true
+                      queryDate: "2026-08-01"
+                      source: TSE-LOCALVOTACAO
+                      onlineQuery: Situação, local, endereço, zona e seção retornados com sucesso
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
                 pessoaPoliticamenteExposta:
                   summary: PF - Pessoa politicamente exposta
                   value:
@@ -2290,6 +2533,190 @@ paths:
                       creditBureauDetails: {}
                       origin: "Quod"
                       queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                scoreCreditoQuantumPj:
+                  summary: PJ - Score de Crédito Quantum PJ
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      score: 690
+                      creditBureauSummary: "Score de crédito dentro da média do setor"
+                      creditBureauDetails: {}
+                      origin: "Quantum"
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                beneficiariosFinais:
+                  summary: PJ - Beneficiários Finais
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      uboSummary: Consulta realizada
+                      uboTotalCompaniesInGroup: 3
+                      uboTotalPeopleInGroup: 5
+                      uboNumberOfOwners: 2
+                      uboBeneficialOwners:
+                        - name: NOME DO BENEFICIARIO
+                          document: "00000000000"
+                          accumulatedPercentage: 45.5
+                      uboParticipations:
+                        - ownerDocument: "00000000000"
+                          ownerName: NOME DO BENEFICIARIO
+                          ownedDocument: "30108283000150"
+                          percentage: 45.5
+                          level: 1
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                percentualParticipacaoSocietaria:
+                  summary: PJ - Percentual de Participação Societária
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      numberOfOwners: 2
+                      numberOfPeopleAsOwners: 1
+                      numberOfCompaniesAsOwners: 1
+                      hasMajorityStakeHolder: true
+                      averageParticipationPercentage: 50.0
+                      maxParticipationPercentage: 70.0
+                      minParticipationPercentage: 30.0
+                      firstOwnerEntryDate: "2015-03-01"
+                      lastOwnerEntryDate: "2022-06-15"
+                      ownerParticipationSummary: Consulta realizada
+                      ownerParticipations:
+                        - ownerDocument: "00000000000"
+                          ownerName: NOME DO SOCIO
+                          percentage: 70.0
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                projetosPublicos:
+                  summary: PJ - Projetos Públicos
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      totalPublicProjects: 1
+                      publicProjectsSummary: Consulta realizada
+                      publicProjects:
+                        - source: BNDES
+                          modality: FINANCIAMENTO
+                          contractedValue: 500000
+                          disbursedValue: 250000
+                          contractDate: "2025-01-10"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                obrasCivis:
+                  summary: PJ - Obras Civis
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      totalCivilConstructionRecords: 2
+                      totalActiveCivilConstructionRecords: 1
+                      civilConstructionSummary: Consulta realizada
+                      civilConstructionRecords:
+                        - cno: "00000000000"
+                          status: ATIVA
+                          address: RUA EXEMPLO, 100
+                          startDate: "2025-01-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                debitosPgfn:
+                  summary: PJ - Débitos com a PGFN
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      pgfnSummary: Consulta realizada
+                      pgfnBaseStatus: NEGATIVA
+                      pgfnClearance: Sim
+                      pgfnEmissionDate: "2026-08-01"
+                      pgfnCertificateUrl: "https://example.com/certidao-pgfn.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                cotaPcd:
+                  summary: PJ - Cota de PCD
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      pcdSummary: Consulta realizada
+                      pcdBaseStatus: EM CONFORMIDADE
+                      pcdExpeditionDate: "2026-08-01"
+                      pcdCertificateUrl: "https://example.com/certidao-pcd.pdf"
+                      pcdContent: Texto integral da certidão de cota de PCD
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                certidaoCgu:
+                  summary: PJ - Certidão Negativa Correcional CGU
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      cguSummary: Consulta realizada
+                      cguBaseStatus: NEGATIVA
+                      cguClearance: Sim
+                      cguValidUntil: "2027-08-01"
+                      cguIssueDate: "2026-08-01"
+                      cguCertificateUrl: "https://example.com/certidao-cgu.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                certidaoCnj:
+                  summary: PJ - Certidão Negativa CNJ
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      cnjSummary: Consulta realizada
+                      cnjBaseStatus: NEGATIVA
+                      cnjClearance: Sim
+                      cnjIssueDate: "2026-08-01"
+                      cnjCertificateUrl: "https://example.com/certidao-cnj.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                certidaoDebitosEstaduais:
+                  summary: PJ - Certidão Negativa de Débitos Estaduais
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      stateDebtSummary: Consulta realizada
+                      stateDebtBaseStatus: NEGATIVA
+                      stateDebtClearance: Sim
+                      stateDebtState: SP
+                      stateDebtRegistration: "000.000.000.000"
+                      stateDebtValidUntil: "2027-08-01"
+                      stateDebtCertificateUrl: "https://example.com/certidao-debitos-estaduais.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                optanteSimples:
+                  summary: PJ - Optante pelo Simples Nacional
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      simplesSummary: Consulta realizada
+                      simplesOfficialName: NOME OFICIAL DA EMPRESA
+                      simplesNationalStatus: OPTANTE
+                      simplesMeiStatus: NAO OPTANTE
+                      simplesCertificateUrl: "https://example.com/comprovante-simples.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                kycGrupoEconomico:
+                  summary: PJ - KYC e Compliance do Grupo Econômico
+                  value:
+                    result:
+                      cnpj: "30108283000150"
+                      economicGroupKycSummary: Consulta realizada
+                      economicGroupTotalCurrentPep: "0"
+                      economicGroupTotalHistoricalPep: "1"
+                      economicGroupTotalCurrentSanctioned: "0"
+                      economicGroupTotalHistoricalSanctioned: "0"
+                      economicGroupAverageSanctions: "0"
                     status:
                       code: 200
                       message: Consulta de API Realizada com Sucesso
