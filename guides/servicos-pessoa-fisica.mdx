@@ -38,6 +38,13 @@ Exemplo de requisição:
 
 ## Como usar este catálogo
 
+Esta é a referência técnica completa de pessoa física — use-a quando precisar
+do contrato completo de um service. Para navegar por objetivo ou família de
+produto primeiro, veja
+[Escolha o serviço certo](/guides/escolha-o-servico-certo),
+[Matriz de serviços](/guides/matriz-de-servicos) ou
+[Famílias de serviços](/guides/service-api/familias-de-servicos).
+
 Use esta página para consultar a lista completa de serviços de CPF, seus códigos
 `service`, campos principais e exemplos mais extensos de request e response.
 
@@ -55,8 +62,8 @@ Passo rápido para evitar erro:
 3. Envie esse alias no campo `service`.
 4. Use os demais campos da tabela como entrada principal da consulta.
 
-| Service |
-| --- |
+| Alias documentado | Alias curto do produto |
+| --- | --- |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
 | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
@@ -120,6 +127,11 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` |
 | Indicadores de atividades | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` |
 | Domínios PF | `SERVICE_DOMAINS_CPF` | `cpf` |
+| Cartão SUS | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | `cpf` |
+| E-mails de Pessoas Relacionadas | `SERVICE_RELATED_PEOPLE_EMAILS` | `cpf` |
+| Telefones de Pessoas Relacionadas | `SERVICE_RELATED_PEOPLE_PHONES` | `cpf` |
+| Endereços de Pessoas Relacionadas | `SERVICE_RELATED_PEOPLE_ADDRESSES` | `cnpj` |
+| TSE - Local de votação | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | `cpf`, `birthDate`, `motherName` |
 
 ### Biometria e documentos
 
@@ -130,9 +142,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
 | Busca de face na base | `SERVICE_FACE_INDEX` | `image1` |
 | FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
-| Liveness 2D | `SERVICE_LIVENESS_2D` | `image1` |
-| Score biométrico | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
-| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
+| Score biométrico / Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
 | Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
 | Resultado da documentoscopia | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` |
 
@@ -143,12 +153,15 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Pessoa politicamente exposta | `SERVICE_PEP` | `cpf` |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
-| Dívida ativa PF | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
+| Dívida ativa PF / Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
-| Score de risco inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
 | Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
+| Score de Crédito | `SERVICE_QUOD_CREDIT_SCORE_PERSON` | `cpf` |
+| Score de Crédito Multidados | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | `cpf` |
+| Dados Restritivos | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | `cpf` |
+| Flags Negativos | `SERVICE_QUOD_CREDIT_RISK_PERSON` | `cpf` |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` |
@@ -166,10 +179,10 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Servidores públicos | `SERVICE_PUBLIC_SERVANTS` | `cpf` |
 | Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` |
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` |
-| Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
 | Dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` |
 | Doações eleitorais PF | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` |
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
+| Envolvimento político PF | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` |
 | Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` |
 | Prestadores de serviço eleitorais PF | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` |
 
@@ -600,66 +613,6 @@ Exemplo de resposta:
   "result": {
     "status": "Face picture match",
     "similarity": 99.95
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-### Liveness 2D
-
-Serviço que executa a verificação de vivacidade a partir de uma selfie,
-processando se a imagem enviada representa uma pessoa real.
-
-```http
-POST /api/service-api
-```
-
-Autorização:
-
-```http
-Authorization: Bearer {jwt_token}
-Content-Type: application/json
-```
-
-Body:
-
-```json
-{
-  "service": "SERVICE_LIVENESS_2D",
-  "image1": "selfie"
-}
-```
-
-Campos principais do retorno:
-
-| Campo | Descrição |
-| --- | --- |
-| `result.message` | Mensagem do resultado da verificação do Liveness 2D |
-| `result.likeRealPerson` | Resultado da verificação do Liveness 2D |
-| `status.code` | Código da mensagem de status |
-| `status.message` | Mensagem do código de status |
-
-Exemplo com `curl`:
-
-```bash
-curl --location '{base_url}/api/service-api' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_LIVENESS_2D",
-    "image1": "selfie"
-  }'
-```
-
-Exemplo de resposta:
-
-```json
-{
-  "result": {
-    "message": "The subject in the submitted Image is likely a Real Human.",
-    "likeRealPerson": true
   },
   "status": {
     "code": 200,

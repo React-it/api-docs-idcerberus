@@ -9,6 +9,14 @@ O endpoint `POST /api/service-api` concentra diferentes produtos. A separação 
 família ajuda a localizar rapidamente o payload correto sem tratar o endpoint
 como uma lista única e extensa.
 
+<Info>
+  Esta página agrupa por família de produto. O catálogo técnico completo, com
+  todos os campos e exemplos de cada service, vive em
+  [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica) e
+  [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica) — use-os como
+  fonte de referência quando precisar do contrato completo de um service.
+</Info>
+
 <CardGroup cols={2}>
   <Card title="Pessoa física" href="#cadastro-e-identidade-pf">
     Services de CPF, cadastro, score, compliance e dados complementares.
@@ -57,8 +65,8 @@ usam `cnpj` e algumas certidões exigem dados complementares como `uf`, `rg` ou
 Antes de testar com o cliente, confirme o alias no produto, copie esse valor
 para o body e depois complete os campos obrigatórios da família escolhida.
 
-| Service |
-| --- |
+| Alias documentado | Alias curto do produto |
+| --- | --- |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
 | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
 | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
@@ -107,6 +115,10 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 | Histórico de telefones | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` |
 | Histórico de e-mails | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` |
 | Pessoas relacionadas | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` |
+| Cartão SUS | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | `cpf` |
+| Dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` |
+| Dados PIS | `SERVICE_PIS_CONSULTATION` | `cpf` |
+| Validação do E-Social | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf` |
 | Relacionamentos econômicos | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` |
 | Histórico profissional | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` |
 | Histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` |
@@ -114,6 +126,10 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 | Dados demográficos | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` |
 | Indicadores de atividades | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` |
 | Domínios PF | `SERVICE_DOMAINS_CPF` | `cpf` |
+| E-mails de Pessoas Relacionadas | `SERVICE_RELATED_PEOPLE_EMAILS` | `cpf` |
+| Telefones de Pessoas Relacionadas | `SERVICE_RELATED_PEOPLE_PHONES` | `cpf` |
+| Endereços de Pessoas Relacionadas | `SERVICE_RELATED_PEOPLE_ADDRESSES` | `cnpj` |
+| TSE - Local de votação | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | `cpf`, `birthDate`, `motherName` |
 
 ## Documentos e biometria
 
@@ -128,9 +144,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | OCR de comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
 | Busca de face na base | `SERVICE_FACE_INDEX` | `image1` |
 | FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
-| Liveness 2D | `SERVICE_LIVENESS_2D` | `image1` |
-| Score biométrico | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
-| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
+| Score biométrico / Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
 | Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
 | Resultado da documentoscopia | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` |
 
@@ -144,9 +158,8 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Score de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
-| Score de risco inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
 | Score de crédito | `SERVICE_CREDIT_SCORE` | `cpf` |
-| Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF`, `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
+| Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
 | Validação de e-mail | `SERVICE_EMAIL_VALIDATION` | `email` |
 | Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` |
 | Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` |
@@ -154,6 +167,12 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Prêmios e certificações | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` |
 | Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` |
 | Benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` |
+| Score de Crédito | `SERVICE_QUOD_CREDIT_SCORE_PERSON` | `cpf` |
+| Score de Crédito Multidados | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | `cpf` |
+| Dados Restritivos | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | `cpf` |
+| Flags Negativos | `SERVICE_QUOD_CREDIT_RISK_PERSON` | `cpf` |
+| Informações financeiras | `SERVICE_FINANCIAL_INFORMATION` | `cpf` |
+| Servidores públicos | `SERVICE_PUBLIC_SERVANTS` | `cpf` |
 
 ## Certidões e judicial PF
 
@@ -175,6 +194,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
 | Histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` |
 | Prestadores eleitorais PF | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` |
+| Envolvimento político PF | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` |
 
 ## Cadastro e regularidade PJ
 
@@ -190,6 +210,8 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Doações eleitorais PJ | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` |
 | Fornecedores eleitorais PJ | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` |
 | DAS MEI | `SERVICE_DAS_MEI` | `cnpj` |
+| Projetos Públicos | `SERVICE_PUBLIC_PROJECTS` | `cnpj` |
+| Obras Civis | `SERVICE_CIVIL_CONSTRUCTION` | `cnpj` |
 
 ## Sócios, relacionamentos e compliance PJ
 
@@ -208,5 +230,36 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Compliance de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` |
 | Compliance de apostas PJ | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
 | Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
-| Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+| Score de Crédito PJ | `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | `cnpj` |
+| Score de Crédito Multidados PJ | `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | `cnpj` |
+| Dados Restritivos PJ | `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | `cnpj` |
+| Flags Negativos PJ | `SERVICE_QUOD_CREDIT_RISK_COMPANY` | `cnpj` |
+| Score de Crédito Quantum PJ | `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | `cnpj` |
+| Ações Trabalhistas | `SERVICE_LABOR_LAWSUITS` | `cnpj` |
+| Acordos Sindicais | `SERVICE_SYNDICATE_AGREEMENTS` | `cnpj` |
+| Anúncios Online | `SERVICE_ONLINE_ADS` | `cnpj` |
+| Arrecadação Simples Nacional - MEI | `SERVICE_PGMEI` | `cnpj` |
+| Avaliações e Reputação | `SERVICE_REPUTATIONS_AND_REVIEWS` | `cnpj` |
+| Categoria Comercial | `SERVICE_MERCHANT_CATEGORY_DATA` | `cnpj` |
+| Dados de Fundos de Investimento | `SERVICE_INVESTMENT_FUND_DATA` | `cnpj` |
+| Distribuição de Processos dos Sócios | `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | `cnpj` |
+| Distribuição de Processos Judiciais | `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | `cnpj` |
+| Evolução da Empresa | `SERVICE_COMPANY_EVOLUTION` | `cnpj` |
+| FGTS | `SERVICE_FGTS` | `cnpj` |
+| Histórico de Dados Básicos | `SERVICE_HISTORY_BASIC_DATA` | `cnpj` |
+| Influência do Quadro Societário | `SERVICE_OWNERS_INFLUENCE` | `cnpj` |
+| KYC e Compliance dos Funcionários | `SERVICE_EMPLOYEES_KYC` | `cnpj` |
+| Marketplaces | `SERVICE_MARKETPLACE_DATA` | `cnpj` |
+| Receita Federal - QSA | `SERVICE_RF_QSA` | `cnpj` |
+| Relacionamentos do Grupo Econômico | `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | `cnpj` |
+| Telefones | `SERVICE_PHONES_EXTENDED_COMPANY` | `cnpj` |
+| Beneficiários Finais | `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | `cnpj` |
+| Percentual de Participação Societária | `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | `cnpj` |
+| Débitos com a PGFN | `SERVICE_PGFN_COMPANY` | `cnpj` |
+| Cota de PCD | `SERVICE_PCD_COMPANY` | `cnpj` |
+| Certidão Negativa Correcional CGU | `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` |
+| Certidão Negativa CNJ | `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` |
+| Certidão Negativa de Débitos Estaduais | `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | `cnpj` |
+| Optante pelo Simples Nacional | `SERVICE_SIMPLES_COMPANY` | `cnpj` |
+| KYC e Compliance do Grupo Econômico | `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | `cnpj` |
 | OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` |

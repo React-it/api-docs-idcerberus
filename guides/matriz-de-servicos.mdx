@@ -8,6 +8,14 @@ description: Visão resumida dos principais serviços por tipo de documento, ent
 Esta matriz ajuda a localizar rapidamente qual serviço usar antes de abrir o
 payload completo no API Reference.
 
+<Info>
+  Esta página é um atalho por objetivo. O catálogo técnico completo, com todos
+  os campos e exemplos de cada service, vive em
+  [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica) e
+  [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica) — use-os como
+  fonte de referência quando precisar do contrato completo de um service.
+</Info>
+
 <Tip>
   Todos os itens abaixo são executados por `POST /api/service-api`, exceto os
   endpoints de autenticação, onboarding e customers. No endpoint central, o campo
@@ -34,7 +42,6 @@ payload completo no API Reference.
 | Ler comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Extrair nome, endereço, datas e valores quando disponíveis |
 | Buscar face na base | `SERVICE_FACE_INDEX` | `image1` | Procurar rosto em base indexada e retornar CPF/similaridade quando houver |
 | Comparar faces | `SERVICE_FACE_MATCH` | `image1`, `image2` | Comparar selfie com documento ou outra imagem |
-| Validar presença real | `SERVICE_LIVENESS_2D` | `image1` | Verificar se a selfie aparenta ser de pessoa real |
 | Validar CNH no DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Validar dados de CNH com apoio do validação documental |
 | Consultar PEP | `SERVICE_PEP` | `cpf` | Avaliar exposição política |
 | Consultar KYC/compliance PF | `SERVICE_PERSON_KYC` | `cpf` | Análise mais ampla de compliance |
@@ -57,6 +64,41 @@ payload completo no API Reference.
 | Consultar pessoas relacionadas | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | Mapear vínculos pessoais associados ao CPF |
 | Validar CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | Conferir associação entre CPF e telefone |
 | Validar CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` | Conferir associação entre CPF e endereço |
+| Consultar e-mails de pessoas relacionadas | `SERVICE_RELATED_PEOPLE_EMAILS` | `cpf` | Mapear e-mails associados a pessoas relacionadas ao CPF |
+| Consultar telefones de pessoas relacionadas | `SERVICE_RELATED_PEOPLE_PHONES` | `cpf` | Mapear telefones associados a pessoas relacionadas ao CPF |
+| Consultar endereços de pessoas relacionadas | `SERVICE_RELATED_PEOPLE_ADDRESSES` | `cnpj` | Mapear endereços associados a pessoas relacionadas ao CNPJ |
+| Consultar score de crédito | `SERVICE_QUOD_CREDIT_SCORE_PERSON` | `cpf` | Obter score de crédito com nível e classificação de risco |
+| Consultar score de crédito multidados | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | `cpf` | Obter score de crédito multidados com nível e classificação de risco |
+| Consultar dados restritivos de crédito | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | `cpf` | Verificar indicativo e quantidade de restrições de crédito |
+| Consultar flags negativos de crédito | `SERVICE_QUOD_CREDIT_RISK_PERSON` | `cpf` | Verificar flags negativos e nível de risco de crédito |
+| Consultar local de votação no TSE | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | `cpf`, `birthDate`, `motherName` | Obter local de votação, situação eleitoral e biometria no TSE |
+| Consultar antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` | Verificar ocorrências criminais em bases estaduais |
+| Consultar antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` | Verificar ocorrências criminais em bases federais |
+| Consultar cartão SUS | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | `cpf` | Obter número do Cartão Nacional de Saúde e dados de nascimento |
+| Consultar certidão de Nada Consta | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` | Emitir certidão de nada consta em tribunal e esfera específicos |
+| Consultar certidão negativa de protesto | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` | Verificar protestos em cartório para o CPF |
+| Consultar certidão negativa de protesto (alias curto) | `SERVICE_PROTEST_PF` | `cpf` | Verificar protestos em cartório para o CPF, quando o produto usa o alias curto |
+| Consultar MEI | `SERVICE_MEI` | `cpf` | Verificar empresas MEI associadas ao CPF |
+| Consultar dados eleitorais de candidato | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` | Levantar histórico de candidaturas eleitorais |
+| Consultar dados pelo telefone | `SERVICE_CONFIRM_PHONE` | `phone` | Obter dados de possível titular a partir do telefone |
+| Consultar dados PIS | `SERVICE_PIS_CONSULTATION` | `cpf` | Verificar número e status do PIS/NIS associado ao CPF |
+| Consultar dívida ativa | `SERVICE_ACTIVE_DEBT_PF` | `cpf` | Verificar débitos ativos vinculados ao CPF |
+| Consultar doações eleitorais | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` | Levantar doações eleitorais realizadas pelo CPF |
+| Consultar documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` | Processar documento, imagem e selfie em um fluxo único |
+| Consultar endereços | `SERVICE_ADDRESS` | `cpf` | Recuperar endereços associados ao CPF |
+| Consultar envolvimento político | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | Consolidar candidaturas, cargos, doações e vínculos políticos |
+| Consultar envolvimento político PF | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | Consolidar candidaturas, cargos, doações e vínculos políticos |
+| Consultar exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | Avaliar notícias, notoriedade e alertas de mídia associados ao CPF |
+| Consultar histórico familiar político | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` | Levantar vínculos políticos de familiares do CPF |
+| Consultar informações financeiras | `SERVICE_FINANCIAL_INFORMATION` | `cpf` | Obter renda presumida e indicadores financeiros estimados |
+| Consultar mandado de prisão | `SERVICE_ARREST_WARRANT` | `nome`, `motherName`, `fatherName`, `birthDate`, `cpf` | Verificar existência de mandado de prisão |
+| Consultar prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` | Levantar prestações de serviço eleitorais vinculadas ao CPF |
+| Consultar relacionamentos econômicos | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` | Mapear vínculos econômicos associados ao CPF |
+| Consultar resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` | Obter o resultado já processado da documentoscopia pela chave |
+| Consultar score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` | Avaliar propensão de fraude com base em fator de risco |
+| Consultar servidores públicos | `SERVICE_PUBLIC_SERVANTS` | `cpf` | Verificar vínculos com o serviço público |
+| Consultar validação de e-mail | `SERVICE_EMAIL_VALIDATION` | `email` | Validar formato, domínio e risco de um e-mail |
+| Consultar validação do E-Social | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf` | Validar qualificação cadastral no E-Social |
 
 ## Pessoa jurídica
 
@@ -82,8 +124,44 @@ payload completo no API Reference.
 | Consultar protestos PJ | `SERVICE_PROTEST_PJ` | `cnpj` | Emitir ou consultar certidão/protestos |
 | Consultar compliance de apostas | `SERVICE_COMPLIANCE_BET` | `cnpj` | Avaliar exposição relacionada a apostas |
 | Consultar compliance de apostas | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Avaliar exposição relacionada a apostas |
-| Consultar risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Obter score, rating e risco esperado |
-| Consultar risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Obter risco de crédito no fluxo |
+| Consultar risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Obter score, rating e risco esperado de crédito PJ |
+| Consultar score de crédito PJ | `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | `cnpj` | Obter score de crédito PJ com nível e classificação de risco |
+| Consultar score de crédito Quantum PJ | `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | `cnpj` | Obter score de crédito Quantum PJ |
+| Identificar beneficiários finais | `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | `cnpj` | Calcular percentual de participação acumulado, inclusive por cadeias indiretas |
+| Consultar percentual de participação societária | `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | `cnpj` | Obter percentual de participação de cada sócio da empresa |
+| Consultar projetos públicos | `SERVICE_PUBLIC_PROJECTS` | `cnpj` | Verificar projetos com financiamento de órgãos públicos |
+| Consultar obras civis | `SERVICE_CIVIL_CONSTRUCTION` | `cnpj` | Verificar obras civis vinculadas ao CNPJ (CNO) |
+| Consultar débitos com a PGFN | `SERVICE_PGFN_COMPANY` | `cnpj` | Emitir certidão de débitos tributários federais e dívida ativa da união |
+| Consultar cota de PCD | `SERVICE_PCD_COMPANY` | `cnpj` | Verificar cumprimento da cota legal de PCD e reabilitados |
+| Consultar certidão negativa correcional CGU | `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` | Verificar punições vigentes em CEIS, CNEP e CEPIM |
+| Consultar certidão negativa CNJ | `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` | Verificar condenações cíveis por improbidade administrativa e inelegibilidade |
+| Consultar certidão negativa de débitos estaduais | `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | `cnpj` | Verificar débitos estaduais em qualquer UF |
+| Consultar optante pelo Simples Nacional | `SERVICE_SIMPLES_COMPANY` | `cnpj` | Verificar situação como optante pelo Simples Nacional e SIMEI |
+| Consultar KYC do grupo econômico | `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | `cnpj` | Obter indicadores agregados de PEP e sanções do grupo econômico |
+| Consultar DAS MEI na Receita | `SERVICE_DAS_MEI` | `cnpj` | Verificar situação fiscal e pagamentos do DAS MEI |
+| Consultar endereços estendidos | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | Obter a lista completa de endereços do CNPJ |
+| Consultar exposição e perfil na mídia dos sócios | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` | Avaliar notícias e alertas de mídia relacionados aos sócios |
+| Consultar score de crédito multidados PJ | `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | `cnpj` | Obter score de crédito multidados PJ |
+| Consultar dados restritivos PJ | `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | `cnpj` | Verificar indicativo e quantidade de restrições de crédito PJ |
+| Consultar flags negativos PJ | `SERVICE_QUOD_CREDIT_RISK_COMPANY` | `cnpj` | Verificar flags negativos e nível de risco de crédito PJ |
+| Consultar ações trabalhistas | `SERVICE_LABOR_LAWSUITS` | `cnpj` | Verificar processos trabalhistas relacionados à empresa |
+| Consultar acordos sindicais | `SERVICE_SYNDICATE_AGREEMENTS` | `cnpj` | Verificar acordos firmados entre a empresa e sindicatos |
+| Consultar anúncios online | `SERVICE_ONLINE_ADS` | `cnpj` | Identificar anúncios vinculados à empresa em portais e marketplaces |
+| Consultar arrecadação Simples Nacional - MEI | `SERVICE_PGMEI` | `cnpj` | Verificar guias e situação do DAS-MEI |
+| Consultar avaliações e reputação | `SERVICE_REPUTATIONS_AND_REVIEWS` | `cnpj` | Consolidar reputação da empresa em plataformas de avaliação |
+| Consultar categoria comercial | `SERVICE_MERCHANT_CATEGORY_DATA` | `cnpj` | Obter a categorização MCC da empresa |
+| Consultar dados de fundos de investimento | `SERVICE_INVESTMENT_FUND_DATA` | `cnpj` | Obter dados cadastrais e operacionais de fundos vinculados ao CNPJ |
+| Consultar distribuição de processos dos sócios | `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | `cnpj` | Obter estatísticas agregadas dos processos dos sócios |
+| Consultar distribuição de processos judiciais | `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | `cnpj` | Obter estatísticas agregadas dos processos da empresa |
+| Consultar evolução da empresa | `SERVICE_COMPANY_EVOLUTION` | `cnpj` | Acompanhar evolução de capital, funcionários, filiais e sócios |
+| Consultar FGTS | `SERVICE_FGTS` | `cnpj` | Verificar certidão de regularidade perante o FGTS |
+| Consultar histórico de dados básicos | `SERVICE_HISTORY_BASIC_DATA` | `cnpj` | Acompanhar alterações cadastrais básicas do CNPJ ao longo do tempo |
+| Consultar influência do quadro societário | `SERVICE_OWNERS_INFLUENCE` | `cnpj` | Avaliar influência inferida do quadro societário |
+| Consultar KYC e compliance dos funcionários | `SERVICE_EMPLOYEES_KYC` | `cnpj` | Verificar PEP e sanções dos funcionários da empresa |
+| Consultar marketplaces | `SERVICE_MARKETPLACE_DATA` | `cnpj` | Verificar presença e desempenho da empresa em marketplaces |
+| Consultar Receita Federal - QSA | `SERVICE_RF_QSA` | `cnpj` | Obter o quadro societário-administrativo completo do CNPJ |
+| Consultar relacionamentos do grupo econômico | `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | `cnpj` | Mapear entidades do mesmo grupo econômico do CNPJ |
+| Consultar telefones | `SERVICE_PHONES_EXTENDED_COMPANY` | `cnpj` | Obter telefones associados à empresa com indicadores de validade |
 
 ## Fluxos fora do service-api
 
