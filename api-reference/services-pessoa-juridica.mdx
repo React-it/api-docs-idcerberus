@@ -78,7 +78,7 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  4 services: `SERVICE_LABOR_LAWSUITS`, `SERVICE_PROTEST_PJ`, `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` e mais 1.
  </Card>
  <Card title="KYC, compliance e exposição">
- 2 services: `SERVICE_COMPLIANCE_BET`, `SERVICE_COMPLIANCE_BET_PJ`.
+ 2 services: `SERVICE_COMPLIANCE_BET_PJ`, `SERVICE_COMPLIANCE_BET`.
  </Card>
  <Card title="Outros services">
  19 services: `SERVICE_SYNDICATE_AGREEMENTS`, `SERVICE_ONLINE_ADS`, `SERVICE_REPUTATIONS_AND_REVIEWS` e mais 16.
@@ -4311,143 +4311,6 @@ Neste service, o objeto `result` representa: Retorna processos jurídicos vincul
 
 </Accordion>
 
-<Accordion title="Compliance de casas de apostas" id="SERVICE_COMPLIANCE_BET">
-
-**Service:** `SERVICE_COMPLIANCE_BET`
-
-**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
-
-**O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
-
-<CardGroup cols={2}>
- <Card title="Entrada">
- Campos obrigatórios: `service`, `cnpj`.
- </Card>
- <Card title="Resultado">
- Principais campos em `result`: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
- </Card>
- <Card title="Status da chamada">
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
- </Card>
- <Card title="Campos opcionais">
- Nenhum campo opcional mapeado neste exemplo.
- </Card>
-</CardGroup>
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cnpj`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-<Tabs>
-<Tab title="Body JSON">
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}
-```
-
-</Tab>
-<Tab title="Curl HML">
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}'
-```
-
-</Tab>
-<Tab title="Curl produção">
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}'
-```
-
-</Tab>
-</Tabs>
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cnpj` | Sim | CNPJ da empresa consultada. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
-| `result.hasBettingExposure` | Campo retornado no objeto result para consumo do cliente. |
-| `result.indicators` | Campo retornado no objeto result para consumo do cliente. |
-| `result.riskLevel` | Indicador de risco retornado pelo produto. |
-
-### Como consumir o retorno
-
-<CardGroup cols={2}>
- <Card title="result">
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
- </Card>
- <Card title="status">
- Status técnico da chamada, com `code` e `message`.
- </Card>
- <Card title="onboardingStatus">
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
- </Card>
- <Card title="externalId">
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
- </Card>
-</CardGroup>
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasBettingExposure": true,
-    "indicators": [
-      "atividade relacionada"
-    ],
-    "riskLevel": "MEDIUM"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
-
-</Accordion>
-
 <Accordion title="Compliance de casas de apostas" id="SERVICE_COMPLIANCE_BET_PJ">
 
 **Service:** `SERVICE_COMPLIANCE_BET_PJ`
@@ -4521,6 +4384,143 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.hasBettingExposure` | Campo retornado no objeto result para consumo do cliente. |
+| `result.indicators` | Campo retornado no objeto result para consumo do cliente. |
+| `result.riskLevel` | Indicador de risco retornado pelo produto. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+</Accordion>
+
+<Accordion title="Compliance de casas de apostas (alias curto)" id="SERVICE_COMPLIANCE_BET">
+
+**Service:** `SERVICE_COMPLIANCE_BET`
+
+**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
+
+**O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
   "cnpj": "cnpj"
 }'
 ```

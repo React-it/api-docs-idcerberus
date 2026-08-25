@@ -386,44 +386,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-### Certidão negativa de protesto PF
-
-- Service: `SERVICE_PROTEST_PF`
-- Endpoint: `POST /api/service-api`
-- Campos do request: `cpf`
-- Termos de busca: PF - Certidão negativa de protesto PF
-- Retorno principal: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
-
-Response resumido:
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Curl de homologação:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PROTEST_PF",
-  "cpf": "cpf"
-}'
-```
-
 ### Consulta de MEI
 
 - Service: `SERVICE_MEI`
@@ -3375,46 +3337,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 ### Compliance de casas de apostas
 
-- Service: `SERVICE_COMPLIANCE_BET`
-- Endpoint: `POST /api/service-api`
-- Campos do request: `cnpj`
-- Termos de busca: PJ - Compliance de casas de apostas, apostas bets compliance bet
-- Retorno principal: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
-
-Response resumido:
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasBettingExposure": true,
-    "indicators": [
-      "atividade relacionada"
-    ],
-    "riskLevel": "MEDIUM"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Curl de homologação:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}'
-```
-
-### Compliance de casas de apostas
-
 - Service: `SERVICE_COMPLIANCE_BET_PJ`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
@@ -3449,6 +3371,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Compliance de casas de apostas (alias curto)
+
+- Service: `SERVICE_COMPLIANCE_BET`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Compliance de casas de apostas (alias curto), apostas bets compliance bet
+- Retorno principal: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
   "cnpj": "cnpj"
 }'
 ```

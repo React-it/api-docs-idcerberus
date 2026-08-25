@@ -4303,7 +4303,7 @@ Na prática: copie o valor de `Service` no card ou no accordion do produto e env
 ## Services por tipo de pessoa
 
 
- 68 services para CPF, biometria, OCR, contatos, risco, crédito, compliance e dados eleitorais.
+ 67 services para CPF, biometria, OCR, contatos, risco, crédito, compliance e dados eleitorais.
 
 
  58 services para CNPJ, Receita Federal, sócios, contatos, risco, compliance, OCR e dados societários.
@@ -4408,18 +4408,6 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 **Retorno principal:** Retorna certidão/consulta de protestos para CPF, com status de nada consta ou lista de protestos, cartório, valor e datas.
 
 [Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_PROTEST_CLEARANCE_CERTIFICATE)
-
-**Service:** `SERVICE_PROTEST_PF`
-
-**Campos principais:** `cpf`
-
-**Termos de busca:** PF - Certidão negativa de protesto PF
-
-**Quando usar:** Use para consultar protestos associados ao documento da pessoa.
-
-**Retorno principal:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
-
-[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_PROTEST_PF)
 
 **Service:** `SERVICE_PROTEST_PF`
 
@@ -5277,18 +5265,6 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 
 [Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ_ON_DEMAND)
 
-**Service:** `SERVICE_COMPLIANCE_BET`
-
-**Campos principais:** `cnpj`
-
-**Termos de busca:** PJ - Compliance de casas de apostas, apostas bets compliance bet
-
-**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
-
-**Retorno principal:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
-
-[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET)
-
 **Service:** `SERVICE_COMPLIANCE_BET_PJ`
 
 **Campos principais:** `cnpj`
@@ -5300,6 +5276,18 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 **Retorno principal:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
 
 [Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET_PJ)
+
+**Service:** `SERVICE_COMPLIANCE_BET`
+
+**Campos principais:** `cnpj`
+
+**Termos de busca:** PJ - Compliance de casas de apostas (alias curto), apostas bets compliance bet
+
+**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
+
+**Retorno principal:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+[Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET)
 
 **Service:** `SERVICE_PCD_COMPANY`
 
@@ -11026,7 +11014,6 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 | Certidão negativa de protesto | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | CPF |
 | Certidão negativa de protesto | `SERVICE_PROTEST_PJ` | CNPJ |
 | Certidão negativa de protesto PF | `SERVICE_PROTEST_PF` | CPF |
-| Certidão negativa de protesto PF | `SERVICE_PROTEST_PF` | CPF |
 | Distribuição de Processos Judiciais | `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | CNPJ |
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` | CPF |
 | Processos jurídicos | `SERVICE_JURIDICAL_PROCESSES_PJ` | CNPJ |
@@ -11036,8 +11023,8 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 
 | Objetivo | Service | Documento |
 | --- | --- | --- |
-| Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET` | CNPJ |
 | Compliance de casas de apostas | `SERVICE_COMPLIANCE_BET_PJ` | CNPJ |
+| Compliance de casas de apostas (alias curto) | `SERVICE_COMPLIANCE_BET` | CNPJ |
 | Exposição e perfil na mídia | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | CPF |
 | Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` | CPF |
 
@@ -11167,7 +11154,7 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  8 services: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`, `SERVICE_ELECTORAL_DONORS_CPF`, `SERVICE_POLITICAL_INVOLVEMENT` e mais 5.
 
 
- 8 services: `SERVICE_CRIMINAL_RECORD_CIVIL`, `SERVICE_CRIMINAL_RECORD_FEDERAL`, `SERVICE_NOTHING_RECORD_LAWSUITS` e mais 5.
+ 7 services: `SERVICE_CRIMINAL_RECORD_CIVIL`, `SERVICE_CRIMINAL_RECORD_FEDERAL`, `SERVICE_NOTHING_RECORD_LAWSUITS` e mais 4.
 
 
  2 services: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`, `SEVICE_ONLINE_BETTING_PROPENSITY`.
@@ -16773,121 +16760,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
 
-**Service:** `SERVICE_PROTEST_PF`
-
-**Quando usar:** Use para consultar protestos associados ao documento da pessoa.
-
-**O que retorna:** Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
-
-
- Campos obrigatórios: `service`, `cpf`.
-
-
- Principais campos em `result`: `cpf`, `hasProtests`, `notaryOffices`, `protests`.
-
-
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
-
-
- Nenhum campo opcional mapeado neste exemplo.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cpf`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_PROTEST_PF",
-  "cpf": "cpf"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PROTEST_PF",
-  "cpf": "cpf"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PROTEST_PF",
-  "cpf": "cpf"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cpf` | Sim | CPF da pessoa física consultada. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF relacionado ao resultado da consulta. |
-| `result.hasProtests` | Campo retornado no objeto result para consumo do cliente. |
-| `result.notaryOffices` | Campo retornado no objeto result para consumo do cliente. |
-| `result.protests` | Campo retornado no objeto result para consumo do cliente. |
-
-### Como consumir o retorno
-
-
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
-
-
- Status técnico da chamada, com `code` e `message`.
-
-
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
-
-
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
-
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
-
 **Service:** `SERVICE_ARREST_WARRANT`
 
 **Quando usar:** Use este service quando precisar executar a consulta "Mandado de prisão" via API.
@@ -19644,7 +19516,7 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  4 services: `SERVICE_LABOR_LAWSUITS`, `SERVICE_PROTEST_PJ`, `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` e mais 1.
 
 
- 2 services: `SERVICE_COMPLIANCE_BET`, `SERVICE_COMPLIANCE_BET_PJ`.
+ 2 services: `SERVICE_COMPLIANCE_BET_PJ`, `SERVICE_COMPLIANCE_BET`.
 
 
  19 services: `SERVICE_SYNDICATE_AGREEMENTS`, `SERVICE_ONLINE_ADS`, `SERVICE_REPUTATIONS_AND_REVIEWS` e mais 16.
@@ -23295,123 +23167,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna processos jurídicos vinculados ao CNPJ, com tribunal, classe, assunto, partes, status, número do processo e datas quando disponíveis.
 
-**Service:** `SERVICE_COMPLIANCE_BET`
-
-**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
-
-**O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
-
-
- Campos obrigatórios: `service`, `cnpj`.
-
-
- Principais campos em `result`: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
-
-
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
-
-
- Nenhum campo opcional mapeado neste exemplo.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `cnpj`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `cnpj` | Sim | CNPJ da empresa consultada. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
-| `result.hasBettingExposure` | Campo retornado no objeto result para consumo do cliente. |
-| `result.indicators` | Campo retornado no objeto result para consumo do cliente. |
-| `result.riskLevel` | Indicador de risco retornado pelo produto. |
-
-### Como consumir o retorno
-
-
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
-
-
- Status técnico da chamada, com `code` e `message`.
-
-
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
-
-
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
-
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasBettingExposure": true,
-    "indicators": [
-      "atividade relacionada"
-    ],
-    "riskLevel": "MEDIUM"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
-
 **Service:** `SERVICE_COMPLIANCE_BET_PJ`
 
 **Quando usar:** Use para executar checagens de KYC e compliance da empresa.
@@ -23472,6 +23227,123 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.hasBettingExposure` | Campo retornado no objeto result para consumo do cliente. |
+| `result.indicators` | Campo retornado no objeto result para consumo do cliente. |
+| `result.riskLevel` | Indicador de risco retornado pelo produto. |
+
+### Como consumir o retorno
+
+
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+
+
+ Status técnico da chamada, com `code` e `message`.
+
+
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+
+
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+**Service:** `SERVICE_COMPLIANCE_BET`
+
+**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
+
+**O que retorna:** Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+
+ Campos obrigatórios: `service`, `cnpj`.
+
+
+ Principais campos em `result`: `cnpj`, `hasBettingExposure`, `indicators`, `riskLevel`.
+
+
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+
+
+ Nenhum campo opcional mapeado neste exemplo.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
   "cnpj": "cnpj"
 }'
 ```
@@ -27445,17 +27317,17 @@ A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo c
  cnpj: cnpj
  ```
 
-- PJ - Compliance de casas de apostas: `SERVICE_COMPLIANCE_BET`
-
- ```yaml
- service: SERVICE_COMPLIANCE_BET
- cnpj: cnpj
- ```
-
 - PJ - Compliance de casas de apostas: `SERVICE_COMPLIANCE_BET_PJ`
 
  ```yaml
  service: SERVICE_COMPLIANCE_BET_PJ
+ cnpj: cnpj
+ ```
+
+- PJ - Compliance de casas de apostas (alias curto): `SERVICE_COMPLIANCE_BET`
+
+ ```yaml
+ service: SERVICE_COMPLIANCE_BET
  cnpj: cnpj
  ```
 
@@ -28117,44 +27989,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
-  "cpf": "cpf"
-}'
-```
-
-### Certidão negativa de protesto PF
-
-- Service: `SERVICE_PROTEST_PF`
-- Endpoint: `POST /api/service-api`
-- Campos do request: `cpf`
-- Termos de busca: PF - Certidão negativa de protesto PF
-- Retorno principal: Retorna certidão/consulta de protestos para CPF, com status, cartórios consultados, protestos e mensagens.
-
-Response resumido:
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "hasProtests": false,
-    "notaryOffices": [],
-    "protests": []
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Curl de homologação:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_PROTEST_PF",
   "cpf": "cpf"
 }'
 ```
@@ -31148,46 +30982,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 ### Compliance de casas de apostas
 
-- Service: `SERVICE_COMPLIANCE_BET`
-- Endpoint: `POST /api/service-api`
-- Campos do request: `cnpj`
-- Termos de busca: PJ - Compliance de casas de apostas, apostas bets compliance bet
-- Retorno principal: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
-
-Response resumido:
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "hasBettingExposure": true,
-    "indicators": [
-      "atividade relacionada"
-    ],
-    "riskLevel": "MEDIUM"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Curl de homologação:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_COMPLIANCE_BET",
-  "cnpj": "cnpj"
-}'
-```
-
-### Compliance de casas de apostas
-
 - Service: `SERVICE_COMPLIANCE_BET_PJ`
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cnpj`
@@ -31222,6 +31016,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Compliance de casas de apostas (alias curto)
+
+- Service: `SERVICE_COMPLIANCE_BET`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Compliance de casas de apostas (alias curto), apostas bets compliance bet
+- Retorno principal: Retorna indicadores de exposição da empresa a apostas, bets e compliance regulatório, incluindo sinais de operação, domínio, atividade e alertas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
   "cnpj": "cnpj"
 }'
 ```
@@ -33909,7 +33743,7 @@ paths:
                   service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS
                   cnpj: cnpj
               complianceBet:
-                summary: PJ - Compliance de casas de apostas
+                summary: PJ - Compliance de casas de apostas (alias curto)
                 value:
                   service: SERVICE_COMPLIANCE_BET
                   cnpj: cnpj
