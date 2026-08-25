@@ -41,7 +41,7 @@ npm install
 
 ## Rodando Localmente
 
-Inicie o servidor de desenvolvimento:
+Inicie o servidor de desenvolvimento (regenera os artifacts de LLM antes de subir o Mintlify):
 
 ```bash
 npm run dev
@@ -234,11 +234,14 @@ api-docs-idcerberus/
 |   |-- quickstart.mdx
 |   `-- ...
 |-- scripts/
+|   |-- check-catalog-coverage.mjs
+|   |-- check-generated-drift.mjs
 |   |-- check-mcp-server.mjs
 |   |-- check-text-quality.mjs
 |   |-- generate-llms.mjs
 |   |-- mcp-server.mjs
-|   `-- prepare-pages-export.mjs
+|   |-- prepare-pages-export.mjs
+|   `-- validate-generated-artifacts.mjs
 |-- docs.json
 |-- index.mdx
 |-- llms.txt
@@ -277,45 +280,48 @@ A documentação está dividida em duas áreas principais:
 
 Dentro dos guias, os conteúdos estão organizados por:
 
-- Comece aqui
+- Primeiros passos
+- Suporte e referência
 - Fluxos principais
 - POST `/api/service-api`
 - Pessoas
 - Empresas
 - Catálogo técnico
 
-## Qualidade de Texto
+O Catálogo técnico (`servicos-pessoa-fisica.mdx` e `servicos-pessoa-juridica.mdx`) é a
+fonte canônica de cada service, com todos os campos e exemplos. As demais páginas de
+navegação por service (Matriz de serviços, Famílias de serviços, Escolha o serviço certo)
+são atalhos por objetivo/família e linkam de volta para o catálogo técnico.
 
-Antes de publicar, rode o check de texto para capturar caracteres quebrados, mojibake, frases duplicadas comuns e placeholders inseguros:
+## Checks
 
-```bash
-npm run check:text
-```
+O projeto tem checks automáticos para pegar problema antes de publicar. Cada um cobre uma
+camada diferente:
 
-Para checar texto e regenerar os arquivos de LLM:
+| Comando | O que verifica |
+| --- | --- |
+| `npm run check:text` | Caracteres quebrados, mojibake, frases duplicadas comuns e placeholders inseguros. |
+| `npm run check:artifacts` | Se `services-catalog.json`, `services-catalog.min.json` e `mcp-manifest.json` têm todos os campos obrigatórios e URLs públicas válidas. |
+| `npm run check:coverage` | Se todo service do catálogo aparece em `familias-de-servicos.mdx`, `matriz-de-servicos.mdx` e no catálogo técnico (`servicos-pessoa-fisica.mdx`/`servicos-pessoa-juridica.mdx`), e se nenhum alias aparece duplicado na mesma tabela. |
+| `npm run check:drift` | Se os artifacts gerados (`services-catalog.json`, `llms*.txt`, páginas do API Reference etc.) estão em dia com o que foi commitado — roda a geração e falha se sobrar diff. |
+| `npm run mcp:check` | Smoke test do servidor MCP local (resources, tools e uma conexão real por stdio). |
+| `npm run validate` | Validação oficial do build Mintlify (`mint validate`) — schemas do `docs.json`, links e estrutura de navegação. |
+
+Para rodar a geração de artifacts e a maioria dos checks de uma vez:
 
 ```bash
 npm run check
 ```
 
-## Validação Rápida
+Isso executa, em sequência: `generate:llms` → `check:text` → `check:artifacts` →
+`check:coverage` → `mcp:check`. Rode `check:drift` e `validate` separadamente quando for
+publicar, já que dependem de estado do git e de baixar o CLI da Mintlify.
 
-Validar `docs.json`:
+Para uma checagem de sintaxe de `docs.json` sem depender de rede (mais rápida que
+`npm run validate`, que baixa o CLI da Mintlify a cada execução):
 
 ```bash
 node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('docs.json','utf8')); console.log('docs.json ok');"
-```
-
-Regenerar artifacts principais:
-
-```bash
-npm run generate:artifacts
-```
-
-Verificar se os arquivos de LLM não têm caractere quebrado:
-
-```bash
-node -e "const fs=require('fs'); for (const f of ['llms.txt','llms-small.txt','llms-full.txt','llms-api-reference.txt']) { const s=fs.readFileSync(f,'utf8'); console.log(f, s.includes('\uFFFD') ? 'encoding ruim' : 'ok'); }"
 ```
 
 ## Deploy
@@ -345,10 +351,14 @@ A busca do site publicado é própria (não depende da conta da Mintlify): `scri
 Antes de commitar alterações na documentação:
 
 ```bash
-npm run check:text
+npm run check
 git diff --check
 git status --short
 ```
+
+Se a alteração adicionar ou remover um service (novo alias documentado), rode
+`npm run check:coverage` de novo depois de editar os guias manualmente — ele falha caso o
+service fique de fora de algum catálogo ou fique duplicado na mesma tabela.
 
 Não commitar:
 

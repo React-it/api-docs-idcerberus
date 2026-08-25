@@ -72,7 +72,7 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  7 services: `SERVICE_PGMEI`, `SERVICE_RFB_PJ_ON_DEMAND`, `SERVICE_REGISTRATION_DATA_CNPJ` e mais 4.
  </Card>
  <Card title="Dados eleitorais e PEP">
- 3 services: `SERVICE_ELECTORAL_DONORS_CNPJ`, `SERVICE_ELECTORAL_PROVIDERS_CNPJ`, `SERVICE_EMPLOYEES_KYC`.
+ 4 services: `SERVICE_ELECTORAL_DONORS_CNPJ`, `SERVICE_ELECTORAL_PROVIDERS_CNPJ`, `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` e mais 1.
  </Card>
  <Card title="Jurídico, certidões e protestos">
  4 services: `SERVICE_LABOR_LAWSUITS`, `SERVICE_PROTEST_PJ`, `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` e mais 1.
@@ -81,10 +81,10 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  2 services: `SERVICE_COMPLIANCE_BET`, `SERVICE_COMPLIANCE_BET_PJ`.
  </Card>
  <Card title="Outros services">
- 11 services: `SERVICE_SYNDICATE_AGREEMENTS`, `SERVICE_ONLINE_ADS`, `SERVICE_REPUTATIONS_AND_REVIEWS` e mais 8.
+ 19 services: `SERVICE_SYNDICATE_AGREEMENTS`, `SERVICE_ONLINE_ADS`, `SERVICE_REPUTATIONS_AND_REVIEWS` e mais 16.
  </Card>
  <Card title="Risco, crédito e dívidas">
- 5 services: `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY`, `SERVICE_ACTIVE_DEBT_PJ`, `SERVICE_CREDIT_RISK_COMPANY` e mais 2.
+ 8 services: `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY`, `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY`, `SERVICE_ACTIVE_DEBT_PJ` e mais 5.
  </Card>
 </CardGroup>
 
@@ -3461,6 +3461,147 @@ Neste service, o objeto `result` representa: Retorna prestações de serviço el
 
 </Accordion>
 
+<Accordion title="KYC e Compliance do Grupo Econômico" id="SERVICE_ECONOMIC_GROUP_KYC_COMPANY">
+
+**Service:** `SERVICE_ECONOMIC_GROUP_KYC_COMPANY`
+
+**Quando usar:** Use para executar checagens de KYC e compliance da empresa.
+
+**O que retorna:** Retorna indicadores agregados de KYC e compliance regulatório do grupo econômico completo do CNPJ informado, incluindo exposição política (PEP) e sanções.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `economicGroupKycSummary`, `economicGroupTotalCurrentPep`, `economicGroupTotalHistoricalPep`, `economicGroupTotalCurrentSanctioned`, `economicGroupTotalHistoricalSanctioned` e mais 1.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.economicGroupKycSummary` | Resumo da consulta de KYC e Compliance do Grupo Econômico. |
+| `result.economicGroupTotalCurrentPep` | Quantidade de entidades do grupo econômico atualmente classificadas como Pessoa Politicamente Exposta. |
+| `result.economicGroupTotalHistoricalPep` | Quantidade de entidades do grupo econômico com histórico de exposição política. |
+| `result.economicGroupTotalCurrentSanctioned` | Quantidade de entidades do grupo econômico atualmente sancionadas em listas restritivas. |
+| `result.economicGroupTotalHistoricalSanctioned` | Quantidade de entidades do grupo econômico com histórico de sanções em listas restritivas. |
+| `result.economicGroupAverageSanctions` | Média de sanções encontradas por empresa do grupo econômico consultado. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "economicGroupKycSummary": "Consulta realizada",
+    "economicGroupTotalCurrentPep": "0",
+    "economicGroupTotalHistoricalPep": "1",
+    "economicGroupTotalCurrentSanctioned": "0",
+    "economicGroupTotalHistoricalSanctioned": "0",
+    "economicGroupAverageSanctions": "0"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna indicadores agregados de KYC e compliance regulatório do grupo econômico completo do CNPJ informado, incluindo exposição política (PEP) e sanções.
+
+</Accordion>
+
 <Accordion title="KYC e Compliance dos Funcionários" id="SERVICE_EMPLOYEES_KYC">
 
 **Service:** `SERVICE_EMPLOYEES_KYC`
@@ -4857,6 +4998,161 @@ Neste service, o objeto `result` representa: Retorna a reputação da empresa em
 
 </Accordion>
 
+<Accordion title="Beneficiários Finais" id="SERVICE_ULTIMATE_BENEFICIAL_OWNERS">
+
+**Service:** `SERVICE_ULTIMATE_BENEFICIAL_OWNERS`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Beneficiários Finais" via API.
+
+**O que retorna:** Retorna os beneficiários finais da empresa pelo CNPJ informado, com percentual de participação acumulado, inclusive por cadeias indiretas, conforme limiar legal de 25%.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `uboSummary`, `uboTotalCompaniesInGroup`, `uboTotalPeopleInGroup`, `uboNumberOfOwners`, `uboBeneficialOwners` e mais 1.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.uboSummary` | Resumo da consulta de Beneficiários Finais. |
+| `result.uboTotalCompaniesInGroup` | Quantidade de empresas identificadas no grupo econômico. |
+| `result.uboTotalPeopleInGroup` | Quantidade de pessoas identificadas no grupo econômico. |
+| `result.uboNumberOfOwners` | Quantidade de sócios beneficiários finais identificados. |
+| `result.uboBeneficialOwners` | Lista consolidada dos beneficiários finais, com percentual de participação agregado, usada para renderização em tabela. |
+| `result.uboParticipations` | Lista achatada das participações societárias do grupo econômico, incluindo os níveis indiretos, usada para renderização em tabela. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "uboSummary": "Consulta realizada",
+    "uboTotalCompaniesInGroup": 3,
+    "uboTotalPeopleInGroup": 5,
+    "uboNumberOfOwners": 2,
+    "uboBeneficialOwners": [
+      {
+        "name": "NOME DO BENEFICIARIO",
+        "document": "00000000000",
+        "accumulatedPercentage": 45.5
+      }
+    ],
+    "uboParticipations": [
+      {
+        "ownerDocument": "00000000000",
+        "ownerName": "NOME DO BENEFICIARIO",
+        "ownedDocument": "cnpj",
+        "percentage": 45.5,
+        "level": 1
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna os beneficiários finais da empresa pelo CNPJ informado, com percentual de participação acumulado, inclusive por cadeias indiretas, conforme limiar legal de 25%.
+
+</Accordion>
+
 <Accordion title="Categoria Comercial" id="SERVICE_MERCHANT_CATEGORY_DATA">
 
 **Service:** `SERVICE_MERCHANT_CATEGORY_DATA`
@@ -4993,6 +5289,425 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna a categorização da empresa de acordo com o MCC (Merchant Category Code), por associação direta com a Abecs ou inferido pelo CNAE.
+
+</Accordion>
+
+<Accordion title="Certidão Negativa CNJ" id="SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY">
+
+**Service:** `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Certidão Negativa CNJ" via API.
+
+**O que retorna:** Retorna a certidão negativa do CNJ pelo CNPJ informado, cobrindo condenações cíveis por improbidade administrativa e inelegibilidade.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `cnjSummary`, `cnjBaseStatus`, `cnjClearance`, `cnjIssueDate`, `cnjCertificateUrl`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.cnjSummary` | Resumo da consulta de Certidão Negativa CNJ. |
+| `result.cnjBaseStatus` | Status simplificado da certidão de condenações cíveis do CNJ. |
+| `result.cnjClearance` | Indica se não há condenações por improbidade administrativa junto ao CNJ. |
+| `result.cnjIssueDate` | Data de emissão da certidão de condenações cíveis do CNJ. |
+| `result.cnjCertificateUrl` | Link para o arquivo da certidão de condenações cíveis do CNJ. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "cnjSummary": "Consulta realizada",
+    "cnjBaseStatus": "NEGATIVA",
+    "cnjClearance": "Sim",
+    "cnjIssueDate": "2026-08-01",
+    "cnjCertificateUrl": "https://example.com/certidão-cnj.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna a certidão negativa do CNJ pelo CNPJ informado, cobrindo condenações cíveis por improbidade administrativa e inelegibilidade.
+
+</Accordion>
+
+<Accordion title="Certidão Negativa Correcional CGU" id="SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY">
+
+**Service:** `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Certidão Negativa Correcional CGU" via API.
+
+**O que retorna:** Retorna a certidão negativa correcional da CGU pelo CNPJ informado, cobrindo punições vigentes em CEIS, CNEP e CEPIM.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `cguSummary`, `cguBaseStatus`, `cguClearance`, `cguValidUntil`, `cguIssueDate` e mais 1.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.cguSummary` | Resumo da consulta de Certidão Negativa Correcional CGU. |
+| `result.cguBaseStatus` | Status simplificado da certidão correcional da CGU. |
+| `result.cguClearance` | Indica se não há registros restritivos junto à CGU. |
+| `result.cguValidUntil` | Data de validade da certidão correcional da CGU. |
+| `result.cguIssueDate` | Data de emissão da certidão correcional da CGU. |
+| `result.cguCertificateUrl` | Link para o arquivo da certidão correcional da CGU. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "cguSummary": "Consulta realizada",
+    "cguBaseStatus": "NEGATIVA",
+    "cguClearance": "Sim",
+    "cguValidUntil": "2027-08-01",
+    "cguIssueDate": "2026-08-01",
+    "cguCertificateUrl": "https://example.com/certidão-cgu.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna a certidão negativa correcional da CGU pelo CNPJ informado, cobrindo punições vigentes em CEIS, CNEP e CEPIM.
+
+</Accordion>
+
+<Accordion title="Cota de PCD" id="SERVICE_PCD_COMPANY">
+
+**Service:** `SERVICE_PCD_COMPANY`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Cota de PCD" via API.
+
+**O que retorna:** Retorna a certidão de cumprimento da cota legal de contratação de pessoas com deficiência e beneficiários reabilitados, pelo CNPJ informado.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `pcdSummary`, `pcdBaseStatus`, `pcdExpeditionDate`, `pcdCertificateUrl`, `pcdContent`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_PCD_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PCD_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PCD_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.pcdSummary` | Resumo da consulta de Cota de PCD. |
+| `result.pcdBaseStatus` | Status do cumprimento da cota legal de contratação de pessoas com deficiência e beneficiários reabilitados. |
+| `result.pcdExpeditionDate` | Data de emissão da certidão de cota de PCD. |
+| `result.pcdCertificateUrl` | Link para o arquivo da certidão de cota de PCD. |
+| `result.pcdContent` | Texto integral da certidão de cota de PCD. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pcdSummary": "Consulta realizada",
+    "pcdBaseStatus": "EM CONFORMIDADE",
+    "pcdExpeditionDate": "2026-08-01",
+    "pcdCertificateUrl": "https://example.com/certidão-pcd.pdf",
+    "pcdContent": "Texto integral da certidão de cota de PCD"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna a certidão de cumprimento da cota legal de contratação de pessoas com deficiência e beneficiários reabilitados, pelo CNPJ informado.
 
 </Accordion>
 
@@ -5977,6 +6692,732 @@ Neste service, o objeto `result` representa: Retorna a presença da empresa em m
 
 </Accordion>
 
+<Accordion title="Obras Civis" id="SERVICE_CIVIL_CONSTRUCTION">
+
+**Service:** `SERVICE_CIVIL_CONSTRUCTION`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Obras Civis" via API.
+
+**O que retorna:** Retorna obras civis vinculadas ao CNPJ informado, conforme o Cadastro Nacional de Obras (CNO).
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `totalCivilConstructionRecords`, `totalActiveCivilConstructionRecords`, `civilConstructionSummary`, `civilConstructionRecords`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_CIVIL_CONSTRUCTION",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CIVIL_CONSTRUCTION",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CIVIL_CONSTRUCTION",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.totalCivilConstructionRecords` | Quantidade total de obras civis encontradas para o CNPJ. |
+| `result.totalActiveCivilConstructionRecords` | Quantidade de obras civis ativas encontradas para o CNPJ. |
+| `result.civilConstructionSummary` | Resumo da consulta de Obras Civis. |
+| `result.civilConstructionRecords` | Lista estruturada das obras civis encontradas, conforme o Cadastro Nacional de Obras (CNO), usada para renderização em tabela. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalCivilConstructionRecords": 2,
+    "totalActiveCivilConstructionRecords": 1,
+    "civilConstructionSummary": "Consulta realizada",
+    "civilConstructionRecords": [
+      {
+        "cno": "00000000000",
+        "status": "ATIVA",
+        "address": "RUA EXEMPLO, 100",
+        "startDate": "2025-01-01"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna obras civis vinculadas ao CNPJ informado, conforme o Cadastro Nacional de Obras (CNO).
+
+</Accordion>
+
+<Accordion title="Optante pelo Simples Nacional" id="SERVICE_SIMPLES_COMPANY">
+
+**Service:** `SERVICE_SIMPLES_COMPANY`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Optante pelo Simples Nacional" via API.
+
+**O que retorna:** Retorna a situação da empresa como optante pelo Simples Nacional e pelo SIMEI, pelo CNPJ informado.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `simplesSummary`, `simplesOfficialName`, `simplesNationalStatus`, `simplesMeiStatus`, `simplesCertificateUrl`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_SIMPLES_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SIMPLES_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SIMPLES_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.simplesSummary` | Resumo da consulta de Optante pelo Simples Nacional. |
+| `result.simplesOfficialName` | Nome oficial da empresa retornado pela Receita Federal. |
+| `result.simplesNationalStatus` | Situação da empresa como optante pelo Simples Nacional. |
+| `result.simplesMeiStatus` | Situação da empresa como optante pelo SIMEI. |
+| `result.simplesCertificateUrl` | Link para o comprovante de Optante pelo Simples Nacional. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "simplesSummary": "Consulta realizada",
+    "simplesOfficialName": "NOME OFICIAL DA EMPRESA",
+    "simplesNationalStatus": "OPTANTE",
+    "simplesMeiStatus": "NAO OPTANTE",
+    "simplesCertificateUrl": "https://example.com/comprovante-simples.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna a situação da empresa como optante pelo Simples Nacional e pelo SIMEI, pelo CNPJ informado.
+
+</Accordion>
+
+<Accordion title="Percentual de Participação Societária" id="SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY">
+
+**Service:** `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Percentual de Participação Societária" via API.
+
+**O que retorna:** Retorna o percentual de participação societária de cada sócio da empresa pelo CNPJ informado.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `numberOfOwners`, `numberOfPeopleAsOwners`, `numberOfCompaniesAsOwners`, `hasMajorityStakeHolder`, `averageParticipationPercentage` e mais 6.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.numberOfOwners` | Número total de sócios da empresa. |
+| `result.numberOfPeopleAsOwners` | Número de sócios pessoa física da empresa. |
+| `result.numberOfCompaniesAsOwners` | Número de sócios pessoa jurídica da empresa. |
+| `result.hasMajorityStakeHolder` | Indica se a empresa possui sócio majoritário. |
+| `result.averageParticipationPercentage` | Percentual médio de participação societária entre os sócios da empresa. |
+| `result.maxParticipationPercentage` | Maior percentual de participação societária entre os sócios da empresa. |
+| `result.minParticipationPercentage` | Menor percentual de participação societária entre os sócios da empresa. |
+| `result.firstOwnerEntryDate` | Data de entrada do sócio mais antigo da empresa. |
+| `result.lastOwnerEntryDate` | Data de entrada do sócio mais recente da empresa. |
+| `result.ownerParticipationSummary` | Resumo da consulta de percentual de participação societária. |
+| `result.ownerParticipations` | Lista estruturada de cada participação societária, usada para renderização em tabela. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "numberOfOwners": 2,
+    "numberOfPeopleAsOwners": 1,
+    "numberOfCompaniesAsOwners": 1,
+    "hasMajorityStakeHolder": true,
+    "averageParticipationPercentage": 50,
+    "maxParticipationPercentage": 70,
+    "minParticipationPercentage": 30,
+    "firstOwnerEntryDate": "2015-03-01",
+    "lastOwnerEntryDate": "2022-06-15",
+    "ownerParticipationSummary": "Consulta realizada",
+    "ownerParticipations": [
+      {
+        "ownerDocument": "00000000000",
+        "ownerName": "NOME DO SOCIO",
+        "percentage": 70
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna o percentual de participação societária de cada sócio da empresa pelo CNPJ informado.
+
+</Accordion>
+
+<Accordion title="Projetos Públicos" id="SERVICE_PUBLIC_PROJECTS">
+
+**Service:** `SERVICE_PUBLIC_PROJECTS`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Projetos Públicos" via API.
+
+**O que retorna:** Retorna projetos com financiamento de órgãos públicos associados à empresa pelo CNPJ informado, com fonte, modalidade e valores contratado e desembolsado.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `totalPublicProjects`, `publicProjectsSummary`, `publicProjects`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_PUBLIC_PROJECTS",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PUBLIC_PROJECTS",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PUBLIC_PROJECTS",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.totalPublicProjects` | Quantidade total de projetos com financiamento público encontrados. |
+| `result.publicProjectsSummary` | Resumo da consulta de Projetos Públicos. |
+| `result.publicProjects` | Lista estruturada dos projetos com financiamento público encontrados, usada para renderização em tabela. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalPublicProjects": 1,
+    "publicProjectsSummary": "Consulta realizada",
+    "publicProjects": [
+      {
+        "source": "BNDES",
+        "modality": "FINANCIAMENTO",
+        "contractedValue": 500000,
+        "disbursedValue": 250000,
+        "contractDate": "2025-01-10"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna projetos com financiamento de órgãos públicos associados à empresa pelo CNPJ informado, com fonte, modalidade e valores contratado e desembolsado.
+
+</Accordion>
+
+<Accordion title="Certidão Negativa de Débitos Estaduais" id="SERVICE_STATE_DEBT_CERTIFICATE_COMPANY">
+
+**Service:** `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY`
+
+**Quando usar:** Use para consultar débitos ou dívidas associadas à empresa.
+
+**O que retorna:** Retorna a certidão negativa de débitos estaduais pelo CNPJ informado, disponível para todos os estados.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `stateDebtSummary`, `stateDebtBaseStatus`, `stateDebtClearance`, `stateDebtState`, `stateDebtRegistration` e mais 2.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.stateDebtSummary` | Resumo da consulta de Certidão Negativa de Débitos Estaduais. |
+| `result.stateDebtBaseStatus` | Status simplificado da certidão de débitos estaduais. |
+| `result.stateDebtClearance` | Indica se não há débitos estaduais associados à empresa. |
+| `result.stateDebtState` | Unidade federativa (UF) a que se refere a certidão de débitos estaduais. |
+| `result.stateDebtRegistration` | Situação cadastral estadual (CAD/ICMS) da empresa. |
+| `result.stateDebtValidUntil` | Data de validade da certidão de débitos estaduais. |
+| `result.stateDebtCertificateUrl` | Link para o arquivo da certidão de débitos estaduais. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "stateDebtSummary": "Consulta realizada",
+    "stateDebtBaseStatus": "NEGATIVA",
+    "stateDebtClearance": "Sim",
+    "stateDebtState": "SP",
+    "stateDebtRegistration": "000.000.000.000",
+    "stateDebtValidUntil": "2027-08-01",
+    "stateDebtCertificateUrl": "https://example.com/certidão-débitos-estaduais.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna a certidão negativa de débitos estaduais pelo CNPJ informado, disponível para todos os estados.
+
+</Accordion>
+
 <Accordion title="Dados Restritivos PJ" id="SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY">
 
 **Service:** `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY`
@@ -6258,6 +7699,145 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna dívidas ativas vinculadas ao CNPJ, com origem do débito, valores, situação, órgão credor e status da consulta.
+
+</Accordion>
+
+<Accordion title="Débitos com a PGFN" id="SERVICE_PGFN_COMPANY">
+
+**Service:** `SERVICE_PGFN_COMPANY`
+
+**Quando usar:** Use para consultar débitos ou dívidas associadas à empresa.
+
+**O que retorna:** Retorna a certidão de débitos relativos a créditos tributários federais e à dívida ativa da união junto à PGFN, pelo CNPJ informado.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `pgfnSummary`, `pgfnBaseStatus`, `pgfnClearance`, `pgfnEmissionDate`, `pgfnCertificateUrl`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_PGFN_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PGFN_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PGFN_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.pgfnSummary` | Resumo da consulta de Débitos com a PGFN. |
+| `result.pgfnBaseStatus` | Status simplificado da certidão de débitos junto à PGFN. |
+| `result.pgfnClearance` | Indica se não há pendências junto à Procuradoria-Geral da Fazenda Nacional. |
+| `result.pgfnEmissionDate` | Data de emissão da certidão de débitos junto à PGFN. |
+| `result.pgfnCertificateUrl` | Link para o arquivo da certidão de débitos junto à PGFN. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pgfnSummary": "Consulta realizada",
+    "pgfnBaseStatus": "NEGATIVA",
+    "pgfnClearance": "Sim",
+    "pgfnEmissionDate": "2026-08-01",
+    "pgfnCertificateUrl": "https://example.com/certidão-pgfn.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna a certidão de débitos relativos a créditos tributários federais e à dívida ativa da união junto à PGFN, pelo CNPJ informado.
 
 </Accordion>
 
@@ -6690,6 +8270,145 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna score de crédito de pessoa jurídica pelo CNPJ informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+</Accordion>
+
+<Accordion title="Score de Crédito Quantum PJ" id="SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY">
+
+**Service:** `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY`
+
+**Quando usar:** Use para avaliar risco, score ou propensão associada à empresa.
+
+**O que retorna:** Retorna score de crédito Quantum de pessoa jurídica pelo CNPJ informado, com resumo textual e dados estruturados de bureau de crédito.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `score`, `creditBureauSummary`, `creditBureauDetails`, `origin`, `queryDate`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.score` | Score de crédito retornado pelo bureau para o CNPJ consultado. |
+| `result.creditBureauSummary` | Resumo textual dos principais dados de bureau de crédito retornados. |
+| `result.creditBureauDetails` | Dados estruturados de bureau de crédito para consumo via API. |
+| `result.origin` | Origem funcional da consulta executada. |
+| `result.queryDate` | Data retornada pela fonte de dados para a consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 690,
+    "creditBureauSummary": "Score de crédito dentro da média do setor",
+    "creditBureauDetails": {},
+    "origin": "Quantum",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna score de crédito Quantum de pessoa jurídica pelo CNPJ informado, com resumo textual e dados estruturados de bureau de crédito.
 
 </Accordion>
 

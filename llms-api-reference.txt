@@ -712,6 +712,48 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Dados Restritivos
+
+- Service: `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: PF - Dados Restritivos, score risco crédito rating inadimplência
+- Retorno principal: Retorna dados restritivos de crédito de pessoa física pelo CPF informado, incluindo score, indicativo e quantidade de restrições encontradas.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 705,
+    "hasRestrictions": false,
+    "restrictionCount": 0,
+    "creditBureauSummary": "Nenhuma restrição de crédito encontrada",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
 ### Dívida ativa
 
 - Service: `SERVICE_ACTIVE_DEBT_PF`
@@ -889,6 +931,57 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### E-mails de Pessoas Relacionadas
+
+- Service: `SERVICE_RELATED_PEOPLE_EMAILS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: PF - E-mails de Pessoas Relacionadas, email validação contato
+- Retorno principal: Retorna e-mails associados a pessoas relacionadas ao CPF informado, com o relacionamento identificado e sinais de uso de cada e-mail.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalRelatedPeopleEmails": 2,
+    "relatedPeopleEmailsList": "nome@email.com - NOME DA PESSOA - 00000000000 - CONJUGE",
+    "relatedPeopleEmails": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "CONJUGE",
+        "type": "PESSOAL",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "email": "nome@email.com",
+        "domain": "email.com",
+        "validationStatus": "VALID"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_EMAILS",
+  "cpf": "cpf"
+}'
+```
+
 ### Endereços
 
 - Service: `SERVICE_ADDRESS`
@@ -932,6 +1025,62 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_ADDRESS",
   "cpf": "cpf"
+}'
+```
+
+### Endereços de Pessoas Relacionadas
+
+- Service: `SERVICE_RELATED_PEOPLE_ADDRESSES`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PF - Endereços de Pessoas Relacionadas
+- Retorno principal: Retorna endereços associados a pessoas relacionadas ao CNPJ informado, com o relacionamento identificado e sinais de uso de cada endereço.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalRelatedPeopleAddresses": 1,
+    "relatedPeopleAddressesList": "RUA EXEMPLO, 100 - NOME DA PESSOA - 00000000000 - SOCIO",
+    "relatedPeopleAddresses": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "SOCIO",
+        "type": "RESIDENCIAL",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "address": "RUA EXEMPLO",
+        "zipcode": "00000000",
+        "state": "SP",
+        "city": "SAO PAULO",
+        "neighborhood": "CENTRO",
+        "number": "100",
+        "complement": "",
+        "isRatified": true
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_ADDRESSES",
+  "cnpj": "cnpj"
 }'
 ```
 
@@ -1136,6 +1285,49 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_FACE_MATCH",
   "image1": "base64",
   "image2": "base64"
+}'
+```
+
+### Flags Negativos
+
+- Service: `SERVICE_QUOD_CREDIT_RISK_PERSON`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: PF - Flags Negativos
+- Retorno principal: Retorna flags negativos de crédito de pessoa física pelo CPF informado, com nível e classificação de risco, indicativo de restrições e quantidade de flags negativos.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "hasRestrictions": false,
+    "negativeFlagsCount": 0,
+    "creditBureauSummary": "Nenhum flag negativo encontrado",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_RISK_PERSON",
+  "cpf": "cpf"
 }'
 ```
 
@@ -1472,43 +1664,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_PERSON_KYC",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (opcional)"
-}'
-```
-
-### Liveness 2D
-
-- Service: `SERVICE_LIVENESS_2D`
-- Endpoint: `POST /api/service-api`
-- Campos do request: `image1`
-- Termos de busca: PF - Liveness 2D, prova de vida selfie liveness
-- Retorno principal: Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
-
-Response resumido:
-
-```json
-{
-  "result": {
-    "liveness": true,
-    "confidence": 0.97,
-    "status": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Curl de homologação:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_LIVENESS_2D",
-  "image1": "selfie"
 }'
 ```
 
@@ -2210,6 +2365,97 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Score de Crédito
+
+- Service: `SERVICE_QUOD_CREDIT_SCORE_PERSON`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: PF - Score de Crédito, score risco crédito rating inadimplência
+- Retorno principal: Retorna score de crédito de pessoa física pelo CPF informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 680,
+    "riskLevel": "MEDIO",
+    "riskClassification": "B",
+    "reasonCodes": [
+      "Tempo de relacionamento com o mercado",
+      "Renda declarada baixa"
+    ],
+    "creditBureauSummary": "Score de crédito dentro da média do perfil",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+### Score de Crédito Multidados
+
+- Service: `SERVICE_BOAVISTA_ONE_SCORE_PERSON`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: PF - Score de Crédito Multidados, score risco crédito rating inadimplência
+- Retorno principal: Retorna score de crédito multidados de pessoa física pelo CPF informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 710,
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "reasonCodes": [
+      "Bom histórico de pagamentos"
+    ],
+    "creditBureauSummary": "Score de crédito multidados acima da média do perfil",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
 ### Score de inadimplência
 
 - Service: `SERVICE_DEFAULT_RISK_SCORE`
@@ -2367,6 +2613,107 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
   "dataDeNascimento": "yyyy-MM-dd (opcional)"
+}'
+```
+
+### Telefones de Pessoas Relacionadas
+
+- Service: `SERVICE_RELATED_PEOPLE_PHONES`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`
+- Termos de busca: PF - Telefones de Pessoas Relacionadas, telefone celular validação contato
+- Retorno principal: Retorna telefones associados a pessoas relacionadas ao CPF informado, com o relacionamento identificado e sinais de uso de cada telefone.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalRelatedPeoplePhones": 1,
+    "relatedPeoplePhonesList": "11900000000 - NOME DA PESSOA - 00000000000 - FILHO",
+    "relatedPeoplePhones": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "FILHO",
+        "type": "CELULAR",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "areaCode": "11",
+        "number": "900000000",
+        "phone": "11900000000",
+        "isInDoNotCallList": false
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_PHONES",
+  "cpf": "cpf"
+}'
+```
+
+### TSE - Local de votação
+
+- Service: `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cpf`, `birthDate`, `motherName`
+- Termos de busca: CPF Receita Federal, PF - TSE - Local de votação
+- Retorno principal: Retorna local de votação, situação eleitoral e biometria atual da pessoa no TSE, a partir do CPF informado.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "status": "REGULAR",
+    "pollingPlace": "ESCOLA CLASSE 01",
+    "pollingPlaceAddress": "QUADRA 01, BRASILIA - DF",
+    "city": "BRASILIA",
+    "uf": "DF",
+    "zipcode": "70000000",
+    "electoralZone": "001",
+    "electoralSection": "0001",
+    "hasBiometrics": true,
+    "queryDate": "2026-08-01",
+    "source": "TSE-LOCALVOTACAO",
+    "onlineQuery": "Situação, local, endereço, zona e seção retornados com sucesso"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)",
+  "motherName": "nome da mãe (opcional)"
 }'
 ```
 
@@ -2731,6 +3078,61 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Beneficiários Finais
+
+- Service: `SERVICE_ULTIMATE_BENEFICIAL_OWNERS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Beneficiários Finais
+- Retorno principal: Retorna os beneficiários finais da empresa pelo CNPJ informado, com percentual de participação acumulado, inclusive por cadeias indiretas, conforme limiar legal de 25%.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "uboSummary": "Consulta realizada",
+    "uboTotalCompaniesInGroup": 3,
+    "uboTotalPeopleInGroup": 5,
+    "uboNumberOfOwners": 2,
+    "uboBeneficialOwners": [
+      {
+        "name": "NOME DO BENEFICIARIO",
+        "document": "00000000000",
+        "accumulatedPercentage": 45.5
+      }
+    ],
+    "uboParticipations": [
+      {
+        "ownerDocument": "00000000000",
+        "ownerName": "NOME DO BENEFICIARIO",
+        "ownedDocument": "cnpj",
+        "percentage": 45.5,
+        "level": 1
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
 ### Categoria Comercial
 
 - Service: `SERVICE_MERCHANT_CATEGORY_DATA`
@@ -2767,6 +3169,129 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_MERCHANT_CATEGORY_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
+### Certidão Negativa CNJ
+
+- Service: `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Certidão Negativa CNJ
+- Retorno principal: Retorna a certidão negativa do CNJ pelo CNPJ informado, cobrindo condenações cíveis por improbidade administrativa e inelegibilidade.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "cnjSummary": "Consulta realizada",
+    "cnjBaseStatus": "NEGATIVA",
+    "cnjClearance": "Sim",
+    "cnjIssueDate": "2026-08-01",
+    "cnjCertificateUrl": "https://example.com/certidão-cnj.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Certidão Negativa Correcional CGU
+
+- Service: `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Certidão Negativa Correcional CGU
+- Retorno principal: Retorna a certidão negativa correcional da CGU pelo CNPJ informado, cobrindo punições vigentes em CEIS, CNEP e CEPIM.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "cguSummary": "Consulta realizada",
+    "cguBaseStatus": "NEGATIVA",
+    "cguClearance": "Sim",
+    "cguValidUntil": "2027-08-01",
+    "cguIssueDate": "2026-08-01",
+    "cguCertificateUrl": "https://example.com/certidão-cgu.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Certidão Negativa de Débitos Estaduais
+
+- Service: `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Certidão Negativa de Débitos Estaduais, dívida ativa débito cobrança inadimplência
+- Retorno principal: Retorna a certidão negativa de débitos estaduais pelo CNPJ informado, disponível para todos os estados.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "stateDebtSummary": "Consulta realizada",
+    "stateDebtBaseStatus": "NEGATIVA",
+    "stateDebtClearance": "Sim",
+    "stateDebtState": "SP",
+    "stateDebtRegistration": "000.000.000.000",
+    "stateDebtValidUntil": "2027-08-01",
+    "stateDebtCertificateUrl": "https://example.com/certidão-débitos-estaduais.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
   "cnpj": "cnpj"
 }'
 ```
@@ -2924,6 +3449,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Cota de PCD
+
+- Service: `SERVICE_PCD_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Cota de PCD
+- Retorno principal: Retorna a certidão de cumprimento da cota legal de contratação de pessoas com deficiência e beneficiários reabilitados, pelo CNPJ informado.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pcdSummary": "Consulta realizada",
+    "pcdBaseStatus": "EM CONFORMIDADE",
+    "pcdExpeditionDate": "2026-08-01",
+    "pcdCertificateUrl": "https://example.com/certidão-pcd.pdf",
+    "pcdContent": "Texto integral da certidão de cota de PCD"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PCD_COMPANY",
   "cnpj": "cnpj"
 }'
 ```
@@ -3129,6 +3694,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ACTIVE_DEBT_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Débitos com a PGFN
+
+- Service: `SERVICE_PGFN_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Débitos com a PGFN, dívida ativa débito cobrança inadimplência
+- Retorno principal: Retorna a certidão de débitos relativos a créditos tributários federais e à dívida ativa da união junto à PGFN, pelo CNPJ informado.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pgfnSummary": "Consulta realizada",
+    "pgfnBaseStatus": "NEGATIVA",
+    "pgfnClearance": "Sim",
+    "pgfnEmissionDate": "2026-08-01",
+    "pgfnCertificateUrl": "https://example.com/certidão-pgfn.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PGFN_COMPANY",
   "cnpj": "cnpj"
 }'
 ```
@@ -3747,6 +4352,47 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### KYC e Compliance do Grupo Econômico
+
+- Service: `SERVICE_ECONOMIC_GROUP_KYC_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - KYC e Compliance do Grupo Econômico, compliance KYC sanções PEP mídia
+- Retorno principal: Retorna indicadores agregados de KYC e compliance regulatório do grupo econômico completo do CNPJ informado, incluindo exposição política (PEP) e sanções.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "economicGroupKycSummary": "Consulta realizada",
+    "economicGroupTotalCurrentPep": "0",
+    "economicGroupTotalHistoricalPep": "1",
+    "economicGroupTotalCurrentSanctioned": "0",
+    "economicGroupTotalHistoricalSanctioned": "0",
+    "economicGroupAverageSanctions": "0"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
 ### KYC e Compliance dos Funcionários
 
 - Service: `SERVICE_EMPLOYEES_KYC`
@@ -3952,6 +4598,52 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Obras Civis
+
+- Service: `SERVICE_CIVIL_CONSTRUCTION`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Obras Civis
+- Retorno principal: Retorna obras civis vinculadas ao CNPJ informado, conforme o Cadastro Nacional de Obras (CNO).
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalCivilConstructionRecords": 2,
+    "totalActiveCivilConstructionRecords": 1,
+    "civilConstructionSummary": "Consulta realizada",
+    "civilConstructionRecords": [
+      {
+        "cno": "00000000000",
+        "status": "ATIVA",
+        "address": "RUA EXEMPLO, 100",
+        "startDate": "2025-01-01"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CIVIL_CONSTRUCTION",
+  "cnpj": "cnpj"
+}'
+```
+
 ### OCR de cartão CNPJ
 
 - Service: `SERVICE_OCR_CNPJ_CARD`
@@ -3986,6 +4678,98 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR_CNPJ_CARD",
   "image1": "base64"
+}'
+```
+
+### Optante pelo Simples Nacional
+
+- Service: `SERVICE_SIMPLES_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Optante pelo Simples Nacional
+- Retorno principal: Retorna a situação da empresa como optante pelo Simples Nacional e pelo SIMEI, pelo CNPJ informado.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "simplesSummary": "Consulta realizada",
+    "simplesOfficialName": "NOME OFICIAL DA EMPRESA",
+    "simplesNationalStatus": "OPTANTE",
+    "simplesMeiStatus": "NAO OPTANTE",
+    "simplesCertificateUrl": "https://example.com/comprovante-simples.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SIMPLES_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Percentual de Participação Societária
+
+- Service: `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Percentual de Participação Societária
+- Retorno principal: Retorna o percentual de participação societária de cada sócio da empresa pelo CNPJ informado.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "numberOfOwners": 2,
+    "numberOfPeopleAsOwners": 1,
+    "numberOfCompaniesAsOwners": 1,
+    "hasMajorityStakeHolder": true,
+    "averageParticipationPercentage": 50,
+    "maxParticipationPercentage": 70,
+    "minParticipationPercentage": 30,
+    "firstOwnerEntryDate": "2015-03-01",
+    "lastOwnerEntryDate": "2022-06-15",
+    "ownerParticipationSummary": "Consulta realizada",
+    "ownerParticipations": [
+      {
+        "ownerDocument": "00000000000",
+        "ownerName": "NOME DO SOCIO",
+        "percentage": 70
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+  "cnpj": "cnpj"
 }'
 ```
 
@@ -4070,6 +4854,52 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Projetos Públicos
+
+- Service: `SERVICE_PUBLIC_PROJECTS`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Projetos Públicos
+- Retorno principal: Retorna projetos com financiamento de órgãos públicos associados à empresa pelo CNPJ informado, com fonte, modalidade e valores contratado e desembolsado.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalPublicProjects": 1,
+    "publicProjectsSummary": "Consulta realizada",
+    "publicProjects": [
+      {
+        "source": "BNDES",
+        "modality": "FINANCIAMENTO",
+        "contractedValue": 500000,
+        "disbursedValue": 250000,
+        "contractDate": "2025-01-10"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PUBLIC_PROJECTS",
   "cnpj": "cnpj"
 }'
 ```
@@ -4337,6 +5167,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Score de Crédito Quantum PJ
+
+- Service: `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY`
+- Endpoint: `POST /api/service-api`
+- Campos do request: `cnpj`
+- Termos de busca: PJ - Score de Crédito Quantum PJ, score risco crédito rating inadimplência
+- Retorno principal: Retorna score de crédito Quantum de pessoa jurídica pelo CNPJ informado, com resumo textual e dados estruturados de bureau de crédito.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 690,
+    "creditBureauSummary": "Score de crédito dentro da média do setor",
+    "creditBureauDetails": {},
+    "origin": "Quantum",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
   "cnpj": "cnpj"
 }'
 ```

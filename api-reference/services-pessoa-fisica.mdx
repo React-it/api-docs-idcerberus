@@ -63,13 +63,13 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
 
 <CardGroup cols={2}>
  <Card title="Biometria e documentos">
- 8 services: `SERVICE_FACE_INDEX`, `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_FACE_MATCH` e mais 5.
+ 7 services: `SERVICE_FACE_INDEX`, `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_FACE_MATCH` e mais 4.
  </Card>
  <Card title="Contatos, sites e relacionamentos">
- 12 services: `SERVICE_PF_FINANCIAL_AND_ADDRESS`, `SERVICE_CONFIRM_PHONE`, `SERVICE_DOMAINS_CPF` e mais 9.
+ 15 services: `SERVICE_PF_FINANCIAL_AND_ADDRESS`, `SERVICE_CONFIRM_PHONE`, `SERVICE_DOMAINS_CPF` e mais 12.
  </Card>
  <Card title="Dados cadastrais e Receita Federal">
- 9 services: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`, `SERVICE_MEI`, `SERVICE_RFB_PF_ON_DEMAND` e mais 6.
+ 10 services: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`, `SERVICE_MEI`, `SERVICE_RFB_PF_ON_DEMAND` e mais 7.
  </Card>
  <Card title="Dados eleitorais e PEP">
  8 services: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`, `SERVICE_ELECTORAL_DONORS_CPF`, `SERVICE_POLITICAL_INVOLVEMENT` e mais 5.
@@ -81,10 +81,10 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  2 services: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`, `SEVICE_ONLINE_BETTING_PROPENSITY`.
  </Card>
  <Card title="Outros services">
- 8 services: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`, `SERVICE_FAMILY_SOCIAL_BENEFITS`, `SERVICE_PROFESSIONAL_HISTORY` e mais 5.
+ 9 services: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`, `SERVICE_FAMILY_SOCIAL_BENEFITS`, `SERVICE_QUOD_CREDIT_RISK_PERSON` e mais 6.
  </Card>
  <Card title="Risco, crédito e dívidas">
- 6 services: `SERVICE_ACTIVE_DEBT_PF`, `SERVICE_FINANCIAL_INFORMATION`, `SERVICE_FINANCIAL_RISK_SCORE` e mais 3.
+ 9 services: `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON`, `SERVICE_ACTIVE_DEBT_PF`, `SERVICE_FINANCIAL_INFORMATION` e mais 6.
  </Card>
 </CardGroup>
 
@@ -515,139 +515,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
-
-</Accordion>
-
-<Accordion title="Liveness 2D" id="SERVICE_LIVENESS_2D">
-
-**Service:** `SERVICE_LIVENESS_2D`
-
-**Quando usar:** Use para validar prova de vida a partir de uma imagem de selfie.
-
-**O que retorna:** Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
-
-<CardGroup cols={2}>
- <Card title="Entrada">
- Campos obrigatórios: `service`, `image1`.
- </Card>
- <Card title="Resultado">
- Principais campos em `result`: `liveness`, `confidence`, `status`.
- </Card>
- <Card title="Status da chamada">
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
- </Card>
- <Card title="Campos opcionais">
- Nenhum campo opcional mapeado neste exemplo.
- </Card>
-</CardGroup>
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-<Tabs>
-<Tab title="Body JSON">
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_LIVENESS_2D",
-  "image1": "selfie"
-}
-```
-
-</Tab>
-<Tab title="Curl HML">
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_LIVENESS_2D",
-  "image1": "selfie"
-}'
-```
-
-</Tab>
-<Tab title="Curl produção">
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_LIVENESS_2D",
-  "image1": "selfie"
-}'
-```
-
-</Tab>
-</Tabs>
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.liveness` | Campo retornado no objeto result para consumo do cliente. |
-| `result.confidence` | Campo retornado no objeto result para consumo do cliente. |
-| `result.status` | Situação principal retornada pelo produto consultado. |
-
-### Como consumir o retorno
-
-<CardGroup cols={2}>
- <Card title="result">
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
- </Card>
- <Card title="status">
- Status técnico da chamada, com `code` e `message`.
- </Card>
- <Card title="onboardingStatus">
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
- </Card>
- <Card title="externalId">
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
- </Card>
-</CardGroup>
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "liveness": true,
-    "confidence": 0.97,
-    "status": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna resultado da prova de vida 2D, com status, score ou confiança da selfie e sinais de validação contra fraude simples.
 
 </Accordion>
 
@@ -1744,6 +1611,154 @@ Neste service, o objeto `result` representa: Retorna domínios, sites e sinais d
 
 </Accordion>
 
+<Accordion title="E-mails de Pessoas Relacionadas" id="SERVICE_RELATED_PEOPLE_EMAILS">
+
+**Service:** `SERVICE_RELATED_PEOPLE_EMAILS`
+
+**Quando usar:** Use para validar ou consultar histórico de e-mails relacionados ao documento.
+
+**O que retorna:** Retorna e-mails associados a pessoas relacionadas ao CPF informado, com o relacionamento identificado e sinais de uso de cada e-mail.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `totalRelatedPeopleEmails`, `relatedPeopleEmailsList`, `relatedPeopleEmails`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_RELATED_PEOPLE_EMAILS",
+  "cpf": "cpf"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_EMAILS",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_EMAILS",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.totalRelatedPeopleEmails` | Quantidade de e-mails encontrados para pessoas relacionadas ao CPF consultado. |
+| `result.relatedPeopleEmailsList` | Lista resumida de e-mails encontrados para pessoas relacionadas ao CPF consultado. |
+| `result.relatedPeopleEmails` | Lista estruturada dos e-mails de pessoas relacionadas, com relacionamento e sinais de uso de cada e-mail, usada para renderização em tabela. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalRelatedPeopleEmails": 2,
+    "relatedPeopleEmailsList": "nome@email.com - NOME DA PESSOA - 00000000000 - CONJUGE",
+    "relatedPeopleEmails": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "CONJUGE",
+        "type": "PESSOAL",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "email": "nome@email.com",
+        "domain": "email.com",
+        "validationStatus": "VALID"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna e-mails associados a pessoas relacionadas ao CPF informado, com o relacionamento identificado e sinais de uso de cada e-mail.
+
+</Accordion>
+
 <Accordion title="Endereços" id="SERVICE_ADDRESS">
 
 **Service:** `SERVICE_ADDRESS`
@@ -1883,6 +1898,159 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna endereços associados ao CPF, incluindo logradouro, número, bairro, cidade, UF, CEP, país, tipo e indicadores de atualidade quando disponíveis.
+
+</Accordion>
+
+<Accordion title="Endereços de Pessoas Relacionadas" id="SERVICE_RELATED_PEOPLE_ADDRESSES">
+
+**Service:** `SERVICE_RELATED_PEOPLE_ADDRESSES`
+
+**Quando usar:** Use para consultar ou validar endereços associados ao documento.
+
+**O que retorna:** Retorna endereços associados a pessoas relacionadas ao CNPJ informado, com o relacionamento identificado e sinais de uso de cada endereço.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cnpj`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cnpj`, `totalRelatedPeopleAddresses`, `relatedPeopleAddressesList`, `relatedPeopleAddresses`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cnpj`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_RELATED_PEOPLE_ADDRESSES",
+  "cnpj": "cnpj"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_ADDRESSES",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_ADDRESSES",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cnpj` | Sim | CNPJ da empresa consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.totalRelatedPeopleAddresses` | Quantidade de endereços encontrados para pessoas relacionadas ao CNPJ consultado. |
+| `result.relatedPeopleAddressesList` | Lista resumida de endereços encontrados para pessoas relacionadas ao CNPJ consultado. |
+| `result.relatedPeopleAddresses` | Lista estruturada dos endereços de pessoas relacionadas, com relacionamento e sinais de uso de cada endereço, usada para renderização em tabela. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalRelatedPeopleAddresses": 1,
+    "relatedPeopleAddressesList": "RUA EXEMPLO, 100 - NOME DA PESSOA - 00000000000 - SOCIO",
+    "relatedPeopleAddresses": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "SOCIO",
+        "type": "RESIDENCIAL",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "address": "RUA EXEMPLO",
+        "zipcode": "00000000",
+        "state": "SP",
+        "city": "SAO PAULO",
+        "neighborhood": "CENTRO",
+        "number": "100",
+        "complement": "",
+        "isRatified": true
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna endereços associados a pessoas relacionadas ao CNPJ informado, com o relacionamento identificado e sinais de uso de cada endereço.
 
 </Accordion>
 
@@ -2635,6 +2803,155 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna vínculos econômicos associados ao CPF, como empresas relacionadas, participações, relações profissionais e indicadores de relacionamento.
+
+</Accordion>
+
+<Accordion title="Telefones de Pessoas Relacionadas" id="SERVICE_RELATED_PEOPLE_PHONES">
+
+**Service:** `SERVICE_RELATED_PEOPLE_PHONES`
+
+**Quando usar:** Use para consultar, validar ou enriquecer dados de telefone.
+
+**O que retorna:** Retorna telefones associados a pessoas relacionadas ao CPF informado, com o relacionamento identificado e sinais de uso de cada telefone.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `totalRelatedPeoplePhones`, `relatedPeoplePhonesList`, `relatedPeoplePhones`.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_RELATED_PEOPLE_PHONES",
+  "cpf": "cpf"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_PHONES",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_PHONES",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.totalRelatedPeoplePhones` | Quantidade de telefones encontrados para pessoas relacionadas ao CPF consultado. |
+| `result.relatedPeoplePhonesList` | Lista resumida de telefones encontrados para pessoas relacionadas ao CPF consultado. |
+| `result.relatedPeoplePhones` | Lista estruturada dos telefones de pessoas relacionadas, com relacionamento e sinais de uso de cada telefone, usada para renderização em tabela. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalRelatedPeoplePhones": 1,
+    "relatedPeoplePhonesList": "11900000000 - NOME DA PESSOA - 00000000000 - FILHO",
+    "relatedPeoplePhones": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "FILHO",
+        "type": "CELULAR",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "areaCode": "11",
+        "number": "900000000",
+        "phone": "11900000000",
+        "isInDoNotCallList": false
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna telefones associados a pessoas relacionadas ao CPF informado, com o relacionamento identificado e sinais de uso de cada telefone.
 
 </Accordion>
 
@@ -4171,6 +4488,166 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis.
+
+</Accordion>
+
+<Accordion title="TSE - Local de votação" id="SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF">
+
+**Service:** `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF`
+
+**Quando usar:** Use este service quando precisar executar a consulta "TSE - Local de votação" via API.
+
+**O que retorna:** Retorna local de votação, situação eleitoral e biometria atual da pessoa no TSE, a partir do CPF informado.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `status`, `pollingPlace`, `pollingPlaceAddress`, `city`, `uf` e mais 7.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ `birthDate`, `motherName`
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** `birthDate`, `motherName`
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)",
+  "motherName": "nome da mãe (opcional)"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)",
+  "motherName": "nome da mãe (opcional)"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (opcional)",
+  "motherName": "nome da mãe (opcional)"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+| `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
+| `motherName` | Não | Nome da mãe usado para aumentar a assertividade da consulta. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.pollingPlace` | Nome do local de votação retornado pelo TSE. |
+| `result.pollingPlaceAddress` | Endereço vigente do local de votação retornado pelo TSE. |
+| `result.city` | Campo retornado no objeto result para consumo do cliente. |
+| `result.uf` | Campo retornado no objeto result para consumo do cliente. |
+| `result.zipcode` | Campo retornado no objeto result para consumo do cliente. |
+| `result.electoralZone` | Zona eleitoral do local de votação. |
+| `result.electoralSection` | Seção eleitoral do local de votação. |
+| `result.hasBiometrics` | Indica se o TSE retornou biometria cadastrada para a pessoa. |
+| `result.queryDate` | Data retornada pela fonte de dados para a consulta. |
+| `result.source` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "status": "REGULAR",
+    "pollingPlace": "ESCOLA CLASSE 01",
+    "pollingPlaceAddress": "QUADRA 01, BRASILIA - DF",
+    "city": "BRASILIA",
+    "uf": "DF",
+    "zipcode": "70000000",
+    "electoralZone": "001",
+    "electoralSection": "0001",
+    "hasBiometrics": true,
+    "queryDate": "2026-08-01",
+    "source": "TSE-LOCALVOTACAO",
+    "onlineQuery": "Situação, local, endereço, zona e seção retornados com sucesso"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna local de votação, situação eleitoral e biometria atual da pessoa no TSE, a partir do CPF informado.
 
 </Accordion>
 
@@ -7083,6 +7560,151 @@ Neste service, o objeto `result` representa: Retorna benefícios sociais familia
 
 </Accordion>
 
+<Accordion title="Flags Negativos" id="SERVICE_QUOD_CREDIT_RISK_PERSON">
+
+**Service:** `SERVICE_QUOD_CREDIT_RISK_PERSON`
+
+**Quando usar:** Use este service quando precisar executar a consulta "Flags Negativos" via API.
+
+**O que retorna:** Retorna flags negativos de crédito de pessoa física pelo CPF informado, com nível e classificação de risco, indicativo de restrições e quantidade de flags negativos.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `riskLevel`, `riskClassification`, `hasRestrictions`, `negativeFlagsCount`, `creditBureauSummary` e mais 3.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_QUOD_CREDIT_RISK_PERSON",
+  "cpf": "cpf"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_RISK_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_RISK_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.riskLevel` | Nível de risco de crédito retornado na consulta. |
+| `result.riskClassification` | Classificação de risco de crédito retornada na consulta. |
+| `result.hasRestrictions` | Indica se foram retornadas restrições de crédito. |
+| `result.negativeFlagsCount` | Quantidade de flags negativos retornados na consulta. |
+| `result.creditBureauSummary` | Resumo textual dos principais dados de bureau de crédito retornados. |
+| `result.creditBureauDetails` | Dados estruturados de bureau de crédito para consumo via API. |
+| `result.origin` | Origem funcional da consulta executada. |
+| `result.queryDate` | Data retornada pela fonte de dados para a consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "hasRestrictions": false,
+    "negativeFlagsCount": 0,
+    "creditBureauSummary": "Nenhum flag negativo encontrado",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna flags negativos de crédito de pessoa física pelo CPF informado, com nível e classificação de risco, indicativo de restrições e quantidade de flags negativos.
+
+</Accordion>
+
 <Accordion title="Histórico profissional" id="SERVICE_PROFESSIONAL_HISTORY">
 
 **Service:** `SERVICE_PROFESSIONAL_HISTORY`
@@ -7908,6 +8530,149 @@ Neste service, o objeto `result` representa: Retorna registros de servidor publi
 
 </Accordion>
 
+<Accordion title="Dados Restritivos" id="SERVICE_BOAVISTA_CREDIT_SCORE_PERSON">
+
+**Service:** `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON`
+
+**Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
+
+**O que retorna:** Retorna dados restritivos de crédito de pessoa física pelo CPF informado, incluindo score, indicativo e quantidade de restrições encontradas.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `score`, `hasRestrictions`, `restrictionCount`, `creditBureauSummary`, `creditBureauDetails` e mais 2.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.score` | Score de crédito retornado pelo bureau para o CNPJ consultado. |
+| `result.hasRestrictions` | Indica se foram retornadas restrições de crédito. |
+| `result.restrictionCount` | Quantidade de restrições retornadas na consulta. |
+| `result.creditBureauSummary` | Resumo textual dos principais dados de bureau de crédito retornados. |
+| `result.creditBureauDetails` | Dados estruturados de bureau de crédito para consumo via API. |
+| `result.origin` | Origem funcional da consulta executada. |
+| `result.queryDate` | Data retornada pela fonte de dados para a consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 705,
+    "hasRestrictions": false,
+    "restrictionCount": 0,
+    "creditBureauSummary": "Nenhuma restrição de crédito encontrada",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados restritivos de crédito de pessoa física pelo CPF informado, incluindo score, indicativo e quantidade de restrições encontradas.
+
+</Accordion>
+
 <Accordion title="Dívida ativa" id="SERVICE_ACTIVE_DEBT_PF">
 
 **Service:** `SERVICE_ACTIVE_DEBT_PF`
@@ -8455,6 +9220,301 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna score de crédito associado ao CPF, com pontuação, faixa de risco e mensagem da consulta quando disponíveis.
+
+</Accordion>
+
+<Accordion title="Score de Crédito" id="SERVICE_QUOD_CREDIT_SCORE_PERSON">
+
+**Service:** `SERVICE_QUOD_CREDIT_SCORE_PERSON`
+
+**Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
+
+**O que retorna:** Retorna score de crédito de pessoa física pelo CPF informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `score`, `riskLevel`, `riskClassification`, `reasonCodes`, `creditBureauSummary` e mais 3.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.score` | Score de crédito retornado pelo bureau para o CNPJ consultado. |
+| `result.riskLevel` | Nível de risco de crédito retornado na consulta. |
+| `result.riskClassification` | Classificação de risco de crédito retornada na consulta. |
+| `result.reasonCodes` | Motivos, códigos ou fatores retornados para explicar o score. |
+| `result.creditBureauSummary` | Resumo textual dos principais dados de bureau de crédito retornados. |
+| `result.creditBureauDetails` | Dados estruturados de bureau de crédito para consumo via API. |
+| `result.origin` | Origem funcional da consulta executada. |
+| `result.queryDate` | Data retornada pela fonte de dados para a consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 680,
+    "riskLevel": "MEDIO",
+    "riskClassification": "B",
+    "reasonCodes": [
+      "Tempo de relacionamento com o mercado",
+      "Renda declarada baixa"
+    ],
+    "creditBureauSummary": "Score de crédito dentro da média do perfil",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna score de crédito de pessoa física pelo CPF informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+</Accordion>
+
+<Accordion title="Score de Crédito Multidados" id="SERVICE_BOAVISTA_ONE_SCORE_PERSON">
+
+**Service:** `SERVICE_BOAVISTA_ONE_SCORE_PERSON`
+
+**Quando usar:** Use para avaliar risco, score ou propensão associada à pessoa.
+
+**O que retorna:** Retorna score de crédito multidados de pessoa física pelo CPF informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
+
+<CardGroup cols={2}>
+ <Card title="Entrada">
+ Campos obrigatórios: `service`, `cpf`.
+ </Card>
+ <Card title="Resultado">
+ Principais campos em `result`: `cpf`, `score`, `riskLevel`, `riskClassification`, `reasonCodes`, `creditBureauSummary` e mais 3.
+ </Card>
+ <Card title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+  "cpf": "cpf"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.score` | Score de crédito retornado pelo bureau para o CNPJ consultado. |
+| `result.riskLevel` | Nível de risco de crédito retornado na consulta. |
+| `result.riskClassification` | Classificação de risco de crédito retornada na consulta. |
+| `result.reasonCodes` | Motivos, códigos ou fatores retornados para explicar o score. |
+| `result.creditBureauSummary` | Resumo textual dos principais dados de bureau de crédito retornados. |
+| `result.creditBureauDetails` | Dados estruturados de bureau de crédito para consumo via API. |
+| `result.origin` | Origem funcional da consulta executada. |
+| `result.queryDate` | Data retornada pela fonte de dados para a consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 710,
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "reasonCodes": [
+      "Bom histórico de pagamentos"
+    ],
+    "creditBureauSummary": "Score de crédito multidados acima da média do perfil",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna score de crédito multidados de pessoa física pelo CPF informado, com nível de risco, classificação de risco, motivos do score e resumo textual da consulta.
 
 </Accordion>
 
