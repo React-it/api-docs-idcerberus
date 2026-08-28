@@ -1,0 +1,305 @@
+---
+title: Quickstart
+description: Make your first call to the idCerberus API with Postman, Windows, macOS, or Linux
+---
+
+# Quickstart
+
+This guide shows the simplest path to making your first call to the idCerberus
+API. It's written for anyone who isn't yet familiar with APIs, terminals, or
+`curl`.
+
+You can test in three ways:
+
+| Way | When to use |
+| --- | --- |
+| Postman | Best option if you prefer a visual interface |
+| Windows PowerShell or CMD | Good for testing directly on Windows |
+| macOS or Linux terminal | Good if you use a Unix terminal |
+
+<Tip>
+  Never run a `curl` command before? Start with Postman. Once the call
+  works, copy the same pattern to your terminal or application code.
+</Tip>
+
+## Before you start
+
+You need:
+
+1. your application's `client` and `secret`;
+2. access to the staging or production environment;
+3. a test CPF or CNPJ;
+4. permission to consume the product you want.
+
+<Note>
+  Don't have a `client` and `secret` yet? This pair is released by React IT
+  along with the contracted product, it's not something you generate
+  yourself. Request it by email at
+  [contact@react-it.com](mailto:contact@react-it.com) before following this
+  guide.
+</Note>
+
+The base endpoints are:
+
+| Environment | `{base_url}` |
+| --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` |
+| Production | `https://backoffice.idcerberus.com` |
+
+The call is the same in both environments. To use production, keep the
+method, headers, and body the same and only swap the URL.
+
+<Warning>
+  Don't mix environments. A token generated in staging must be used with the
+  staging URL. A token generated in production must be used with the
+  production URL.
+</Warning>
+
+## 1. Choose where to test
+
+### Postman
+
+1. Open Postman.
+2. Click **New**.
+3. Choose **HTTP Request**.
+4. Select the `POST` method.
+5. Paste the URL for the environment you want.
+6. Go to the **Headers** tab and add `Content-Type` with value `application/json`.
+7. Go to the **Body** tab.
+8. Choose **raw**.
+9. Select **JSON**.
+10. Paste the example body.
+11. Click **Send**.
+
+### Windows PowerShell
+
+1. Open the start menu.
+2. Search for `PowerShell`.
+3. Open PowerShell.
+4. Paste the example `curl.exe` command.
+5. Press **Enter**.
+
+On Windows, prefer `curl.exe`. Plain `curl` alone can be interpreted as a
+different built-in PowerShell command.
+
+### Windows CMD
+
+1. Open the start menu.
+2. Search for `cmd`.
+3. Open Command Prompt.
+4. Paste the command on a single line, or use `^` to break lines.
+5. Press **Enter**.
+
+### macOS or Linux
+
+1. Open the Terminal.
+2. Paste the example `curl` command.
+3. Press **Enter**.
+
+On macOS and Linux, `curl` usually comes preinstalled. If the terminal says
+the command doesn't exist, install the `curl` package through your system's
+package manager.
+
+## 2. Generate a token
+
+The first request generates a JWT token. That token will be used in the next
+protected calls.
+
+In Postman, set it up like this:
+
+| Field | Value |
+| --- | --- |
+| Method | `POST` |
+| Staging URL | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+| Production URL | `https://backoffice.idcerberus.com/api/token-generate` |
+| Header | `Content-Type: application/json` |
+| Body | `raw` + `JSON` |
+
+Body:
+
+```json
+{
+  "client": "{client}",
+  "secret": "{secret}"
+}
+```
+
+### Staging
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+### Production
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+### Windows CMD
+
+```bat
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
+  --header "Content-Type: application/json" ^
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+Expected response:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+Copy the `access_token` value. It will be used in the next step.
+
+In Postman, copy only the content between quotes. Example:
+
+```json
+{
+  "access_token": "eyJhbGciOi...",
+  "expires_in": "300"
+}
+```
+
+In this case, the token to use in the next step is `eyJhbGciOi...`.
+
+## 3. Run a service
+
+Use the returned token in the `Authorization` header.
+
+In Postman, create a new request:
+
+| Field | Value |
+| --- | --- |
+| Method | `POST` |
+| Staging URL | `https://backoffice-hml.idcerberus.com/api/service-api` |
+| Production URL | `https://backoffice.idcerberus.com/api/service-api` |
+| Header 1 | `Authorization: Bearer {jwt_token}` |
+| Header 2 | `Content-Type: application/json` |
+| Body | `raw` + `JSON` |
+
+### Staging
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+### Production
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+### Windows CMD
+
+```bat
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
+  --header "Authorization: Bearer {jwt_token}" ^
+  --header "Content-Type: application/json" ^
+  --data "{\"service\":\"SERVICE_PERSON_DATA_ENRICHMENT\",\"cpf\":\"cpf\"}"
+```
+
+<Info>
+  Going to test OCR? Use the [OCR via Service API](/guides/service-api/sobre-ocr-service-api)
+  guide to build the payload with `image1`, `image2`, `documentType`, base64,
+  and response examples. OCR needs a real image; a short payload only
+  validates authentication and access.
+</Info>
+
+Replace:
+
+| Value | What to put |
+| --- | --- |
+| `{jwt_token}` | Token returned in the previous step |
+| `cpf` | CPF used for testing |
+| `SERVICE_PERSON_DATA_ENRICHMENT` | Code of the service you want to run |
+
+<CardGroup cols={2}>
+  <Card icon="id-card" title="CPF query" href="/guides/primeira-consulta-cpf">
+    Use this to validate the flow with a simple individual (PF) service.
+  </Card>
+  <Card icon="building" title="CNPJ query" href="/guides/primeira-consulta-cnpj">
+    Use this to validate the flow with a simple business (PJ) service.
+  </Card>
+  <Card icon="image" title="OCR with image" href="/guides/service-api/sobre-ocr-service-api">
+    Use this when the body needs base64, an image, a URL, or `documentType`.
+  </Card>
+  <Card icon="book" title="Service catalog" href="/guides/service-api/familias-de-servicos">
+    Use this to browse the product groups of `POST /api/service-api`.
+  </Card>
+</CardGroup>
+
+## 4. Read the result
+
+Most services return the data in `result` and the technical status in
+`status`.
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "REGULAR",
+    "name": "PERSON NAME"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+| Field | How to interpret |
+| --- | --- |
+| `result` | Data returned by the service |
+| `status.code` | Technical processing code |
+| `status.message` | Technical message for the query |
+| `externalId` | Query identifier, when returned |
+
+## 5. Handle success and failure
+
+Use `status.code` to decide your application's behavior.
+
+| Situation | How to handle it |
+| --- | --- |
+| `status.code` 200 | Processing complete. Read the `result` object. |
+| `status.code` 400 | The payload, parameter, permission, or external source may have failed. Read `status.message`. |
+| Expired token | Generate a new token and repeat the call. |
+| No JSON body | Handle it according to the endpoint. The onboarding report returns a PDF. |
+
+## 6. Next step
+
+If you already know which product to consume, go to the [API Reference](/api-reference/autorização/gerar-token-de-api).
+
+If you're still designing the flow, use [Choose the right service](/guides/escolha-o-servico-certo).
+
+<Info>
+  Did something go wrong in this test? You don't have to guess. See
+  [Common integration errors](/guides/erros-comuns-integracao) before trying
+  again. Most first-call problems are a token, environment mix-up, or a
+  missing `service` field, and all of them have a direct fix there.
+</Info>
