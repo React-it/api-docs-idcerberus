@@ -35,7 +35,7 @@ integrações, leia os dois.
 | HTTP 200 e `status.code` 200 | A chamada foi processada | Ler `result` e seguir a regra de negócio |
 | HTTP 200 e `status.code` 400 | Payload inválido ou service sem permissão no produto | Ler `status.message`, validar parâmetros e permissão |
 | HTTP 200 e `status.code` 401 | Produto inativo ou não encontrado para o `client` usado | Confirmar se o produto está ativo, não é problema de token |
-| HTTP 401 ou 403 (de verdade) | Token ausente, expirado ou de outro ambiente — rejeitado antes de processar | Gerar novo token no ambiente correto |
+| HTTP 401 ou 403 (de verdade) | Token ausente, expirado ou de outro ambiente, rejeitado antes de processar | Gerar novo token no ambiente correto |
 | Timeout | Fonte externa ou rede pode ter demorado | Aplicar retry controlado, sem loop agressivo |
 | Sem body JSON | O endpoint retorna outro tipo de conteúdo | Tratar conforme contrato, como PDF no relatório de onboarding |
 
@@ -43,7 +43,7 @@ integrações, leia os dois.
   Exceção real à primeira linha da tabela: se o seu produto for pré-pago e o
   saldo estiver insuficiente, a chamada retorna HTTP 200 **e** `status.code`
   200, mas `status.message` traz algo como "Not enough balance" e `result`
-  vem vazio — sempre leia `status.message` quando `result` vier vazio, mesmo
+  vem vazio. Sempre leia `status.message` quando `result` vier vazio, mesmo
   com HTTP 200 e `status.code` 200.
 </Warning>
 

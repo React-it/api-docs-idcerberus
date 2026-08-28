@@ -6,7 +6,7 @@ description: Receba avisos automáticos quando um onboarding muda de status, sem
 # Webhooks
 
 Use webhooks para que a idCerberus avise a sua aplicação quando um onboarding
-mudar de status — ou quando uma consulta avulsa terminar de processar — em
+mudar de status, ou quando uma consulta avulsa terminar de processar, em
 vez de sua aplicação precisar ficar perguntando (polling).
 
 ## O que é, por que existe, pra que serve
@@ -52,7 +52,7 @@ sequenceDiagram
     Note over idCerberus: status muda / consulta termina /<br/>revisão manual decide
     idCerberus->>Webhook: POST com id-cerberus-token
     Webhook-->>idCerberus: 2xx (confirma recebimento)
-    Note over idCerberus,Webhook: Sem 2xx? Sem retry automático —<br/>veja o aviso abaixo
+    Note over idCerberus,Webhook: Sem 2xx? Sem retry automático,<br/>veja o aviso abaixo
 ```
 
 <Info>
@@ -60,8 +60,8 @@ sequenceDiagram
   onboarding é verificado a cada poucos segundos e disparado quando encontra
   uma mudança; consulta avulsa dispara o webhook cerca de 10 segundos depois
   da resposta HTTP. Decisão de revisão manual (alguém aprova/recusa pelo
-  backoffice) dispara na hora. Nenhum desses tempos é um SLA contratual —
-  trate como comportamento observado, não como garantia.
+  backoffice) dispara na hora. Nenhum desses tempos é um SLA contratual.
+  Trate como comportamento observado, não como garantia.
 </Info>
 
 <Warning>
@@ -71,7 +71,7 @@ sequenceDiagram
   acontece se: (a) o mesmo onboarding mudar de conteúdo de novo mais tarde
   (dispara como entrega nova, não como retry), ou (b) alguém com acesso ao
   [Backoffice](/guides/backoffice) forçar o reenvio manualmente na tela. Por
-  isso, não trate webhook como garantia de entrega — mantenha o polling
+  isso, não trate webhook como garantia de entrega. Mantenha o polling
   (`GET /api/onboarding/report/{tokenOnboarding}`) como rede de segurança
   real, não só como formalidade.
 </Warning>
@@ -95,12 +95,12 @@ O formato do corpo depende da origem do evento.
 ```
 
 Veja a tabela de campos completa em
-[Onboarding via SDK](/guides/onboarding-sdk#consultar-resultado) — é a
+[Onboarding via SDK](/guides/onboarding-sdk#consultar-resultado): é a
 mesma estrutura.
 
 **Consulta avulsa (`POST /api/service-api`):** o mesmo JSON que já veio na
-resposta HTTP síncrona da chamada — `result`, `status`, `onboardingStatus` e
-`externalId`, não o formato de relatório de onboarding acima.
+resposta HTTP síncrona da chamada (`result`, `status`, `onboardingStatus` e
+`externalId`), não o formato de relatório de onboarding acima.
 
 ## Autenticar a chamada recebida
 
@@ -127,7 +127,7 @@ veio mesmo da idCerberus, e não de terceiros que descobriram sua URL.
 2. Sempre valide o header `id-cerberus-token` antes de confiar no payload.
 3. Trate eventos repetidos. Reprocessar o mesmo `tokenOnboarding` com o mesmo
   status não deve causar efeito colateral duplicado.
-4. Não trate `REFUSED` como erro técnico — é um resultado de negócio, igual ao
+4. Não trate `REFUSED` como erro técnico. É um resultado de negócio, igual ao
   consumo avulso via polling. Veja
   [Status e erros](/guides/status-e-erros).
 5. Mantenha um fallback de polling. Como não existe reenvio automático para
@@ -145,7 +145,7 @@ veio mesmo da idCerberus, e não de terceiros que descobriram sua URL.
   </Accordion>
   <Accordion title="Recebo um webhook por consulta avulsa também?">
     Sim, se o seu produto tiver webhook configurado. Consultas avulsas em
-    `POST /api/service-api` já retornam o resultado direto na resposta HTTP —
+    `POST /api/service-api` já retornam o resultado direto na resposta HTTP;
     o webhook chega depois (por volta de 10 segundos), com o mesmo conteúdo.
     Na prática ele é redundante para consumo avulso simples; ele importa mais
     quando você quer centralizar tudo (avulso e onboarding) num único

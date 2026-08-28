@@ -9,15 +9,15 @@ Use esta página quando uma chamada não funcionar como esperado.
 
 <Info>
   Página focada em sintomas técnicos específicos (401/403, ambiente errado,
-  PowerShell). Para um diagnóstico mais amplo — com cards por categoria e
-  modelo de mensagem para pedir suporte — veja
+  PowerShell). Para um diagnóstico mais amplo, com cards por categoria e
+  modelo de mensagem para pedir suporte, veja
   [Erros comuns de integração](/guides/erros-comuns-integracao).
 </Info>
 
 ## Recebi 401 ou 403 (HTTP)
 
 Em `POST /api/service-api`, um HTTP 401/403 de verdade só acontece por
-problema de autenticação — a chamada nem chega a processar o service:
+problema de autenticação: a chamada nem chega a processar o service.
 
 1. Token ausente.
 2. Token expirado.
@@ -35,7 +35,7 @@ Authorization: Bearer {jwt_token}
 
 <Warning>
   "Produto não liberado para a conta" e "service sem permissão" **não** geram
-  HTTP 401/403 nesse endpoint — a chamada retorna HTTP 200 com o problema
+  HTTP 401/403 nesse endpoint. A chamada retorna HTTP 200 com o problema
   descrito em `status.message` (`status.code` 400 ou 401 dentro do corpo).
   Veja a seção seguinte.
 </Warning>
@@ -48,7 +48,7 @@ Esse é o caso mais comum de erro em `POST /api/service-api`: a chamada
 | `status.code` no corpo | Causa | Observação |
 | --- | --- | --- |
 | 400 | Body inválido, campo obrigatório ausente, `service` incorreto, CPF/CNPJ inválido, fonte externa indisponível | Leia `status.message` para o motivo exato |
-| 401 | Produto não encontrado ou inativo para o `client` usado | Diferente do HTTP 401 — aqui o token é válido, o produto que está desativado |
+| 401 | Produto não encontrado ou inativo para o `client` usado | Diferente do HTTP 401: aqui o token é válido, o produto que está desativado |
 
 Como resolver:
 

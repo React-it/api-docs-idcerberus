@@ -19,7 +19,7 @@ PDF.
   aplicação e expira em minutos (veja [Autenticação](/guides/autenticacao)).
   `tokenOnboarding` identifica um cadastro específico e continua válido durante
   todo o processo, mesmo depois do `access_token` expirar. Se o `access_token`
-  expirar no meio do fluxo, gere um novo — o `tokenOnboarding` não muda.
+  expirar no meio do fluxo, gere um novo. O `tokenOnboarding` não muda.
 </Warning>
 
 ## O que é, por que existe, pra que serve
@@ -31,9 +31,9 @@ PDF.
   para validação (foco, iluminação, ângulo, prova de vida) é um problema já
   resolvido pelo SDK. Reimplementar isso do zero é caro e propenso a erro.
 3. **Pra que serve pra você:** sua aplicação não processa imagem nem
-  implementa câmera — só gera o `tokenOnboarding`, entrega ao SDK e depois lê
+  implementa câmera; só gera o `tokenOnboarding`, entrega ao SDK e depois lê
   o resultado já pronto. Se seu caso de uso é só consultar dados (sem capturar
-  documento do usuário), você provavelmente não precisa do SDK — veja
+  documento do usuário), você provavelmente não precisa do SDK. Veja
   [Escolha o serviço certo](/guides/escolha-o-servico-certo).
 
 ## Quando usar
@@ -361,7 +361,7 @@ apresentar o relatório final do processo de onboarding em PDF.
 Existem duas formas de saber quando um onboarding termina de processar:
 webhook (a idCerberus avisa a sua aplicação) ou polling (a sua aplicação
 pergunta). Veja [Webhooks](/guides/webhooks) para configurar o aviso
-automático — é a forma recomendada, porque reduz chamadas desnecessárias.
+automático. É a forma recomendada, porque reduz chamadas desnecessárias.
 Mesmo com webhook configurado, mantenha o polling abaixo como fallback: uma
 entrega de webhook que falha não é reenviada automaticamente (detalhes em
 [Webhooks](/guides/webhooks)).
@@ -370,14 +370,14 @@ Consulte `GET /api/onboarding/report/{tokenOnboarding}` até o `status` sair de
 `IN_PROCESS`.
 
 1. Espere alguns segundos entre uma consulta e outra. Não faça polling a cada
-  poucos milissegundos — os serviços por trás do onboarding podem depender de
+  poucos milissegundos: os serviços por trás do onboarding podem depender de
   bases externas e levar mais tempo que uma chamada avulsa.
 2. Defina um limite de tentativas ou um tempo máximo de espera na sua
   aplicação, com um caminho claro para "ainda não terminou, avise o usuário e
   tente de novo depois" em vez de travar a tela esperando.
 3. `REFUSED` é um resultado final do negócio, não um erro técnico. A chamada em
   si teve sucesso (HTTP 200); o cadastro é que não foi aprovado. Não trate
-  `REFUSED` como falha para retry — trate como decisão de negócio que a sua
+  `REFUSED` como falha para retry. Trate como decisão de negócio que a sua
   aplicação precisa refletir para o usuário.
 
 ## Boas práticas

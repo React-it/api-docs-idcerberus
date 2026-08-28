@@ -31,7 +31,7 @@ comportamentos esperados que só não estavam claros na documentação técnica.
   </Accordion>
   <Accordion title="client e secret são os mesmos em HML e produção?">
     Não. São credenciais diferentes por ambiente. Um `client`/`secret` de HML
-    não gera token válido para chamar produção, e vice-versa — os bancos de
+    não gera token válido para chamar produção, e vice-versa. Os bancos de
     dados e o realm de autenticação são separados fisicamente entre os dois
     ambientes.
   </Accordion>
@@ -48,12 +48,12 @@ comportamentos esperados que só não estavam claros na documentação técnica.
   <Accordion title="Recebi HTTP 200, mas a consulta não funcionou. Isso é normal?">
     Sim, e é o motivo número um de confusão nesta API. `POST /api/service-api`
     quase sempre retorna HTTP 200, mesmo quando a consulta falhou por
-    completo — o motivo real fica dentro do corpo, em `status.code` e
+    completo. O motivo real fica dentro do corpo, em `status.code` e
     `status.message`. Nunca decida sucesso ou falha só pelo HTTP status.
   </Accordion>
   <Accordion title="Qual a diferença entre um 401/403 de verdade e um erro de acesso no corpo?">
-    HTTP 401/403 de verdade só acontece por problema de autenticação — token
-    ausente, expirado ou de outro ambiente — e a chamada nem chega a
+    HTTP 401/403 de verdade só acontece por problema de autenticação (token
+    ausente, expirado ou de outro ambiente), e a chamada nem chega a
     processar o service. "Produto não liberado para o service" e "produto
     inativo" não geram HTTP 401/403 nesse endpoint: a chamada retorna HTTP
     200 com o problema descrito em `status.code` (400 para payload/permissão
@@ -61,23 +61,23 @@ comportamentos esperados que só não estavam claros na documentação técnica.
   </Accordion>
   <Accordion title="A chamada voltou 200/200, mas result veio vazio. Por quê?">
     Existem pelo menos três causas distintas: a fonte de dados não encontrou
-    nada para aquele documento (comportamento válido — nem todo retorno vazio
-    é erro), a imagem não foi lida com sucesso em OCR, ou — se o seu produto
-    for pré-pago — o saldo da organização está insuficiente. Esse último caso
+    nada para aquele documento (comportamento válido, nem todo retorno vazio
+    é erro), a imagem não foi lida com sucesso em OCR, ou, se o seu produto
+    for pré-pago, o saldo da organização está insuficiente. Esse último caso
     é traiçoeiro porque também vem com HTTP 200 e `status.code` 200, com
     `status.message` dizendo algo como "Not enough balance". Sempre leia
     `status.message` quando `result` vier vazio, mesmo com 200/200.
   </Accordion>
   <Accordion title="O alias que estou usando pode ser diferente em outro produto?">
     Não. O alias de cada service (o valor que você envia em `service`) é
-    único no sistema — não existe um alias customizado por produto. Se um
+    único no sistema: não existe um alias customizado por produto. Se um
     service não funciona, o problema é ele não estar habilitado para o seu
     produto, não o nome do alias estar errado (a menos que você tenha
     digitado errado).
   </Accordion>
   <Accordion title="Um alias parece ter erro de digitação. Devo corrigir?">
     Só num caso específico: `SEVICE_ONLINE_BETTING_PROPENSITY` está
-    documentado sem a letra R em `SERVICE` de propósito — essa é a grafia
+    documentado sem a letra R em `SERVICE` de propósito. Essa é a grafia
     implementada no backend. Corrigir esse alias ao copiar quebra a chamada.
     Fora esse caso, copie os aliases exatamente como aparecem no
     [catálogo de services](/guides/indice-de-services).
@@ -92,7 +92,7 @@ comportamentos esperados que só não estavam claros na documentação técnica.
     autentica a sua aplicação e expira em minutos. `tokenOnboarding`
     identifica um cadastro específico e continua válido durante todo o
     processo, mesmo depois do `access_token` expirar. Se o `access_token`
-    expirar no meio do fluxo, gere um novo — o `tokenOnboarding` não muda.
+    expirar no meio do fluxo, gere um novo: o `tokenOnboarding` não muda.
   </Accordion>
   <Accordion title="Quanto tempo leva para um onboarding sair de IN_PROCESS?">
     Não há um tempo fixo garantido. O processamento automático é verificado a
@@ -102,7 +102,7 @@ comportamentos esperados que só não estavam claros na documentação técnica.
     sempre implemente um limite máximo de espera na sua aplicação.
   </Accordion>
   <Accordion title="REFUSED é um erro que devo tratar como falha técnica?">
-    Não. `REFUSED` é um resultado de negócio — a chamada em si teve sucesso
+    Não. `REFUSED` é um resultado de negócio: a chamada em si teve sucesso
     (HTTP 200), e o cadastro é que não foi aprovado pelas regras do produto.
     Não trate `REFUSED` como algo para repetir a chamada; trate como decisão
     que a sua aplicação precisa refletir para o usuário.
@@ -127,14 +127,14 @@ comportamentos esperados que só não estavam claros na documentação técnica.
     conteúdo de novo mais tarde (o que dispara como uma entrega nova, não
     como retry), ou se alguém com acesso ao [Backoffice](/guides/backoffice)
     forçar o reenvio manualmente na tela. Por isso, nunca dependa só do
-    webhook — mantenha o polling (`GET /api/onboarding/report/{tokenOnboarding}`)
+    webhook. Mantenha o polling (`GET /api/onboarding/report/{tokenOnboarding}`)
     como rede de segurança de verdade.
   </Accordion>
   <Accordion title="O payload do webhook muda dependendo de onde ele veio?">
     Sim. Webhook originado de onboarding usa o formato de relatório completo
     (`tokenOnboarding`, `status`, `fields`, `services`). Webhook originado de
     consulta avulsa usa o mesmo JSON que já veio na resposta HTTP síncrona da
-    chamada (`result`, `status`, `onboardingStatus`, `externalId`) — são
+    chamada (`result`, `status`, `onboardingStatus`, `externalId`). São
     formatos diferentes, então não assuma uma estrutura única.
   </Accordion>
 </AccordionGroup>
@@ -150,15 +150,15 @@ comportamentos esperados que só não estavam claros na documentação técnica.
   <Accordion title="O OCR retornou vazio mesmo com uma imagem boa. O que conferir?">
     Confirme três coisas na ordem: se o `documentType` bate com o documento
     real enviado, se a imagem está completa e legível (sem corte nas bordas),
-    e se o base64 não foi truncado no meio do envio — esse último é comum
+    e se o base64 não foi truncado no meio do envio. Esse último é comum
     quando o payload é montado manualmente e o corte acontece sem erro
     visível até chegar na API.
   </Accordion>
   <Accordion title="O campo com o tipo de documento se chama docType ou doc?">
     Pode variar. `SERVICE_OCR` é processado por parceiros diferentes conforme
     a configuração do seu produto, e isso pode mudar um campo pontual do
-    `result` — o mais comum é o nome do campo que indica o tipo do documento
-    reconhecido. Trate o contrato desta página como "os campos costumam vir
+    `result` (o mais comum é o nome do campo que indica o tipo do documento
+    reconhecido). Trate o contrato desta página como "os campos costumam vir
     assim", não como uma garantia rígida campo a campo, e sempre valide pelo
     `result` retornado no seu ambiente real.
   </Accordion>
@@ -181,7 +181,7 @@ comportamentos esperados que só não estavam claros na documentação técnica.
   </Accordion>
   <Accordion title="Por que a URL da API se chama backoffice-hml.idcerberus.com?">
     `backoffice-hml.idcerberus.com` e `backoffice.idcerberus.com` são as
-    mesmas URLs usadas pelo painel administrativo — mas quando você chama
+    mesmas URLs usadas pelo painel administrativo. Quando você chama
     `/api/...` nelas, está falando com a API, não com a interface visual. Não
     existe uma URL separada só para API: é o mesmo domínio, endpoints
     diferentes.
@@ -209,7 +209,7 @@ comportamentos esperados que só não estavam claros na documentação técnica.
 ## Antes de abrir chamado
 
 Se sua dúvida não está aqui, reúna estas informações antes de acionar o
-suporte — isso evita idas e vindas e acelera a resposta.
+suporte. Isso evita idas e vindas e acelera a resposta.
 
 | Informação | Onde encontrar |
 | --- | --- |
