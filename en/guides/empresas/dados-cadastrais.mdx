@@ -1,0 +1,109 @@
+---
+title: Business registration data
+description: Query registration status, official data, economic activities, and obligations of businesses
+---
+
+# Business registration data
+
+Use these services to validate whether a company exists, enrich CNPJ data,
+and query official registration information. They help with PJ onboarding
+flows, registration analysis, database updates, fraud prevention, and
+operational validation before opening a business relationship.
+
+All services in this category are consumed through the endpoint:
+
+```http
+POST /api/service-api
+```
+
+The `service` field defines which query runs.
+
+## When to use it
+
+Use this category when you need to:
+
+1. confirm a CNPJ's registration status at the Federal Revenue;
+2. retrieve the official name, trade name, opening date, activities, and legal nature;
+3. check state registration in SINTEGRA;
+4. query extended addresses associated with the CNPJ;
+5. query digital presence, domains, and online operation signals;
+6. query periods, invoices, and barcodes for DAS MEI or Simples Nacional - MEI collection;
+7. track the company's registration change history, share capital, and tax regime;
+8. query phone numbers, merchant category (MCC), marketplace presence, online ads, and the company's reputation on review platforms;
+9. query investment fund data linked to the CNPJ and the time evolution of capital, employees, and business owners.
+
+## Available services
+
+| Service | `service` code | Main use |
+| --- | --- | --- |
+| PJ data enrichment | `SERVICE_CORPORATE_DATA_ENRICHMENT` | Returns the company's full registration, including official name, trade name, economic activities, legal nature, regime, and capital |
+| CNPJ status at the Federal Revenue | `SERVICE_RFB_PJ` | Queries the CNPJ's registration status and the status date at the Federal Revenue |
+| CNPJ at the Federal Revenue on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | Fetches or updates the company's registration data at request time |
+| SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION` | Queries state registration data in SINTEGRA, including state, status, and CFDF when applicable |
+| Extended business addresses | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | Returns addresses associated with the CNPJ, including street, neighborhood, city, state, country, postal code, and address type |
+| PJ electoral donations | `SERVICE_ELECTORAL_DONORS_CNPJ` | Queries electoral donations made by the company and aggregated statistics |
+| PJ electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | Queries electoral service provision associated with the CNPJ |
+| DAS MEI at the Federal Revenue | `SERVICE_DAS_MEI` | Queries DAS MEI periods, assessment status, invoice, and barcode |
+| Simples Nacional - MEI collection | `SERVICE_PGMEI` | Queries the MEI's DAS with monthly collection history and payment status |
+| Basic data history | `SERVICE_HISTORY_BASIC_DATA` | Queries the CNPJ's basic registration change history: name, tax regime, registration status, CNAE, and share capital |
+| Merchant category | `SERVICE_MERCHANT_CATEGORY_DATA` | Queries the company's MCC categorization, by direct association with Abecs or inferred from the CNAE |
+| Phone numbers | `SERVICE_PHONES_EXTENDED_COMPANY` | Queries phone numbers associated with the company, with validity, priority, and source indicators |
+| Company evolution | `SERVICE_COMPANY_EVOLUTION` | Queries the time evolution of capital, employees, branches, and business owners, with growth trend |
+| Marketplaces | `SERVICE_MARKETPLACE_DATA` | Queries the company's presence in marketplaces, stores operated, products listed, and ratings |
+| Online ads | `SERVICE_ONLINE_ADS` | Queries online ads linked to the company on classifieds portals and peer-to-peer marketplaces |
+| Ratings and reputation | `SERVICE_REPUTATIONS_AND_REVIEWS` | Queries the company's reputation across different review platforms, with a consolidated view and history |
+| Investment fund data | `SERVICE_INVESTMENT_FUND_DATA` | Queries registration and operational information for investment funds associated with the CNPJ, per CVM |
+
+## Quick example
+
+Business registration enrichment query:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+    "cnpj": "cnpj"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+  "cnpj": "cnpj"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "status": "ATIVA",
+    "name": "REACT IT SOLUCOES EM TECNOLOGIA LTDA",
+    "fantasyName": "REACT IT SOLUTIONS",
+    "origin": "Receita Federal",
+    "regime": "SIMPLES",
+    "foundedDate": "2018-04-04T00:00:00Z"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Best practices
+
+1. Send the CNPJ without a mask when possible, keeping only digits.
+2. Use data enrichment when you need to build a complete registration view of the company.
+3. Use the CNPJ status when you only need to validate whether the company is active or in good standing.
+4. For companies with state-level operations, combine Federal Revenue and SINTEGRA.
+
+For fields, full examples, and responses, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api) or the
+[Business technical catalog](/guides/servicos-pessoa-juridica).

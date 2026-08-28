@@ -1,0 +1,104 @@
+---
+title: Business owners and relationships
+description: Analyze ownership structure, business relationships, relationship circles, and risks associated with business owners
+---
+
+# Business owners and relationships
+
+This category brings together queries to understand who's behind a
+company, what ties exist between people and CNPJs, and what risks show up
+around the ownership structure. It's useful for PJ onboarding, ultimate
+beneficial owner analysis, business owner KYC, economic relationship
+assessment, and investigating relevant ties.
+
+All services in this category are consumed through the endpoint:
+
+```http
+POST /api/service-api
+```
+
+## When to use it
+
+Use this category when you need to:
+
+1. identify owners, representatives, and a company's relationships;
+2. map individuals related to the CNPJ at the first level;
+3. query the full corporate/management ownership structure (QSA) of the headquarters at the Federal Revenue;
+4. map the economic group and infer the ownership structure's influence level;
+5. assess legal cases associated with business owners, individually or aggregated;
+6. query PEP, sanctions, and compliance history indicators for business owners.
+
+## Available services
+
+| Service | `service` code | Main use |
+| --- | --- | --- |
+| Company relationships | `SERVICE_COMPANY_RELATIONSHIP` | Returns the company's relationships, including owners, employees, owned companies, and relationships with people |
+| Business owners at the Federal Revenue | `SERVICE_COMPANY_RFB_OWNERS` | Returns registration data for business owners identified at the Federal Revenue |
+| First-level partners | `SERVICE_FIRST_LEVEL_PARTNER` | Summarizes circles of individuals related to the CNPJ, with metrics on age, income, location, lawsuits, and distributions |
+| Federal Revenue - QSA | `SERVICE_RF_QSA` | Queries the CNPJ's corporate/management ownership structure, with the headquarters' registration data and the list of business owners and administrators |
+| Economic group relationships | `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | Queries entities (people and companies) that are part of the same economic group as the CNPJ, with current and historical relationships |
+| Business ownership influence | `SERVICE_OWNERS_INFLUENCE` | Infers the ownership structure's influence level, considering media exposure, political involvement, and business owners' lawsuits |
+| Business owners' lawsuit distribution | `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | Queries aggregated data on the distribution of lawsuits the company's business owners are involved in |
+| Business owners' legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | Queries cases associated with business owners and groups indicators by document |
+| Business owners' KYC and compliance | `SERVICE_COMPANY_KYC_OWNERS` | Queries PEP exposure, current and historical sanctions, and relevant occurrences within the ownership structure |
+| Business owners' electoral donations | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | Queries electoral donations made by business owners linked to the CNPJ |
+
+## Quick example
+
+Company relationships query:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_COMPANY_RELATIONSHIP",
+    "cnpj": "cnpj"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
+  "cnpj": "cnpj"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "relationshipTotal": 1,
+    "totalOwners": 1,
+    "totalEmployees": 1,
+    "companyRelationships": [
+      {
+        "cpf": "77272722314",
+        "name": "BUSINESS OWNER NAME",
+        "relationshipName": "SOCIO-ADMINISTRADOR",
+        "origin": "RECEITA FEDERAL"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## How to combine services
+
+A PJ analysis usually starts with `SERVICE_COMPANY_RELATIONSHIP` to
+understand the company's structure. Next, `SERVICE_FIRST_LEVEL_PARTNER`
+helps summarize the ownership surroundings. When you need to dig deeper
+into risk, use `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` and
+`SERVICE_COMPANY_KYC_OWNERS`.
+
+For fields, full examples, and responses, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api) or the
+[Business technical catalog](/guides/servicos-pessoa-juridica).

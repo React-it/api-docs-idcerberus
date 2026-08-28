@@ -1,0 +1,113 @@
+---
+title: Business compliance
+description: Query debts, protests, restrictions, and regulatory exposure of businesses
+---
+
+# Business compliance
+
+Business compliance services help identify financial, regulatory, and
+reputational risks tied to CNPJs. They can be used in PJ onboarding,
+vendor monitoring, third-party assessment, credit processes, fraud
+prevention, and AML/CFT routines.
+
+All services in this category are consumed through the endpoint:
+
+```http
+POST /api/service-api
+```
+
+## When to use it
+
+Use this category when you need to:
+
+1. check a company's active debts with government agencies;
+2. query protests at notary offices;
+3. assess public exposure and news related to business owners;
+4. assess exposure and compliance of companies related to the betting market;
+5. identify ultimate beneficial owners and equity stake percentages;
+6. query federal and state negative certificates (PGFN, CGU, CNJ, state debts, PCD, Simples Nacional);
+7. assess aggregated KYC for the company's full economic group;
+8. complement a registration analysis with risk and restriction signals.
+
+## Available services
+
+| Service | `service` code | Main use |
+| --- | --- | --- |
+| PJ active debts | `SERVICE_ACTIVE_DEBT_PJ` | Queries the company's active debts with the government and returns totals, sources, and a list of debts |
+| PJ negative protest certificate | `SERVICE_PROTEST_PJ` | Queries protests at notary offices and returns title details found |
+| Business owners' media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | Queries public exposure, notoriety, unpopularity, and news related to the company's business owners |
+| PJ betting compliance | `SERVICE_COMPLIANCE_BET_PJ` | Queries sports exposure, betting relationship, registration data, and regulatory signals for companies in the sector |
+| FGTS | `SERVICE_FGTS` | Queries the employer's FGTS compliance certificate |
+| Labor lawsuits | `SERVICE_LABOR_LAWSUITS` | Queries an on-demand certificate stating whether there are labor lawsuits related to the company |
+| Legal case distribution | `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | Queries aggregated data on the distribution of lawsuits the company is involved in |
+| Employee KYC and compliance | `SERVICE_EMPLOYEES_KYC` | Queries KYC and regulatory compliance indicators for employees, including PEP status and national and international sanctions |
+| Union agreements | `SERVICE_SYNDICATE_AGREEMENTS` | Queries the union agreements signed between the company and the unions that represent its employees |
+| PJ credit score | `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | Queries a business's credit score by CNPJ, with level and risk classification |
+| PJ multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | Queries a business's multi-data credit score by CNPJ |
+| PJ restrictive data | `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | Queries a business's restrictive credit data, with an indicator and count of restrictions |
+| PJ negative flags | `SERVICE_QUOD_CREDIT_RISK_COMPANY` | Queries a business's negative credit flags, with level and risk classification |
+| PJ Quantum credit score | `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | Queries a business's Quantum credit score by CNPJ |
+| Ultimate beneficial owners | `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | Identifies the company's ultimate beneficial owners, with an accumulated equity stake percentage through indirect chains |
+| Equity stake percentage | `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | Queries the equity stake percentage of each of the company's business owners |
+| PGFN debts | `SERVICE_PGFN_COMPANY` | Queries a certificate for federal tax debts and active union debt at the PGFN |
+| PCD quota | `SERVICE_PCD_COMPANY` | Queries a certificate confirming compliance with the legal PCD quota and rehabilitated beneficiaries |
+| CGU negative certificate | `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | Queries active sanctions in CEIS, CNEP, and CEPIM |
+| CNJ negative certificate | `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | Queries civil convictions for administrative misconduct and ineligibility |
+| State debt negative certificate | `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | Queries state debts, available for every state |
+| Simples Nacional status | `SERVICE_SIMPLES_COMPANY` | Queries enrollment status in Simples Nacional and SIMEI |
+| Economic group KYC and compliance | `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | Queries aggregated PEP and sanctions indicators for the full economic group |
+
+## Quick example
+
+PJ betting compliance query:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_COMPLIANCE_BET_PJ",
+    "cnpj": "cnpj"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "status": "ATIVA",
+    "origin": "Receita Federal",
+    "officialName": "ANONYMIZED OFFICIAL NAME",
+    "tradeName": "ANONYMIZED TRADE NAME",
+    "isBet": false,
+    "onlineBettingCompliance": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  }
+}
+```
+
+## Reading the results
+
+The `status` object indicates the query's technical result. Business
+signals live in the `result` object, such as debt amounts, protests,
+relationships, regulatory exposure, and compliance indicators. In critical
+analyses, combine these services with registration data and ownership
+relationships.
+
+For fields, full examples, and responses, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api) or the
+[Business technical catalog](/guides/servicos-pessoa-juridica).
