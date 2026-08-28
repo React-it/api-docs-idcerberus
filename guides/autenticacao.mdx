@@ -17,6 +17,36 @@ Caso você ainda não possua essas credenciais, entre em contato pelo e-mail
 o processo de criação da conta e liberação do acesso necessário para a
 integração via API.
 
+## O que é, por que existe, pra que serve
+
+- **O que é:** o passo que transforma `client` + `secret` em um `access_token`
+  (JWT) de curta duração, que sua aplicação usa em toda chamada protegida.
+- **Por que existe:** `client` e `secret` são credenciais de longa duração —
+  se vazarem, o estrago é permanente até serem trocadas. O `access_token`
+  expira em minutos, então mesmo que vaze, a janela de risco é pequena. Por
+  isso as chamadas do dia a dia usam o token, não o `client`/`secret`
+  diretamente.
+- **Pra que serve pra você:** define uma peça de infraestrutura da sua
+  aplicação — algo no seu back-end que gera e renova o token
+  automaticamente, para o resto do código nunca se preocupar com isso.
+
+<AccordionGroup>
+  <Accordion title="Preciso gerar um token novo a cada chamada?">
+    Não. Gere um token e reutilize até ele expirar (`expires_in`). Gerar um
+    novo a cada chamada funciona, mas é desperdício de uma chamada extra por
+    request.
+  </Accordion>
+  <Accordion title="O que acontece se eu chamar a API com token expirado?">
+    A chamada retorna erro de autenticação (401). Gere um novo token e repita
+    a chamada original — veja [Status e erros](/guides/status-e-erros) para o
+    tratamento completo.
+  </Accordion>
+  <Accordion title="client e secret são a mesma coisa em HML e produção?">
+    Não. São credenciais diferentes por ambiente. Um `client`/`secret` de HML
+    não gera token válido para chamar produção, e vice-versa.
+  </Accordion>
+</AccordionGroup>
+
 ## Quando usar
 
 Use esta página quando precisar:
@@ -179,3 +209,20 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Para detalhes técnicos do endpoint, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api).
+
+## Próximo passo
+
+<CardGroup cols={2}>
+  <Card icon="rocket" title="Quickstart" href="/guides/quickstart">
+    Use o token recém-gerado para fazer sua primeira chamada completa.
+  </Card>
+  <Card icon="list-check" title="Escolha o serviço certo" href="/guides/escolha-o-servico-certo">
+    Encontre o código `service` certo pra usar depois do token.
+  </Card>
+  <Card icon="triangle-exclamation" title="Status e erros" href="/guides/status-e-erros">
+    Veja como tratar token expirado e outros erros de autenticação.
+  </Card>
+  <Card icon="display" title="Backoffice" href="/guides/backoffice">
+    Diferente do `client`/`secret`: veja como funciona o login pessoal.
+  </Card>
+</CardGroup>

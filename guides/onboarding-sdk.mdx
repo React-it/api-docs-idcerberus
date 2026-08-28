@@ -14,6 +14,28 @@ O `tokenOnboarding` identifica o cadastro durante todo o ciclo: criação,
 execução no SDK, processamento, consulta de resultado e download do relatório em
 PDF.
 
+<Warning>
+  Não confunda os dois tokens deste fluxo. `access_token` autentica a sua
+  aplicação e expira em minutos (veja [Autenticação](/guides/autenticacao)).
+  `tokenOnboarding` identifica um cadastro específico e continua válido durante
+  todo o processo, mesmo depois do `access_token` expirar. Se o `access_token`
+  expirar no meio do fluxo, gere um novo — o `tokenOnboarding` não muda.
+</Warning>
+
+## O que é, por que existe, pra que serve
+
+- **O que é:** um componente (mobile ou web) fornecido pela idCerberus que
+  captura documento, selfie e dados do usuário diretamente na tela dele,
+  seguindo o roteiro de onboarding configurado para o seu produto.
+- **Por que existe:** capturar documento e biometria com qualidade suficiente
+  para validação (foco, iluminação, ângulo, prova de vida) é um problema já
+  resolvido pelo SDK. Reimplementar isso do zero é caro e propenso a erro.
+- **Pra que serve pra você:** sua aplicação não processa imagem nem
+  implementa câmera — só gera o `tokenOnboarding`, entrega ao SDK e depois lê
+  o resultado já pronto. Se seu caso de uso é só consultar dados (sem capturar
+  documento do usuário), você provavelmente não precisa do SDK — veja
+  [Escolha o serviço certo](/guides/escolha-o-servico-certo).
+
 ## Quando usar
 
 Use esta integração quando precisar:
@@ -334,6 +356,30 @@ curl --location '{base_url}/api/history-onboarding-report/{tokenOnboarding}' \
 Esse endpoint não retorna um body JSON. Use-o quando precisar armazenar ou
 apresentar o relatório final do processo de onboarding em PDF.
 
+## Acompanhar o processamento
+
+Existem duas formas de saber quando um onboarding termina de processar:
+webhook (a idCerberus avisa a sua aplicação) ou polling (a sua aplicação
+pergunta). Veja [Webhooks](/guides/webhooks) para configurar o aviso
+automático — é a forma recomendada, porque reduz chamadas desnecessárias.
+Mesmo com webhook configurado, mantenha o polling abaixo como fallback: uma
+entrega de webhook que falha não é reenviada automaticamente (detalhes em
+[Webhooks](/guides/webhooks)).
+
+Consulte `GET /api/onboarding/report/{tokenOnboarding}` até o `status` sair de
+`IN_PROCESS`.
+
+- Espere alguns segundos entre uma consulta e outra. Não faça polling a cada
+  poucos milissegundos — os serviços por trás do onboarding podem depender de
+  bases externas e levar mais tempo que uma chamada avulsa.
+- Defina um limite de tentativas ou um tempo máximo de espera na sua
+  aplicação, com um caminho claro para "ainda não terminou, avise o usuário e
+  tente de novo depois" em vez de travar a tela esperando.
+- `REFUSED` é um resultado final do negócio, não um erro técnico. A chamada em
+  si teve sucesso (HTTP 200); o cadastro é que não foi aprovado. Não trate
+  `REFUSED` como falha para retry — trate como decisão de negócio que a sua
+  aplicação precisa refletir para o usuário.
+
 ## Boas práticas
 
 - Gere o `tokenOnboarding` no back-end, nunca diretamente no aplicativo.
@@ -345,3 +391,20 @@ apresentar o relatório final do processo de onboarding em PDF.
 
 Para detalhes técnicos dos endpoints, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api).
+
+## Próximo passo
+
+<CardGroup cols={2}>
+  <Card icon="bolt" title="Webhooks" href="/guides/webhooks">
+    Seja avisado automaticamente quando o status mudar, em vez de só consultar.
+  </Card>
+  <Card icon="display" title="Backoffice" href="/guides/backoffice">
+    Veja o resultado de um onboarding específico direto na tela, sem código.
+  </Card>
+  <Card icon="triangle-exclamation" title="Status e erros" href="/guides/status-e-erros">
+    Entenda `APPROVED`, `IN_PROCESS`, `REFUSED` e como tratar cada um.
+  </Card>
+  <Card icon="key" title="Autenticação" href="/guides/autenticacao">
+    Revise como gerar e renovar o `access_token` usado neste fluxo.
+  </Card>
+</CardGroup>
