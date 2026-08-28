@@ -281,7 +281,7 @@ function extractOpenApiSummary(content) {
   lines.push('A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo campo `service` no body.');
   lines.push('');
   for (const item of services.sort((a, b) => a.summary.localeCompare(b.summary))) {
-    lines.push(`- ${item.summary}: \`${item.service}\``);
+    lines.push(`**${item.summary}**: \`${item.service}\``);
     if (item.requestBody) {
       lines.push('');
       lines.push(' ```yaml');
@@ -1140,13 +1140,13 @@ function renderApiReferenceText(servicesCatalog) {
   lines.push('');
   lines.push('## Regras obrigatórias');
   lines.push('');
-  lines.push('- Não invente endpoints, parâmetros ou services.');
-  '- Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.',
-  '- Antes de responder payload, confirme se o alias é o alias de chamada configurado no produto.',
-  lines.push('- Use homologação para testes: `https://backoffice-hml.idcerberus.com`.');
-  lines.push('- Use produção somente quando o usuário pedir explicitamente: `https://backoffice.idcerberus.com`.');
-  lines.push('- Nunca exponha `client`, `secret`, JWT real, CPF real, CNPJ real ou imagens reais em exemplos.');
-  lines.push('- Quando faltar um service no catálogo, diga que ele precisa ser confirmado antes de documentar ou integrar.');
+  lines.push('1. Não invente endpoints, parâmetros ou services.');
+  lines.push('2. Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.');
+  lines.push('3. Antes de responder payload, confirme se o alias é o alias de chamada configurado no produto.');
+  lines.push('4. Use homologação para testes: `https://backoffice-hml.idcerberus.com`.');
+  lines.push('5. Use produção somente quando o usuário pedir explicitamente: `https://backoffice.idcerberus.com`.');
+  lines.push('6. Nunca exponha `client`, `secret`, JWT real, CPF real, CNPJ real ou imagens reais em exemplos.');
+  lines.push('7. Quando faltar um service no catálogo, diga que ele precisa ser confirmado antes de documentar ou integrar.');
   lines.push('');
   lines.push('## Autenticação');
   lines.push('');
@@ -1170,11 +1170,11 @@ function renderApiReferenceText(servicesCatalog) {
 
     lines.push(`### ${service.name}`);
     lines.push('');
-    lines.push(`- Service: \`${service.service}\``);
-    lines.push(`- Endpoint: \`${service.endpoint}\``);
-    lines.push(`- Campos do request: ${service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : 'sem campos adicionais mapeados'}`);
-    lines.push(`- Termos de busca: ${displaySearchTerms(service, 10)}`);
-    lines.push(`- Retorno principal: ${service.responseSummary}`);
+    lines.push(`1. Service: \`${service.service}\``);
+    lines.push(`2. Endpoint: \`${service.endpoint}\``);
+    lines.push(`3. Campos do request: ${service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : 'sem campos adicionais mapeados'}`);
+    lines.push(`4. Termos de busca: ${displaySearchTerms(service, 10)}`);
+    lines.push(`5. Retorno principal: ${service.responseSummary}`);
     lines.push('');
     lines.push('Response resumido:');
     lines.push('');
@@ -2009,7 +2009,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', totalBenefits: 1, benefits: [{ program: 'Programa social', status: 'ACTIVE' }], indicators: [] },
   },
   SEVICE_ONLINE_BETTING_PROPENSITY: {
-    summary: 'Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. Atenção: o alias é `SEVICE_ONLINE_BETTING_PROPENSITY` (sem a letra R em SERVICE) — essa é a grafia implementada no backend, copie exatamente assim.',
+    summary: 'Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. Atenção: o alias é `SEVICE_ONLINE_BETTING_PROPENSITY` (sem a letra R em SERVICE); essa é a grafia implementada no backend, copie exatamente assim.',
     result: { cpf: 'cpf', propensityScore: 78, propensityLevel: 'HIGH', indicators: ['sinal encontrado'] },
   },
   SERVICE_QUOD_CREDIT_SCORE_COMPANY: {
@@ -2899,9 +2899,9 @@ function renderServiceQuickstartPage() {
   lines.push('');
   lines.push('Use os catálogos de pessoa física e pessoa jurídica para copiar o valor exato do campo `service`.');
   lines.push('');
-  lines.push('- [Services de pessoa física](/api-reference/services-pessoa-fisica)');
-  lines.push('- [Services de pessoa jurídica](/api-reference/services-pessoa-juridica)');
-  lines.push('- [Services por caso de uso](/api-reference/services-por-caso-de-uso)');
+  lines.push('1. [Services de pessoa física](/api-reference/services-pessoa-fisica)');
+  lines.push('2. [Services de pessoa jurídica](/api-reference/services-pessoa-juridica)');
+  lines.push('3. [Services por caso de uso](/api-reference/services-por-caso-de-uso)');
   lines.push('');
   lines.push('</Step>');
   lines.push('<Step title="Monte o body">');
@@ -2934,10 +2934,10 @@ function renderServiceQuickstartPage() {
   }, null, 2));
   lines.push('```');
   lines.push('');
-  lines.push('- `result`: dados retornados pelo produto.');
-  lines.push('- `status.code`: código do processamento.');
-  lines.push('- `status.message`: mensagem resumida do processamento.');
-  lines.push('- `externalId`: identificador externo da consulta, quando retornado.');
+  lines.push('1. `result`: dados retornados pelo produto.');
+  lines.push('2. `status.code`: código do processamento.');
+  lines.push('3. `status.message`: mensagem resumida do processamento.');
+  lines.push('4. `externalId`: identificador externo da consulta, quando retornado.');
   lines.push('');
   lines.push('</Step>');
   lines.push('</Steps>');
@@ -3187,41 +3187,41 @@ function pushMcpUsageNotes(lines) {
   lines.push('');
   lines.push('### Regras para o MCP');
   lines.push('');
-  lines.push('- Operar como fonte somente leitura da documentação.');
-  lines.push('- Não chamar HML, produção, banco ou endpoints idCerberus.');
-  lines.push('- Não solicitar nem armazenar `client`, `secret`, JWT, CPF, CNPJ ou imagem real.');
-  lines.push('- Usar homologação como ambiente padrão quando gerar exemplos.');
-  lines.push('- Se o service não existir no catálogo, responder que precisa ser confirmado antes de integrar.');
-  lines.push('- Preferir `result` como contrato público; não usar `fieldsOutput` ou metadados internos.');
+  lines.push('1. Operar como fonte somente leitura da documentação.');
+  lines.push('2. Não chamar HML, produção, banco ou endpoints idCerberus.');
+  lines.push('3. Não solicitar nem armazenar `client`, `secret`, JWT, CPF, CNPJ ou imagem real.');
+  lines.push('4. Usar homologação como ambiente padrão quando gerar exemplos.');
+  lines.push('5. Se o service não existir no catálogo, responder que precisa ser confirmado antes de integrar.');
+  lines.push('6. Preferir `result` como contrato público; não usar `fieldsOutput` ou metadados internos.');
   lines.push('');
 }
 
 function pushServiceApiContract(lines) {
   lines.push('## Contrato base do POST /api/service-api');
   lines.push('');
-  lines.push('- Endpoint de homologação: `POST https://backoffice-hml.idcerberus.com/api/service-api`.');
-  lines.push('- Endpoint de produção: `POST https://backoffice.idcerberus.com/api/service-api`.');
-  lines.push('- Header obrigatório: `Authorization: Bearer {jwt_token}`.');
-  lines.push('- Header recomendado: `Content-Type: application/json`.');
-  lines.push('- Campo obrigatório no body: `service`.');
-  lines.push('- O alias enviado em `service` deve ser o alias configurado no produto do cliente.');
-  lines.push('- Leia dados públicos em `result`; não trate `fieldsOutput` ou metadados internos como contrato público.');
-  lines.push('- Preserve `status`, `onboardingStatus` e `externalId` ao explicar respostas.');
+  lines.push('1. Endpoint de homologação: `POST https://backoffice-hml.idcerberus.com/api/service-api`.');
+  lines.push('2. Endpoint de produção: `POST https://backoffice.idcerberus.com/api/service-api`.');
+  lines.push('3. Header obrigatório: `Authorization: Bearer {jwt_token}`.');
+  lines.push('4. Header recomendado: `Content-Type: application/json`.');
+  lines.push('5. Campo obrigatório no body: `service`.');
+  lines.push('6. O alias enviado em `service` deve ser o alias configurado no produto do cliente.');
+  lines.push('7. Leia dados públicos em `result`; não trate `fieldsOutput` ou metadados internos como contrato público.');
+  lines.push('8. Preserve `status`, `onboardingStatus` e `externalId` ao explicar respostas.');
   lines.push('');
 }
 
 function pushOcrLlmNotes(lines) {
   lines.push('## Notas rápidas para OCR e imagem');
   lines.push('');
-  lines.push('- OCR usa imagem do documento, não selfie.');
-  lines.push('- Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.');
-  lines.push('- `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,` — os dois formatos funcionam.');
-  lines.push('- RG normalmente usa frente e verso: `image1` e `image2`.');
-  lines.push('- CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.');
-  lines.push('- Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.');
-  lines.push('- Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.');
-  lines.push('- Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.');
-  lines.push('- Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.');
+  lines.push('1. OCR usa imagem do documento, não selfie.');
+  lines.push('2. Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.');
+  lines.push('3. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.');
+  lines.push('4. RG normalmente usa frente e verso: `image1` e `image2`.');
+  lines.push('5. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.');
+  lines.push('6. Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.');
+  lines.push('7. Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.');
+  lines.push('8. Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.');
+  lines.push('9. Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.');
   lines.push('');
 }
 
@@ -3501,14 +3501,14 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
 const llmRules = [
   '## Regras para assistentes de IA',
   '',
-  '- Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.',
-  '- Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.',
-  '- Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.',
-  '- Use homologação para testes e produção somente quando o usuário pedir explicitamente.',
-  '- Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.',
-  '- Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).',
-  '- Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.',
-  '- Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.',
+  '1. Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.',
+  '2. Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.',
+  '3. Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.',
+  '4. Use homologação para testes e produção somente quando o usuário pedir explicitamente.',
+  '5. Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.',
+  '6. Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).',
+  '7. Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.',
+  '8. Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.',
   '',
 ].join('\n');
 
@@ -3570,9 +3570,9 @@ llmsLines.push('> Documentação da API idCerberus para onboarding digital, KYC,
 llmsLines.push('');
 llmsLines.push('Base URLs:');
 llmsLines.push('');
-llmsLines.push('- Homologação: `https://backoffice-hml.idcerberus.com`');
-llmsLines.push('- Produção: `https://backoffice.idcerberus.com`');
-llmsLines.push('- Documentação publicada: `https://api-docs.idcerberus.com/`');
+llmsLines.push('1. Homologação: `https://backoffice-hml.idcerberus.com`');
+llmsLines.push('2. Produção: `https://backoffice.idcerberus.com`');
+llmsLines.push('3. Documentação publicada: `https://api-docs.idcerberus.com/`');
 llmsLines.push('');
 llmsLines.push(llmRules);
 pushLlmFileMap(llmsLines);
@@ -3584,6 +3584,7 @@ llmsLines.push('## Conteúdo principal');
 llmsLines.push('');
 
 let currentGroup = '';
+let groupItemIdx = 0;
 for (const page of mdxPages) {
   const groupName = `${page.tab} / ${page.group}`;
   if (groupName !== currentGroup) {
@@ -3591,32 +3592,34 @@ for (const page of mdxPages) {
       llmsLines.push('');
     }
     currentGroup = groupName;
+    groupItemIdx = 0;
     llmsLines.push(`### ${groupName}`);
     llmsLines.push('');
   }
+  groupItemIdx++;
   const desc = page.description ? `: ${page.description}` : '';
-  llmsLines.push(`- [${page.title}](${slugToUrl(page.slug)})${desc}`);
+  llmsLines.push(`${groupItemIdx}. [${page.title}](${slugToUrl(page.slug)})${desc}`);
 }
 
 llmsLines.push('');
 llmsLines.push('## API Reference');
 llmsLines.push('');
-llmsLines.push(`- [OpenAPI reference](${slugToUrl('api-reference/boas-vindas')}): endpoints, exemplos de request/response e schemas.`);
-llmsLines.push('- Endpoint principal de consultas: `POST /api/service-api`.');
-llmsLines.push('- Autenticação: `POST /api/token-generate` retorna `access_token`; use `Authorization: Bearer {jwt_token}` nas chamadas protegidas.');
+llmsLines.push(`1. [OpenAPI reference](${slugToUrl('api-reference/boas-vindas')}): endpoints, exemplos de request/response e schemas.`);
+llmsLines.push('2. Endpoint principal de consultas: `POST /api/service-api`.');
+llmsLines.push('3. Autenticação: `POST /api/token-generate` retorna `access_token`; use `Authorization: Bearer {jwt_token}` nas chamadas protegidas.');
 llmsLines.push('');
 llmsLines.push('## Arquivo completo para LLM');
 llmsLines.push('');
-llmsLines.push(`- [llms-small.txt](${siteUrl}/llms-small.txt): resumo operacional com fluxos, autenticação, service-api e services documentados.`);
-llmsLines.push(`- [llms-full.txt](${siteUrl}/llms-full.txt): versão consolidada dos guias e da API Reference.`);
-llmsLines.push(`- [llms-api-reference.txt](${siteUrl}/llms-api-reference.txt): referência operacional dos services com exemplos de curl.`);
-llmsLines.push(`- [services-catalog.min.json](${siteUrl}/services-catalog.min.json): índice leve para busca rápida por service, categoria, tag e campos.`);
-llmsLines.push(`- [services-catalog.json](${siteUrl}/services-catalog.json): catálogo estruturado para ferramentas e automações.`);
-llmsLines.push(`- [mcp-manifest.json](${siteUrl}/mcp-manifest.json): manifesto para MCPs e agentes com recursos, regras e ferramentas sugeridas.`);
+llmsLines.push(`1. [llms-small.txt](${siteUrl}/llms-small.txt): resumo operacional com fluxos, autenticação, service-api e services documentados.`);
+llmsLines.push(`2. [llms-full.txt](${siteUrl}/llms-full.txt): versão consolidada dos guias e da API Reference.`);
+llmsLines.push(`3. [llms-api-reference.txt](${siteUrl}/llms-api-reference.txt): referência operacional dos services com exemplos de curl.`);
+llmsLines.push(`4. [services-catalog.min.json](${siteUrl}/services-catalog.min.json): índice leve para busca rápida por service, categoria, tag e campos.`);
+llmsLines.push(`5. [services-catalog.json](${siteUrl}/services-catalog.json): catálogo estruturado para ferramentas e automações.`);
+llmsLines.push(`6. [mcp-manifest.json](${siteUrl}/mcp-manifest.json): manifesto para MCPs e agentes com recursos, regras e ferramentas sugeridas.`);
 llmsLines.push('');
 llmsLines.push('## Exemplos curl');
 llmsLines.push('');
-for (const example of exampleFiles) llmsLines.push(`- [${example.file}](${example.url}): ${example.title}. ${example.description}`);
+exampleFiles.forEach((example, idx) => llmsLines.push(`${idx + 1}. [${example.file}](${example.url}): ${example.title}. ${example.description}`));
 
 write(path.join(root, 'llms.txt'), llmsLines.join('\n'));
 
@@ -3634,50 +3637,53 @@ pushOcrLlmNotes(smallLines);
 pushLlmCommonErrors(smallLines);
 smallLines.push('## Ambientes');
 smallLines.push('');
-smallLines.push('- Homologação: `https://backoffice-hml.idcerberus.com`');
-smallLines.push('- Produção: `https://backoffice.idcerberus.com`');
+smallLines.push('1. Homologação: `https://backoffice-hml.idcerberus.com`');
+smallLines.push('2. Produção: `https://backoffice.idcerberus.com`');
 smallLines.push('');
 smallLines.push('## Autenticação');
 smallLines.push('');
-smallLines.push('- Gere token em `POST /api/token-generate` com `client` e `secret`.');
-smallLines.push('- Envie o token nas chamadas protegidas com `Authorization: Bearer {jwt_token}`.');
-smallLines.push('- Quando expirar, gere um novo token.');
+smallLines.push('1. Gere token em `POST /api/token-generate` com `client` e `secret`.');
+smallLines.push('2. Envie o token nas chamadas protegidas com `Authorization: Bearer {jwt_token}`.');
+smallLines.push('3. Quando expirar, gere um novo token.');
 smallLines.push('');
 smallLines.push('## Endpoint principal');
 smallLines.push('');
-smallLines.push('- Use `POST /api/service-api` para consultas de dados, risco, compliance, biometria e enriquecimento.');
-smallLines.push('- O campo `service` define qual produto será executado.');
-smallLines.push('- Os demais campos variam conforme o serviço escolhido.');
+smallLines.push('1. Use `POST /api/service-api` para consultas de dados, risco, compliance, biometria e enriquecimento.');
+smallLines.push('2. O campo `service` define qual produto será executado.');
+smallLines.push('3. Os demais campos variam conforme o serviço escolhido.');
 smallLines.push('');
 smallLines.push('## Fluxos principais');
 smallLines.push('');
-for (const slug of [
-  'guides/quickstart',
-  'guides/autenticacao',
-  'guides/primeira-consulta-cpf',
-  'guides/primeira-consulta-cnpj',
-  'guides/onboarding-sdk',
-  'guides/matriz-de-servicos',
-]) {
-  const page = mdxPages.find((item) => item.slug === slug);
-  if (page) smallLines.push(`- [${page.title}](${slugToUrl(page.slug)}): ${page.description || 'Guia da documentação idCerberus.'}`);
+{
+  let flowIdx = 1;
+  for (const slug of [
+    'guides/quickstart',
+    'guides/autenticacao',
+    'guides/primeira-consulta-cpf',
+    'guides/primeira-consulta-cnpj',
+    'guides/onboarding-sdk',
+    'guides/matriz-de-servicos',
+  ]) {
+    const page = mdxPages.find((item) => item.slug === slug);
+    if (page) smallLines.push(`${flowIdx++}. [${page.title}](${slugToUrl(page.slug)}): ${page.description || 'Guia da documentação idCerberus.'}`);
+  }
 }
 smallLines.push('');
 smallLines.push('## Services documentados no API Reference');
 smallLines.push('');
 for (const item of servicesCatalog) {
   const terms = displaySearchTerms(item, 4);
-  smallLines.push(`- ${item.category} - ${item.name}: \`${item.service}\` | campos: ${item.requestFields.length ? item.requestFields.join(', ') : '-'} | busca: ${terms}`);
+  smallLines.push(`**${item.category} - ${item.name}**: \`${item.service}\` | campos: ${item.requestFields.length ? item.requestFields.join(', ') : 'nenhum campo adicional'} | busca: ${terms}`);
 }
 smallLines.push('');
 smallLines.push('## Arquivos auxiliares');
 smallLines.push('');
-smallLines.push(`- Catálogo JSON: ${siteUrl}/services-catalog.json`);
-smallLines.push(`- Catálogo leve: ${siteUrl}/services-catalog.min.json`);
-smallLines.push(`- API Reference para LLM: ${siteUrl}/llms-api-reference.txt`);
-smallLines.push(`- Manifesto MCP: ${siteUrl}/mcp-manifest.json`);
-smallLines.push('- Exemplos curl: ' + siteUrl + '/examples/auth.hml.curl');
-smallLines.push('- Lista de exemplos curl: ' + siteUrl + '/llms.txt#exemplos-curl');
+smallLines.push(`1. Catálogo JSON: ${siteUrl}/services-catalog.json`);
+smallLines.push(`2. Catálogo leve: ${siteUrl}/services-catalog.min.json`);
+smallLines.push(`3. API Reference para LLM: ${siteUrl}/llms-api-reference.txt`);
+smallLines.push(`4. Manifesto MCP: ${siteUrl}/mcp-manifest.json`);
+smallLines.push('5. Exemplos curl: ' + siteUrl + '/examples/auth.hml.curl');
+smallLines.push('6. Lista de exemplos curl: ' + siteUrl + '/llms.txt#exemplos-curl');
 
 write(path.join(root, 'llms-small.txt'), smallLines.join('\n'));
 
@@ -3688,8 +3694,8 @@ fullLines.push('Este arquivo consolida os guias e a referência da API idCerberu
 fullLines.push('');
 fullLines.push('Base URLs:');
 fullLines.push('');
-fullLines.push('- Homologação: `https://backoffice-hml.idcerberus.com`');
-fullLines.push('- Produção: `https://backoffice.idcerberus.com`');
+fullLines.push('1. Homologação: `https://backoffice-hml.idcerberus.com`');
+fullLines.push('2. Produção: `https://backoffice.idcerberus.com`');
 fullLines.push('');
 fullLines.push(llmRules);
 pushLlmFileMap(fullLines);
