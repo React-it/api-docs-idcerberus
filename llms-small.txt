@@ -9,7 +9,7 @@ Use este arquivo quando precisar de contexto rápido para integrar com a API idC
 - Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
 - Use homologação para testes e produção somente quando o usuário pedir explicitamente.
 - Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
-- Para OCR, use base64 puro em `image1`/`image2` e não inclua prefixo `data:image/...;base64,`.
+- Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).
 - Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.
 - Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
 
@@ -76,7 +76,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 | Caso | Service | Campos principais | Guia/API |
 | --- | --- | --- | --- |
-| CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
+| CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `birthDate` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
 | CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_OCR |
 | OCR cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
@@ -91,7 +91,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 - OCR usa imagem do documento, não selfie.
 - Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
-- `image1` deve receber base64 puro, sem prefixo `data:image/...;base64,`.
+- `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,` — os dois formatos funcionam.
 - RG normalmente usa frente e verso: `image1` e `image2`.
 - CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
 - Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
@@ -198,7 +198,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 - Pessoa Física - Score de inadimplência: `SERVICE_DEFAULT_RISK_SCORE` | campos: cpf | busca: PF - Score de inadimplência, score risco crédito rating inadimplência
 - Pessoa Física - Score de risco de fraude: `SERVICE_FRAUD_RISK_SCORE` | campos: cpf, factor | busca: PF - Score de risco de fraude, score risco crédito rating inadimplência
 - Pessoa Física - Servidores públicos: `SERVICE_PUBLIC_SERVANTS` | campos: cpf | busca: PF - Servidores públicos
-- Pessoa Física - Status do CPF na Receita Federal: `SERVICE_RFB_PF` | campos: cpf, dataDeNascimento | busca: CPF Receita Federal, PF - Status do CPF na Receita Federal
+- Pessoa Física - Status do CPF na Receita Federal: `SERVICE_RFB_PF` | campos: cpf, birthDate | busca: CPF Receita Federal, PF - Status do CPF na Receita Federal
 - Pessoa Física - Telefones de Pessoas Relacionadas: `SERVICE_RELATED_PEOPLE_PHONES` | campos: cpf | busca: PF - Telefones de Pessoas Relacionadas, telefone celular validação contato
 - Pessoa Física - TSE - Local de votação: `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | campos: cpf, birthDate, motherName | busca: CPF Receita Federal, PF - TSE - Local de votação
 - Pessoa Física - Validação de CPF com endereço: `SERVICE_CPF_ADDRESS_VALIDATION` | campos: cpf, zipcode, numberAddress | busca: CPF Receita Federal, PF - Validação de CPF com endereço

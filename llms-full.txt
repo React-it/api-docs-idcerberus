@@ -14,7 +14,7 @@ Base URLs:
 - Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
 - Use homologação para testes e produção somente quando o usuário pedir explicitamente.
 - Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
-- Para OCR, use base64 puro em `image1`/`image2` e não inclua prefixo `data:image/...;base64,`.
+- Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).
 - Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.
 - Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
 
@@ -94,7 +94,7 @@ Use o service público liberado no produto no campo `service`.
 
 | Caso | Service | Campos principais | Guia/API |
 | --- | --- | --- | --- |
-| CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
+| CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `birthDate` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
 | CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_OCR |
 | OCR cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
@@ -109,7 +109,7 @@ Use o service público liberado no produto no campo `service`.
 
 - OCR usa imagem do documento, não selfie.
 - Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
-- `image1` deve receber base64 puro, sem prefixo `data:image/...;base64,`.
+- `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,` — os dois formatos funcionam.
 - RG normalmente usa frente e verso: `image1` e `image2`.
 - CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
 - Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
@@ -163,8 +163,8 @@ curto de acordo com o seu objetivo.
 | Dev integrando a API | [Quickstart](/guides/quickstart) | [Primeira consulta CPF](/guides/primeira-consulta-cpf) ou [Primeira consulta CNPJ](/guides/primeira-consulta-cnpj) |
 | QA ou homologação | [Ambientes](/guides/ambientes) | [Status e erros](/guides/status-e-erros) e [Troubleshooting](/guides/troubleshooting) |
 | Produto ou negócio | [Visão geral](/guides/visao-geral) | [Escolha o serviço certo](/guides/escolha-o-servico-certo) |
-| Mobile ou SDK | [Onboarding via SDK](/guides/onboarding-sdk) | API Reference de onboarding |
-| Dev consultando contrato | [API Reference](/api-reference/autorização/gerar-token-de-api) | Endpoint ou exemplo do serviço desejado |
+| Mobile ou SDK | [Onboarding via SDK](/guides/onboarding-sdk) | [Webhooks](/guides/webhooks) |
+| Dev consultando contrato | [API Reference](/api-reference/autorização/gerar-token-de-api) | [Índice de services](/guides/indice-de-services) |
 
 ## Por objetivo
 
@@ -177,6 +177,8 @@ curto de acordo com o seu objetivo.
 | Consultar CNPJ | [Primeira consulta CNPJ](/guides/primeira-consulta-cnpj) |
 | Escolher um código `service` | [Escolha o serviço certo](/guides/escolha-o-servico-certo) |
 | Testar OCR com imagem ou base64 | [OCR via Service API](/guides/service-api/sobre-ocr-service-api) |
+| Receber aviso automático de status, sem polling | [Webhooks](/guides/webhooks) |
+| Ver resultado ou testar consulta sem escrever código | [Backoffice](/guides/backoffice) |
 | Usar Postman | [Postman do zero](/guides/postman-do-zero) |
 | Resolver erro | [Troubleshooting](/guides/troubleshooting) |
 | Ir para produção | [Boas práticas de integração](/guides/boas-praticas-integracao) |
@@ -213,6 +215,11 @@ Descrição: Encontre services, payloads, guias e exemplos usando termos comuns,
 # Busca rápida
 
 Use esta página quando não souber exatamente onde procurar. Ela concentra os termos que mais ajudam a busca da documentação a encontrar o guia certo, o service correto ou um exemplo pronto.
+
+> Info:
+  Essa página é uma lista de termos pra digitar na busca. Se você quer um
+  caminho guiado por perfil ou objetivo em vez de pesquisar, veja
+  [Mapa da documentação](/guides/mapa-da-documentacao).
 
 ## Como pesquisar melhor
 
@@ -334,6 +341,13 @@ Você precisa ter:
 - acesso ao ambiente de homologação ou produção;
 - um CPF ou CNPJ de teste;
 - permissão para consumir o produto desejado.
+
+> Nota:
+  Ainda não tem `client` e `secret`? Esse par é liberado pela React IT junto
+  com o produto contratado, não é algo que você gera sozinho. Solicite pelo
+  e-mail [contact@react-it.com](mailto:contact@react-it.com) antes de seguir
+  este guia.
+
 
 Os endpoints base são:
 
@@ -590,6 +604,12 @@ Se você já sabe qual produto consumir, vá para a [API Reference](/api-referen
 
 Se ainda está desenhando o fluxo, use [Escolha o serviço certo](/guides/escolha-o-servico-certo).
 
+> Info:
+  Deu algo errado nesse teste? Não precisa adivinhar — veja
+  [Erros comuns de integração](/guides/erros-comuns-integracao) antes de tentar
+  de novo. A maioria dos problemas na primeira chamada é token, ambiente
+  trocado ou campo `service` ausente, e todos têm solução direta lá.
+
 ---
 
 # Roteiro de integração
@@ -696,11 +716,19 @@ Antes de subir para produção, confirme:
   `status.message` e `externalId`, quando retornado;
 - dados sensíveis, base64 e tokens não são gravados em log aberto.
 
-## 7. Onde continuar
+## 7. Onboarding? Configure webhook em vez de só consultar
+
+Se o seu fluxo é de onboarding (SDK ou Cliente Web), não fique só no polling
+do passo 5. Configure um webhook para ser avisado automaticamente quando o
+status mudar — veja [Webhooks](/guides/webhooks). Isso vale tanto para HML
+(testar o recebimento) quanto para produção.
+
+## 8. Onde continuar
 
 - Para primeira chamada completa: [Quickstart](/guides/quickstart)
 - Para escolher produtos: [Escolha o serviço certo](/guides/escolha-o-servico-certo)
 - Para ver todos os grupos de serviço: [Matriz de serviços](/guides/matriz-de-servicos)
+- Para onboarding via SDK: [Onboarding via SDK](/guides/onboarding-sdk)
 - Para contrato técnico: [API Reference](/api-reference/autorização/gerar-token-de-api)
 
 ---
@@ -718,6 +746,107 @@ dados, biometria, prevenção à fraude, análise de risco e compliance. A integ
 foi desenhada para permitir tanto fluxos completos de onboarding quanto consumo
 avulso de consultas por CPF ou CNPJ.
 
+## Como tudo se encaixa
+
+Antes de entrar em endpoint, token e payload, vale entender três peças que se
+repetem em toda a documentação. Para cada uma: o que é, por que existe e pra
+que serve na sua implementação.
+
+### Service
+
+- **O que é:** uma consulta ou verificação específica, como "situação do CPF na
+  Receita Federal" ou "comparar selfie com documento". Tem um código próprio
+  (`SERVICE_ALGUMA_COISA`) e devolve um resultado isolado.
+- **Por que existem mais de 300:** cada tipo de dado ou verificação vira um
+  service diferente, porque cada empresa usa uma combinação diferente deles.
+  Você nunca precisa de todos.
+- **Pra que serve pra você:** é a unidade que você efetivamente chama. Toda
+  implementação começa por decidir quais services resolvem o seu problema —
+  veja [Escolha o serviço certo](/guides/escolha-o-servico-certo).
+
+### Consulta avulsa vs. onboarding
+
+- **O que é:** duas formas de usar um service. Avulsa é chamar um service
+  sozinho, na hora, direto em `POST /api/service-api`. Onboarding é combinar
+  vários services em uma jornada guiada, com etapas, campos capturados e um
+  status final (`APPROVED`, `IN_PROCESS`, `REFUSED`).
+- **Por que as duas existem:** nem toda necessidade é um cadastro completo.
+  Às vezes você só precisa confirmar um dado pontual (avulsa); às vezes precisa
+  conduzir o usuário por um fluxo de KYC inteiro (onboarding).
+- **Pra que serve pra você:** define o modelo de integração que você vai
+  construir. Se a resposta é "só confirmar um dado agora", é avulsa via API. Se
+  é "cadastrar o usuário do zero, com documento e selfie", é onboarding via
+  SDK ou Cliente Web.
+
+```mermaid
+flowchart LR
+    T["POST /api/token-generate"] --> C{"O que você precisa?"}
+
+    C -->|"Confirmar um dado agora"| A["POST /api/service-api\n(consulta avulsa)"]
+    A --> R1["Resposta síncrona\nresult + status"]
+    A -.->|"~10s depois, se configurado"| W["Webhook"]
+
+    C -->|"Cadastrar do zero,\ncom documento e selfie"| S["SDK ou Cliente Web\n(onboarding)"]
+    S --> P["Processamento\n(vários services em sequência)"]
+    P -->|"status muda"| W
+    P --> R2["GET /api/onboarding/report\n(polling)"]
+```
+
+O webhook é o mesmo mecanismo para os dois caminhos — veja
+[Webhooks](/guides/webhooks) para configurar.
+
+### Produto
+
+- **O que é:** a configuração específica da sua empresa — quais services estão
+  liberados, em qual ordem entram no onboarding e quais ficam disponíveis para
+  consulta avulsa.
+- **Por que existe:** cada cliente da idCerberus usa um conjunto diferente de
+  services. O produto é o que amarra "API idCerberus" a "o que a sua empresa
+  efetivamente contratou".
+- **Pra que serve pra você:** você nunca escolhe entre todos os 300+ services —
+  escolhe dentro do que já foi habilitado para o seu produto. Se um service que
+  você precisa não responde ou não aparece, o primeiro suspeito é ele não estar
+  liberado no seu produto, não um erro de implementação.
+
+Com isso em mente, a pergunta que define por onde começar não é "como uso a
+API", e sim: **minha aplicação vai chamar consultas isoladas (API), ou vai guiar
+o usuário por um cadastro completo (SDK/Web)?** A resposta define o modelo de
+integração abaixo.
+
+### Dúvidas comuns nessa fase
+
+
+
+    Não. Use API quando sua aplicação só precisa de consultas pontuais. Use
+    SDK ou Cliente Web quando precisa conduzir o usuário por um cadastro
+    completo. Muitos clientes usam só um dos dois; outros combinam ambos —
+    onboarding para o cadastro inicial e API avulsa para reconsultas depois.
+
+
+    Confirme primeiro se ele está liberado no seu produto — isso é combinado
+    previamente com a React IT, não é algo que você habilita sozinho. Se
+    estiver liberado e mesmo assim falhar, siga
+    [Troubleshooting](/guides/troubleshooting).
+
+
+    Sim. API, SDK e Cliente Web consomem os mesmos services por baixo; a
+    diferença é só a forma como sua aplicação dispara e consome o resultado.
+    Migrar de um modelo para outro não muda os dados retornados.
+
+
+    Não. Comece pelo [Quickstart](/guides/quickstart) com um único service de
+    teste, valide o fluxo de ponta a ponta e só depois volte ao catálogo para
+    adicionar os services que fazem sentido pro seu caso.
+
+
+    `backoffice-hml.idcerberus.com` e `backoffice.idcerberus.com` são as
+    mesmas URLs usadas pelo painel administrativo da idCerberus — mas quando
+    você chama `/api/...` nelas, está falando com a API, não com a interface
+    visual. Não existe URL separada para API: é o mesmo domínio, endpoints
+    diferentes.
+
+
+
 ## Modelos de integração
 
 | Modelo | Quando usar | Responsabilidade da sua aplicação |
@@ -725,6 +854,15 @@ avulso de consultas por CPF ou CNPJ.
 | API | Quando o back-end da sua empresa vai consumir consultas diretamente | Autenticar, montar payloads, chamar endpoints e tratar responses |
 | SDK | Quando a captura de dados e documentos acontece em aplicativo mobile | Gerar `tokenOnboarding`, entregar ao SDK e consultar resultado |
 | Cliente Web | Quando o fluxo será feito via WebView, site responsivo ou QR Code | Direcionar o usuário ao fluxo e consumir o resultado processado |
+
+Além desses três, existem dois complementos que não são modelos de
+integração por si só, mas se somam a qualquer um deles:
+
+- [Backoffice](/guides/backoffice): interface visual da idCerberus, para
+  olhar resultados e testar consultas sem escrever código.
+- [Webhooks](/guides/webhooks): avisa sua aplicação quando o status mudar —
+  vale tanto para onboarding quanto para consulta avulsa — em vez de ela
+  ficar perguntando (polling).
 
 ## Se você está começando agora
 
@@ -1177,6 +1315,13 @@ A documentação está organizada para apoiar descoberta, desenho do fluxo e
 implementação técnica. O objetivo é evitar que você precise procurar em uma
 coleção grande de requests sem contexto.
 
+> Info:
+  Essa página explica como o SITE é organizado (guias vs. catálogo vs. API
+  Reference). Se você quer um caminho recomendado por perfil ou objetivo, veja
+  [Mapa da documentação](/guides/mapa-da-documentacao). Se quer só bons termos
+  para pesquisar, veja [Busca rápida](/guides/busca-rapida).
+
+
 ## O caminho mais comum
 
 
@@ -1271,6 +1416,13 @@ Descrição: Configure o Postman para testar token, service-api e OCR sem escrev
 # Postman do zero
 
 Use este guia para montar uma collection simples e testar a API idCerberus em homologação.
+
+> Nota:
+  Se você só quer testar rápido sem instalar nada, cada página de endpoint na
+  [API Reference](/api-reference/autorização/gerar-token-de-api) já tem um
+  painel de teste embutido no navegador. Use o Postman quando quiser guardar
+  uma collection reutilizável para o time.
+
 
 O objetivo é sair com dois requests funcionando:
 
@@ -1449,7 +1601,7 @@ Se quiser copiar um curl já montado, use:
 
 ## 7. Testar OCR com imagem
 
-Para OCR, o campo `image1` deve receber base64 puro. Não envie prefixo `data:image/jpeg;base64,`.
+Para OCR, o campo `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/jpeg;base64,` — os dois formatos funcionam.
 
 ### CNH
 
@@ -1558,10 +1710,18 @@ integrações, leia os dois.
 | Caso | Significado prático | Ação recomendada |
 | --- | --- | --- |
 | HTTP 200 e `status.code` 200 | A chamada foi processada | Ler `result` e seguir a regra de negócio |
-| HTTP 200 e `status.code` 400 | A API respondeu, mas o processamento falhou | Ler `status.message`, validar parâmetros e permissão |
-| HTTP 401 ou 403 | Problema de autenticação ou permissão | Gerar novo token ou revisar credenciais/produto liberado |
+| HTTP 200 e `status.code` 400 | Payload inválido ou service sem permissão no produto | Ler `status.message`, validar parâmetros e permissão |
+| HTTP 200 e `status.code` 401 | Produto inativo ou não encontrado para o `client` usado | Confirmar se o produto está ativo, não é problema de token |
+| HTTP 401 ou 403 (de verdade) | Token ausente, expirado ou de outro ambiente — rejeitado antes de processar | Gerar novo token no ambiente correto |
 | Timeout | Fonte externa ou rede pode ter demorado | Aplicar retry controlado, sem loop agressivo |
 | Sem body JSON | O endpoint retorna outro tipo de conteúdo | Tratar conforme contrato, como PDF no relatório de onboarding |
+
+> Atencao:
+  Exceção real à primeira linha da tabela: se o seu produto for pré-pago e o
+  saldo estiver insuficiente, a chamada retorna HTTP 200 **e** `status.code`
+  200, mas `status.message` traz algo como "Not enough balance" e `result`
+  vem vazio — sempre leia `status.message` quando `result` vier vazio, mesmo
+  com HTTP 200 e `status.code` 200.
 
 ## Problemas comuns
 
@@ -1736,9 +1896,17 @@ Use esta página quando uma chamada falhar, retornar vazio ou parecer diferente 
 
 A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, não só o HTTP status. Uma chamada pode retornar HTTP 200 e mesmo assim o processamento vir como `REFUSED` ou `ERROR`.
 
+> Info:
+  Procurando um sintoma técnico específico (erro de ambiente, PowerShell
+  quebrando o `curl`, resposta que não é JSON)? Veja
+  [Troubleshooting](/guides/troubleshooting) — mais direto ao ponto para esses
+  casos.
 
 
-    `401`, `403`, token vencido ou produto sem permissão para o service.
+
+
+    Token ausente/vencido (HTTP 401/403) ou produto sem permissão para o
+    service (HTTP 200, `status.code` no corpo).
 
 
     Campo obrigatório ausente, alias errado, CPF/CNPJ inválido ou JSON malformado.
@@ -1761,8 +1929,9 @@ A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, n�
 | API retorna HTTP 200 com `REFUSED` | Chamada autenticou, mas a regra de negócio recusou | Leia `status.message` e trate como recusa válida |
 | API retorna HTTP 200 com `ERROR` | Falha técnica aconteceu dentro do processamento | Guarde `externalId`, horário e service chamado |
 | Resultado vazio `{}` | Massa sem dados, imagem não lida ou service sem retorno para aquele caso | Teste massa válida e confira `status.message` |
+| Resultado vazio `{}` com HTTP 200 e `status.code` 200 | Em produto pré-pago, pode ser saldo insuficiente (`status.message`: "Not enough balance") | Confira saldo da organização antes de investigar o payload |
 | Campo esperado não veio | Campo não existe na fonte ou não foi extraído com segurança | Não invente dado; trate campo ausente como opcional quando o contrato permitir |
-| Base64 rejeitado | Prefixo, encoding, quebra de linha ou arquivo inválido | Envie base64 puro, sem `data:image/...;base64,` |
+| Base64 rejeitado | Encoding quebrado, base64 truncado ou arquivo inválido | Gere o base64 de novo a partir do arquivo original (com ou sem prefixo `data:image/...;base64,`, os dois são aceitos) |
 | CPF/CNPJ não encontrado | Documento mascarado, incompleto, massa ruim ou ambiente errado | Teste sem máscara e confira a base URL |
 | Timeout | Fonte externa demorou ou ficou indisponível | Aplique retry controlado e registre o `externalId`, quando houver |
 
@@ -1821,11 +1990,10 @@ Exemplo de JSON mínimo válido:
 Para services de OCR:
 
 1. Use imagem real, nítida e completa.
-2. Envie base64 puro.
-3. Não envie `data:image/jpeg;base64,`.
-4. Para RG, envie frente e verso quando o service exigir.
-5. Para face, use selfie real, não foto de documento.
-6. Confira se o documento enviado combina com o service.
+2. Envie o base64 completo, sem truncar — com ou sem prefixo `data:image/jpeg;base64,`, os dois formatos funcionam.
+3. Para RG, envie frente e verso quando o service exigir.
+4. Para face, use selfie real, não foto de documento.
+5. Confira se o documento enviado combina com o service.
 
 Exemplo de erro por imagem ausente:
 
@@ -1930,14 +2098,21 @@ Descrição: Resolva problemas comuns ao integrar com a API idCerberus
 
 Use esta página quando uma chamada não funcionar como esperado.
 
-## Recebi 401 ou 403
+> Info:
+  Página focada em sintomas técnicos específicos (401/403, ambiente errado,
+  PowerShell). Para um diagnóstico mais amplo — com cards por categoria e
+  modelo de mensagem para pedir suporte — veja
+  [Erros comuns de integração](/guides/erros-comuns-integracao).
 
-Possíveis causas:
+
+## Recebi 401 ou 403 (HTTP)
+
+Em `POST /api/service-api`, um HTTP 401/403 de verdade só acontece por
+problema de autenticação — a chamada nem chega a processar o service:
 
 - Token ausente.
 - Token expirado.
 - Token gerado em outro ambiente.
-- Produto não liberado para a conta.
 
 Como resolver:
 
@@ -1949,18 +2124,22 @@ Como resolver:
 Authorization: Bearer {jwt_token}
 ```
 
-4. Confirme se o serviço está liberado para a conta.
+> Atencao:
+  "Produto não liberado para a conta" e "service sem permissão" **não** geram
+  HTTP 401/403 nesse endpoint — a chamada retorna HTTP 200 com o problema
+  descrito em `status.message` (`status.code` 400 ou 401 dentro do corpo).
+  Veja a seção seguinte.
 
-## Recebi `status.code` 400
 
-Possíveis causas:
+## HTTP 200, mas `status.code` diferente de 200
 
-- Body inválido.
-- Campo obrigatório ausente.
-- Código `service` incorreto.
-- CPF ou CNPJ inválido.
-- Serviço sem permissão.
-- Fonte externa indisponível.
+Esse é o caso mais comum de erro em `POST /api/service-api`: a chamada
+"funcionou" no sentido HTTP, mas o corpo mostra o problema real.
+
+| `status.code` no corpo | Causa | Observação |
+| --- | --- | --- |
+| 400 | Body inválido, campo obrigatório ausente, `service` incorreto, CPF/CNPJ inválido, fonte externa indisponível | Leia `status.message` para o motivo exato |
+| 401 | Produto não encontrado ou inativo para o `client` usado | Diferente do HTTP 401 — aqui o token é válido, o produto que está desativado |
 
 Como resolver:
 
@@ -2181,6 +2360,8 @@ Esta página explica termos comuns usados nos guias e no API Reference.
 | `status.message` | Mensagem técnica do processamento |
 | `externalId` | Identificador externo da consulta, quando retornado |
 | OCR | Extração de dados de documentos por imagem |
+| Webhook | Aviso automático que a idCerberus envia para uma URL sua quando um onboarding muda de status |
+| `id-cerberus-token` | Header enviado em toda chamada de webhook, usado para confirmar que ela veio da idCerberus |
 | FaceMatch | Comparação facial entre duas imagens |
 | Liveness | Validação de prova de vida |
 | KYC | Processo de conhecimento e validação de cliente |
@@ -2230,6 +2411,36 @@ Caso você ainda não possua essas credenciais, entre em contato pelo e-mail
 [contact@react-it.com](mailto:contact@react-it.com). Nossa equipe poderá orientar
 o processo de criação da conta e liberação do acesso necessário para a
 integração via API.
+
+## O que é, por que existe, pra que serve
+
+- **O que é:** o passo que transforma `client` + `secret` em um `access_token`
+  (JWT) de curta duração, que sua aplicação usa em toda chamada protegida.
+- **Por que existe:** `client` e `secret` são credenciais de longa duração —
+  se vazarem, o estrago é permanente até serem trocadas. O `access_token`
+  expira em minutos, então mesmo que vaze, a janela de risco é pequena. Por
+  isso as chamadas do dia a dia usam o token, não o `client`/`secret`
+  diretamente.
+- **Pra que serve pra você:** define uma peça de infraestrutura da sua
+  aplicação — algo no seu back-end que gera e renova o token
+  automaticamente, para o resto do código nunca se preocupar com isso.
+
+
+
+    Não. Gere um token e reutilize até ele expirar (`expires_in`). Gerar um
+    novo a cada chamada funciona, mas é desperdício de uma chamada extra por
+    request.
+
+
+    A chamada retorna erro de autenticação (401). Gere um novo token e repita
+    a chamada original — veja [Status e erros](/guides/status-e-erros) para o
+    tratamento completo.
+
+
+    Não. São credenciais diferentes por ambiente. Um `client`/`secret` de HML
+    não gera token válido para chamar produção, e vice-versa.
+
+
 
 ## Quando usar
 
@@ -2393,6 +2604,21 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Para detalhes técnicos do endpoint, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api).
+
+## Próximo passo
+
+
+
+    Use o token recém-gerado para fazer sua primeira chamada completa.
+
+
+    Encontre o código `service` certo pra usar depois do token.
+
+
+    Veja como tratar token expirado e outros erros de autenticação.
+
+
+    Diferente do `client`/`secret`: veja como funciona o login pessoal.
 
 ---
 
@@ -2663,6 +2889,28 @@ pelo backoffice.
 O `tokenOnboarding` identifica o cadastro durante todo o ciclo: criação,
 execução no SDK, processamento, consulta de resultado e download do relatório em
 PDF.
+
+> Atencao:
+  Não confunda os dois tokens deste fluxo. `access_token` autentica a sua
+  aplicação e expira em minutos (veja [Autenticação](/guides/autenticacao)).
+  `tokenOnboarding` identifica um cadastro específico e continua válido durante
+  todo o processo, mesmo depois do `access_token` expirar. Se o `access_token`
+  expirar no meio do fluxo, gere um novo — o `tokenOnboarding` não muda.
+
+
+## O que é, por que existe, pra que serve
+
+- **O que é:** um componente (mobile ou web) fornecido pela idCerberus que
+  captura documento, selfie e dados do usuário diretamente na tela dele,
+  seguindo o roteiro de onboarding configurado para o seu produto.
+- **Por que existe:** capturar documento e biometria com qualidade suficiente
+  para validação (foco, iluminação, ângulo, prova de vida) é um problema já
+  resolvido pelo SDK. Reimplementar isso do zero é caro e propenso a erro.
+- **Pra que serve pra você:** sua aplicação não processa imagem nem
+  implementa câmera — só gera o `tokenOnboarding`, entrega ao SDK e depois lê
+  o resultado já pronto. Se seu caso de uso é só consultar dados (sem capturar
+  documento do usuário), você provavelmente não precisa do SDK — veja
+  [Escolha o serviço certo](/guides/escolha-o-servico-certo).
 
 ## Quando usar
 
@@ -2984,6 +3232,30 @@ curl --location '{base_url}/api/history-onboarding-report/{tokenOnboarding}' \
 Esse endpoint não retorna um body JSON. Use-o quando precisar armazenar ou
 apresentar o relatório final do processo de onboarding em PDF.
 
+## Acompanhar o processamento
+
+Existem duas formas de saber quando um onboarding termina de processar:
+webhook (a idCerberus avisa a sua aplicação) ou polling (a sua aplicação
+pergunta). Veja [Webhooks](/guides/webhooks) para configurar o aviso
+automático — é a forma recomendada, porque reduz chamadas desnecessárias.
+Mesmo com webhook configurado, mantenha o polling abaixo como fallback: uma
+entrega de webhook que falha não é reenviada automaticamente (detalhes em
+[Webhooks](/guides/webhooks)).
+
+Consulte `GET /api/onboarding/report/{tokenOnboarding}` até o `status` sair de
+`IN_PROCESS`.
+
+- Espere alguns segundos entre uma consulta e outra. Não faça polling a cada
+  poucos milissegundos — os serviços por trás do onboarding podem depender de
+  bases externas e levar mais tempo que uma chamada avulsa.
+- Defina um limite de tentativas ou um tempo máximo de espera na sua
+  aplicação, com um caminho claro para "ainda não terminou, avise o usuário e
+  tente de novo depois" em vez de travar a tela esperando.
+- `REFUSED` é um resultado final do negócio, não um erro técnico. A chamada em
+  si teve sucesso (HTTP 200); o cadastro é que não foi aprovado. Não trate
+  `REFUSED` como falha para retry — trate como decisão de negócio que a sua
+  aplicação precisa refletir para o usuário.
+
 ## Boas práticas
 
 - Gere o `tokenOnboarding` no back-end, nunca diretamente no aplicativo.
@@ -2995,6 +3267,280 @@ apresentar o relatório final do processo de onboarding em PDF.
 
 Para detalhes técnicos dos endpoints, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api).
+
+## Próximo passo
+
+
+
+    Seja avisado automaticamente quando o status mudar, em vez de só consultar.
+
+
+    Veja o resultado de um onboarding específico direto na tela, sem código.
+
+
+    Entenda `APPROVED`, `IN_PROCESS`, `REFUSED` e como tratar cada um.
+
+
+    Revise como gerar e renovar o `access_token` usado neste fluxo.
+
+---
+
+# Webhooks
+
+URL: https://api-docs.idcerberus.com/guides/webhooks
+Fonte: guides/webhooks.mdx
+Descrição: Receba avisos automáticos quando um onboarding muda de status, sem precisar fazer polling
+
+# Webhooks
+
+Use webhooks para que a idCerberus avise a sua aplicação quando um onboarding
+mudar de status — ou quando uma consulta avulsa terminar de processar — em
+vez de sua aplicação precisar ficar perguntando (polling).
+
+## O que é, por que existe, pra que serve
+
+- **O que é:** uma URL da sua aplicação que a idCerberus chama automaticamente
+  (`POST`) toda vez que o processamento de um onboarding muda de status.
+- **Por que existe:** consultar `GET /api/onboarding/report/{tokenOnboarding}`
+  em loop até o status sair de `IN_PROCESS` funciona, mas gasta chamadas e
+  atrasa a reação da sua aplicação. O webhook inverte isso: você é avisado no
+  momento em que há novidade.
+- **Pra que serve pra você:** é a forma recomendada de acompanhar onboarding
+  em produção. Reserve o polling (veja [Onboarding via SDK](/guides/onboarding-sdk))
+  para quando o webhook ainda não estiver configurado, ou como conferência
+  ocasional.
+
+> Info:
+  Configurar o webhook (URL e chave de segurança) hoje é feito pelo time da
+  React IT, não é self-service pela API. Peça a ativação em
+  [contact@react-it.com](mailto:contact@react-it.com) informando a URL que
+  deve receber as chamadas.
+
+## Como funciona
+
+1. Algo relevante acontece: um onboarding muda de status (sai de `IN_PROCESS`
+   para `APPROVED` ou `REFUSED`), uma decisão de revisão manual é tomada, ou
+   uma consulta avulsa em `POST /api/service-api` termina de processar.
+2. A idCerberus monta o conteúdo (o mesmo formato de
+   `GET /api/onboarding/report/{tokenOnboarding}`, adaptado quando a origem é
+   uma consulta avulsa).
+3. A idCerberus faz `POST` desse conteúdo para a URL configurada no seu
+   produto.
+4. Sua aplicação responde com sucesso (`2xx`) para confirmar o recebimento.
+
+```mermaid
+sequenceDiagram
+    participant Você as Sua aplicação
+    participant idCerberus
+    participant Webhook as Sua URL de webhook
+
+    Você->>idCerberus: POST /api/service-api ou fluxo de onboarding
+    idCerberus-->>Você: Resposta síncrona (result + status)
+    Note over idCerberus: status muda / consulta termina /revisão manual decide
+    idCerberus->>Webhook: POST com id-cerberus-token
+    Webhook-->>idCerberus: 2xx (confirma recebimento)
+    Note over idCerberus,Webhook: Sem 2xx? Sem retry automático —veja o aviso abaixo
+```
+
+> Info:
+  O webhook não é instantâneo no sentido estrito. Processamento automático de
+  onboarding é verificado a cada poucos segundos e disparado quando encontra
+  uma mudança; consulta avulsa dispara o webhook cerca de 10 segundos depois
+  da resposta HTTP. Decisão de revisão manual (alguém aprova/recusa pelo
+  backoffice) dispara na hora. Nenhum desses tempos é um SLA contratual —
+  trate como comportamento observado, não como garantia.
+
+> Atencao:
+  Se a sua aplicação não responder com sucesso, a chamada é marcada
+  internamente como pendente de nova tentativa, mas **não existe um processo
+  automático que fica reenviando entregas que falharam**. Um novo envio só
+  acontece se: (a) o mesmo onboarding mudar de conteúdo de novo mais tarde
+  (dispara como entrega nova, não como retry), ou (b) alguém com acesso ao
+  [Backoffice](/guides/backoffice) forçar o reenvio manualmente na tela. Por
+  isso, não trate webhook como garantia de entrega — mantenha o polling
+  (`GET /api/onboarding/report/{tokenOnboarding}`) como rede de segurança
+  real, não só como formalidade.
+
+## Payload
+
+O formato do corpo depende da origem do evento.
+
+**Onboarding (SDK ou Cliente Web):** mesmo formato do relatório de onboarding.
+
+```json
+{
+  "tokenOnboarding": "bb6adc72-0132-4b27-a723-98fe9f20cb81",
+  "createdDate": "2022-06-15T19:02:04.877688Z",
+  "numberSteps": 4,
+  "status": "APPROVED",
+  "result": "AUT_APPROVED",
+  "fields": [],
+  "services": []
+}
+```
+
+Veja a tabela de campos completa em
+[Onboarding via SDK](/guides/onboarding-sdk#consultar-resultado) — é a
+mesma estrutura.
+
+**Consulta avulsa (`POST /api/service-api`):** o mesmo JSON que já veio na
+resposta HTTP síncrona da chamada — `result`, `status`, `onboardingStatus` e
+`externalId`, não o formato de relatório de onboarding acima.
+
+## Autenticar a chamada recebida
+
+Toda chamada de webhook chega com um header de verificação:
+
+```http
+id-cerberus-token: {webhookKey}
+```
+
+Antes de processar o payload, confira se `id-cerberus-token` bate com a chave
+que a React IT te passou ao configurar o webhook. Isso confirma que a chamada
+veio mesmo da idCerberus, e não de terceiros que descobriram sua URL.
+
+> Atencao:
+  Não exponha a `webhookKey` no front-end nem em repositórios públicos. Trate-a
+  como qualquer outro segredo de autenticação.
+
+## Boas práticas
+
+- Responda rápido (idealmente abaixo de alguns segundos) e processe o
+  conteúdo depois, de forma assíncrona. Um endpoint lento pode ser
+  interpretado como falha.
+- Sempre valide o header `id-cerberus-token` antes de confiar no payload.
+- Trate eventos repetidos. Reprocessar o mesmo `tokenOnboarding` com o mesmo
+  status não deve causar efeito colateral duplicado.
+- Não trate `REFUSED` como erro técnico — é um resultado de negócio, igual ao
+  consumo avulso via polling. Veja
+  [Status e erros](/guides/status-e-erros).
+- Mantenha um fallback de polling. Como não existe reenvio automático para
+  entregas que falharam (veja "Como funciona" acima), esse fallback é o que
+  garante que sua aplicação não fique presa esperando um evento que não vai
+  chegar sozinho.
+
+## Dúvidas comuns
+
+
+    Não. Use o webhook como principal e o polling
+    (`GET /api/onboarding/report/{tokenOnboarding}`) como conferência ou
+    fallback, especialmente logo após configurar o webhook pela primeira vez.
+
+
+    Sim, se o seu produto tiver webhook configurado. Consultas avulsas em
+    `POST /api/service-api` já retornam o resultado direto na resposta HTTP —
+    o webhook chega depois (por volta de 10 segundos), com o mesmo conteúdo.
+    Na prática ele é redundante para consumo avulso simples; ele importa mais
+    quando você quer centralizar tudo (avulso e onboarding) num único
+    listener em vez de tratar a resposta síncrona da API em vários lugares do
+    seu código.
+
+
+    A configuração é uma URL por produto. Se você precisa distribuir eventos
+    para múltiplos sistemas internos, receba na sua própria URL e distribua a
+    partir dali.
+
+
+    Faça um onboarding de teste em homologação e confirme se a sua URL recebeu
+    a chamada. Se não tiver certeza se a configuração foi aplicada, confirme
+    com quem liberou o acesso.
+
+
+## Próximo passo
+
+
+    Veja o fluxo completo que gera os eventos que o webhook avisa.
+
+
+    Veja logs de tentativas e force um reenvio manual pela tela.
+
+
+    Entenda como interpretar `REFUSED`, `ERROR` e os demais status recebidos.
+
+
+    Confira termos como `id-cerberus-token` e `tokenOnboarding`.
+
+---
+
+# Backoffice
+
+URL: https://api-docs.idcerberus.com/guides/backoffice
+Fonte: guides/backoffice.mdx
+Descrição: A interface visual da idCerberus — dashboard, histórico de onboarding e consultas manuais sem escrever código
+
+# Backoffice
+
+## O que é, por que existe, pra que serve
+
+- **O que é:** a interface web da idCerberus, acessada por login (usuário e
+  senha), separada da integração via API. É o mesmo domínio
+  (`backoffice-hml.idcerberus.com` / `backoffice.idcerberus.com`) que serve
+  os endpoints `/api/...` — veja por que em [Visão geral](/guides/visao-geral).
+- **Por que existe:** nem toda tarefa precisa de código. Acompanhar o volume
+  de cadastros, olhar o resultado de um onboarding específico ou testar uma
+  consulta pontual não deveria exigir abrir o Postman.
+- **Pra que serve pra você:** é o lugar para visualizar e explorar, não para
+  integrar. Sua aplicação continua consumindo dados pela API, SDK ou webhook
+  — o backoffice é o painel que o seu time usa por cima disso.
+
+## O que você encontra lá
+
+| Área | Para que serve |
+| --- | --- |
+| Dashboard | Volume de cadastros, resumo de onboarding, distribuição geográfica e por idade dos clientes processados |
+| Onboardings | Lista e detalhe de cada cadastro processado — o mesmo conteúdo que `GET /api/onboarding/report/{tokenOnboarding}` retorna, mas em tela. O detalhe também mostra o histórico de tentativas de webhook daquele onboarding e permite forçar um reenvio manual |
+| Consultas rápidas | Rodar uma consulta pontual (CPF, CNPJ, documento com OCR, nome, telefone, face) direto na interface, sem montar payload nem chamar a API |
+
+> Nota:
+  Use as consultas rápidas do backoffice para validar rapidamente que um
+  service faz o que você espera, antes de replicar a mesma chamada em código
+  via `POST /api/service-api`. É o jeito mais rápido de "ver o resultado" sem
+  escrever nada.
+
+## Backoffice ou API — qual usar
+
+| Se você precisa... | Use |
+| --- | --- |
+| Automatizar consultas dentro do fluxo da sua aplicação | API ([Quickstart](/guides/quickstart)) |
+| Conduzir um cadastro completo dentro do seu app | SDK ou Cliente Web ([Onboarding via SDK](/guides/onboarding-sdk)) |
+| Ser avisado quando um cadastro mudar de status | Webhook ([Webhooks](/guides/webhooks)) |
+| Olhar um resultado específico rapidamente, sem codar | Backoffice, tela de Onboardings |
+| Testar uma consulta antes de integrar | Backoffice, Consultas rápidas |
+| Acompanhar volume e indicadores | Backoffice, Dashboard |
+
+## Dúvidas comuns
+
+
+    Dashboard e histórico de onboarding refletem os mesmos dados que
+    `GET /api/onboarding/report/{tokenOnboarding}` expõe. Consultas rápidas
+    usam por baixo os mesmos services de `POST /api/service-api` — é a
+    mesma consulta, só que disparada pela tela em vez de código.
+
+
+    Não. O login do backoffice é usuário e senha, para uma pessoa. `client` e
+    `secret` autenticam a sua aplicação. São dois mecanismos de autenticação
+    diferentes para o mesmo sistema — veja
+    [Autenticação](/guides/autenticacao) para o lado API.
+
+
+    A configuração de webhook (URL e chave) hoje é feita pela React IT sob
+    pedido, não é uma tela de autoatendimento ainda. Veja
+    [Webhooks](/guides/webhooks) para como pedir a ativação.
+
+
+## Próximo passo
+
+
+    Faça a primeira chamada de API pra comparar com o que você viu na tela.
+
+
+    Configure aviso automático em vez de olhar a tela manualmente.
+
+
+    Entenda a diferença entre seu login pessoal e o `client`/`secret` da API.
+
+
+    Volte pro panorama geral: service, onboarding, produto e backoffice.
 
 ---
 
@@ -3019,6 +3565,34 @@ protestos, sócios e compliance.
   services. O catálogo técnico completo vive em
   [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica) e
   [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
+
+## Antes das tabelas, qual é o seu papel?
+
+Você não precisa ler código `SERVICE_ALGO` para decidir nada. Pule direto para
+a tabela da sua necessidade (validar identidade, analisar risco, validar
+contato, analisar uma empresa) e leia a coluna **Necessidade** — ela descreve
+o que o service faz em português. O código na coluna ao lado é só o que o seu
+time técnico vai copiar depois.
+
+Se preferir uma conversa em vez de tabela, comece pela
+[Visão geral](/guides/visao-geral), que explica o que é um service e um
+onboarding sem jargão técnico.
+
+Siga o processo normal: ache o service na tabela, copie o código exato e vá
+para a [API Reference](/api-reference/autorização/gerar-token-de-api) pegar o
+contrato completo (payload, response, erros). Se ainda não fez a primeira
+chamada, comece pelo [Quickstart](/guides/quickstart) antes de escolher o
+service definitivo.
+
+Esta página é sobre `POST /api/service-api` (consultas avulsas). Se o seu caso
+é capturar documento e selfie do usuário num app, o fluxo é outro — veja
+[Onboarding via SDK](/guides/onboarding-sdk). Você ainda pode voltar aqui
+depois para complementar o onboarding com consultas avulsas extras.
+
+As tabelas abaixo valem para HML e produção sem diferença de código. Depois de
+escolher o service, veja [Ambientes](/guides/ambientes) para confirmar URL e
+credenciais de teste, e [Status e erros](/guides/status-e-erros) para saber
+interpretar retornos antes de reportar bug.
 
 ## Como decidir
 
@@ -3052,7 +3626,7 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Consultar processos de pessoa física | `SERVICE_JURIDICAL_PROCESSES` |
 | Consultar dados financeiros e endereços da pessoa | `SERVICE_PF_FINANCIAL_AND_ADDRESS` |
 | Consultar histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` |
-| Avaliar propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` |
+| Avaliar propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` (sem R, grafia oficial) |
 | Validar CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION` |
 | Validar CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION` |
 | Consultar histórico de telefones | `SERVICE_PHONE_HISTORY` |
@@ -3097,8 +3671,8 @@ CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-p
 | Score de fraude | `SERVICE_FRAUD_RISK_SCORE` |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` |
-| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` |
-| Débitos com governo | `SERVICE_ACTIVE_DEBT_PF`, `SERVICE_ACTIVE_DEBT_PF` |
+| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` (sem R, grafia oficial) |
+| Débitos com governo | `SERVICE_ACTIVE_DEBT_PF` |
 | Processos e certidões | `SERVICE_JURIDICAL_PROCESSES`, `SERVICE_NOTHING_RECORD_LAWSUITS`, `SERVICE_CRIMINAL_RECORD_FEDERAL`, `SERVICE_CRIMINAL_RECORD_CIVIL` |
 | Protestos | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
 | Mandado de prisão | `SERVICE_ARREST_WARRANT` |
@@ -3210,7 +3784,7 @@ Content-Type: application/json
 1. Gere token no mesmo ambiente da chamada.
 2. Confirme se o produto tem o service ativo e habilitado para API.
 3. Use massa válida de HML.
-4. Para OCR, use base64 puro, sem prefixo `data:image/...;base64,`.
+4. Para OCR, envie o base64 completo (com ou sem prefixo `data:image/...;base64,`, os dois funcionam).
 5. Leia `result`, `status.message`, `onboardingStatus` e `externalId`.
 
 ## Testar CPF
@@ -3289,9 +3863,9 @@ Retorno esperado:
 {
   "result": {
     "cnpj": "00000000000000",
-    "companyName": "EMPRESA FICTICIA LTDA",
+    "officialName": "EMPRESA FICTICIA LTDA",
     "tradeName": "EMPRESA FICTICIA",
-    "registrationStatus": "ATIVA",
+    "status": "ATIVA",
     "openingDate": "2020-01-01"
   },
   "status": {
@@ -3637,7 +4211,6 @@ Use credenciais, token e base URL do mesmo ambiente. Token de homologação não
 deve ser usado em produção, e token de produção não deve ser usado em
 homologação.
 
-
 ## URLs base
 
 | Ambiente | Base URL | Quando usar |
@@ -3646,9 +4219,6 @@ homologação.
 | Produção | `https://backoffice.idcerberus.com` | Operação real, com credenciais produtivas |
 
 ## Gerar token
-
-
-
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
@@ -3659,9 +4229,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
 }'
 ```
 
-
-
-
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
 --header 'Content-Type: application/json' \
@@ -3671,13 +4238,7 @@ curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
 }'
 ```
 
-
-
-
 ## Consulta de CPF
-
-
-
 
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
@@ -3686,12 +4247,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "birthDate": "yyyy-MM-dd (opcional)"
 }'
 ```
-
-
-
 
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/service-api' \
@@ -3700,18 +4258,12 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "birthDate": "yyyy-MM-dd (opcional)"
 }'
 ```
-
-
-
 
 ## Consulta de CNPJ
 
-
-
-
 ```bash
 curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -3722,9 +4274,6 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
-
-
-
 ```bash
 curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
@@ -3734,9 +4283,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
   "cnpj": "cnpj"
 }'
 ```
-
-
-
 
 ## Arquivos prontos
 
@@ -3827,6 +4373,13 @@ curl.exe --location "$baseUrl/api/service-api" `
 
 ## Node.js
 
+> Info:
+  Os exemplos usam `fetch` global, disponível a partir do Node 18. Em versões
+  anteriores, instale um polyfill como `node-fetch`. O trecho final roda
+  dentro de uma função `async` imediatamente invocada para funcionar tanto em
+  projetos CommonJS quanto ESM sem configuração extra.
+
+
 ### Node.js com fetch
 
 ```js
@@ -3871,45 +4424,51 @@ async function executarServico(token) {
   return body.result;
 }
 
-const { access_token } = await gerarToken();
-const result = await executarServico(access_token);
-console.log(result);
+(async () => {
+  const { access_token } = await gerarToken();
+  const result = await executarServico(access_token);
+  console.log(result);
+})();
 ```
 
 ### Node.js com Axios
 
+Instale antes com `npm install axios`.
+
 ```js
-import axios from "axios";
+const axios = require("axios");
 
 const baseUrl = "https://backoffice-hml.idcerberus.com";
 
-const tokenResponse = await axios.post(`${baseUrl}/api/token-generate`, {
-  client: "{client}",
-  secret: "{secret}",
-});
+(async () => {
+  const tokenResponse = await axios.post(`${baseUrl}/api/token-generate`, {
+    client: "{client}",
+    secret: "{secret}",
+  });
 
-const token = tokenResponse.data.access_token;
+  const token = tokenResponse.data.access_token;
 
-const serviceResponse = await axios.post(
-  `${baseUrl}/api/service-api`,
-  {
-    service: "SERVICE_PERSON_DATA_ENRICHMENT",
-    cpf: "cpf",
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+  const serviceResponse = await axios.post(
+    `${baseUrl}/api/service-api`,
+    {
+      service: "SERVICE_PERSON_DATA_ENRICHMENT",
+      cpf: "cpf",
     },
-    timeout: 60000,
-  },
-);
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 60000,
+    },
+  );
 
-if (serviceResponse.data.status?.code !== 200) {
-  throw new Error(serviceResponse.data.status?.message || "Falha no processamento");
-}
+  if (serviceResponse.data.status?.code !== 200) {
+    throw new Error(serviceResponse.data.status?.message || "Falha no processamento");
+  }
 
-console.log(serviceResponse.data.result);
+  console.log(serviceResponse.data.result);
+})();
 ```
 
 ## Python
@@ -3951,6 +4510,7 @@ print(body["result"])
 ## C#
 
 ```csharp
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -3993,7 +4553,9 @@ Console.WriteLine(serviceBody);
 
 ## Java
 
-Exemplo usando `HttpClient`, disponível nas versões recentes do Java.
+Exemplo usando `HttpClient` (Java 11+) e text blocks (`"""`) para o JSON, que
+exigem Java 15+. Em Java 11-14, troque os text blocks por strings normais
+concatenadas.
 
 ```java
 import java.net.URI;
@@ -4122,7 +4684,7 @@ payload completo no API Reference.
 | Consultar histórico profissional | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` | Recuperar vínculos profissionais |
 | Consultar histórico profissional do titular | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` | Recuperar vínculos em que a pessoa aparece como titular ou sócia |
 | Consultar dados financeiros e endereços | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` | Combinar dados cadastrais, endereços e informações financeiras |
-| Consultar propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` | Avaliar sinais de propensão a apostas online |
+| Consultar propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` (sem R, grafia oficial) | `cpf` | Avaliar sinais de propensão a apostas online |
 | Consultar histórico de telefones | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` | Recuperar telefones associados ao CPF |
 | Consultar histórico de e-mails | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | Recuperar e-mails associados ao CPF |
 | Consultar pessoas relacionadas | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | Mapear vínculos pessoais associados ao CPF |
@@ -4909,7 +5471,7 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 
 **Quando usar:** Use este service quando precisar executar a consulta "Propensão a apostas online" via API.
 
-**Retorno principal:** Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
+**Retorno principal:** Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. Atenção: o alias é `SEVICE_ONLINE_BETTING_PROPENSITY` (sem a letra R em SERVICE) — essa é a grafia implementada no backend, copie exatamente assim.
 
 [Ver no API Reference](https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SEVICE_ONLINE_BETTING_PROPENSITY)
 
@@ -5035,7 +5597,7 @@ Abra o service para ver alias público, campos de entrada, termos de busca e ret
 
 **Service:** `SERVICE_RFB_PF`
 
-**Campos principais:** `cpf`, `dataDeNascimento`
+**Campos principais:** `cpf`, `birthDate`
 
 **Termos de busca:** CPF Receita Federal, PF - Status do CPF na Receita Federal
 
@@ -5942,7 +6504,7 @@ de pessoa física. Se o `service` mudar, o produto executado também muda.
 | Produto | Código `service` | Entrada principal |
 | --- | --- | --- |
 | Enriquecimento de pessoa física | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
-| Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
+| Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `birthDate` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
 | Modelagem de dados de pessoa física | `SERVICE_PERSON_DATA_MODELING` | `cpf` |
 | Prompt de IA para pessoa | `SERVICE_PERSON_AI_PROMPT` | `cpf` |
@@ -5999,7 +6561,7 @@ produzir o retorno esperado. Para OCR, use também o guia [OCR via Service API](
 | Validação de e-mail | `SERVICE_EMAIL_VALIDATION` | `email` |
 | Validação de CPF com telefone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` |
 | Validação de CPF com endereço | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` |
-| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` |
+| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` (sem R, grafia oficial) | `cpf` |
 | Prêmios e certificações | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` |
 | Benefícios sociais familiares | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` |
 | Benefícios sociais estendidos | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` |
@@ -6194,7 +6756,7 @@ Resposta esperada:
     "cpf": "06319423196",
     "status": "REGULAR",
     "name": "NOME DA PESSOA",
-    "birthdate": "1998-07-05",
+    "birthDate": "1998-07-05",
     "origin": "RECEITA FEDERAL",
     "age": 24
   },
@@ -6380,8 +6942,7 @@ Use esta categoria quando precisar:
 | Pessoa politicamente exposta | `SERVICE_PEP` | Indica se o CPF pertence a uma Pessoa Politicamente Exposta |
 | KYC e compliance de pessoa física | `SERVICE_PERSON_KYC` | Consolida PEP, sanções e histórico de compliance associado ao CPF |
 | Exposição e perfil na mídia PF | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | Consulta exposição pública, notoriedade, impopularidade e notícias relacionadas ao CPF |
-| Dívida ativa PF | `SERVICE_ACTIVE_DEBT_PF` | Consulta situação de dívida ativa em fontes públicas |
-| Débitos ativos PF | `SERVICE_ACTIVE_DEBT_PF` | Retorna totais e lista de débitos ativos associados ao CPF |
+| Dívida ativa PF | `SERVICE_ACTIVE_DEBT_PF` | Retorna totais e lista de débitos ativos associados ao CPF |
 | Score de risco de fraude | `SERVICE_FRAUD_RISK_SCORE` | Mede propensão de fraude com base em fator de risco |
 | Risco financeiro | `SERVICE_FINANCIAL_RISK_SCORE` | Retorna score e leitura resumida de risco financeiro |
 | Score de inadimplência | `SERVICE_DEFAULT_RISK_SCORE` | Retorna score, faixa de risco e probabilidade esperada de inadimplência |
@@ -6389,7 +6950,7 @@ Use esta categoria quando precisar:
 | Score de Crédito Multidados | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | Consulta score de crédito multidados de pessoa física |
 | Dados Restritivos | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | Consulta dados restritivos de crédito de pessoa física, com indicativo e quantidade de restrições |
 | Flags Negativos | `SERVICE_QUOD_CREDIT_RISK_PERSON` | Consulta flags negativos de crédito de pessoa física, com nível e classificação de risco |
-| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` | Avalia sinais de propensão a apostas online associados ao CPF |
+| Propensão a apostas online | `SEVICE_ONLINE_BETTING_PROPENSITY` (sem R, grafia oficial) | Avalia sinais de propensão a apostas online associados ao CPF |
 | Nada consta em ações judiciais | `SERVICE_NOTHING_RECORD_LAWSUITS` | Emite certidão de Nada Consta em tribunais regionais federais |
 | Antecedentes criminais federais | `SERVICE_CRIMINAL_RECORD_FEDERAL` | Consulta certidão de antecedentes criminais federal |
 | Antecedentes criminais civis | `SERVICE_CRIMINAL_RECORD_CIVIL` | Consulta certidão de antecedentes criminais estadual |
@@ -6997,7 +7558,7 @@ Para detalhes de tratamento, consulte [Status e erros](/guides/status-e-erros).
 | Serviço | Código `service` | Campos principais |
 | --- | --- | --- |
 | Enriquecimento de dados de PF | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
-| Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` |
+| Status do CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `birthDate` |
 | CPF na Receita Federal on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
 | Modelagem de dados de pessoa física | `SERVICE_PERSON_DATA_MODELING` | `cpf` |
 | Prompt de IA para pessoa | `SERVICE_PERSON_AI_PROMPT` | `cpf` |
@@ -7177,7 +7738,7 @@ Exemplo de resposta:
     "gender": "M",
     "fatherName": "NOME DO PAI",
     "motherName": "NOME DA MÃE",
-    "birthdate": "1998-07-05",
+    "birthDate": "1998-07-05",
     "birthCountry": "BRASILEIRA",
     "dead": false,
     "country": "BRAZIL",
@@ -7217,7 +7778,7 @@ Body:
 {
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "birthDate": "yyyy-MM-dd (opcional)"
 }
 ```
 
@@ -7240,7 +7801,7 @@ curl --location '{base_url}/api/service-api' \
   --data '{
     "service": "SERVICE_RFB_PF",
     "cpf": "cpf",
-    "dataDeNascimento": "yyyy-MM-dd (opcional) "
+    "birthDate": "yyyy-MM-dd (opcional)"
   }'
 ```
 
@@ -8578,7 +9139,7 @@ Exemplo de resposta:
     "status": "VERIFIED",
     "message": "Os dados estão corretos.",
     "name": "NOME EXEMPLO",
-    "birthdate": "1971-11-23",
+    "birthDate": "1971-11-23",
     "pis": "12460888617"
   },
   "status": {
@@ -8655,7 +9216,7 @@ Exemplo de resposta:
     "name": "NOME DA PESSOA",
     "fatherName": "NOME DO PAI",
     "motherName": "NOME DA MÃE",
-    "birthdate": "1984-05-21",
+    "birthDate": "1984-05-21",
     "cnhCategory": "AD",
     "expeditionDate": "19/03/2021",
     "rg": "3261880",
@@ -8725,7 +9286,7 @@ Exemplo de resposta:
     "name": "NOME DA PESSOA",
     "fatherName": "NOME DO PAI",
     "motherName": "NOME DA MÃE",
-    "birthdate": "1992-01-05",
+    "birthDate": "1992-01-05",
     "cnhCategory": "AB",
     "cnhNumber": "07796497926",
     "expeditionDate": "2020-04-13",
@@ -10562,6 +11123,12 @@ compliance e enriquecimento de dados.
 Use esta seção quando estiver implementando no código. Para contexto de produto,
 fluxos sugeridos e explicações por domínio, consulte os guias.
 
+> Nota:
+  Cada página de endpoint tem um painel de teste direto no navegador — sem
+  precisar do Postman. Preencha seu `access_token` e os campos do body ali
+  mesmo e clique em enviar para ver a resposta real.
+
+
 
 
     Abra o endpoint `POST /api/token-generate` com request, response e exemplo
@@ -10790,9 +11357,10 @@ Quando houver falha, trate a mensagem retornada antes de repetir a chamada.
 1. Gere um token em `POST /api/token-generate`.
 2. Abra o endpoint que deseja consumir.
 3. Se for usar `POST /api/service-api`, selecione o exemplo pelo campo `service`.
-4. Substitua os valores de teste pelos dados reais.
-5. Valide o response esperado e mapeie os campos de `result`.
-6. Use os guias quando precisar entender o contexto de negócio do produto.
+4. Teste no painel da própria página (com seu `access_token` e dados de HML) antes de sair copiando pro seu código.
+5. Substitua os valores de teste pelos dados reais.
+6. Valide o response esperado e mapeie os campos de `result`.
+7. Use os guias quando precisar entender o contexto de negócio do produto.
 
 ---
 
@@ -14271,7 +14839,7 @@ Neste service, o objeto `result` representa: Retorna empresas MEI associadas ao 
  Campos obrigatórios: `service`, `cpf`.
 
 
- Principais campos em `result`: `cpf`, `name`, `birthDate`, `registrationStatus`, `protocol`.
+ Principais campos em `result`: `cpf`, `name`, `birthDate`, `status`, `protocol`.
 
 
  Use `status.code` e `status.message` para entender se a consulta processou corretamente.
@@ -14339,7 +14907,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | `result.cpf` | CPF relacionado ao resultado da consulta. |
 | `result.name` | Nome completo retornado pela consulta quando disponível. |
 | `result.birthDate` | Data retornada pela consulta, conforme o contexto do service. |
-| `result.registrationStatus` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
 | `result.protocol` | Campo retornado no objeto result para consumo do cliente. |
 
 ### Como consumir o retorno
@@ -14365,7 +14933,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
     "cpf": "cpf",
     "name": "Nome completo",
     "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
+    "status": "REGULAR",
     "protocol": "protocolo"
   },
   "status": {
@@ -14623,7 +15191,7 @@ Neste service, o objeto `result` representa: Retorna dados de PIS/NIS associados
  Campos obrigatórios: `service`, `cpf`.
 
 
- Principais campos em `result`: `cpf`, `name`, `birthDate`, `registrationStatus`, `motherName`.
+ Principais campos em `result`: `cpf`, `name`, `birthDate`, `status`, `motherName`.
 
 
  Use `status.code` e `status.message` para entender se a consulta processou corretamente.
@@ -14691,7 +15259,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | `result.cpf` | CPF relacionado ao resultado da consulta. |
 | `result.name` | Nome completo retornado pela consulta quando disponível. |
 | `result.birthDate` | Data retornada pela consulta, conforme o contexto do service. |
-| `result.registrationStatus` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
 | `result.motherName` | Campo retornado no objeto result para consumo do cliente. |
 
 ### Como consumir o retorno
@@ -14717,7 +15285,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
     "cpf": "cpf",
     "name": "Nome completo",
     "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
+    "status": "REGULAR",
     "motherName": "Nome da mãe"
   },
   "status": {
@@ -14857,20 +15425,20 @@ Neste service, o objeto `result` representa: Retorna a quantidade e os registros
  Campos obrigatórios: `service`, `cpf`.
 
 
- Principais campos em `result`: `cpf`, `name`, `birthDate`, `registrationStatus`, `protocol`.
+ Principais campos em `result`: `cpf`, `name`, `birthDate`, `status`, `protocol`.
 
 
  Use `status.code` e `status.message` para entender se a consulta processou corretamente.
 
 
- `dataDeNascimento`
+ `birthDate`
 
 
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cpf`
 
-**Campos opcionais:** `dataDeNascimento`
+**Campos opcionais:** `birthDate`
 
 ### Passo a passo
 
@@ -14888,7 +15456,7 @@ Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de tes
 {
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "birthDate": "yyyy-MM-dd (opcional)"
 }
 ```
 
@@ -14899,7 +15467,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "birthDate": "yyyy-MM-dd (opcional)"
 }'
 ```
 
@@ -14910,7 +15478,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "birthDate": "yyyy-MM-dd (opcional)"
 }'
 ```
 
@@ -14920,7 +15488,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
-| `dataDeNascimento` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
+| `birthDate` | Não | Data de nascimento usada para aumentar a precisão da consulta quando exigida. |
 
 ### Campos principais do result
 
@@ -14929,7 +15497,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | `result.cpf` | CPF relacionado ao resultado da consulta. |
 | `result.name` | Nome completo retornado pela consulta quando disponível. |
 | `result.birthDate` | Data retornada pela consulta, conforme o contexto do service. |
-| `result.registrationStatus` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
 | `result.protocol` | Campo retornado no objeto result para consumo do cliente. |
 
 ### Como consumir o retorno
@@ -14955,7 +15523,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
     "cpf": "cpf",
     "name": "Nome completo",
     "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
+    "status": "REGULAR",
     "protocol": "protocolo"
   },
   "status": {
@@ -17131,7 +17699,7 @@ Neste service, o objeto `result` representa: Retorna exposição e perfil de mí
 
 **Quando usar:** Use este service quando precisar executar a consulta "Propensão a apostas online" via API.
 
-**O que retorna:** Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
+**O que retorna:** Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. Atenção: o alias é `SEVICE_ONLINE_BETTING_PROPENSITY` (sem a letra R em SERVICE) — essa é a grafia implementada no backend, copie exatamente assim.
 
 
  Campos obrigatórios: `service`, `cpf`.
@@ -17242,7 +17810,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
+Neste service, o objeto `result` representa: Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. Atenção: o alias é `SEVICE_ONLINE_BETTING_PROPENSITY` (sem a letra R em SERVICE) — essa é a grafia implementada no backend, copie exatamente assim.
 
 **Service:** `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
 
@@ -27182,7 +27750,7 @@ A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo c
  ```yaml
  service: SERVICE_RFB_PF
  cpf: cpf
- dataDeNascimento: yyyy-MM-dd (opcional)
+ birthDate: yyyy-MM-dd (opcional)
  ```
 
 - PF - Telefones de Pessoas Relacionadas: `SERVICE_RELATED_PEOPLE_PHONES`
@@ -28089,7 +28657,7 @@ Response resumido:
     "cpf": "cpf",
     "name": "Nome completo",
     "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
+    "status": "REGULAR",
     "protocol": "protocolo"
   },
   "status": {
@@ -28707,7 +29275,7 @@ Response resumido:
     "cpf": "cpf",
     "name": "Nome completo",
     "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
+    "status": "REGULAR",
     "motherName": "Nome da mãe"
   },
   "status": {
@@ -29732,7 +30300,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 - Endpoint: `POST /api/service-api`
 - Campos do request: `cpf`
 - Termos de busca: PF - Propensão a apostas online, apostas bets compliance bet
-- Retorno principal: Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis.
+- Retorno principal: Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. Atenção: o alias é `SEVICE_ONLINE_BETTING_PROPENSITY` (sem a letra R em SERVICE) — essa é a grafia implementada no backend, copie exatamente assim.
 
 Response resumido:
 
@@ -30187,7 +30755,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 - Service: `SERVICE_RFB_PF`
 - Endpoint: `POST /api/service-api`
-- Campos do request: `cpf`, `dataDeNascimento`
+- Campos do request: `cpf`, `birthDate`
 - Termos de busca: CPF Receita Federal, PF - Status do CPF na Receita Federal
 - Retorno principal: Retorna situação do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponíveis.
 
@@ -30199,7 +30767,7 @@ Response resumido:
     "cpf": "cpf",
     "name": "Nome completo",
     "birthDate": "yyyy-MM-dd",
-    "registrationStatus": "REGULAR",
+    "status": "REGULAR",
     "protocol": "protocolo"
   },
   "status": {
@@ -30219,7 +30787,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_RFB_PF",
   "cpf": "cpf",
-  "dataDeNascimento": "yyyy-MM-dd (opcional)"
+  "birthDate": "yyyy-MM-dd (opcional)"
 }'
 ```
 
@@ -33377,7 +33945,7 @@ paths:
                 value:
                   service: SERVICE_RFB_PF
                   cpf: cpf
-                  dataDeNascimento: yyyy-MM-dd (opcional)
+                  birthDate: yyyy-MM-dd (opcional)
               statusCpfReceitaFederalOnDemand:
                 summary: PF - CPF na Receita Federal on-demand
                 value:

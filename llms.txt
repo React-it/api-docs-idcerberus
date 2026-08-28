@@ -15,7 +15,7 @@ Base URLs:
 - Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
 - Use homologação para testes e produção somente quando o usuário pedir explicitamente.
 - Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
-- Para OCR, use base64 puro em `image1`/`image2` e não inclua prefixo `data:image/...;base64,`.
+- Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).
 - Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.
 - Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
 
@@ -82,7 +82,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 | Caso | Service | Campos principais | Guia/API |
 | --- | --- | --- | --- |
-| CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `dataDeNascimento` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
+| CPF na Receita Federal | `SERVICE_RFB_PF` | `cpf`, `birthDate` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
 | CNPJ na Receita Federal | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ |
 | OCR React | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_OCR |
 | OCR cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
@@ -97,7 +97,7 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 - OCR usa imagem do documento, não selfie.
 - Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
-- `image1` deve receber base64 puro, sem prefixo `data:image/...;base64,`.
+- `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,` — os dois formatos funcionam.
 - RG normalmente usa frente e verso: `image1` e `image2`.
 - CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
 - Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
@@ -131,6 +131,8 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 - [Primeira consulta CPF](https://api-docs.idcerberus.com/guides/primeira-consulta-cpf): Execute uma consulta simples de pessoa física do início ao fim
 - [Primeira consulta CNPJ](https://api-docs.idcerberus.com/guides/primeira-consulta-cnpj): Execute uma consulta simples de pessoa jurídica do início ao fim
 - [Onboarding via SDK](https://api-docs.idcerberus.com/guides/onboarding-sdk): Gere TokenOnboarding, acompanhe o status do cadastro e baixe o relatório final
+- [Webhooks](https://api-docs.idcerberus.com/guides/webhooks): Receba avisos automáticos quando um onboarding muda de status, sem precisar fazer polling
+- [Backoffice](https://api-docs.idcerberus.com/guides/backoffice): A interface visual da idCerberus — dashboard, histórico de onboarding e consultas manuais sem escrever código
 - [Escolha o serviço certo](https://api-docs.idcerberus.com/guides/escolha-o-servico-certo): Encontre os services idCerberus mais indicados para cada caso de uso
 - [Receitas prontas](https://api-docs.idcerberus.com/guides/receitas-prontas): Fluxos práticos para testar CPF, CNPJ, OCR, Face Index, risco e score pela Service API
 - [Exemplos por ambiente](https://api-docs.idcerberus.com/guides/exemplos-por-ambiente): Copie chamadas equivalentes para homologação e produção sem trocar parâmetros por engano
