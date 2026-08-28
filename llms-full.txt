@@ -125,7 +125,7 @@ Use o service público liberado no produto no campo `service`.
 | `Don't have access to the service` | Produto sem service ativo/API habilitada ou alias errado. | Conferir configuração do produto e alias de chamada. |
 | Imagem ausente | Payload não enviou `image1`, `image2`, URL ou `key` esperado. | Conferir o OCR chamado e montar o JSON novamente. |
 | `result: {}` | Consulta processou, mas não retornou dado útil. | Validar imagem, massa, configuração do produto e tipo correto do service. |
-| `onboardingStatus: ERROR` | Falha técnica , storage, processamento externo ou processamento. | Usar `externalId`, horário e ambiente para investigar. |
+| `onboardingStatus: ERROR` | Falha técnica no processamento, no storage ou em fonte externa. | Usar `externalId`, horário e ambiente para investigar. |
 | Campo esperado ausente | O campo pode não existir no documento/base ou não ter sido extraído. | Não inventar valor; explicar que o retorno traz apenas dados disponíveis. |
 
 ---
@@ -142,7 +142,6 @@ Use esta página quando não souber por onde começar. Ela indica o caminho mais
 curto de acordo com o seu objetivo.
 
 
-
     Gere token, execute um service e entenda o formato básico da resposta.
 
 
@@ -153,7 +152,6 @@ curto de acordo com o seu objetivo.
 
 
     Copie requests, responses e exemplos por endpoint.
-
 
 
 ## Por perfil
@@ -181,12 +179,12 @@ curto de acordo com o seu objetivo.
 | Ver resultado ou testar consulta sem escrever código | [Backoffice](/guides/backoffice) |
 | Usar Postman | [Postman do zero](/guides/postman-do-zero) |
 | Resolver erro | [Troubleshooting](/guides/troubleshooting) |
+| Ver dúvidas comuns antes de abrir chamado | [Dúvidas e Soluções](/guides/duvidas-e-solucoes) |
 | Ir para produção | [Boas práticas de integração](/guides/boas-praticas-integracao) |
 | Entender termos técnicos | [Glossário](/guides/glossario) |
 | Copiar request e response | [API Reference](/api-reference/autorização/gerar-token-de-api) |
 
 ## Caminho recomendado
-
 
 
     Entenda o fluxo básico: gerar token, executar serviço e ler resposta.
@@ -289,14 +287,14 @@ Use esta página quando não souber exatamente onde procurar. Ela concentra os t
 
 Você pode pesquisar frases inteiras:
 
-- `Como chamar SERVICE_OCR no /api/service-api?`
-- `Qual payload para OCR de RG frente e verso?`
-- `Como testar SERVICE_FACE_INDEX em HML?`
-- `Don't have access to the service`
-- `Por que result veio vazio?`
-- `Qual service usar para risco de crédito PJ?`
-- `Como consultar cartão CNPJ por OCR?`
-- `Quais campos obrigatórios de SERVICE_CREDIT_RISK_COMPANY?`
+1. `Como chamar SERVICE_OCR no /api/service-api?`
+2. `Qual payload para OCR de RG frente e verso?`
+3. `Como testar SERVICE_FACE_INDEX em HML?`
+4. `Don't have access to the service`
+5. `Por que result veio vazio?`
+6. `Qual service usar para risco de crédito PJ?`
+7. `Como consultar cartão CNPJ por OCR?`
+8. `Quais campos obrigatórios de SERVICE_CREDIT_RISK_COMPANY?`
 
 ## Se a busca não achar
 
@@ -332,22 +330,20 @@ Você pode testar de três formas:
   Se você nunca executou um `curl`, comece pelo Postman. Depois que a chamada
   funcionar, copie o mesmo padrão para o terminal ou para o código da aplicação.
 
-
 ## Antes de começar
 
 Você precisa ter:
 
-- `client` e `secret` da sua aplicação;
-- acesso ao ambiente de homologação ou produção;
-- um CPF ou CNPJ de teste;
-- permissão para consumir o produto desejado.
+1. `client` e `secret` da sua aplicação;
+2. acesso ao ambiente de homologação ou produção;
+3. um CPF ou CNPJ de teste;
+4. permissão para consumir o produto desejado.
 
 > Nota:
   Ainda não tem `client` e `secret`? Esse par é liberado pela React IT junto
   com o produto contratado, não é algo que você gera sozinho. Solicite pelo
   e-mail [contact@react-it.com](mailto:contact@react-it.com) antes de seguir
   este guia.
-
 
 Os endpoints base são:
 
@@ -362,7 +358,6 @@ headers e body iguais e troque apenas a URL.
 > Atencao:
   Não misture ambientes. Token gerado em homologação deve ser usado com URL de
   homologação. Token gerado em produção deve ser usado com URL de produção.
-
 
 ## 1. Escolha onde vai testar
 
@@ -537,7 +532,6 @@ curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
   para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
   de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
 
-
 Substitua:
 
 | Valor | O que colocar |
@@ -545,7 +539,6 @@ Substitua:
 | `{jwt_token}` | Token retornado no passo anterior |
 | `cpf` | CPF usado para teste |
 | `SERVICE_PERSON_DATA_ENRICHMENT` | Código do serviço que deseja executar |
-
 
 
     Use quando quiser validar o fluxo com um service simples de pessoa física.
@@ -558,7 +551,6 @@ Substitua:
 
 
     Use para navegar pelos grupos de produtos do `POST /api/service-api`.
-
 
 
 ## 4. Leia o resultado
@@ -708,13 +700,13 @@ quando existir, `externalId`.
 
 Antes de subir para produção, confirme:
 
-- credenciais de produção foram liberadas;
-- a base URL foi trocada para `https://backoffice.idcerberus.com`;
-- token expirado é tratado gerando um novo token;
-- erros `400`, `401` e `403` têm tratamento claro;
-- logs registram `service`, documento consultado de forma segura, `status.code`,
+1. credenciais de produção foram liberadas;
+2. a base URL foi trocada para `https://backoffice.idcerberus.com`;
+3. token expirado é tratado gerando um novo token;
+4. erros `400`, `401` e `403` têm tratamento claro;
+5. logs registram `service`, documento consultado de forma segura, `status.code`,
   `status.message` e `externalId`, quando retornado;
-- dados sensíveis, base64 e tokens não são gravados em log aberto.
+6. dados sensíveis, base64 e tokens não são gravados em log aberto.
 
 ## 7. Onboarding? Configure webhook em vez de só consultar
 
@@ -725,11 +717,11 @@ status mudar — veja [Webhooks](/guides/webhooks). Isso vale tanto para HML
 
 ## 8. Onde continuar
 
-- Para primeira chamada completa: [Quickstart](/guides/quickstart)
-- Para escolher produtos: [Escolha o serviço certo](/guides/escolha-o-servico-certo)
-- Para ver todos os grupos de serviço: [Matriz de serviços](/guides/matriz-de-servicos)
-- Para onboarding via SDK: [Onboarding via SDK](/guides/onboarding-sdk)
-- Para contrato técnico: [API Reference](/api-reference/autorização/gerar-token-de-api)
+1. Para primeira chamada completa: [Quickstart](/guides/quickstart)
+2. Para escolher produtos: [Escolha o serviço certo](/guides/escolha-o-servico-certo)
+3. Para ver todos os grupos de serviço: [Matriz de serviços](/guides/matriz-de-servicos)
+4. Para onboarding via SDK: [Onboarding via SDK](/guides/onboarding-sdk)
+5. Para contrato técnico: [API Reference](/api-reference/autorização/gerar-token-de-api)
 
 ---
 
@@ -754,26 +746,26 @@ que serve na sua implementação.
 
 ### Service
 
-- **O que é:** uma consulta ou verificação específica, como "situação do CPF na
+1. **O que é:** uma consulta ou verificação específica, como "situação do CPF na
   Receita Federal" ou "comparar selfie com documento". Tem um código próprio
   (`SERVICE_ALGUMA_COISA`) e devolve um resultado isolado.
-- **Por que existem mais de 300:** cada tipo de dado ou verificação vira um
+2. **Por que existem mais de 300:** cada tipo de dado ou verificação vira um
   service diferente, porque cada empresa usa uma combinação diferente deles.
   Você nunca precisa de todos.
-- **Pra que serve pra você:** é a unidade que você efetivamente chama. Toda
+3. **Pra que serve pra você:** é a unidade que você efetivamente chama. Toda
   implementação começa por decidir quais services resolvem o seu problema —
   veja [Escolha o serviço certo](/guides/escolha-o-servico-certo).
 
 ### Consulta avulsa vs. onboarding
 
-- **O que é:** duas formas de usar um service. Avulsa é chamar um service
+1. **O que é:** duas formas de usar um service. Avulsa é chamar um service
   sozinho, na hora, direto em `POST /api/service-api`. Onboarding é combinar
   vários services em uma jornada guiada, com etapas, campos capturados e um
   status final (`APPROVED`, `IN_PROCESS`, `REFUSED`).
-- **Por que as duas existem:** nem toda necessidade é um cadastro completo.
+2. **Por que as duas existem:** nem toda necessidade é um cadastro completo.
   Às vezes você só precisa confirmar um dado pontual (avulsa); às vezes precisa
   conduzir o usuário por um fluxo de KYC inteiro (onboarding).
-- **Pra que serve pra você:** define o modelo de integração que você vai
+3. **Pra que serve pra você:** define o modelo de integração que você vai
   construir. Se a resposta é "só confirmar um dado agora", é avulsa via API. Se
   é "cadastrar o usuário do zero, com documento e selfie", é onboarding via
   SDK ou Cliente Web.
@@ -797,13 +789,13 @@ O webhook é o mesmo mecanismo para os dois caminhos — veja
 
 ### Produto
 
-- **O que é:** a configuração específica da sua empresa — quais services estão
+1. **O que é:** a configuração específica da sua empresa — quais services estão
   liberados, em qual ordem entram no onboarding e quais ficam disponíveis para
   consulta avulsa.
-- **Por que existe:** cada cliente da idCerberus usa um conjunto diferente de
+2. **Por que existe:** cada cliente da idCerberus usa um conjunto diferente de
   services. O produto é o que amarra "API idCerberus" a "o que a sua empresa
   efetivamente contratou".
-- **Pra que serve pra você:** você nunca escolhe entre todos os 300+ services —
+3. **Pra que serve pra você:** você nunca escolhe entre todos os 300+ services —
   escolhe dentro do que já foi habilitado para o seu produto. Se um service que
   você precisa não responde ou não aparece, o primeiro suspeito é ele não estar
   liberado no seu produto, não um erro de implementação.
@@ -814,7 +806,6 @@ o usuário por um cadastro completo (SDK/Web)?** A resposta define o modelo de
 integração abaixo.
 
 ### Dúvidas comuns nessa fase
-
 
 
     Não. Use API quando sua aplicação só precisa de consultas pontuais. Use
@@ -846,7 +837,6 @@ integração abaixo.
     diferentes.
 
 
-
 ## Modelos de integração
 
 | Modelo | Quando usar | Responsabilidade da sua aplicação |
@@ -858,9 +848,9 @@ integração abaixo.
 Além desses três, existem dois complementos que não são modelos de
 integração por si só, mas se somam a qualquer um deles:
 
-- [Backoffice](/guides/backoffice): interface visual da idCerberus, para
+1. [Backoffice](/guides/backoffice): interface visual da idCerberus, para
   olhar resultados e testar consultas sem escrever código.
-- [Webhooks](/guides/webhooks): avisa sua aplicação quando o status mudar —
+2. [Webhooks](/guides/webhooks): avisa sua aplicação quando o status mudar —
   vale tanto para onboarding quanto para consulta avulsa — em vez de ela
   ficar perguntando (polling).
 
@@ -972,11 +962,11 @@ A maioria das consultas retorna:
 
 ## Próximos passos
 
-- Para autenticação, veja [Autenticação](/guides/autenticacao).
-- Para onboarding via SDK, veja [Onboarding via SDK](/guides/onboarding-sdk).
-- Para catálogo de CPF, veja [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica).
-- Para catálogo de CNPJ, veja [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
-- Para implementação endpoint a endpoint, use a [API Reference](/api-reference/autorização/gerar-token-de-api).
+1. Para autenticação, veja [Autenticação](/guides/autenticacao).
+2. Para onboarding via SDK, veja [Onboarding via SDK](/guides/onboarding-sdk).
+3. Para catálogo de CPF, veja [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica).
+4. Para catálogo de CNPJ, veja [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
+5. Para implementação endpoint a endpoint, use a [API Reference](/api-reference/autorização/gerar-token-de-api).
 
 ---
 
@@ -1001,7 +991,6 @@ base usada na chamada.
   Não misture credenciais e dados de ambientes diferentes. Um token gerado em
   homologação deve ser usado com a URL de homologação. Um token gerado em
   produção deve ser usado com a URL de produção.
-
 
 ## Como trocar de ambiente
 
@@ -1248,20 +1237,20 @@ e os erros comuns. Não diga que OCR garante extrair todos os campos.
 
 ### Respostas que o MCP deve evitar
 
-- Não dizer que Face Index valida identidade definitiva. Ele busca correspondência na base de faces.
-- Não tratar `fieldsOutput` como contrato público.
-- Não prometer que OCR sempre extrai todos os campos.
-- Não inventar retorno de campo quando o campo não aparece na documentação.
-- Não pedir CPF, CNPJ, token, client, secret ou imagem real para montar exemplo.
-- Não sugerir chamada real em HML ou produção; esta base é somente leitura.
+1. Não dizer que Face Index valida identidade definitiva. Ele busca correspondência na base de faces.
+2. Não tratar `fieldsOutput` como contrato público.
+3. Não prometer que OCR sempre extrai todos os campos.
+4. Não inventar retorno de campo quando o campo não aparece na documentação.
+5. Não pedir CPF, CNPJ, token, client, secret ou imagem real para montar exemplo.
+6. Não sugerir chamada real em HML ou produção; esta base é somente leitura.
 
 Exemplos de perguntas que essa base deve responder:
 
-- OCR: qual service usar para RG, CNH, cartão CNPJ ou comprovante de endereço?
-- CPF/CNPJ: qual payload mínimo para Receita Federal, score, risco ou cadastro?
-- Face: como testar `SERVICE_FACE_INDEX` e qual imagem usar?
-- Erro: o que significa `Don't have access to the service` ou `onboardingStatus: ERROR`?
-- Curl: como montar uma chamada de homologação sem usar dado real?
+1. OCR: qual service usar para RG, CNH, cartão CNPJ ou comprovante de endereço?
+2. CPF/CNPJ: qual payload mínimo para Receita Federal, score, risco ou cadastro?
+3. Face: como testar `SERVICE_FACE_INDEX` e qual imagem usar?
+4. Erro: o que significa `Don't have access to the service` ou `onboardingStatus: ERROR`?
+5. Curl: como montar uma chamada de homologação sem usar dado real?
 
 ## Exemplo de prompt
 
@@ -1321,9 +1310,7 @@ coleção grande de requests sem contexto.
   [Mapa da documentação](/guides/mapa-da-documentacao). Se quer só bons termos
   para pesquisar, veja [Busca rápida](/guides/busca-rapida).
 
-
 ## O caminho mais comum
-
 
 
     Use o [Quickstart](/guides/quickstart) para validar credenciais, gerar token
@@ -1340,7 +1327,6 @@ coleção grande de requests sem contexto.
 
     Use a [API Reference](/api-reference/autorização/gerar-token-de-api) para copiar payloads,
     conferir parâmetros e mapear responses.
-
 
 
 ## Se você não sabe por onde executar
@@ -1391,8 +1377,8 @@ chamada.
 O catálogo técnico é útil quando você precisa conferir listas maiores de campos
 ou comparar serviços dentro do mesmo domínio.
 
-- [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica)
-- [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica)
+1. [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica)
+2. [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica)
 
 Para endpoints operacionais, como consulta ou alteração de cliente, use a seção
 Endpoints da API no API Reference.
@@ -1423,12 +1409,10 @@ Use este guia para montar uma collection simples e testar a API idCerberus em ho
   painel de teste embutido no navegador. Use o Postman quando quiser guardar
   uma collection reutilizável para o time.
 
-
 O objetivo é sair com dois requests funcionando:
 
-- `POST /api/token-generate`
-- `POST /api/service-api`
-
+1. `POST /api/token-generate`
+2. `POST /api/service-api`
 
 
     Sem token válido, nenhum service protegido deve ser testado.
@@ -1441,7 +1425,6 @@ O objetivo é sair com dois requests funcionando:
 
 
     Veja o que olhar quando vier falta de acesso, imagem ausente, `{}` ou `ERROR`.
-
 
 
 ## 1. Crie uma collection
@@ -1503,7 +1486,6 @@ https://backoffice-hml.idcerberus.com
 
 > Nota:
   Se preferir, configure um script de teste no request de token para salvar o token automaticamente:
-
 
 ```js
 const data = pm.response.json();
@@ -1579,7 +1561,6 @@ Leia assim:
 > Atencao:
   Não use apenas o HTTP status para decidir se deu certo. A API pode responder HTTP 200 e o body indicar `REFUSED` ou `ERROR`.
 
-
 ## 6. Exemplos prontos
 
 Se quiser copiar um curl já montado, use:
@@ -1597,7 +1578,6 @@ Se quiser copiar um curl já montado, use:
 
 > Nota:
   Se quiser payload, retorno esperado e erro comum no mesmo lugar, abra [Receitas prontas](/guides/receitas-prontas).
-
 
 ## 7. Testar OCR com imagem
 
@@ -1671,6 +1651,230 @@ Use credenciais de produção e gere um novo token. Não reutilize token de HML 
 | Campo esperado não veio | Campo não existe no documento ou não foi extraído | Validar imagem, tipo de documento e contrato do service |
 
 Para diagnóstico mais completo, veja [Erros comuns de integração](/guides/erros-comuns-integracao).
+
+---
+
+# Dúvidas e Soluções
+
+URL: https://api-docs.idcerberus.com/guides/duvidas-e-solucoes
+Fonte: guides/duvidas-e-solucoes.mdx
+Descrição: Respostas diretas para as dúvidas mais comuns de integração, organizadas por tema, antes de abrir chamado
+
+# Dúvidas e Soluções
+
+Esta página reúne, num só lugar, as perguntas que mais aparecem durante uma
+integração com a idCerberus. A ideia é simples: antes de abrir um chamado de
+suporte, procure sua dúvida aqui. Boa parte dos "bugs" reportados são
+comportamentos esperados que só não estavam claros na documentação técnica.
+
+> Nota:
+  Use `Ctrl + F` (ou `Cmd + F` no Mac) para pesquisar uma palavra-chave nesta
+  página antes de percorrer as seções manualmente.
+
+## Autenticação e token
+
+
+    Não. Gere um `access_token` em `POST /api/token-generate` e reutilize até
+    ele expirar, conforme o campo `expires_in` do retorno. Gerar um novo a
+    cada chamada funciona, mas desperdiça uma chamada extra por request.
+
+
+    Você recebe HTTP 401. Gere um token novo com `client` e `secret` e repita
+    a chamada original. Isso é um HTTP de verdade, diferente das falhas de
+    permissão de service que também aparecem como "401 no corpo" (veja a
+    seção de status abaixo).
+
+
+    Não. São credenciais diferentes por ambiente. Um `client`/`secret` de HML
+    não gera token válido para chamar produção, e vice-versa — os bancos de
+    dados e o realm de autenticação são separados fisicamente entre os dois
+    ambientes.
+
+
+    Esse par é liberado pela React IT junto com o produto contratado, não é
+    algo que você gera sozinho. Solicite pelo e-mail
+    [contact@react-it.com](mailto:contact@react-it.com).
+
+
+## Consulta avulsa (POST /api/service-api)
+
+
+    Sim, e é o motivo número um de confusão nesta API. `POST /api/service-api`
+    quase sempre retorna HTTP 200, mesmo quando a consulta falhou por
+    completo — o motivo real fica dentro do corpo, em `status.code` e
+    `status.message`. Nunca decida sucesso ou falha só pelo HTTP status.
+
+
+    HTTP 401/403 de verdade só acontece por problema de autenticação — token
+    ausente, expirado ou de outro ambiente — e a chamada nem chega a
+    processar o service. "Produto não liberado para o service" e "produto
+    inativo" não geram HTTP 401/403 nesse endpoint: a chamada retorna HTTP
+    200 com o problema descrito em `status.code` (400 para payload/permissão
+    de service, 401 para produto inativo ou não encontrado) dentro do corpo.
+
+
+    Existem pelo menos três causas distintas: a fonte de dados não encontrou
+    nada para aquele documento (comportamento válido — nem todo retorno vazio
+    é erro), a imagem não foi lida com sucesso em OCR, ou — se o seu produto
+    for pré-pago — o saldo da organização está insuficiente. Esse último caso
+    é traiçoeiro porque também vem com HTTP 200 e `status.code` 200, com
+    `status.message` dizendo algo como "Not enough balance". Sempre leia
+    `status.message` quando `result` vier vazio, mesmo com 200/200.
+
+
+    Não. O alias de cada service (o valor que você envia em `service`) é
+    único no sistema — não existe um alias customizado por produto. Se um
+    service não funciona, o problema é ele não estar habilitado para o seu
+    produto, não o nome do alias estar errado (a menos que você tenha
+    digitado errado).
+
+
+    Só num caso específico: `SEVICE_ONLINE_BETTING_PROPENSITY` está
+    documentado sem a letra R em `SERVICE` de propósito — essa é a grafia
+    implementada no backend. Corrigir esse alias ao copiar quebra a chamada.
+    Fora esse caso, copie os aliases exatamente como aparecem no
+    [catálogo de services](/guides/indice-de-services).
+
+
+## Onboarding via SDK ou Cliente Web
+
+
+    Não, e confundir os dois é uma fonte comum de erro. `access_token`
+    autentica a sua aplicação e expira em minutos. `tokenOnboarding`
+    identifica um cadastro específico e continua válido durante todo o
+    processo, mesmo depois do `access_token` expirar. Se o `access_token`
+    expirar no meio do fluxo, gere um novo — o `tokenOnboarding` não muda.
+
+
+    Não há um tempo fixo garantido. O processamento automático é verificado a
+    cada poucos segundos internamente, mas o tempo total depende de quantos
+    services estão na esteira e se algum deles depende de fontes externas
+    lentas. Trate como comportamento observado, não como SLA contratual, e
+    sempre implemente um limite máximo de espera na sua aplicação.
+
+
+    Não. `REFUSED` é um resultado de negócio — a chamada em si teve sucesso
+    (HTTP 200), e o cadastro é que não foi aprovado pelas regras do produto.
+    Não trate `REFUSED` como algo para repetir a chamada; trate como decisão
+    que a sua aplicação precisa refletir para o usuário.
+
+
+## Webhooks
+
+
+    Primeiro, confirme que o evento que você espera realmente dispara
+    webhook: mudança de status de onboarding, decisão de revisão manual, e
+    consulta avulsa em `POST /api/service-api` (quando o produto tem webhook
+    configurado). Segundo, lembre que consulta avulsa dispara o webhook cerca
+    de 10 segundos depois da resposta HTTP, não instantaneamente. Terceiro,
+    valide se a sua URL está acessível publicamente (a idCerberus não
+    consegue entregar num endpoint atrás de firewall sem liberação).
+
+
+    Não. Não existe um processo automático que fica reenviando entregas que
+    falharam. Um novo envio só acontece se o mesmo onboarding mudar de
+    conteúdo de novo mais tarde (o que dispara como uma entrega nova, não
+    como retry), ou se alguém com acesso ao [Backoffice](/guides/backoffice)
+    forçar o reenvio manualmente na tela. Por isso, nunca dependa só do
+    webhook — mantenha o polling (`GET /api/onboarding/report/{tokenOnboarding}`)
+    como rede de segurança de verdade.
+
+
+    Sim. Webhook originado de onboarding usa o formato de relatório completo
+    (`tokenOnboarding`, `status`, `fields`, `services`). Webhook originado de
+    consulta avulsa usa o mesmo JSON que já veio na resposta HTTP síncrona da
+    chamada (`result`, `status`, `onboardingStatus`, `externalId`) — são
+    formatos diferentes, então não assuma uma estrutura única.
+
+
+## OCR e imagem
+
+
+    Não. O sistema aceita base64 com ou sem esse prefixo e remove
+    automaticamente quando presente. Se a sua ferramenta gera o base64 com
+    prefixo (comum em navegador, por exemplo), não perca tempo removendo.
+
+
+    Confirme três coisas na ordem: se o `documentType` bate com o documento
+    real enviado, se a imagem está completa e legível (sem corte nas bordas),
+    e se o base64 não foi truncado no meio do envio — esse último é comum
+    quando o payload é montado manualmente e o corte acontece sem erro
+    visível até chegar na API.
+
+
+    Pode variar. `SERVICE_OCR` é processado por parceiros diferentes conforme
+    a configuração do seu produto, e isso pode mudar um campo pontual do
+    `result` — o mais comum é o nome do campo que indica o tipo do documento
+    reconhecido. Trate o contrato desta página como "os campos costumam vir
+    assim", não como uma garantia rígida campo a campo, e sempre valide pelo
+    `result` retornado no seu ambiente real.
+
+
+## Backoffice
+
+
+    Não. São dois mecanismos de autenticação diferentes para o mesmo sistema.
+    O login do backoffice é usuário e senha, pessoal. `client` e `secret`
+    autenticam a sua aplicação e geram `access_token` via
+    `POST /api/token-generate`. Veja [Autenticação](/guides/autenticacao)
+    para o lado API.
+
+
+    A configuração de webhook (URL e chave) hoje é feita pela React IT sob
+    pedido, não é uma tela de autoatendimento ainda. Veja
+    [Webhooks](/guides/webhooks) para como pedir a ativação.
+
+
+    `backoffice-hml.idcerberus.com` e `backoffice.idcerberus.com` são as
+    mesmas URLs usadas pelo painel administrativo — mas quando você chama
+    `/api/...` nelas, está falando com a API, não com a interface visual. Não
+    existe uma URL separada só para API: é o mesmo domínio, endpoints
+    diferentes.
+
+
+## Ambientes
+
+
+    Não recomendado. Homologação e produção usam bancos de dados e
+    credenciais completamente separados. Teste sempre em HML primeiro; use
+    produção só depois de validar o fluxo, com dados reais e consciência de
+    que consultas em produção normalmente têm custo.
+
+
+    Confirme, nesta ordem: se o token usado é de produção (não HML), se o
+    produto de produção tem os mesmos services habilitados que o de HML, e
+    se a massa de dados testada em produção é real (HML costuma ter dados
+    fake que não existem nas fontes de produção). Divergência de
+    configuração entre ambientes é a causa mais comum aqui.
+
+
+## Antes de abrir chamado
+
+Se sua dúvida não está aqui, reúna estas informações antes de acionar o
+suporte — isso evita idas e vindas e acelera a resposta.
+
+| Informação | Onde encontrar |
+| --- | --- |
+| Ambiente (HML ou produção) | A base URL usada na chamada |
+| `service` enviado | O campo `service` do seu payload |
+| `status.code` e `status.message` | O corpo da resposta, não o HTTP status |
+| `externalId` | Retornado no corpo, quando presente |
+| Horário aproximado da chamada | Para cruzar com os logs internos |
+
+Veja o formato completo de chamado em
+[Erros comuns de integração](/guides/erros-comuns-integracao#como-solicitar-suporte).
+
+
+    Diagnóstico por categoria: token, payload, imagem e erro técnico.
+
+
+    Sintomas técnicos específicos, como PowerShell quebrando o curl.
+
+
+    Como funciona, payload por origem e por que não há retry automático.
+
+
+    Termos técnicos usados nesta página e no resto da documentação.
 
 ---
 
@@ -1823,9 +2027,9 @@ token válido.
 
 Como corrigir:
 
-- confirme se o `service` está escrito exatamente como na documentação;
-- valide se o produto está liberado para a conta;
-- confirme se está chamando o ambiente correto.
+1. confirme se o `service` está escrito exatamente como na documentação;
+2. valide se o produto está liberado para a conta;
+3. confirme se está chamando o ambiente correto.
 
 ### Fonte externa indisponível
 
@@ -1844,10 +2048,10 @@ API pode retornar erro técnico.
 
 Como tratar:
 
-- registre o `externalId`, quando existir;
-- tente novamente depois com retry limitado;
-- não faça loop infinito de chamadas;
-- se o erro persistir, encaminhe o payload e o horário da tentativa para suporte.
+1. registre o `externalId`, quando existir;
+2. tente novamente depois com retry limitado;
+3. não faça loop infinito de chamadas;
+4. se o erro persistir, encaminhe o payload e o horário da tentativa para suporte.
 
 ## Negativo não é erro técnico
 
@@ -1865,12 +2069,12 @@ resposta negativa de negócio.
 
 ## Boas práticas de tratamento
 
-- Registre o `externalId` quando ele vier no retorno.
-- Não use apenas HTTP status para decidir sucesso de negócio.
-- Trate token expirado gerando novo token.
-- Valide campos obrigatórios antes de chamar a API.
-- Evite retry automático em erro de payload.
-- Use retry com limite para timeout ou falha temporária de fonte externa.
+1. Registre o `externalId` quando ele vier no retorno.
+2. Não use apenas HTTP status para decidir sucesso de negócio.
+3. Trate token expirado gerando novo token.
+4. Valide campos obrigatórios antes de chamar a API.
+5. Evite retry automático em erro de payload.
+6. Use retry com limite para timeout ou falha temporária de fonte externa.
 
 ## Exemplo de decisão
 
@@ -1903,8 +2107,6 @@ A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, n�
   casos.
 
 
-
-
     Token ausente/vencido (HTTP 401/403) ou produto sem permissão para o
     service (HTTP 200, `status.code` no corpo).
 
@@ -1916,7 +2118,6 @@ A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, n�
 
 
     `ERROR`, `500`, falha externa, timeout ou investigação por `externalId`.
-
 
 
 ## Diagnóstico rápido
@@ -2045,14 +2246,14 @@ Erro técnico normalmente aparece como `ERROR` ou mensagem de falha no body:
 
 Nessa situação, guarde:
 
-- ambiente;
-- endpoint;
-- service enviado;
-- horário aproximado;
-- `externalId`;
-- `status.code`;
-- `status.message`;
-- payload sem dados sensíveis.
+1. ambiente;
+2. endpoint;
+3. service enviado;
+4. horário aproximado;
+5. `externalId`;
+6. `status.code`;
+7. `status.message`;
+8. payload sem dados sensíveis.
 
 Não envie token JWT, `client`, `secret`, CPF, CNPJ, imagem real ou base64 completo em canais abertos.
 
@@ -2104,15 +2305,14 @@ Use esta página quando uma chamada não funcionar como esperado.
   modelo de mensagem para pedir suporte — veja
   [Erros comuns de integração](/guides/erros-comuns-integracao).
 
-
 ## Recebi 401 ou 403 (HTTP)
 
 Em `POST /api/service-api`, um HTTP 401/403 de verdade só acontece por
 problema de autenticação — a chamada nem chega a processar o service:
 
-- Token ausente.
-- Token expirado.
-- Token gerado em outro ambiente.
+1. Token ausente.
+2. Token expirado.
+3. Token gerado em outro ambiente.
 
 Como resolver:
 
@@ -2129,7 +2329,6 @@ Authorization: Bearer {jwt_token}
   HTTP 401/403 nesse endpoint — a chamada retorna HTTP 200 com o problema
   descrito em `status.message` (`status.code` 400 ou 401 dentro do corpo).
   Veja a seção seguinte.
-
 
 ## HTTP 200, mas `status.code` diferente de 200
 
@@ -2164,14 +2363,14 @@ Gere um token novo em produção usando credenciais de produção.
 
 Confira:
 
-- URL base.
-- Método HTTP.
-- Headers.
-- Body JSON.
-- Timeout.
-- Serialização do JSON.
-- Header `Authorization`.
-- Header `Content-Type`.
+1. URL base.
+2. Método HTTP.
+3. Headers.
+4. Body JSON.
+5. Timeout.
+6. Serialização do JSON.
+7. Header `Authorization`.
+8. Header `Content-Type`.
 
 Compare o request do código com o request da API Reference.
 
@@ -2193,11 +2392,11 @@ Nem todo retorno sem dado é erro técnico.
 
 Exemplos:
 
-- certidão com “Nada consta”;
-- CPF não encontrado em validação de endereço;
-- pessoa não exposta politicamente;
-- empresa sem débitos;
-- lista vazia de relacionamentos.
+1. certidão com “Nada consta”;
+2. CPF não encontrado em validação de endereço;
+3. pessoa não exposta politicamente;
+4. empresa sem débitos;
+5. lista vazia de relacionamentos.
 
 Leia `result` e aplique a regra de negócio do seu produto.
 
@@ -2215,16 +2414,16 @@ Esse endpoint retorna PDF, não JSON.
 
 Antes de pedir apoio, confira:
 
-- A URL está correta?
-- O método HTTP está correto?
-- O token foi gerado no mesmo ambiente?
-- O header `Authorization` foi enviado?
-- O header `Content-Type` foi enviado?
-- O body é JSON válido?
-- O campo `service` está correto?
-- O CPF/CNPJ está no campo esperado?
-- O serviço está liberado para a conta?
-- Você leu `status.message`?
+1. A URL está correta?
+2. O método HTTP está correto?
+3. O token foi gerado no mesmo ambiente?
+4. O header `Authorization` foi enviado?
+5. O header `Content-Type` foi enviado?
+6. O body é JSON válido?
+7. O campo `service` está correto?
+8. O CPF/CNPJ está no campo esperado?
+9. O serviço está liberado para a conta?
+10. Você leu `status.message`?
 
 ---
 
@@ -2251,10 +2450,10 @@ deixar a integração pronta para produção.
 
 ## Ambientes
 
-- Use HML para desenvolvimento e homologação.
-- Use produção somente depois de validar o fluxo.
-- Não misture token de HML com URL de produção.
-- Não misture token de produção com URL de HML.
+1. Use HML para desenvolvimento e homologação.
+2. Use produção somente depois de validar o fluxo.
+3. Não misture token de HML com URL de produção.
+4. Não misture token de produção com URL de HML.
 
 | Ambiente | Base URL |
 | --- | --- |
@@ -2263,11 +2462,11 @@ deixar a integração pronta para produção.
 
 ## Requests
 
-- Sempre envie `Content-Type: application/json` em requests com body JSON.
-- Sempre envie `Authorization: Bearer {jwt_token}` em chamadas protegidas.
-- Valide campos obrigatórios antes de chamar a API.
-- Envie CPF/CNPJ no formato esperado pelo seu fluxo.
-- Use timeout nas chamadas HTTP.
+1. Sempre envie `Content-Type: application/json` em requests com body JSON.
+2. Sempre envie `Authorization: Bearer {jwt_token}` em chamadas protegidas.
+3. Valide campos obrigatórios antes de chamar a API.
+4. Envie CPF/CNPJ no formato esperado pelo seu fluxo.
+5. Use timeout nas chamadas HTTP.
 
 ## Retry
 
@@ -2284,11 +2483,11 @@ Use retry apenas quando fizer sentido.
 
 ## Respostas
 
-- Não use apenas o status HTTP para decidir sucesso de negócio.
-- Leia também `status.code` e `status.message`.
-- Trate `status.code` diferente de 200.
-- Salve `externalId` quando ele for retornado.
-- Lembre que resultado negativo não é necessariamente erro técnico.
+1. Não use apenas o status HTTP para decidir sucesso de negócio.
+2. Leia também `status.code` e `status.message`.
+3. Trate `status.code` diferente de 200.
+4. Salve `externalId` quando ele for retornado.
+5. Lembre que resultado negativo não é necessariamente erro técnico.
 
 Exemplo:
 
@@ -2414,17 +2613,16 @@ integração via API.
 
 ## O que é, por que existe, pra que serve
 
-- **O que é:** o passo que transforma `client` + `secret` em um `access_token`
+1. **O que é:** o passo que transforma `client` + `secret` em um `access_token`
   (JWT) de curta duração, que sua aplicação usa em toda chamada protegida.
-- **Por que existe:** `client` e `secret` são credenciais de longa duração —
+2. **Por que existe:** `client` e `secret` são credenciais de longa duração —
   se vazarem, o estrago é permanente até serem trocadas. O `access_token`
   expira em minutos, então mesmo que vaze, a janela de risco é pequena. Por
   isso as chamadas do dia a dia usam o token, não o `client`/`secret`
   diretamente.
-- **Pra que serve pra você:** define uma peça de infraestrutura da sua
+3. **Pra que serve pra você:** define uma peça de infraestrutura da sua
   aplicação — algo no seu back-end que gera e renova o token
   automaticamente, para o resto do código nunca se preocupar com isso.
-
 
 
     Não. Gere um token e reutilize até ele expirar (`expires_in`). Gerar um
@@ -2441,15 +2639,14 @@ integração via API.
     não gera token válido para chamar produção, e vice-versa.
 
 
-
 ## Quando usar
 
 Use esta página quando precisar:
 
-- gerar um token de acesso para chamadas protegidas;
-- entender como enviar o header `Authorization`;
-- identificar o tempo de expiração do token;
-- preparar a autenticação antes de testar os endpoints da API Reference.
+1. gerar um token de acesso para chamadas protegidas;
+2. entender como enviar o header `Authorization`;
+3. identificar o tempo de expiração do token;
+4. preparar a autenticação antes de testar os endpoints da API Reference.
 
 ## Fluxo recomendado
 
@@ -2597,16 +2794,15 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 ## Boas práticas
 
-- Mantenha `client` e `secret` apenas no back-end da aplicação.
-- Não exponha credenciais em aplicativos mobile, front-end ou repositórios.
-- Renove o token quando `expires_in` indicar expiração.
-- Trate respostas de autenticação inválida regenerando o token antes de repetir a chamada.
+1. Mantenha `client` e `secret` apenas no back-end da aplicação.
+2. Não exponha credenciais em aplicativos mobile, front-end ou repositórios.
+3. Renove o token quando `expires_in` indicar expiração.
+4. Trate respostas de autenticação inválida regenerando o token antes de repetir a chamada.
 
 Para detalhes técnicos do endpoint, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api).
 
 ## Próximo passo
-
 
 
     Use o token recém-gerado para fazer sua primeira chamada completa.
@@ -2897,16 +3093,15 @@ PDF.
   todo o processo, mesmo depois do `access_token` expirar. Se o `access_token`
   expirar no meio do fluxo, gere um novo — o `tokenOnboarding` não muda.
 
-
 ## O que é, por que existe, pra que serve
 
-- **O que é:** um componente (mobile ou web) fornecido pela idCerberus que
+1. **O que é:** um componente (mobile ou web) fornecido pela idCerberus que
   captura documento, selfie e dados do usuário diretamente na tela dele,
   seguindo o roteiro de onboarding configurado para o seu produto.
-- **Por que existe:** capturar documento e biometria com qualidade suficiente
+2. **Por que existe:** capturar documento e biometria com qualidade suficiente
   para validação (foco, iluminação, ângulo, prova de vida) é um problema já
   resolvido pelo SDK. Reimplementar isso do zero é caro e propenso a erro.
-- **Pra que serve pra você:** sua aplicação não processa imagem nem
+3. **Pra que serve pra você:** sua aplicação não processa imagem nem
   implementa câmera — só gera o `tokenOnboarding`, entrega ao SDK e depois lê
   o resultado já pronto. Se seu caso de uso é só consultar dados (sem capturar
   documento do usuário), você provavelmente não precisa do SDK — veja
@@ -2916,11 +3111,11 @@ PDF.
 
 Use esta integração quando precisar:
 
-- iniciar um fluxo de onboarding em aplicativo mobile ou experiência web
+1. iniciar um fluxo de onboarding em aplicativo mobile ou experiência web
   integrada ao SDK;
-- enviar documentos ou dados iniciais para apoiar o cadastro;
-- consultar status, campos capturados e serviços executados;
-- baixar o relatório final em PDF para auditoria ou armazenamento.
+2. enviar documentos ou dados iniciais para apoiar o cadastro;
+3. consultar status, campos capturados e serviços executados;
+4. baixar o relatório final em PDF para auditoria ou armazenamento.
 
 ## Fluxo de integração
 
@@ -3245,31 +3440,30 @@ entrega de webhook que falha não é reenviada automaticamente (detalhes em
 Consulte `GET /api/onboarding/report/{tokenOnboarding}` até o `status` sair de
 `IN_PROCESS`.
 
-- Espere alguns segundos entre uma consulta e outra. Não faça polling a cada
+1. Espere alguns segundos entre uma consulta e outra. Não faça polling a cada
   poucos milissegundos — os serviços por trás do onboarding podem depender de
   bases externas e levar mais tempo que uma chamada avulsa.
-- Defina um limite de tentativas ou um tempo máximo de espera na sua
+2. Defina um limite de tentativas ou um tempo máximo de espera na sua
   aplicação, com um caminho claro para "ainda não terminou, avise o usuário e
   tente de novo depois" em vez de travar a tela esperando.
-- `REFUSED` é um resultado final do negócio, não um erro técnico. A chamada em
+3. `REFUSED` é um resultado final do negócio, não um erro técnico. A chamada em
   si teve sucesso (HTTP 200); o cadastro é que não foi aprovado. Não trate
   `REFUSED` como falha para retry — trate como decisão de negócio que a sua
   aplicação precisa refletir para o usuário.
 
 ## Boas práticas
 
-- Gere o `tokenOnboarding` no back-end, nunca diretamente no aplicativo.
-- Entregue ao SDK apenas o token necessário para iniciar o fluxo.
-- Use o mesmo `tokenOnboarding` para consultar resultado e baixar relatório.
-- Trate `IN_PROCESS` como estado intermediário e consulte novamente depois.
-- Armazene o relatório PDF somente quando houver necessidade operacional,
+1. Gere o `tokenOnboarding` no back-end, nunca diretamente no aplicativo.
+2. Entregue ao SDK apenas o token necessário para iniciar o fluxo.
+3. Use o mesmo `tokenOnboarding` para consultar resultado e baixar relatório.
+4. Trate `IN_PROCESS` como estado intermediário e consulte novamente depois.
+5. Armazene o relatório PDF somente quando houver necessidade operacional,
   regulatória ou de auditoria.
 
 Para detalhes técnicos dos endpoints, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api).
 
 ## Próximo passo
-
 
 
     Seja avisado automaticamente quando o status mudar, em vez de só consultar.
@@ -3299,13 +3493,13 @@ vez de sua aplicação precisar ficar perguntando (polling).
 
 ## O que é, por que existe, pra que serve
 
-- **O que é:** uma URL da sua aplicação que a idCerberus chama automaticamente
+1. **O que é:** uma URL da sua aplicação que a idCerberus chama automaticamente
   (`POST`) toda vez que o processamento de um onboarding muda de status.
-- **Por que existe:** consultar `GET /api/onboarding/report/{tokenOnboarding}`
+2. **Por que existe:** consultar `GET /api/onboarding/report/{tokenOnboarding}`
   em loop até o status sair de `IN_PROCESS` funciona, mas gasta chamadas e
   atrasa a reação da sua aplicação. O webhook inverte isso: você é avisado no
   momento em que há novidade.
-- **Pra que serve pra você:** é a forma recomendada de acompanhar onboarding
+3. **Pra que serve pra você:** é a forma recomendada de acompanhar onboarding
   em produção. Reserve o polling (veja [Onboarding via SDK](/guides/onboarding-sdk))
   para quando o webhook ainda não estiver configurado, ou como conferência
   ocasional.
@@ -3405,16 +3599,16 @@ veio mesmo da idCerberus, e não de terceiros que descobriram sua URL.
 
 ## Boas práticas
 
-- Responda rápido (idealmente abaixo de alguns segundos) e processe o
+1. Responda rápido (idealmente abaixo de alguns segundos) e processe o
   conteúdo depois, de forma assíncrona. Um endpoint lento pode ser
   interpretado como falha.
-- Sempre valide o header `id-cerberus-token` antes de confiar no payload.
-- Trate eventos repetidos. Reprocessar o mesmo `tokenOnboarding` com o mesmo
+2. Sempre valide o header `id-cerberus-token` antes de confiar no payload.
+3. Trate eventos repetidos. Reprocessar o mesmo `tokenOnboarding` com o mesmo
   status não deve causar efeito colateral duplicado.
-- Não trate `REFUSED` como erro técnico — é um resultado de negócio, igual ao
+4. Não trate `REFUSED` como erro técnico — é um resultado de negócio, igual ao
   consumo avulso via polling. Veja
   [Status e erros](/guides/status-e-erros).
-- Mantenha um fallback de polling. Como não existe reenvio automático para
+5. Mantenha um fallback de polling. Como não existe reenvio automático para
   entregas que falharam (veja "Como funciona" acima), esse fallback é o que
   garante que sua aplicação não fique presa esperando um evento que não vai
   chegar sozinho.
@@ -3472,14 +3666,14 @@ Descrição: A interface visual da idCerberus — dashboard, histórico de onboa
 
 ## O que é, por que existe, pra que serve
 
-- **O que é:** a interface web da idCerberus, acessada por login (usuário e
+1. **O que é:** a interface web da idCerberus, acessada por login (usuário e
   senha), separada da integração via API. É o mesmo domínio
   (`backoffice-hml.idcerberus.com` / `backoffice.idcerberus.com`) que serve
   os endpoints `/api/...` — veja por que em [Visão geral](/guides/visao-geral).
-- **Por que existe:** nem toda tarefa precisa de código. Acompanhar o volume
+2. **Por que existe:** nem toda tarefa precisa de código. Acompanhar o volume
   de cadastros, olhar o resultado de um onboarding específico ou testar uma
   consulta pontual não deveria exigir abrir o Postman.
-- **Pra que serve pra você:** é o lugar para visualizar e explorar, não para
+3. **Pra que serve pra você:** é o lugar para visualizar e explorar, não para
   integrar. Sua aplicação continua consumindo dados pela API, SDK ou webhook
   — o backoffice é o painel que o seu time usa por cima disso.
 
@@ -3759,7 +3953,6 @@ Content-Type: application/json
 ```
 
 
-
     Dados cadastrais e enriquecimento de pessoa física.
 
 
@@ -3776,7 +3969,6 @@ Content-Type: application/json
 
 
     Consulta de score de crédito para CPF.
-
 
 
 ## Antes de testar
@@ -4378,7 +4570,6 @@ curl.exe --location "$baseUrl/api/service-api" `
   anteriores, instale um polyfill como `node-fetch`. O trecho final roda
   dentro de uma função `async` imediatamente invocada para funcionar tanto em
   projetos CommonJS quanto ESM sem configuração extra.
-
 
 ### Node.js com fetch
 
@@ -6391,12 +6582,975 @@ Use o API Reference para copiar body, curl e response resumido de cada produto:
 
 ---
 
-# [object Object]
+# Sobre OCR Service API
 
-URL: https://api-docs.idcerberus.com/[object Object]
-Fonte: [object Object].mdx
+URL: https://api-docs.idcerberus.com/guides/service-api/sobre-ocr-service-api
+Fonte: guides/service-api/sobre-ocr-service-api.mdx
+Descrição: Guia prático para escolher, configurar, testar e interpretar os services de OCR no POST /api/service-api.
+
+Use esta página para integrar services de OCR pelo `POST /api/service-api`.
+Ela mostra qual service usar, como montar o payload, como deve ser o retorno e
+o que conferir antes de abrir chamado ou mexer na implementação.
+
+> Requisito básico: o token precisa ser do produto correto e o produto precisa
+> ter o service ativo com API habilitada. Se a configuração do produto estiver
+> incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
+
+> Info:
+  `SERVICE_OCR` pode ser processado por parceiros diferentes dependendo da
+  configuração do seu produto. Isso normalmente não muda o que você faz na
+  integração, mas pode fazer variar um campo pontual do `result` de tempos em
+  tempos (por exemplo, o tipo do documento reconhecido). Trate o contrato como
+  "os campos desta página costumam vir assim", não como uma garantia rígida
+  campo a campo.
 
 
+    Use `SERVICE_OCR` quando o documento for RG, CNH, OAB, RNE ou PASSAPORTE e o payload tiver `documentType`.
+
+
+    Use `SERVICE_OCR_CNPJ_CARD` para extrair CNPJ e texto OCR do cartão CNPJ.
+
+
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS` para contas, faturas e comprovantes aceitos.
+
+
+    Use `SERVICE_OCR_EMANCIPATION` para documentos variáveis, sem layout fixo.
+
+
+## Teste mais rápido
+
+Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
+
+
+    Curl pronto com `SERVICE_OCR`, `documentType: CNH` e `image1`.
+
+
+    Curl pronto com `SERVICE_OCR`, `documentType: RG`, `image1` e `image2`.
+
+
+    Curl pronto para `SERVICE_OCR_CNPJ_CARD` com imagem do cartão CNPJ.
+
+
+    Curl pronto para `SERVICE_OCR_PROOF_OF_ADDRESS` com comprovante em base64.
+
+
+> Nota:
+  Para teste manual no Postman, use a seção [Copiar e testar](#copiar-e-testar). Ela monta o JSON completo no clipboard.
+
+## Jornada visual do OCR
+
+
+    Defina se o teste é CNH, RG, cartão CNPJ, comprovante de endereço ou documento de emancipação antes de montar o payload.
+
+
+    Envie imagem nítida e sem corte, em base64 (com ou sem o prefixo `data:image/...;base64,` — os dois funcionam). OCR ruim quase sempre começa com imagem ruim ou documento errado.
+
+
+    O retorno útil fica em `result`. Use `status`, `onboardingStatus` e `externalId` para rastrear o processamento.
+
+
+## Blocos de decisão
+
+
+    Use `SERVICE_OCR` com `documentType`. Para RG, envie frente e verso quando o documento exigir os dois lados.
+
+
+    Use `SERVICE_OCR_CNPJ_CARD`. O mínimo esperado é CNPJ válido, `docType` coerente e `genericOcr` preenchido.
+
+
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS`. O documento precisa ter endereço visível e texto suficiente para leitura.
+
+
+    Use `SERVICE_OCR_EMANCIPATION`. Não trate CPF, RG ou código como obrigatórios, porque o layout pode variar.
+
+
+## Caminho recomendado
+
+Se você precisa testar agora, siga esta ordem:
+
+1. Confirme o service no produto do cliente.
+2. Gere o token do mesmo produto.
+3. Converta uma imagem real para base64 puro.
+4. Envie o payload do OCR correto.
+5. Valide `status`, `onboardingStatus`, `externalId` e os campos dentro de `result`.
+
+Esse caminho evita misturar problema de permissão, imagem ruim e payload errado.
+
+## O que esta página resolve
+
+| Público | Como usar |
+| --- | --- |
+| Desenvolvimento | Copiar payload, entender campos obrigatórios e validar o retorno esperado. |
+| Produto | Conferir se o service certo está configurado para o documento certo. |
+| Suporte | Separar problema de configuração, imagem ruim, payload errado e falha técnica. |
+| CS/Operação | Explicar para o cliente o que enviar e o que esperar da resposta. |
+
+O objetivo é evitar tentativa e erro. Antes de abrir chamado, a pessoa deve
+conseguir responder: qual service foi chamado, qual imagem foi enviada, qual
+produto autorizou a chamada e qual `externalId` voltou.
+
+## Escolha rápida
+
+| Preciso ler | Service | Enviar | Retorno principal |
+| --- | --- | --- | --- |
+| CNH | `SERVICE_OCR` | `documentType: CNH` + `image1` | CPF, nome, nascimento, dados da CNH |
+| RG | `SERVICE_OCR` | `documentType: RG` + `image1` + `image2` | CPF, nome, filiação, nascimento, dados do RG |
+| Cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ, tipo do documento, texto OCR |
+| Documento de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Texto OCR, campos extraídos e análise estruturada |
+| Comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Nome, endereço, tipo do documento, datas e valores |
+
+O campo `image1` recebe o base64 da imagem. Funciona com base64 puro ou com o
+prefixo `data:image/jpeg;base64,` — o sistema aceita os dois formatos e
+remove o prefixo automaticamente quando presente.
+
+## Qual imagem usar
+
+| Service | Imagem certa | Não usar |
+| --- | --- | --- |
+| `SERVICE_OCR` com CNH | Foto ou imagem nítida da CNH inteira | Selfie, print cortado, documento de outro tipo |
+| `SERVICE_OCR` com RG | Frente em `image1` e verso em `image2` | Só frente quando o verso for obrigatório |
+| `SERVICE_OCR_CNPJ_CARD` | Cartão CNPJ completo e legível | Contrato social, nota fiscal ou comprovante |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | Conta, fatura ou comprovante aceito com endereço visível | Documento pessoal ou selfie |
+| `SERVICE_OCR_EMANCIPATION` | Documento de cartório, declaração, escritura ou certidão legível | Documento sem relação com emancipação |
+
+## Critério de sucesso por service
+
+| Service | Sucesso mínimo esperado | Quando recusar |
+| --- | --- | --- |
+| `SERVICE_OCR` com CNH | Documento lido e campos principais da CNH retornados. | Imagem ausente, documento não lido ou tipo documental inconsistente. |
+| `SERVICE_OCR` com RG | Frente e verso enviados, documento lido e dados principais retornados. | Verso ausente, imagem ilegível ou dados centrais não extraídos. |
+| `SERVICE_OCR_CNPJ_CARD` | CNPJ válido extraído e `docType` coerente com cartão CNPJ. | CNPJ não encontrado ou CNPJ inválido. |
+| `SERVICE_OCR_EMANCIPATION` | OCR retornou texto e a API retornou os campos encontrados, sem exigir layout fixo. | OCR vazio ou imagem que não permite leitura. |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | OCR retornou texto útil e dados possíveis do comprovante. | Imagem não lida ou documento fora do esperado para comprovante. |
+
+Nem todo service tem os mesmos campos obrigatórios. Em documentos variáveis,
+como emancipação e comprovante de endereço, o retorno deve trazer o que foi
+extraído sem inventar dado.
+
+## Fluxo completo
+
+1. Gere o token em `/api/token-generate`.
+2. Confirme se o produto tem o service ativo e habilitado para API.
+3. Escolha o `service` correto na tabela acima.
+4. Converta a imagem para base64 puro.
+5. Envie o payload para `POST /api/service-api`.
+6. Valide `status.code`, `onboardingStatus`, `externalId` e os campos dentro de
+   `result`.
+
+## Gerar base64 no PowerShell
+
+Para copiar apenas o base64 da imagem:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
+```
+
+Esse valor já é base64 puro. Se a sua ferramenta gerar com o prefixo
+`data:image/jpeg;base64,` (comum em navegador, por exemplo), não precisa
+remover — o sistema aceita os dois formatos.
+
+## Copiar e testar
+
+Use estes blocos quando quiser montar o JSON completo no clipboard e colar direto no body raw JSON do Postman.
+Troque apenas o caminho do arquivo e mantenha o `service` conforme o OCR que será testado.
+
+### CNH
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cnh.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "CNH"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### RG com frente e verso
+
+```powershell
+$front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-frente.jpg"))
+$back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\rg-verso.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "RG"
+  image1 = $front
+  image2 = $back
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Cartão CNPJ
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\cartao-cnpj.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Comprovante de endereço
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\comprovante-endereco.jpg"))
+@{
+  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+Depois de executar o comando, cole o conteúdo do clipboard no Postman em `Body > raw > JSON`.
+
+## Testar no Postman
+
+1. Gere token em `POST /api/token-generate`.
+2. Copie o `access_token`.
+3. Abra `POST https://backoffice-hml.idcerberus.com/api/service-api`.
+4. Adicione o header `Authorization: Bearer {access_token}`.
+5. Adicione `Content-Type: application/json`.
+6. Cole o JSON gerado pelo PowerShell no body raw.
+7. Execute e confira `status`, `onboardingStatus`, `externalId` e `result`.
+
+Exemplo de headers:
+
+```http
+Authorization: Bearer {access_token}
+Content-Type: application/json
+```
+
+## Conferência antes de chamar suporte
+
+| Ponto | O que conferir |
+| --- | --- |
+| Produto | O token usado pertence ao produto em que o service está ativo. |
+| Payload | O campo `service` usa o alias liberado no produto. |
+| Imagem | A imagem abre normalmente e o texto está legível para uma pessoa. |
+| Base64 | O valor decodifica de volta pra uma imagem válida (com ou sem prefixo `data:image/...;base64,`, os dois são aceitos). |
+| Retorno | Guarde `externalId`, `status.message` e o horário do teste. |
+
+Se esses pontos estiverem corretos e o OCR ainda falhar, o chamado já chega com
+informação suficiente para investigar sem repetir teste básico.
+
+## Diagnóstico rápido
+
+| Sintoma | Conferir primeiro | Próxima ação |
+| --- | --- | --- |
+| Não tem acesso ao service | Token, produto, service ativo e API habilitada. | Corrigir a configuração do produto antes de mexer na imagem. |
+| Deu imagem ausente | `image1`, `image2`, `image1Url`, `image2Url` ou `key`, conforme o OCR. | Gerar novamente o JSON e confirmar se o campo esperado chegou no body. |
+| Retornou `{}` | Se a imagem é do tipo certo e está legível. | Testar com imagem mais nítida e validar se o service escolhido bate com o documento. |
+| Veio `ERROR` | `externalId`, horário, ambiente e mensagem técnica segura. | Repetir uma vez; se persistir, acionar suporte técnico com o `externalId`. |
+| Veio sem campo esperado | Se o campo existe visualmente no documento e se o OCR desse service retorna esse campo. | Comparar com o padrão de retorno abaixo e não tratar campo ausente como contrato obrigatório. |
+## Qualidade da imagem
+
+Para reduzir recusa por leitura ruim:
+
+| Item | Recomendação |
+| --- | --- |
+| Enquadramento | Documento inteiro visível, sem cortar bordas. |
+| Nitidez | Texto legível ao abrir a imagem manualmente. |
+| Iluminação | Evitar reflexo, sombra forte e blur. |
+| Orientação | Preferir documento reto, sem rotação exagerada. |
+| Arquivo | Usar imagem real em JPG/PNG convertida para base64. |
+
+Foto de documento não serve para service de face. Selfie não serve para OCR de
+documento.
+
+## Configuração do produto
+
+Antes de testar em HML ou PROD, confira:
+
+| Configuração | O que verificar |
+| --- | --- |
+| Token | `client` e `secret` pertencem ao produto que será testado. |
+| Service | O service está cadastrado e ativo no produto. |
+| API | O service está liberado para chamada via API. |
+| Alias | O valor enviado em `service` é o alias de chamada do produto. |
+| Campos | O service tem os campos de entrada e saída esperados. |
+
+Se o retorno for `"Don't have access to the service"`, o primeiro ponto a olhar
+e configuração do produto, não a imagem.
+
+## Padrão de retorno
+
+O retorno público deve ficar limpo, com os dados úteis dentro de `result`.
+
+Exemplo de sucesso:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "NOME EXTRAÍDO"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+O cliente não deve depender de campos internos como:
+
+1. `fieldsOutput`
+2. `required`
+3. `enabled`
+4. `valid`
+5. `callService`
+6. `nextStep`
+7. `fields`
+8. `visible`
+
+A regra prática e simples: o integrador olha para `result`. Se o campo não está
+em `result`, ele não deve ser usado como contrato público da API.
+
+## Não use assim
+
+| Evite | Motivo |
+| --- | --- |
+| Enviar base64 truncado ou cortado no meio | O arquivo fica corrompido e o OCR falha ao decodificar. |
+| Usar foto de RG/CNH em service de face | Face e OCR usam fluxos diferentes. |
+| Usar selfie em OCR de documento | OCR precisa da imagem do documento. |
+| Testar RG enviando só a frente | O verso pode conter campos importantes. |
+| Testar cartão CNPJ no service de comprovante | Cada OCR tem parser e critério próprio. |
+| Colocar CPF, CNPJ ou nomes reais na documentação | Exemplos públicos devem usar dados fictícios. |
+| Assumir que campo ausente sempre é bug | O campo pode não existir no documento ou não ter sido lido. |
+
+## Limites conhecidos
+
+| Ponto | Como tratar |
+| --- | --- |
+| OCR não garante leitura perfeita em imagem ruim | Valide nitidez, enquadramento e documento completo antes de acionar suporte. |
+| Alguns campos podem não existir no documento | A API deve retornar apenas o que foi extraído com segurança. |
+| Produto sem API habilitada parece erro de acesso | Corrija configuração do produto antes de mexer no payload. |
+| RG pode variar por estado/modelo | Sempre enviar frente e verso quando o service exigir RG. |
+| Emancipação não tem layout único | O sucesso depende de texto OCR, não de todos os campos opcionais. |
+| Comprovantes variam muito | `fullAddress`, valores, datas e código de barras dependem do tipo de documento enviado. |
+
+---
+
+# Documentos de identificação
+
+URL: https://api-docs.idcerberus.com/guides/service-api/identificacao-de-documentos
+Fonte: guides/service-api/identificacao-de-documentos.mdx
+Descrição: Serviço para extração de dados de documentos de identificação via API.
+
+Use `SERVICE_OCR` para realizar a extração de dados de documentos de identificação como RG, CNH, OAB, RNE e PASSAPORTE.
+
+## RG / CIN
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RG",
+  "image1": "BASE64_DA_FRENTE",
+  "image2": "BASE64_DO_VERSO"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "RG/CIN",
+    "name": "NOME EXTRAÍDO",
+    "fatherName": "NOME DO PAI",
+    "motherName": "NOME DA MÃE",
+    "birthDate": "yyyy-mm-dd",
+    "rg": "000000000", // <- Apenas para documento RG
+    "rgIssuer": "SSP/UF",
+    "rgIssueDate": "yyyy-mm-dd",
+    "nationality": "BRA", // <- Apenas para documento CIN
+    "validDate": "yyyy-mm-dd", // <- Apenas para documento CIN
+    "naturality": "CIDADE/UF",
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## CNH
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "NOME EXTRAÍDO",
+    "fatherName": "NOME DO PAI",
+    "motherName": "NOME DA MÃE",
+    "birthDate": "yyyy-mm-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000",
+    "emissionPlace": "LOCAL EMISSÃO",
+    "rg": "000000000",
+    "rgIssuer": "SSP/UF",
+    "cnhIssueDate": "yyyy-mm-dd",
+    "cnhDocEmissionPlace": "DETRAN/UF",
+    "cnhFirstQualificationDate": "yyyy-mm-dd",
+    "cnhLastEmissionDate": "yyyy-mm-dd",
+    "renach": "UF000000000",
+    "paidActivity": "BOOLEAN",
+    "state": "UF"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## OAB
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "OAB",
+  "image1": "BASE64_FRENTE_DA_OAB",
+  "image2": "BASE64_VERSO_DA_OAB"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+      "cpf": "00000000000",
+      "docType": "OAB",
+      "name": "NOME COMPLETO",
+      "fatherName": "NOME DO PAI",
+      "motherName": "NOME DA MÃE",
+      "birthDate": "yyyy-mm-dd",
+      "rg": "0000000",
+      "issueDate": "yyyy-mm-dd",
+      "naturality": "CIDADE-UF",
+      "registrationNumber": "00000",
+      "isOrganDonor": "NÃO",
+      "via": "00",
+      "observations": "OBSERVAÇÃO"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## RNE / CRNM
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RNE",
+  "image1": "BASE64_FRENTE_DO_RNE",
+  "image2": "BASE64_VERSO_DO_RNE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+      "cpf": "00000000000", // <- Apenas para documento CRNM
+      "docType": "RNE/CRNM",
+      "name": "NOME COMPLETO",
+      "fatherName": "NOME DO PAI",
+      "motherName": "NOME DA MÃE",
+      "birthDate": "yyyy-mm-dd",
+      "nationality": "NACIONALIDADE",
+      "issueDate": "yyyy-mm-dd",
+      "classification": "STATUS DA CLASSIFICAÇÃO",
+      "entryDate": "yyyy-mm-dd", // <- Apenas para documento RNE
+      "naturality": "NATURALIDADE", // <- Apenas para documento RNE
+      "sex": "F",
+      "via": "00", // <- Apenas para documento RNE
+      "rneValidDate": "DATA ou STATUS",
+      "rneNumber": "A000000-A", // <- Apenas para documento RNE
+      "rnmNumber": "A000000-0", // <- Apenas para documento CRNM
+      "residencePeriod": "STATUS", // <- Apenas para documento CRNM
+      "issueBody": "ORGÃO EMISSOR"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+
+```
+---
+
+## PASSAPORTE
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "PASSAPORT",
+  "image1": "BASE64_DO_PASSAPORTE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+      "docType": "Passaporte",
+      "name": "NOME COMPLETO",
+      "fatherName": "NOME DO PAI",
+      "motherName": "NOME DA MÃE",
+      "birthDate": "yyyy-mm-dd",
+      "nationality": "NACIONALIDADE",
+      "validDate": "yyyy-mm-dd",
+      "issueDate": "yyyy-mm-dd",
+      "naturality": "NATURALIDADE",
+      "sex": "M",
+      "issueCountry": "BRA",
+      "passaportType": "TIPO DE PASSAPORTE",
+      "passaportNumber": "AZ000000",
+      "authority": "AUTORIDADE"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## Identificação Automática
+
+Este tipo de OCR faz a identificação do documento por inferência e extraí os dados correspondentes do documento identificado.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "image1": "BASE64_FRENTE_DO_DOCUMENTO",
+  "image2": "BASE64_VERSO_DO_DOCUMENTO" // <- Opcional
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    // Depende do tipo de documento identificado.
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Por enquanto, esta página cobre RG, CNH, OAB, RNE e PASSAPORTE. Outros documentos devem ser validados quando o suporte do OCR estiver fechado para cada tipo.
+
+## Campos esperados por retorno
+
+| DocumentType | Campos retornados | Observações |
+| --- | --- | --- |
+| RG | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rg`, `rgIssuer`, `rgIssueDate`, `nationality`, `naturality`, `validDate` | Caso o documento enviado for do tipo `CIN`, ele poderá encontrar `nationality` e `validDate`, e não conter `rg`. Envio frente e verso do documento  |
+| CNH | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `cnhCategory`, `cnhNumber`, `validDate`, `emissionPlace`, `rg`, `rgIssuer`, `cnhIssueDate`, `cnhDocEmissionPlace`, `cnhFirstQualificationDate`, `cnhLastEmissionDate`, `renach`, `paidActivity`, `state` | Envio único de documento |
+| OAB | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rg`, `issueDate`, `naturality`, `registrationNumber`, `isOrganDonor`, `via`, `observations` | Envio frente e verso do documento |
+| RNE | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rneNumber`, `rnmNumber`, `nationality`, `issueDate`, `classification`, `entryDate`, `naturality`, `sex`, `via`, `rneValidDate`, `issueBody`, `residencePeriod` | Campos exclusivos de `RNE`: `entryDate`, `naturality`, `via`, `rneNumber`. Campos exclusivos de `CRNM`: `rnmNumber`, `cpf`, `residencePeriod`.  Envio frente e verso do documento |
+| PASSAPORT | `docType`, `name`, `fatherName`, `motherName`, `birthDate`, `nationality`, `validDate`, `issueDate`, `naturality`, `sex`, `issueCountry`, `passaportType`, `passaportNumber`, `authority` | Envio único de documento |
+| IDENTIFICATION_DOCUMENT | Depende do documento identificado internamente | O texto OCR é analisado para inferir se o documento é CNH, RG, OAB, RNE ou Passaporte. Neste caso, o envio do verso do documento, `image2`, é opcional. |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+> Nota:
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+
+---
+
+# Cartão CNPJ
+
+URL: https://api-docs.idcerberus.com/guides/service-api/cartao-cnpj
+Fonte: guides/service-api/cartao-cnpj.mdx
+Descrição: Serviço para extração de dados do cartão CNPJ via API.
+
+## OCR de cartão CNPJ
+
+Use `SERVICE_OCR_CNPJ_CARD` para imagem de cartão CNPJ.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraído do cartão CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Cartão CNPJ processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Se o CNPJ não for encontrado ou for inválido, o esperado é recusa com mensagem
+clara. Se a imagem, armazenamento ou leitura do provedor falhar, pode retornar
+erro.
+
+## Campos esperados por retorno
+
+| Service | Campos mais comuns em `result` |
+| --- | --- |
+| `SERVICE_OCR_CNPJ_CARD` | `cnpj`, `docType`, `genericOcr` |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+> Nota:
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+
+---
+
+# Comprovante de endereço
+
+URL: https://api-docs.idcerberus.com/guides/service-api/comprovante-de-endereco
+Fonte: guides/service-api/comprovante-de-endereco.mdx
+Descrição: Serviço para extração de dados de comprovantes de endereço via API.
+
+## OCR de comprovante de endereço
+
+Use `SERVICE_OCR_PROOF_OF_ADDRESS` para comprovantes de endereço.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "BASE64_DO_COMPROVANTE"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraído",
+    "fullName": "NOME EXTRAÍDO",
+    "fullAddress": "ENDEREÇO EXTRAÍDO",
+    "docType": "Conta de consumo",
+    "issueDate": "2026-01-01",
+    "dueDate": "2026-01-10",
+    "invoiceAmount": "R$ 100,00",
+    "barcode": "00000000000000000000000000000000000000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Comprovante de endereço obtido com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Nem todo comprovante terá todos os campos. A API deve retornar os campos
+extraídos sem preencher dado falso.
+
+## Campos esperados por retorno
+
+| Service | Campos mais comuns em `result` |
+| --- | --- |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | `genericOcr`, `fullName`, `fullAddress`, `docType`, `issueDate`, `dueDate`, `invoiceAmount`, `barcode` |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+> Nota:
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+
+---
+
+# Documento de emancipação
+
+URL: https://api-docs.idcerberus.com/guides/service-api/documento-de-emancipacao
+Fonte: guides/service-api/documento-de-emancipacao.mdx
+Descrição: Serviço para extração de dados de documentos de emancipação via API.
+
+## OCR de emancipação
+
+Use `SERVICE_OCR_EMANCIPATION` para documentos de emancipação.
+
+Esse documento não tem layout único. Pode ser declaração, escritura, certidão ou
+documento de cartório. Por isso, o service deve priorizar texto OCR e extrair o
+que for possível, sem reprovar apenas porque CPF, RG ou código não apareceram.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+Retorno esperado:
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraído do documento",
+    "extractedFields": {
+      "cpf": "00000000000",
+      "rg": "000000000",
+      "authenticationCode": "ABC123456",
+      "dates": ["2026-01-01"]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "summary": "Resumo do documento",
+      "confidence": "MEDIUM",
+      "evidence": ["Texto menciona emancipação"],
+      "warnings": ["Código de autenticação não encontrado"]
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Documento de emancipação processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+## Campos esperados por retorno
+
+| Service | Campos mais comuns em `result` |
+| --- | --- |
+| `SERVICE_OCR_EMANCIPATION` | `docType`, `genericOcr`, `extractedFields`, `analysis` |
+
+Campos ausentes não devem aparecer como `null` só para preencher contrato. O
+padrão público da Service API é retornar apenas dados úteis.
+
+> Nota:
+Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+
+---
+
+# Dúvidas e Suporte
+
+URL: https://api-docs.idcerberus.com/guides/service-api/duvidas-e-suporte
+Fonte: guides/service-api/duvidas-e-suporte.mdx
+Descrição: Orientação para cenários possíveis de dúvida em testes do OCR por API e casos para chamada de suporte técnico.
+
+## Respostas comuns
+
+| Cenário | Status esperado | Como agir |
+| --- | --- | --- |
+| OCR leu e extraiu dados | `APPROVED` | Usar os dados de `result`. |
+| Documento legível, mas campo principal não apareceu | `REFUSED` | Conferir se a imagem corresponde ao service correto. |
+| Produto sem acesso ao service | `REFUSED` ou mensagem de acesso | Corrigir configuração do produto. |
+| Falha real no provedor, imagem ou armazenamento | `ERROR` | Repetir teste e acionar suporte técnico se persistir. |
+
+
+    Quando o token é válido, mas o produto não tem o service liberado para API.
+
+
+    Quando `image1`, `image2`, URL ou `key` não foram enviados como o service espera.
+
+
+    Quando a imagem chega, mas o OCR não extrai dados suficientes.
+
+
+    Quando a falha precisa ser investigada por `externalId`, logs e ambiente.
+
+
+Exemplo de recusa por documento não lido:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+## Exemplos de erro
+
+### Produto sem acesso ao service
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: conferir se o service está ativo no produto e se está habilitado para API.
+
+### Imagem ausente
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: conferir se `image1`, `image2`, `image1Url` ou `key` foram enviados conforme
+o service escolhido.
+
+### RG sem verso
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: enviar `image1` com a frente e `image2` com o verso.
+
+### Documento não lido
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: conferir qualidade da imagem e se o documento corresponde ao service usado.
+
+### Erro interno
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Falha ao realizar OCR"
+  },
+  "onboardingStatus": "ERROR",
+  "externalId": "..."
+}
+```
+
+Ação: guardar o `externalId`, repetir com uma imagem válida e acionar suporte
+técnico se persistir.
+
+## Checklist antes de passar para o cliente
+
+1. Testou em HML com token do produto correto.
+2. Confirmou que o service está ativo e com API habilitada.
+3. Confirmou que o base64 não está truncado (com ou sem prefixo `data:image`, os dois funcionam).
+4. Validou um caso de sucesso.
+5. Validou um caso de recusa esperado.
+6. Conferiu se o retorno veio sem `fieldsOutput` e sem metadados internos.
+7. Conferiu se `externalId` voltou para rastreio.
+8. Conferiu se os dados retornados vieram dentro de `result`.
+
+## Resumo para suporte e CS
+
+Quando um cliente disser que o OCR não funcionou, confira nesta ordem:
+
+1. Produto e service liberados para API.
+2. Alias correto no campo `service`.
+3. Tipo de documento correto para o service escolhido.
+4. Imagem legível e completa.
+5. Retorno de `status.message`.
+6. `externalId` para rastrear a execução.
+
+Isso evita tratar problema de configuração como problema de OCR, e também evita
+trocar payload quando o erro real está no produto.
+
+## Quando acionar cada time
+
+| Situação | Quem acionar | O que enviar |
+| --- | --- | --- |
+| Falta de acesso ao service | Produto/configuração | Produto, cliente, alias enviado e print da configuração. |
+| OCR retorna vazio com imagem boa | Time técnico | Payload sem base64, imagem usada e `externalId`. |
+| Erro 500 | Backend/logs | `externalId`, ambiente, horário aproximado e service usado. |
+| Campo extraído errado | Time técnico/OCR | Imagem, retorno recebido, campo esperado e `externalId`. |
+| Dúvida de qual service usar | Produto/CS | Tipo de documento e objetivo da consulta. |
+| Divergência entre HML e PROD | Produto + técnico | Produto dos dois ambientes, alias configurado e retorno de cada ambiente. |
 
 ---
 
@@ -6689,10 +7843,10 @@ O serviço executado é definido pelo campo `service`.
 
 Use esta categoria quando precisar:
 
-- validar se um CPF está regular na Receita Federal;
-- enriquecer dados cadastrais de uma pessoa física;
-- confirmar dados associados a telefone, endereço ou e-mail;
-- consultar informações complementares como MEI, PIS, E-Social, Cartão SUS,
+1. validar se um CPF está regular na Receita Federal;
+2. enriquecer dados cadastrais de uma pessoa física;
+3. confirmar dados associados a telefone, endereço ou e-mail;
+4. consultar informações complementares como MEI, PIS, E-Social, Cartão SUS,
   endereços e relacionamentos econômicos.
 
 ## Serviços disponíveis
@@ -6817,10 +7971,10 @@ POST /api/service-api
 
 Use estes serviços quando precisar:
 
-- extrair dados de documentos por OCR;
-- comparar imagens de rosto com FaceMatch;
-- consultar score biométrico;
-- executar documentoscopia digital e consultar o resultado depois.
+1. extrair dados de documentos por OCR;
+2. comparar imagens de rosto com FaceMatch;
+3. consultar score biométrico;
+4. executar documentoscopia digital e consultar o resultado depois.
 
 ## Serviços disponíveis
 
@@ -6892,11 +8046,11 @@ Resposta esperada:
 
 ## Boas práticas
 
-- Envie imagens nítidas, sem cortes no documento ou no rosto.
-- Use `image1Url` e `image2Url` quando as imagens já estiverem hospedadas em URL
+1. Envie imagens nítidas, sem cortes no documento ou no rosto.
+2. Use `image1Url` e `image2Url` quando as imagens já estiverem hospedadas em URL
   acessível pelo serviço.
-- Para documentos com frente e verso, envie as duas imagens quando disponível.
-- Combine OCR e FaceMatch quando o fluxo exigir validação de identidade
+3. Para documentos com frente e verso, envie as duas imagens quando disponível.
+4. Combine OCR e FaceMatch quando o fluxo exigir validação de identidade
   com maior robustez.
 
 Para campos, exemplos completos e responses, consulte a
@@ -6928,12 +8082,12 @@ POST /api/service-api
 
 Use esta categoria quando precisar:
 
-- verificar se a pessoa é PEP ou possui exposição pública relevante;
-- consultar sanções e histórico de compliance em uma visão consolidada;
-- avaliar propensão de fraude ou inadimplência;
-- consultar certidões, antecedentes criminais e nada consta;
-- verificar protestos, débitos ativos e processos;
-- complementar uma esteira de aprovação com sinais de risco.
+1. verificar se a pessoa é PEP ou possui exposição pública relevante;
+2. consultar sanções e histórico de compliance em uma visão consolidada;
+3. avaliar propensão de fraude ou inadimplência;
+4. consultar certidões, antecedentes criminais e nada consta;
+5. verificar protestos, débitos ativos e processos;
+6. complementar uma esteira de aprovação com sinais de risco.
 
 ## Serviços disponíveis
 
@@ -7037,11 +8191,11 @@ POST /api/service-api
 
 Use esta categoria quando precisar:
 
-- identificar se uma pessoa já concorreu ou foi eleita;
-- consultar doações eleitorais realizadas;
-- avaliar envolvimento político e exposição pública;
-- identificar histórico familiar político;
-- consultar prestação de serviços eleitorais e possíveis relações econômicas com campanhas.
+1. identificar se uma pessoa já concorreu ou foi eleita;
+2. consultar doações eleitorais realizadas;
+3. avaliar envolvimento político e exposição pública;
+4. identificar histórico familiar político;
+5. consultar prestação de serviços eleitorais e possíveis relações econômicas com campanhas.
 
 ## Serviços disponíveis
 
@@ -7134,15 +8288,15 @@ O campo `service` define qual consulta será executada.
 
 Use esta categoria quando precisar:
 
-- confirmar a situação cadastral de um CNPJ na Receita Federal;
-- recuperar razão social, nome fantasia, data de abertura, atividades e natureza jurídica;
-- verificar cadastro estadual no SINTEGRA;
-- consultar endereços estendidos associados ao CNPJ;
-- consultar presença digital, domínios e sinais de operação online;
-- consultar períodos, boletos e códigos de barras de DAS MEI ou da Arrecadação Simples Nacional - MEI;
-- acompanhar o histórico de alterações cadastrais, capital social e regime tributário da empresa;
-- consultar telefones, categoria comercial (MCC), presença em marketplaces, anúncios online e reputação da empresa em plataformas de avaliação;
-- consultar dados de fundos de investimento vinculados ao CNPJ e a evolução temporal de capital, funcionários e sócios.
+1. confirmar a situação cadastral de um CNPJ na Receita Federal;
+2. recuperar razão social, nome fantasia, data de abertura, atividades e natureza jurídica;
+3. verificar cadastro estadual no SINTEGRA;
+4. consultar endereços estendidos associados ao CNPJ;
+5. consultar presença digital, domínios e sinais de operação online;
+6. consultar períodos, boletos e códigos de barras de DAS MEI ou da Arrecadação Simples Nacional - MEI;
+7. acompanhar o histórico de alterações cadastrais, capital social e regime tributário da empresa;
+8. consultar telefones, categoria comercial (MCC), presença em marketplaces, anúncios online e reputação da empresa em plataformas de avaliação;
+9. consultar dados de fundos de investimento vinculados ao CNPJ e a evolução temporal de capital, funcionários e sócios.
 
 ## Serviços disponíveis
 
@@ -7211,12 +8365,12 @@ Resposta esperada:
 
 ## Boas práticas
 
-- Envie CNPJ sem máscara quando possível, mantendo apenas números.
-- Use o enriquecimento de dados quando precisar montar uma visão cadastral
+1. Envie CNPJ sem máscara quando possível, mantendo apenas números.
+2. Use o enriquecimento de dados quando precisar montar uma visão cadastral
   completa da empresa.
-- Use o status do CNPJ quando a necessidade for apenas validar se a empresa está
+3. Use o status do CNPJ quando a necessidade for apenas validar se a empresa está
   ativa ou regular.
-- Para empresas com operação estadual, combine Receita Federal e SINTEGRA.
+4. Para empresas com operação estadual, combine Receita Federal e SINTEGRA.
 
 Para campos, exemplos completos e responses, consulte a
 [API Reference](/api-reference/autorização/gerar-token-de-api) ou o
@@ -7248,12 +8402,12 @@ POST /api/service-api
 
 Use esta categoria quando precisar:
 
-- identificar proprietários, representantes e vínculos de uma empresa;
-- mapear pessoas físicas relacionadas ao CNPJ em primeiro nível;
-- consultar o quadro societário-administrativo (QSA) completo da matriz na Receita Federal;
-- mapear o grupo econômico e inferir o nível de influência do quadro societário;
-- avaliar processos judiciais associados aos sócios, individualmente ou de forma agregada;
-- consultar indicadores de PEP, sanções e histórico de compliance dos sócios.
+1. identificar proprietários, representantes e vínculos de uma empresa;
+2. mapear pessoas físicas relacionadas ao CNPJ em primeiro nível;
+3. consultar o quadro societário-administrativo (QSA) completo da matriz na Receita Federal;
+4. mapear o grupo econômico e inferir o nível de influência do quadro societário;
+5. avaliar processos judiciais associados aos sócios, individualmente ou de forma agregada;
+6. consultar indicadores de PEP, sanções e histórico de compliance dos sócios.
 
 ## Serviços disponíveis
 
@@ -7354,14 +8508,14 @@ POST /api/service-api
 
 Use esta categoria quando precisar:
 
-- verificar débitos ativos de uma empresa com órgãos públicos;
-- consultar protestos em cartórios;
-- avaliar exposição pública e notícias relacionadas aos sócios;
-- avaliar exposição e conformidade de empresas relacionadas ao mercado de apostas;
-- identificar os beneficiários finais e o percentual de participação societária;
-- consultar certidões negativas federais e estaduais (PGFN, CGU, CNJ, débitos estaduais, PCD, Simples Nacional);
-- avaliar KYC agregado do grupo econômico completo da empresa;
-- complementar uma análise cadastral com sinais de risco e restrição.
+1. verificar débitos ativos de uma empresa com órgãos públicos;
+2. consultar protestos em cartórios;
+3. avaliar exposição pública e notícias relacionadas aos sócios;
+4. avaliar exposição e conformidade de empresas relacionadas ao mercado de apostas;
+5. identificar os beneficiários finais e o percentual de participação societária;
+6. consultar certidões negativas federais e estaduais (PGFN, CGU, CNJ, débitos estaduais, PCD, Simples Nacional);
+7. avaliar KYC agregado do grupo econômico completo da empresa;
+8. complementar uma análise cadastral com sinais de risco e restrição.
 
 ## Serviços disponíveis
 
@@ -10117,7 +11271,6 @@ response.
   documentados, mas o produto estiver configurado com alias curto, envie
   `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` no campo `service`.
 
-
 Passo rápido para evitar erro:
 
 1. Abra o produto do cliente no Backoffice.
@@ -10231,7 +11384,6 @@ Exemplo de resposta:
   Este serviço executa a consulta on-demand, mas o response exposto atualmente
   pode ser mínimo. Para uma visão cadastral mais completa da empresa, use também
   `SERVICE_CORPORATE_DATA_ENRICHMENT`.
-
 
 ## Exemplos
 
@@ -10553,8 +11705,8 @@ empresas.
 
 Observações:
 
-- Pode existir círculo sem nenhum indivíduo participante.
-- O retorno dos círculos fica contido no objeto principal de resultado.
+1. Pode existir círculo sem nenhum indivíduo participante.
+2. O retorno dos círculos fica contido no objeto principal de resultado.
 
 ```json
 {
@@ -11129,8 +12281,6 @@ fluxos sugeridos e explicações por domínio, consulte os guias.
   mesmo e clique em enviar para ver a resposta real.
 
 
-
-
     Abra o endpoint `POST /api/token-generate` com request, response e exemplo
     em cURL.
 
@@ -11152,7 +12302,6 @@ fluxos sugeridos e explicações por domínio, consulte os guias.
 
 
     Ative ou desative registros de cliente pela API.
-
 
 
 ## Base URL
@@ -11185,7 +12334,6 @@ POST https://backoffice.idcerberus.com/api/service-api
 As chamadas protegidas exigem um token JWT no header `Authorization`.
 
 
-
     Envie `client` e `secret` para `POST /api/token-generate`.
 
 
@@ -11193,7 +12341,6 @@ As chamadas protegidas exigem um token JWT no header `Authorization`.
 
 
     Use o formato `Authorization: Bearer {jwt_token}`.
-
 
 
 HML:
@@ -11324,7 +12471,6 @@ A maioria das consultas retorna:
 > Nota:
   Nem todos os endpoints retornam JSON. O download do relatório de onboarding
   retorna um arquivo PDF.
-
 
 ## Principais endpoints
 
