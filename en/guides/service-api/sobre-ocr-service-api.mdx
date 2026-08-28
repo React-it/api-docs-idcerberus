@@ -1,0 +1,360 @@
+---
+title: About the OCR Service API
+description: Practical guide to choosing, configuring, testing, and interpreting OCR services in POST /api/service-api.
+---
+
+Use this page to integrate OCR services through `POST /api/service-api`.
+It shows which service to use, how to build the payload, what the return
+should look like, and what to check before opening a ticket or touching
+your implementation.
+
+> Basic requirement: the token needs to belong to the correct product, and
+> the product needs to have the service active with the API enabled. If the
+> product setup is incomplete, the call can authenticate and still return an
+> access failure.
+
+<Info>
+  `SERVICE_OCR` can be processed by different partners depending on your
+  product's configuration. This usually doesn't change what you do in the
+  integration, but it can occasionally vary one specific `result` field
+  (for example, the recognized document type). Treat the contract as "the
+  fields on this page usually come like this," not as a rigid
+  field-by-field guarantee.
+</Info>
+
+<CardGroup cols={2}>
+  <Card icon="id-card" title="Identification documents" href="./identificacao-de-documentos">
+    Use `SERVICE_OCR` when the document is an RG, CNH, OAB, RNE, or PASSPORT and the payload has `documentType`.
+  </Card>
+  <Card icon="building" title="CNPJ card" href="./cartao-cnpj">
+    Use `SERVICE_OCR_CNPJ_CARD` to extract the CNPJ and OCR text from the CNPJ card.
+  </Card>
+  <Card icon="house" title="Proof of address" href="./comprovante-de-endereco">
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS` for bills, invoices, and accepted proofs.
+  </Card>
+  <Card icon="file-signature" title="Emancipation document" href="./documento-de-emancipacao">
+    Use `SERVICE_OCR_EMANCIPATION` for variable documents with no fixed layout.
+  </Card>
+</CardGroup>
+
+## Fastest test
+
+If you just need to validate the call in staging, start with the
+ready-made examples:
+
+<CardGroup cols={2}>
+  <Card icon="id-card" title="CNH" href="/examples/service-api-ocr-cnh.hml.curl">
+    Ready-made curl with `SERVICE_OCR`, `documentType: CNH`, and `image1`.
+  </Card>
+  <Card icon="id-card" title="RG front and back" href="/examples/service-api-ocr-rg.hml.curl">
+    Ready-made curl with `SERVICE_OCR`, `documentType: RG`, `image1`, and `image2`.
+  </Card>
+  <Card icon="building" title="CNPJ card" href="/examples/service-api-ocr-cnpj-card.hml.curl">
+    Ready-made curl for `SERVICE_OCR_CNPJ_CARD` with a CNPJ card image.
+  </Card>
+  <Card icon="house" title="Proof of address" href="/examples/service-api-ocr-proof-of-address.hml.curl">
+    Ready-made curl for `SERVICE_OCR_PROOF_OF_ADDRESS` with a base64 proof.
+  </Card>
+</CardGroup>
+
+<Tip>
+  For manual testing in Postman, use the [Copy and test](#copy-and-test) section. It builds the full JSON on your clipboard.
+</Tip>
+
+## Visual OCR journey
+
+<CardGroup cols={3}>
+  <Card icon="clipboard-list" title="1. Choose the document">
+    Decide whether the test is CNH, RG, CNPJ card, proof of address, or an emancipation document before building the payload.
+  </Card>
+  <Card icon="image" title="2. Use a real image">
+    Send a sharp, uncropped image, in base64 (with or without the `data:image/...;base64,` prefix, both work). Bad OCR almost always starts with a bad image or the wrong document.
+  </Card>
+  <Card icon="database" title="3. Read the result">
+    The useful return lives in `result`. Use `status`, `onboardingStatus`, and `externalId` to trace processing.
+  </Card>
+</CardGroup>
+
+## Decision blocks
+
+<CardGroup cols={2}>
+  <Card icon="id-card" title="I have an RG or CNH">
+    Use `SERVICE_OCR` with `documentType`. For RG, send front and back when the document requires both sides.
+  </Card>
+  <Card icon="building" title="I have a CNPJ card">
+    Use `SERVICE_OCR_CNPJ_CARD`. The minimum expected is a valid CNPJ, a consistent `docType`, and a filled `genericOcr`.
+  </Card>
+  <Card icon="house" title="I have a proof">
+    Use `SERVICE_OCR_PROOF_OF_ADDRESS`. The document needs a visible address and enough text to read.
+  </Card>
+  <Card icon="file-signature" title="I have a variable document">
+    Use `SERVICE_OCR_EMANCIPATION`. Don't treat CPF, RG, or a code as required, since the layout can vary.
+  </Card>
+</CardGroup>
+
+## Recommended path
+
+If you need to test right now, follow this order:
+
+1. Confirm the service on the client's product.
+2. Generate a token for the same product.
+3. Convert a real image to clean base64.
+4. Send the correct OCR payload.
+5. Validate `status`, `onboardingStatus`, `externalId`, and the fields inside `result`.
+
+This path avoids mixing up a permission problem, a bad image, and a wrong
+payload.
+
+## What this page solves
+
+| Audience | How to use it |
+| --- | --- |
+| Development | Copy the payload, understand required fields, and validate the expected return. |
+| Product | Check whether the right service is configured for the right document. |
+| Support | Separate a configuration problem, a bad image, a wrong payload, and a technical failure. |
+| CS/Operations | Explain to the client what to send and what to expect from the response. |
+
+The goal is to avoid trial and error. Before opening a ticket, the person
+should be able to answer: which service was called, which image was sent,
+which product authorized the call, and which `externalId` came back.
+
+## Quick pick
+
+| I need to read | Service | Send | Main return |
+| --- | --- | --- | --- |
+| CNH | `SERVICE_OCR` | `documentType: CNH` + `image1` | CPF, name, birth date, CNH data |
+| RG | `SERVICE_OCR` | `documentType: RG` + `image1` + `image2` | CPF, name, parents' names, birth date, RG data |
+| CNPJ card | `SERVICE_OCR_CNPJ_CARD` | `image1` | CNPJ, document type, OCR text |
+| Emancipation document | `SERVICE_OCR_EMANCIPATION` | `image1` | OCR text, extracted fields, and structured analysis |
+| Proof of address | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Name, address, document type, dates, and amounts |
+
+The `image1` field receives the image's base64. It works with clean base64
+or with the `data:image/jpeg;base64,` prefix. The system accepts both
+formats and removes the prefix automatically when present.
+
+## Which image to use
+
+| Service | Right image | Don't use |
+| --- | --- | --- |
+| `SERVICE_OCR` with CNH | A sharp photo or image of the full CNH | A selfie, a cropped screenshot, or a different document type |
+| `SERVICE_OCR` with RG | Front in `image1` and back in `image2` | Only the front when the back is required |
+| `SERVICE_OCR_CNPJ_CARD` | A complete, legible CNPJ card | Articles of incorporation, an invoice, or a proof |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | A bill, invoice, or accepted proof with a visible address | A personal document or selfie |
+| `SERVICE_OCR_EMANCIPATION` | A legible notary document, declaration, deed, or certificate | A document unrelated to emancipation |
+
+## Success criteria by service
+
+| Service | Minimum expected success | When it declines |
+| --- | --- | --- |
+| `SERVICE_OCR` with CNH | Document read and the CNH's main fields returned. | Missing image, unread document, or inconsistent document type. |
+| `SERVICE_OCR` with RG | Front and back sent, document read, and main data returned. | Missing back, illegible image, or core data not extracted. |
+| `SERVICE_OCR_CNPJ_CARD` | Valid CNPJ extracted and `docType` consistent with a CNPJ card. | CNPJ not found or invalid CNPJ. |
+| `SERVICE_OCR_EMANCIPATION` | OCR returned text and the API returned the fields found, with no fixed layout required. | Empty OCR or an image that can't be read. |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | OCR returned useful text and possible proof data. | Image not read or a document outside what's expected for a proof. |
+
+Not every service has the same required fields. For variable documents,
+like emancipation and proof of address, the return should carry what was
+extracted without making up data.
+
+## Full flow
+
+1. Generate a token at `/api/token-generate`.
+2. Confirm the product has the service active and enabled for the API.
+3. Choose the correct `service` from the table above.
+4. Convert the image to clean base64.
+5. Send the payload to `POST /api/service-api`.
+6. Validate `status.code`, `onboardingStatus`, `externalId`, and the fields inside `result`.
+
+## Generate base64 in PowerShell
+
+To copy just the image's base64:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\document.jpg")) | Set-Clipboard
+```
+
+This value is already clean base64. If your tool generates it with the
+`data:image/jpeg;base64,` prefix (common in browsers, for example), you
+don't need to remove it. The system accepts both formats.
+
+## Copy and test
+
+Use these blocks when you want to build the full JSON on your clipboard and
+paste it directly into Postman's raw JSON body.
+Just swap the file path and keep the `service` matching the OCR being tested.
+
+### CNH
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\cnh.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "CNH"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### RG with front and back
+
+```powershell
+$front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\rg-front.jpg"))
+$back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\rg-back.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "RG"
+  image1 = $front
+  image2 = $back
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### CNPJ card
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\cnpj-card.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Proof of address
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\proof-of-address.jpg"))
+@{
+  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+After running the command, paste the clipboard content into Postman under
+`Body > raw > JSON`.
+
+## Testing in Postman
+
+1. Generate a token at `POST /api/token-generate`.
+2. Copy the `access_token`.
+3. Open `POST https://backoffice-hml.idcerberus.com/api/service-api`.
+4. Add the header `Authorization: Bearer {access_token}`.
+5. Add `Content-Type: application/json`.
+6. Paste the JSON generated by PowerShell into the raw body.
+7. Run it and check `status`, `onboardingStatus`, `externalId`, and `result`.
+
+Example headers:
+
+```http
+Authorization: Bearer {access_token}
+Content-Type: application/json
+```
+
+## Checklist before contacting support
+
+| Point | What to check |
+| --- | --- |
+| Product | The token used belongs to the product where the service is active. |
+| Payload | The `service` field uses the alias enabled for the product. |
+| Image | The image opens normally and the text is legible to a person. |
+| Base64 | The value decodes back into a valid image (with or without the `data:image/...;base64,` prefix, both are accepted). |
+| Return | Save `externalId`, `status.message`, and the test's time. |
+
+If these points are correct and OCR still fails, the ticket already arrives
+with enough information to investigate without repeating basic tests.
+
+## Quick diagnosis
+
+| Symptom | Check first | Next action |
+| --- | --- | --- |
+| No access to the service | Token, product, whether the service is active, and API enabled. | Fix the product setup before touching the image. |
+| Missing image | `image1`, `image2`, `image1Url`, `image2Url`, or `key`, depending on the OCR. | Regenerate the JSON and confirm the expected field made it into the body. |
+| Returned `{}` | Whether the image is the right type and legible. | Test with a sharper image and validate whether the chosen service matches the document. |
+| Got `ERROR` | `externalId`, time, environment, and a safe technical message. | Retry once; if it persists, escalate to technical support with the `externalId`. |
+| Came back without an expected field | Whether the field visually exists in the document and whether this service's OCR returns that field. | Compare with the return pattern below and don't treat a missing field as a required contract. |
+
+## Image quality
+
+To reduce declines from poor reading:
+
+| Item | Recommendation |
+| --- | --- |
+| Framing | Whole document visible, no cropped edges. |
+| Sharpness | Text legible when opening the image manually. |
+| Lighting | Avoid glare, heavy shadow, and blur. |
+| Orientation | Prefer a straight document, without excessive rotation. |
+| File | Use a real JPG/PNG image converted to base64. |
+
+A document photo doesn't work for a face service. A selfie doesn't work for
+document OCR.
+
+## Product configuration
+
+Before testing in staging or production, check:
+
+| Setting | What to verify |
+| --- | --- |
+| Token | `client` and `secret` belong to the product being tested. |
+| Service | The service is registered and active on the product. |
+| API | The service is enabled for calls via the API. |
+| Alias | The value sent in `service` is the product's calling alias. |
+| Fields | The service has the expected input and output fields. |
+
+If the return is `"Don't have access to the service"`, the first thing to
+check is the product setup, not the image.
+
+## Return pattern
+
+The public return should stay clean, with the useful data inside `result`.
+
+Success example:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "EXTRACTED NAME"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+The client shouldn't depend on internal fields like:
+
+1. `fieldsOutput`
+2. `required`
+3. `enabled`
+4. `valid`
+5. `callService`
+6. `nextStep`
+7. `fields`
+8. `visible`
+
+The practical, simple rule: the integrator looks at `result`. If a field
+isn't in `result`, it shouldn't be used as a public API contract.
+
+## Don't do this
+
+| Avoid | Reason |
+| --- | --- |
+| Sending truncated or cut-off base64 | The file becomes corrupted and OCR fails to decode it. |
+| Using an RG/CNH photo on a face service | Face and OCR use different flows. |
+| Using a selfie for document OCR | OCR needs the document's image. |
+| Testing RG by sending only the front | The back may contain important fields. |
+| Testing a CNPJ card on the proof-of-address service | Each OCR has its own parser and criteria. |
+| Putting real CPFs, CNPJs, or names in the documentation | Public examples should use fictitious data. |
+| Assuming a missing field is always a bug | The field may not exist in the document or may not have been read. |
+
+## Known limits
+
+| Point | How to handle it |
+| --- | --- |
+| OCR doesn't guarantee a perfect read on a bad image | Validate sharpness, framing, and a complete document before contacting support. |
+| Some fields may not exist in the document | The API should return only what was safely extracted. |
+| A product without API enabled looks like an access error | Fix the product setup before touching the payload. |
+| RG can vary by state/model | Always send front and back when the service requires an RG. |
+| Emancipation has no single layout | Success depends on OCR text, not on every optional field. |
+| Proofs vary a lot | `fullAddress`, amounts, dates, and barcode depend on the type of document sent. |

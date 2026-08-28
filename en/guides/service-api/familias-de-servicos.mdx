@@ -1,0 +1,267 @@
+---
+title: Service families
+description: Browse the main product groups run via POST /api/service-api
+---
+
+# Service families
+
+The `POST /api/service-api` endpoint brings together different products.
+Grouping by family helps you quickly find the right payload instead of
+treating the endpoint as one long, undifferentiated list.
+
+<Info>
+  This page groups by product family. The full technical catalog, with
+  every field and example for each service, lives in
+  [Individual Services](/guides/servicos-pessoa-fisica) and
+  [Business Services](/guides/servicos-pessoa-juridica). Use them as the
+  reference source when you need a service's full contract.
+</Info>
+
+<CardGroup cols={2}>
+  <Card icon="id-card" title="Individuals" href="#pf-registration-and-identity">
+    CPF, registration, score, compliance, and complementary data services.
+  </Card>
+  <Card icon="building" title="Businesses" href="#pj-registration-and-compliance-status">
+    CNPJ, business registration, business owners, risk, and compliance services.
+  </Card>
+  <Card icon="image" title="Documents and biometrics" href="#documents-and-biometrics">
+    OCR, face, liveness, document analysis, and image payloads.
+  </Card>
+  <Card icon="shield-halved" title="Risk and validations" href="#pf-risk-validations-and-compliance">
+    Scores, validations, compliance, certificates, and risk signals.
+  </Card>
+</CardGroup>
+
+## How to use this page
+
+1. Choose the service family.
+2. Copy the `service` code or confirm the calling alias configured for the product.
+3. Open `POST /api/service-api` in the API Reference.
+4. Select the corresponding example.
+5. Map the expected response.
+
+## Consumption pattern
+
+Every product on this page uses the same call base:
+
+```json
+{
+  "service": "service_code",
+  "cpf": "cpf"
+}
+```
+
+The `service` field picks the product. The other fields vary by query:
+document services use images or URLs, PF services use `cpf`, PJ services
+use `cnpj`, and some certificates require extra data like `uf`, `rg`, or
+`court`.
+
+<Warning>
+  The API validates `service` against the services enabled for the
+  client's product. Because of this, in some cases the value sent in the
+  call can be a short product alias, not another alias documented in the
+  catalog.
+</Warning>
+
+Before testing with the client, confirm the alias for the product, copy
+that value into the body, and then fill in the required fields for the
+chosen family.
+
+| Documented alias | Product's short alias |
+| --- | --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
+| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+
+Think of `POST /api/service-api` as a runner. The route is always the
+same, but the service executed changes based on the value sent in
+`service`.
+
+Example:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+In this case, the API understands it should run the individual data
+enrichment service. If `service` changes, the product run changes too.
+
+| Query type | Main document | Note |
+| --- | --- | --- |
+| Individual | `cpf` | May require extra data for certificates, validations, or biometrics |
+| Business | `cnpj` | May require `uf` for state-level queries or complementary documents |
+| Document and biometrics | `image1`, `image2`, `selfie1`, or URLs | Use base64 or a URL depending on the product |
+| Onboarding/async document analysis | `key` | The key lets you query the result later |
+
+<Tip>
+  For implementation, copy the full example in the API Reference and use this page just to quickly pick the right product.
+</Tip>
+
+## PF registration and identity
+
+| Product | `service` code | Main input |
+| --- | --- | --- |
+| Individual enrichment | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
+| CPF status at the Federal Revenue | `SERVICE_RFB_PF` | `cpf`, `birthDate` |
+| CPF at the Federal Revenue on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
+| Individual data modeling | `SERVICE_PERSON_DATA_MODELING` | `cpf` |
+| AI prompt for a person | `SERVICE_PERSON_AI_PROMPT` | `cpf` |
+| MEI query | `SERVICE_MEI` | `cpf` |
+| Addresses | `SERVICE_ADDRESS` | `cpf` |
+| Phone history | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` |
+| Email history | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` |
+| Related people | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` |
+| SUS card | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | `cpf` |
+| Data by phone number | `SERVICE_CONFIRM_PHONE` | `phone` |
+| PIS data | `SERVICE_PIS_CONSULTATION` | `cpf` |
+| E-Social validation | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf` |
+| Economic relationships | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` |
+| Professional history | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` |
+| Account holder's professional history | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` |
+| PF financial data and addresses | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` |
+| Demographic data | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` |
+| Activity indicators | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` |
+| PF domains | `SERVICE_DOMAINS_CPF` | `cpf` |
+| Related people's emails | `SERVICE_RELATED_PEOPLE_EMAILS` | `cpf` |
+| Related people's phones | `SERVICE_RELATED_PEOPLE_PHONES` | `cpf` |
+| Related people's addresses | `SERVICE_RELATED_PEOPLE_ADDRESSES` | `cnpj` |
+| TSE polling place | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | `cpf`, `birthDate`, `motherName` |
+
+## Documents and biometrics
+
+In this family, the payload needs extra care: a wrong image, base64 with a
+prefix, or an incorrect alias can let the call authenticate and still not
+produce the expected return. For OCR, also use the [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api) guide.
+
+| Product | `service` code | Main input |
+| --- | --- | --- |
+| React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
+| Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | `image1` |
+| Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
+| Face search in the base | `SERVICE_FACE_INDEX` | `image1` |
+| FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
+| Biometric score / CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
+| Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
+| Document analysis result | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` |
+
+## PF risk, validations, and compliance
+
+| Product | `service` code | Main input |
+| --- | --- | --- |
+| Politically exposed person | `SERVICE_PEP` | `cpf` |
+| Individual KYC and compliance | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
+| PF media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
+| Fraud score | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
+| Financial risk | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
+| Default risk score | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
+| Credit score | `SERVICE_CREDIT_SCORE` | `cpf` |
+| PF active debts | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
+| Email validation | `SERVICE_EMAIL_VALIDATION` | `email` |
+| CPF validation with phone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` |
+| CPF validation with address | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` |
+| Propensity for online betting | `SEVICE_ONLINE_BETTING_PROPENSITY` (no R, official spelling) | `cpf` |
+| Awards and certifications | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` |
+| Family social benefits | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` |
+| Extended social assistance | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` |
+| Credit score | `SERVICE_QUOD_CREDIT_SCORE_PERSON` | `cpf` |
+| Multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | `cpf` |
+| Restrictive data | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | `cpf` |
+| Negative flags | `SERVICE_QUOD_CREDIT_RISK_PERSON` | `cpf` |
+| Financial information | `SERVICE_FINANCIAL_INFORMATION` | `cpf` |
+| Public servants | `SERVICE_PUBLIC_SERVANTS` | `cpf` |
+
+## PF certificates and legal
+
+| Product | `service` code | Main input |
+| --- | --- | --- |
+| Nothing on record in lawsuits | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
+| Federal criminal records | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
+| Civil criminal records | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` |
+| Negative protest certificate | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` |
+| Legal cases | `SERVICE_JURIDICAL_PROCESSES` | `cpf` |
+| Arrest warrant | `SERVICE_ARREST_WARRANT` | `cpf`, `name`, `birthDate` |
+
+## Political and electoral
+
+| Product | `service` code | Main input |
+| --- | --- | --- |
+| Candidate electoral data | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` |
+| PF electoral donations | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` |
+| Political involvement | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
+| Political family history | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` |
+| PF electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` |
+| PF political involvement | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` |
+
+## PJ registration and compliance status
+
+| Product | `service` code | Main input |
+| --- | --- | --- |
+| Business enrichment | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` |
+| CNPJ status at the Federal Revenue | `SERVICE_RFB_PJ` | `cnpj` |
+| CNPJ at the Federal Revenue on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` |
+| SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION` | `cnpj`, `uf` |
+| CNPJ registration data | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` |
+| CNPJ domains | `SERVICE_DOMAINS_CNPJ` | `cnpj` |
+| Extended business addresses | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
+| PJ electoral donations | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` |
+| PJ electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` |
+| DAS MEI | `SERVICE_DAS_MEI` | `cnpj` |
+| Public projects | `SERVICE_PUBLIC_PROJECTS` | `cnpj` |
+| Civil construction | `SERVICE_CIVIL_CONSTRUCTION` | `cnpj` |
+
+## PJ business owners, relationships, and compliance
+
+| Product | `service` code | Main input |
+| --- | --- | --- |
+| Business relationships | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` |
+| Business owners at the Federal Revenue | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
+| First-level partners | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` |
+| PJ legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` |
+| Business owners' legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | `cnpj` |
+| Business owners' KYC and compliance | `SERVICE_COMPANY_KYC_OWNERS` | `cnpj` |
+| Business owners' media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` |
+| Business owners' electoral donations | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` |
+| PJ active debts | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
+| PJ protest | `SERVICE_PROTEST_PJ` | `cnpj` |
+| Betting compliance | `SERVICE_COMPLIANCE_BET` | `cnpj` |
+| PJ betting compliance | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
+| PJ credit risk | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+| PJ credit score | `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | `cnpj` |
+| PJ multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | `cnpj` |
+| PJ restrictive data | `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | `cnpj` |
+| PJ negative flags | `SERVICE_QUOD_CREDIT_RISK_COMPANY` | `cnpj` |
+| PJ Quantum credit score | `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | `cnpj` |
+| Labor lawsuits | `SERVICE_LABOR_LAWSUITS` | `cnpj` |
+| Union agreements | `SERVICE_SYNDICATE_AGREEMENTS` | `cnpj` |
+| Online ads | `SERVICE_ONLINE_ADS` | `cnpj` |
+| Simples Nacional - MEI collection | `SERVICE_PGMEI` | `cnpj` |
+| Ratings and reputation | `SERVICE_REPUTATIONS_AND_REVIEWS` | `cnpj` |
+| Merchant category | `SERVICE_MERCHANT_CATEGORY_DATA` | `cnpj` |
+| Investment fund data | `SERVICE_INVESTMENT_FUND_DATA` | `cnpj` |
+| Business owners' lawsuit distribution | `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | `cnpj` |
+| Legal case distribution | `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | `cnpj` |
+| Company evolution | `SERVICE_COMPANY_EVOLUTION` | `cnpj` |
+| FGTS | `SERVICE_FGTS` | `cnpj` |
+| Basic data history | `SERVICE_HISTORY_BASIC_DATA` | `cnpj` |
+| Business ownership influence | `SERVICE_OWNERS_INFLUENCE` | `cnpj` |
+| Employee KYC and compliance | `SERVICE_EMPLOYEES_KYC` | `cnpj` |
+| Marketplaces | `SERVICE_MARKETPLACE_DATA` | `cnpj` |
+| Federal Revenue - QSA | `SERVICE_RF_QSA` | `cnpj` |
+| Economic group relationships | `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | `cnpj` |
+| Phone numbers | `SERVICE_PHONES_EXTENDED_COMPANY` | `cnpj` |
+| Ultimate beneficial owners | `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | `cnpj` |
+| Equity stake percentage | `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | `cnpj` |
+| PGFN debts | `SERVICE_PGFN_COMPANY` | `cnpj` |
+| PCD quota | `SERVICE_PCD_COMPANY` | `cnpj` |
+| CGU negative certificate | `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` |
+| CNJ negative certificate | `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` |
+| State debt negative certificate | `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | `cnpj` |
+| Simples Nacional status | `SERVICE_SIMPLES_COMPANY` | `cnpj` |
+| Economic group KYC and compliance | `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | `cnpj` |
+| CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | `image1` |

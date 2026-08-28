@@ -1,0 +1,279 @@
+---
+title: Identification documents
+description: Service for extracting data from identification documents via API.
+---
+
+Use `SERVICE_OCR` to extract data from identification documents such as RG, CNH, OAB, RNE, and PASSPORT.
+
+## RG / CIN
+
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RG",
+  "image1": "FRONT_BASE64",
+  "image2": "BACK_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "RG/CIN",
+    "name": "EXTRACTED NAME",
+    "fatherName": "FATHER'S NAME",
+    "motherName": "MOTHER'S NAME",
+    "birthDate": "yyyy-mm-dd",
+    "rg": "000000000", // <- RG document only
+    "rgIssuer": "SSP/UF",
+    "rgIssueDate": "yyyy-mm-dd",
+    "nationality": "BRA", // <- CIN document only
+    "validDate": "yyyy-mm-dd", // <- CIN document only
+    "naturality": "CITY/STATE",
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## CNH
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "CNH_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "EXTRACTED NAME",
+    "fatherName": "FATHER'S NAME",
+    "motherName": "MOTHER'S NAME",
+    "birthDate": "yyyy-mm-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000",
+    "emissionPlace": "ISSUE LOCATION",
+    "rg": "000000000",
+    "rgIssuer": "SSP/UF",
+    "cnhIssueDate": "yyyy-mm-dd",
+    "cnhDocEmissionPlace": "DETRAN/UF",
+    "cnhFirstQualificationDate": "yyyy-mm-dd",
+    "cnhLastEmissionDate": "yyyy-mm-dd",
+    "renach": "UF000000000",
+    "paidActivity": "BOOLEAN",
+    "state": "UF"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## OAB
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "OAB",
+  "image1": "OAB_FRONT_BASE64",
+  "image2": "OAB_BACK_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+      "cpf": "00000000000",
+      "docType": "OAB",
+      "name": "FULL NAME",
+      "fatherName": "FATHER'S NAME",
+      "motherName": "MOTHER'S NAME",
+      "birthDate": "yyyy-mm-dd",
+      "rg": "0000000",
+      "issueDate": "yyyy-mm-dd",
+      "naturality": "CITY-STATE",
+      "registrationNumber": "00000",
+      "isOrganDonor": "NÃO",
+      "via": "00",
+      "observations": "NOTE"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## RNE / CRNM
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RNE",
+  "image1": "RNE_FRONT_BASE64",
+  "image2": "RNE_BACK_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+      "cpf": "00000000000", // <- CRNM document only
+      "docType": "RNE/CRNM",
+      "name": "FULL NAME",
+      "fatherName": "FATHER'S NAME",
+      "motherName": "MOTHER'S NAME",
+      "birthDate": "yyyy-mm-dd",
+      "nationality": "NATIONALITY",
+      "issueDate": "yyyy-mm-dd",
+      "classification": "CLASSIFICATION STATUS",
+      "entryDate": "yyyy-mm-dd", // <- RNE document only
+      "naturality": "PLACE OF BIRTH", // <- RNE document only
+      "sex": "F",
+      "via": "00", // <- RNE document only
+      "rneValidDate": "DATE or STATUS",
+      "rneNumber": "A000000-A", // <- RNE document only
+      "rnmNumber": "A000000-0", // <- CRNM document only
+      "residencePeriod": "STATUS", // <- CRNM document only
+      "issueBody": "ISSUING BODY"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+
+```
+---
+
+## PASSPORT
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "PASSAPORT",
+  "image1": "PASSPORT_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+      "docType": "Passaporte",
+      "name": "FULL NAME",
+      "fatherName": "FATHER'S NAME",
+      "motherName": "MOTHER'S NAME",
+      "birthDate": "yyyy-mm-dd",
+      "nationality": "NATIONALITY",
+      "validDate": "yyyy-mm-dd",
+      "issueDate": "yyyy-mm-dd",
+      "naturality": "PLACE OF BIRTH",
+      "sex": "M",
+      "issueCountry": "BRA",
+      "passaportType": "PASSPORT TYPE",
+      "passaportNumber": "AZ000000",
+      "authority": "AUTHORITY"
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+---
+
+## Automatic identification
+
+This type of OCR identifies the document by inference and extracts the
+corresponding data from the identified document.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "image1": "DOCUMENT_FRONT_BASE64",
+  "image2": "DOCUMENT_BACK_BASE64" // <- Optional
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    // Depends on the identified document type.
+  },
+  "status": {
+      "code": 200,
+      "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+For now, this page covers RG, CNH, OAB, RNE, and PASSPORT. Other documents
+should be validated once OCR support is finalized for each type.
+
+## Expected fields by return
+
+| DocumentType | Returned fields | Notes |
+| --- | --- | --- |
+| RG | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rg`, `rgIssuer`, `rgIssueDate`, `nationality`, `naturality`, `validDate` | If the document sent is a `CIN`, it may include `nationality` and `validDate`, and not include `rg`.<br /> Send front and back of the document |
+| CNH | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `cnhCategory`, `cnhNumber`, `validDate`, `emissionPlace`, `rg`, `rgIssuer`, `cnhIssueDate`, `cnhDocEmissionPlace`, `cnhFirstQualificationDate`, `cnhLastEmissionDate`, `renach`, `paidActivity`, `state` | Single document upload |
+| OAB | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rg`, `issueDate`, `naturality`, `registrationNumber`, `isOrganDonor`, `via`, `observations` | Send front and back of the document |
+| RNE | `cpf`, `docType`, `name`, `birthDate`, `fatherName`, `motherName`, `rneNumber`, `rnmNumber`, `nationality`, `issueDate`, `classification`, `entryDate`, `naturality`, `sex`, `via`, `rneValidDate`, `issueBody`, `residencePeriod` | Fields exclusive to `RNE`: `entryDate`, `naturality`, `via`, `rneNumber`.<br /> Fields exclusive to `CRNM`: `rnmNumber`, `cpf`, `residencePeriod`. <br /> Send front and back of the document |
+| PASSAPORT | `docType`, `name`, `fatherName`, `motherName`, `birthDate`, `nationality`, `validDate`, `issueDate`, `naturality`, `sex`, `issueCountry`, `passaportType`, `passaportNumber`, `authority` | Single document upload |
+| IDENTIFICATION_DOCUMENT | Depends on the document identified internally | The OCR text is analyzed to infer whether the document is a CNH, RG, OAB, RNE, or Passport.<br /> In this case, sending the back of the document, `image2`, is optional. |
+
+Missing fields shouldn't show up as `null` just to fill out the contract.
+The Service API's public standard is to return only useful data.
+
+<Note>
+For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
+</Note>
