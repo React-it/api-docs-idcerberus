@@ -10,33 +10,36 @@ Integre consultas de CPF, CNPJ, OCR, biometria, risco, compliance e onboarding d
 Esta documentação foi organizada para dois momentos: testar rápido em homologação e implementar com segurança em produção.
 
 <CardGroup cols={3}>
-  <Card title="Testar em 5 minutos" href="/guides/postman-do-zero">
-    Configure token, ambiente e primeira chamada no Postman sem escrever código.
+  <Card icon="rocket" title="Testar em 5 minutos" href="/guides/postman-do-zero">
+    Configure token, ambiente e primeira chamada no Postman sem escrever código. Prefere não instalar nada? Use o painel de teste embutido em qualquer página da [API Reference](/api-reference/autorização/gerar-token-de-api).
   </Card>
-  <Card title="Receitas de teste" href="/guides/receitas-prontas">
+  <Card icon="list-check" title="Receitas de teste" href="/guides/receitas-prontas">
     Copie fluxos prontos para CPF, CNPJ, OCR, Face Index, risco PJ e score PF.
   </Card>
-  <Card title="Executar um service" href="/api-reference/como-executar-service">
+  <Card icon="server" title="Executar um service" href="/api-reference/como-executar-service">
     Entenda o contrato do `POST /api/service-api` e copie payloads prontos.
   </Card>
-  <Card title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">
+  <Card icon="image" title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">
     Veja como testar CNH, RG, cartão CNPJ, comprovante de endereço e documentos com base64.
   </Card>
-  <Card title="Catálogo de services" href="/guides/indice-de-services">
+  <Card icon="book" title="Catálogo de services" href="/guides/indice-de-services">
     Pesquise por alias, documento, categoria, campo ou objetivo de negócio.
   </Card>
-  <Card title="Busca rápida" href="/guides/busca-rapida">
+  <Card icon="magnifying-glass" title="Busca rápida" href="/guides/busca-rapida">
     Encontre services por CPF, CNPJ, OCR, Face Index, erro, campo obrigatório ou alias.
   </Card>
-  <Card title="Services por caso de uso" href="/api-reference/services-por-caso-de-uso">
+  <Card icon="compass" title="Services por caso de uso" href="/api-reference/services-por-caso-de-uso">
     Escolha o service certo a partir do que você precisa validar ou consultar.
   </Card>
-  <Card title="Erros comuns" href="/guides/erros-comuns-integracao">
+  <Card icon="triangle-exclamation" title="Erros comuns" href="/guides/erros-comuns-integracao">
     Diagnóstico rápido para token, acesso, payload, imagem, retorno vazio e falha externa.
+  </Card>
+  <Card icon="bolt" title="Webhooks" href="/guides/webhooks">
+    Receba aviso automático quando um onboarding mudar de status, sem polling.
   </Card>
 </CardGroup>
 
-## Caminho mais curto
+## Caminho mais curto (consulta avulsa via API)
 
 <Steps>
   <Step title="Gere um token">
@@ -55,6 +58,13 @@ Esta documentação foi organizada para dois momentos: testar rápido em homolog
     Use `result` como retorno de negócio e `status.message`, `onboardingStatus` e `externalId` para diagnóstico.
   </Step>
 </Steps>
+
+<Info>
+  Vai capturar documento e selfie do usuário num cadastro guiado, em vez de
+  fazer consultas avulsas? Esse é o fluxo de onboarding via SDK ou Cliente
+  Web — veja [Onboarding via SDK](/guides/onboarding-sdk) em vez dos passos
+  acima.
+</Info>
 
 ## Mais usados
 
@@ -75,8 +85,9 @@ Esta documentação foi organizada para dois momentos: testar rápido em homolog
 | Modelo | Quando usar | O que você implementa |
 | --- | --- | --- |
 | API direta | Consultas server-to-server por CPF, CNPJ, imagem ou chave | Token, payload, chamada HTTP e leitura do `result` |
-| SDK | Captura guiada de documento, selfie e dados no aplicativo | Geração do `tokenOnboarding` e consulta do resultado |
+| SDK | Captura guiada de documento, selfie e dados no aplicativo | Geração do `tokenOnboarding` e consulta do resultado (ou recebimento via webhook) |
 | Cliente Web | Fluxos em WebView, navegador ou QR Code | Redirecionamento do usuário e leitura do processamento |
+| Webhook | Complementa qualquer modelo acima: avisa sua aplicação quando o status mudar, seja onboarding ou consulta avulsa | Configurar a URL de recebimento e validar o header `id-cerberus-token` |
 
 ## Endpoints essenciais
 
