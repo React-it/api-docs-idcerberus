@@ -1,0 +1,106 @@
+---
+title: Risk and compliance
+description: Assess exposure, restrictions, certificates, debts, and risk signals for individuals
+---
+
+# Risk and compliance
+
+Use these services to identify risk signals associated with an individual,
+including political exposure, certificates, criminal records, protests,
+debts, lawsuits, warrants, and scores. They support decisions in
+onboarding, credit, fraud prevention, compliance, and ongoing monitoring.
+
+All services in this category are consumed through the endpoint:
+
+```http
+POST /api/service-api
+```
+
+## When to use it
+
+Use this category when you need to:
+
+1. check whether the person is a PEP or has relevant public exposure;
+2. query sanctions and compliance history in a consolidated view;
+3. assess propensity for fraud or default;
+4. query certificates, criminal records, and nothing-on-record checks;
+5. check protests, active debts, and lawsuits;
+6. complement an approval pipeline with risk signals.
+
+## Available services
+
+| Service | `service` code | Main use |
+| --- | --- | --- |
+| Politically exposed person | `SERVICE_PEP` | Indicates whether the CPF belongs to a Politically Exposed Person |
+| Individual KYC and compliance | `SERVICE_PERSON_KYC` | Consolidates PEP, sanctions, and compliance history associated with the CPF |
+| PF media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | Queries public exposure, notoriety, unpopularity, and news related to the CPF |
+| PF active debt | `SERVICE_ACTIVE_DEBT_PF` | Returns totals and a list of active debts associated with the CPF |
+| Fraud risk score | `SERVICE_FRAUD_RISK_SCORE` | Measures fraud propensity based on a risk factor |
+| Financial risk | `SERVICE_FINANCIAL_RISK_SCORE` | Returns a score and a summarized financial risk reading |
+| Default risk score | `SERVICE_DEFAULT_RISK_SCORE` | Returns a score, risk band, and expected probability of default |
+| Credit score | `SERVICE_QUOD_CREDIT_SCORE_PERSON` | Queries an individual's credit score, with level and risk classification |
+| Multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | Queries an individual's multi-data credit score |
+| Restrictive data | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | Queries an individual's restrictive credit data, with an indicator and count of restrictions |
+| Negative flags | `SERVICE_QUOD_CREDIT_RISK_PERSON` | Queries an individual's negative credit flags, with level and risk classification |
+| Propensity for online betting | `SEVICE_ONLINE_BETTING_PROPENSITY` (no R, official spelling) | Assesses signals of propensity for online betting associated with the CPF |
+| Nothing on record in lawsuits | `SERVICE_NOTHING_RECORD_LAWSUITS` | Issues a "nothing on record" certificate in federal regional courts |
+| Federal criminal records | `SERVICE_CRIMINAL_RECORD_FEDERAL` | Queries a federal criminal record certificate |
+| Civil criminal records | `SERVICE_CRIMINAL_RECORD_CIVIL` | Queries a state criminal record certificate |
+| Negative protest certificate | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | Queries protests at notary offices and title details |
+| Legal cases | `SERVICE_JURIDICAL_PROCESSES` | Queries legal and administrative cases associated with the CPF |
+| Public servants | `SERVICE_PUBLIC_SERVANTS` | Queries relationships with public service |
+| Arrest warrant | `SERVICE_ARREST_WARRANT` | Checks for an existing arrest warrant |
+
+## Quick example
+
+Fraud risk score query:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_FRAUD_RISK_SCORE",
+    "cpf": "cpf",
+    "factor": "minRisk or minattrition"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_FRAUD_RISK_SCORE",
+  "cpf": "cpf",
+  "factor": "minRisk or minattrition"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "score": "8.0691",
+    "factor": "MEDIUM RISK",
+    "message": "Success calculating score"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Reading the results
+
+The `status` object indicates the call's technical result. Business
+signals live in the `result` object, such as certificate status, scores,
+risk factors, debt amounts, protests, and indicators found. In critical
+flows, combine more than one query to avoid basing a decision on a single
+signal.
+
+For fields, full examples, and responses, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api) or the
+[Individual technical catalog](/guides/servicos-pessoa-fisica).

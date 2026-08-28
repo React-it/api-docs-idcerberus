@@ -1,0 +1,112 @@
+---
+title: Registration enrichment
+description: Query, validate, and complement individuals' registration data
+---
+
+# Registration enrichment
+
+Use these services to validate CPF data, complement registrations, and
+confirm associations between a person and their contact data. They support
+onboarding, registration updates, fraud prevention, operational analysis,
+and database qualification.
+
+All services in this category are consumed through the endpoint:
+
+```http
+POST /api/service-api
+```
+
+The service run is defined by the `service` field.
+
+## When to use it
+
+Use this category when you need to:
+
+1. validate whether a CPF is in good standing at the Federal Revenue;
+2. enrich an individual's registration data;
+3. confirm data associated with a phone number, address, or email;
+4. query complementary information like MEI, PIS, E-Social, SUS card,
+  addresses, and economic relationships.
+
+## Available services
+
+| Service | `service` code | Main use |
+| --- | --- | --- |
+| PF data enrichment | `SERVICE_PERSON_DATA_ENRICHMENT` | Returns registration data, status, parents' names, birth date, tax region, and name-uniqueness indicators |
+| CPF status at the Federal Revenue | `SERVICE_RFB_PF` | Queries the CPF's registration status, date of birth, date of death, and information source |
+| CPF at the Federal Revenue on-demand | `SERVICE_RFB_PF_ON_DEMAND` | Fetches or updates the CPF's registration data at request time |
+| Individual data modeling | `SERVICE_PERSON_DATA_MODELING` | Consolidates registration data, contacts, relationships, lawsuits, and addresses into a text view |
+| AI prompt for a person | `SERVICE_PERSON_AI_PROMPT` | Generates an analytical reading of the queried person's consolidated data |
+| Email validation | `SERVICE_EMAIL_VALIDATION` | Checks validity, normalization, risk, disposable domain, spam trap, and address characteristics |
+| CPF validation with phone | `SERVICE_CPF_PHONE_VALIDATION` | Checks the association between a CPF and a phone number and returns a match rate |
+| CPF validation with address | `SERVICE_CPF_ADDRESS_VALIDATION` | Checks the association between a CPF, a postal code, and an address number |
+| MEI query | `SERVICE_MEI` | Returns MEI businesses associated with the CPF |
+| PIS data | `SERVICE_PIS_CONSULTATION` | Queries Social Integration Program (PIS) data when available |
+| SUS card | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | Returns National Health Card data found for the CPF, with the card number, capture date, and birth data |
+| E-Social validation | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | Validates registration qualification in E-Social, with CPF, name, birth date, and PIS |
+| Address query | `SERVICE_ADDRESS` | Returns addresses associated with the CPF |
+| Data by phone number | `SERVICE_CONFIRM_PHONE` | Returns a person's data based on a phone number |
+| Phone history | `SERVICE_PHONE_HISTORY` | Returns phone numbers associated with the CPF, line type, and a recency indicator |
+| Email history | `SERVICE_EMAILS_EXTENDED` | Returns emails associated with the CPF along with usage, validation, and priority signals |
+| Related people | `SERVICE_RELATED_PEOPLE` | Returns people related to the CPF and the identified relationship type |
+| Related people's emails | `SERVICE_RELATED_PEOPLE_EMAILS` | Returns emails of people related to the CPF, with the identified relationship |
+| Related people's phones | `SERVICE_RELATED_PEOPLE_PHONES` | Returns phones of people related to the CPF, with the identified relationship |
+| Related people's addresses | `SERVICE_RELATED_PEOPLE_ADDRESSES` | Returns addresses of people related to the CNPJ, with the identified relationship |
+| TSE - Polling place | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | Returns the polling place, electoral status, and current biometrics at the TSE |
+| Economic relationships | `SERVICE_ECONOMIC_RELATIONSHIP` | Returns economic relationships associated with the CPF |
+| Professional history | `SERVICE_PROFESSIONAL_HISTORY` | Queries professional relationships and history |
+| Account holder's professional history | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | Returns professional relationships where the person appears as the account holder or partner |
+| PF financial data and addresses | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | Combines registration data, addresses, and financial information into a single query |
+
+## Quick example
+
+Individual registration enrichment query:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "REGULAR",
+    "name": "PERSON NAME",
+    "birthDate": "1998-07-05",
+    "origin": "RECEITA FEDERAL",
+    "age": 24
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## How to combine services
+
+A simple registration validation usually starts with `SERVICE_RFB_PF`. For
+a fuller view, use `SERVICE_PERSON_DATA_ENRICHMENT`. When the goal is to
+validate contact or delivery, combine the email, phone, and address
+queries.
+
+For fields, full examples, and responses, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api) or the
+[Individual technical catalog](/guides/servicos-pessoa-fisica).

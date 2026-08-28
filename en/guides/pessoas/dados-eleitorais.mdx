@@ -1,0 +1,91 @@
+---
+title: Electoral data
+description: Query candidacies, donations, political relationships, and electoral exposure of individuals
+---
+
+# Electoral data
+
+Use these services to assess an individual's electoral exposure and
+political involvement. The queries cover candidacies, donations made,
+electoral service provisions, political family history, and aggregated
+public participation indicators.
+
+All services in this category are consumed through the endpoint:
+
+```http
+POST /api/service-api
+```
+
+## When to use it
+
+Use this category when you need to:
+
+1. identify whether a person has run for office or been elected;
+2. query electoral donations made;
+3. assess political involvement and public exposure;
+4. identify political family history;
+5. query electoral service provisions and possible economic ties to campaigns.
+
+## Available services
+
+| Service | `service` code | Main use |
+| --- | --- | --- |
+| Candidate electoral data | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | Returns electoral history, candidacies, party, assets, accountability, and campaign data |
+| PF electoral donations | `SERVICE_ELECTORAL_DONORS_CPF` | Queries electoral donations made by a person and aggregated statistics |
+| Political involvement | `SERVICE_POLITICAL_INVOLVEMENT` | Summarizes elections, offices, PEP status, amounts donated, amounts received, and a political involvement score |
+| Political family history | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | Queries family members' political participation and breakdowns by office, party, and region |
+| PF electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CPF` | Queries electoral service provision, parties served, and provision amounts |
+
+## Quick example
+
+Consolidated political involvement query:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_POLITICAL_INVOLVEMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
+  "cpf": "cpf"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "electionsCount": 5,
+    "isCurrentlyInOffice": true,
+    "wasFormerlyElected": true,
+    "isPep": true,
+    "amountDonated": 19804076,
+    "amountReceived": 20599420,
+    "politicalInvolvementScore": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## How to interpret it
+
+These services don't replace an internal compliance policy, but they help
+bring structured evidence about public exposure and electoral
+relationships. Use the returns as inputs for risk classification,
+enhanced due diligence, or monitoring.
+
+For fields, full examples, and responses, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api) or the
+[Individual technical catalog](/guides/servicos-pessoa-fisica).

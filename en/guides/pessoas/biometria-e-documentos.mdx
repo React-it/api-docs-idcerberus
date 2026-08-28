@@ -1,0 +1,126 @@
+---
+title: Biometrics and documents
+description: Validate documents, selfies, facial biometrics, and identity evidence
+---
+
+# Biometrics and documents
+
+Use these services to extract data from documents, compare facial images,
+validate liveness, and support identity decisions in onboarding and KYC
+flows. They help reduce document fraud, automate document reading, and
+verify whether the person presented matches the evidence sent.
+
+All services in this category are consumed through the endpoint:
+
+```http
+POST /api/service-api
+```
+
+<Info>
+  For OCR, start with the [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api)
+  guide. It brings together the payloads for RG, CNH, CNPJ card,
+  emancipation, and proof of address, plus the clean return pattern in
+  `result`.
+</Info>
+
+<CardGroup cols={2}>
+  <Card icon="image" title="OCR" href="/en/guides/service-api/sobre-ocr-service-api">
+    Extract data from RG, CNH, CNPJ card, proofs, and variable documents.
+  </Card>
+  <Card icon="face-smile" title="FaceMatch" href="/api-reference/services-pessoa-fisica#facematch">
+    Compare two facial images and read the similarity percentage.
+  </Card>
+  <Card icon="magnifying-glass" title="Document analysis" href="/api-reference/services-pessoa-fisica#documentoscopia-digital">
+    Process a document, an image, and a selfie in document-analysis flows.
+  </Card>
+</CardGroup>
+
+## When to use it
+
+Use these services when you need to:
+
+1. extract data from documents via OCR;
+2. compare face images with FaceMatch;
+3. query a biometric score;
+4. run digital document analysis and query the result later.
+
+## Available services
+
+| Service | `service` code | Main use |
+| --- | --- | --- |
+| React OCR | `SERVICE_OCR` | Reads RG/CIN, CNH, OAB, RNE/CRNM, passport, or auto-identifies, and returns clean fields inside `result` |
+| CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | Extracts the CNPJ and OCR text from the CNPJ card |
+| Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | Extracts name, address, dates, and amounts when found |
+| Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | Reads variable emancipation documents and returns text, objective fields, and analysis |
+| FaceMatch | `SERVICE_FACE_MATCH` | Compares two images and returns a status and facial similarity percentage |
+| Biometric score | `SERVICE_DATAVALID_CNH` | Compares a CPF and a selfie against official databases and returns similarity |
+| CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | Validates CNH data with document-validation support |
+| Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Processes a document, extracts data, and runs FaceMatch when a selfie is present |
+| Document analysis result | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | Queries the result of a document analysis using the key sent at creation |
+
+## Documents supported in OCR
+
+| Document | Value |
+| --- | --- |
+| CNH | `CNH` |
+| RG | `RG` |
+| New RG | `NEWRG` |
+| RNE | `RNE` |
+| CPF card | `CARTAOCPF` |
+| Passport | `PASSPORT` |
+| CRLV (vehicle registration) | `BR_CAR_LICENCE` |
+| Utility bill | `LIGHTRECEIPT` |
+| Work card (CTPS) | `CTPS` |
+
+## Quick example
+
+Facial comparison between two images:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_FACE_MATCH",
+    "image1": "base64",
+    "image2": "base64"
+  }'
+```
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_FACE_MATCH",
+  "image1": "base64",
+  "image2": "base64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "status": "Face picture match",
+    "similarity": 99.95
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## Best practices
+
+1. Send sharp images, without cropping the document or the face.
+2. Use `image1Url` and `image2Url` when the images are already hosted at a
+  URL the service can access.
+3. For documents with a front and back, send both images when available.
+4. Combine OCR and FaceMatch when the flow requires more robust identity
+  validation.
+
+For fields, full examples, and responses, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api) or the
+[Individual technical catalog](/guides/servicos-pessoa-fisica).
