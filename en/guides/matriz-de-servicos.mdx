@@ -1,0 +1,180 @@
+---
+title: Service matrix
+description: Quick overview of the main services by document type, input, and moment of use
+---
+
+# Service matrix
+
+This matrix helps you quickly find which service to use before opening the
+full payload in the API Reference.
+
+<Info>
+  This page is a shortcut by goal. The full technical catalog, with every
+  field and example for each service, lives in
+  [Individual Services](/guides/servicos-pessoa-fisica) and
+  [Business Services](/guides/servicos-pessoa-juridica). Use them as the
+  reference source when you need a service's full contract.
+</Info>
+
+<Tip>
+  Every item below runs through `POST /api/service-api`, except the
+  authentication, onboarding, and customer endpoints. On the central
+  endpoint, the `service` field picks the product.
+</Tip>
+
+## Individuals
+
+<Info>
+  OCR services are listed in this matrix, but the full payloads are in the
+  [OCR via Service API](/guides/service-api/sobre-ocr-service-api) guide. Use
+  that guide when the call involves `image1`, `image2`, base64, an image
+  URL, or `documentType`.
+</Info>
+
+| Goal | Service | Main input | When to use |
+| --- | --- | --- | --- |
+| Enrich registration data | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` | Get basic identification data |
+| Check CPF at the Federal Revenue | `SERVICE_RFB_PF` | `cpf` | Validate the CPF's registration status |
+| Check CPF at the Federal Revenue on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` | Fetch registration data at query time |
+| Consolidate PF data modeling | `SERVICE_PERSON_DATA_MODELING` | `cpf` | Gather registration signals, contacts, relationships, and risk into consolidated text |
+| Generate an analytical summary of a person | `SERVICE_PERSON_AI_PROMPT` | `cpf` | Support reading consolidated data with a text response |
+| Extract document data via React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Read RG/CIN, CNH, OAB, RNE/CRNM, passport, or auto-identify |
+| Read an emancipation document | `SERVICE_OCR_EMANCIPATION` | `image1` | Extract text and possible data from a variable document |
+| Read a proof of address | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Extract name, address, dates, and values when available |
+| Search for a face in the base | `SERVICE_FACE_INDEX` | `image1` | Search for a face in the indexed base and return CPF/similarity when found |
+| Compare faces | `SERVICE_FACE_MATCH` | `image1`, `image2` | Compare a selfie with a document or another image |
+| Validate a CNH with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Validate CNH data with document-validation support |
+| Check for politically exposed person (PEP) status | `SERVICE_PEP` | `cpf` | Assess political exposure |
+| Query PF KYC/compliance | `SERVICE_PERSON_KYC` | `cpf` | Broader compliance analysis |
+| Query financial risk | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` | Get a score and summarized financial risk reading |
+| Query credit score | `SERVICE_CREDIT_SCORE` | `cpf` | Get a credit score |
+| Query default risk score | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` | Assess default risk |
+| Query demographic data | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` | Get demographic indicators for the CPF |
+| Query activity indicators | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` | Get professional and activity signals |
+| Query PF domains | `SERVICE_DOMAINS_CPF` | `cpf` | Search domains and digital signals associated with the CPF |
+| Query awards and certifications | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` | Get awards/certifications found |
+| Query family social benefits | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | Check family social benefits |
+| Query extended social assistance | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` | Check extended social benefits |
+| Query legal cases | `SERVICE_JURIDICAL_PROCESSES` | `cpf` | Gather legal and administrative cases |
+| Query professional history | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` | Retrieve professional relationships |
+| Query the account holder's professional history | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` | Retrieve relationships where the person appears as the account holder or partner |
+| Query financial data and addresses | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` | Combine registration data, addresses, and financial information |
+| Query propensity for online betting | `SEVICE_ONLINE_BETTING_PROPENSITY` (no R, official spelling) | `cpf` | Assess signals of propensity for online betting |
+| Query phone history | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` | Retrieve phone numbers associated with the CPF |
+| Query email history | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` | Retrieve emails associated with the CPF |
+| Query related people | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` | Map personal relationships associated with the CPF |
+| Validate CPF with phone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` | Check the association between CPF and phone |
+| Validate CPF with address | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` | Check the association between CPF and address |
+| Query related people's emails | `SERVICE_RELATED_PEOPLE_EMAILS` | `cpf` | Map emails associated with people related to the CPF |
+| Query related people's phones | `SERVICE_RELATED_PEOPLE_PHONES` | `cpf` | Map phones associated with people related to the CPF |
+| Query related people's addresses | `SERVICE_RELATED_PEOPLE_ADDRESSES` | `cnpj` | Map addresses associated with people related to the CNPJ |
+| Query credit score | `SERVICE_QUOD_CREDIT_SCORE_PERSON` | `cpf` | Get a credit score with level and risk classification |
+| Query multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | `cpf` | Get a multi-data credit score with level and risk classification |
+| Query restrictive credit data | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | `cpf` | Check for and count credit restrictions |
+| Query negative credit flags | `SERVICE_QUOD_CREDIT_RISK_PERSON` | `cpf` | Check negative flags and credit risk level |
+| Query TSE polling place | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | `cpf`, `birthDate`, `motherName` | Get polling place, electoral status, and biometrics at the TSE |
+| Query civil criminal records | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` | Check criminal occurrences in state databases |
+| Query federal criminal records | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` | Check criminal occurrences in federal databases |
+| Query SUS card | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | `cpf` | Get the National Health Card number and birth data |
+| Query "nothing on record" certificate | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` | Issue a "nothing on record" certificate for a specific court and jurisdiction |
+| Query negative protest certificate | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` | Check for notary protests against the CPF |
+| Query negative protest certificate (short alias) | `SERVICE_PROTEST_PF` | `cpf` | Check for notary protests against the CPF, when the product uses the short alias |
+| Query MEI (individual microentrepreneur) status | `SERVICE_MEI` | `cpf` | Check MEI businesses associated with the CPF |
+| Query candidate electoral data | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` | Gather electoral candidacy history |
+| Query data by phone number | `SERVICE_CONFIRM_PHONE` | `phone` | Get data for a possible holder based on the phone number |
+| Query PIS data | `SERVICE_PIS_CONSULTATION` | `cpf` | Check the PIS/NIS number and status associated with the CPF |
+| Query active debt | `SERVICE_ACTIVE_DEBT_PF` | `cpf` | Check active debts linked to the CPF |
+| Query electoral donations | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` | Gather electoral donations made by the CPF |
+| Query digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` | Process a document, an image, and a selfie in a single flow |
+| Query addresses | `SERVICE_ADDRESS` | `cpf` | Retrieve addresses associated with the CPF |
+| Query political involvement | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` | Consolidate candidacies, offices, donations, and political relationships |
+| Query PF political involvement | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` | Consolidate candidacies, offices, donations, and political relationships |
+| Query media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` | Assess news, notoriety, and media alerts associated with the CPF |
+| Query political family history | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` | Gather the CPF's family political relationships |
+| Query financial information | `SERVICE_FINANCIAL_INFORMATION` | `cpf` | Get presumed income and estimated financial indicators |
+| Query arrest warrant | `SERVICE_ARREST_WARRANT` | `name`, `motherName`, `fatherName`, `birthDate`, `cpf` | Check for an arrest warrant |
+| Query electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` | Gather electoral service provisions linked to the CPF |
+| Query economic relationships | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` | Map economic relationships associated with the CPF |
+| Query digital document analysis result | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` | Get the already-processed document analysis result by key |
+| Query fraud risk score | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` | Assess fraud propensity based on a risk factor |
+| Query public servants | `SERVICE_PUBLIC_SERVANTS` | `cpf` | Check relationships with public service |
+| Query email validation | `SERVICE_EMAIL_VALIDATION` | `email` | Validate an email's format, domain, and risk |
+| Query E-Social validation | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf` | Validate registration qualification in E-Social |
+
+## Businesses
+
+| Goal | Service | Main input | When to use |
+| --- | --- | --- | --- |
+| Enrich registration data | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` | Get the company's data from the Federal Revenue |
+| Check CNPJ status | `SERVICE_RFB_PJ` | `cnpj` | Validate the company's registration status |
+| Check CNPJ at the Federal Revenue on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` | Fetch the company's registration data at query time |
+| Query CNPJ registration data | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` | Get the business registration returned by the base |
+| Read CNPJ card | `SERVICE_OCR_CNPJ_CARD` | `image1` | Extract the CNPJ and OCR text from the CNPJ card |
+| Query SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION` | `cnpj`, `uf` | Check state tax registration and status |
+| Query CNPJ domains | `SERVICE_DOMAINS_CNPJ` | `cnpj` | Search domains and digital signals associated with the company |
+| Query relationships | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` | Understand equity and business relationships |
+| Query business owners at the Federal Revenue | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` | Retrieve business owners' registration data at the Federal Revenue |
+| Query first-level partners | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` | Assess the circle of related people |
+| Query business owners' KYC | `SERVICE_COMPANY_KYC_OWNERS` | `cnpj` | Assess PEP, sanctions, and compliance for business owners |
+| Query PJ legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | Gather the company's legal cases |
+| Query business owners' legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | `cnpj` | Gather cases related to the business owners |
+| Query PJ electoral donations | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` | Assess electoral donations associated with the company |
+| Query business owners' electoral donations | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` | Assess electoral donations associated with the business owners |
+| Query PJ electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` | Assess electoral service provision associated with the CNPJ |
+| Query PJ active debts | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` | Check debts with the government |
+| Query PJ protests | `SERVICE_PROTEST_PJ` | `cnpj` | Issue or check a protest certificate |
+| Query betting compliance | `SERVICE_COMPLIANCE_BET` | `cnpj` | Assess exposure related to betting |
+| Query betting compliance | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` | Assess exposure related to betting |
+| Query PJ credit risk | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | Get score, rating, and expected PJ credit risk |
+| Query PJ credit score | `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | `cnpj` | Get a PJ credit score with level and risk classification |
+| Query Quantum PJ credit score | `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | `cnpj` | Get a Quantum PJ credit score |
+| Identify ultimate beneficial owners | `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | `cnpj` | Calculate accumulated equity stake percentage, including through indirect chains |
+| Query equity stake percentage | `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | `cnpj` | Get each partner's equity stake percentage in the company |
+| Query public projects | `SERVICE_PUBLIC_PROJECTS` | `cnpj` | Check projects with public agency funding |
+| Query civil construction | `SERVICE_CIVIL_CONSTRUCTION` | `cnpj` | Check civil construction works linked to the CNPJ (CNO) |
+| Query PGFN debts | `SERVICE_PGFN_COMPANY` | `cnpj` | Issue a certificate for federal tax debts and active union debt |
+| Query PCD quota | `SERVICE_PCD_COMPANY` | `cnpj` | Check compliance with the legal PCD (disability) and rehabilitated worker quota |
+| Query CGU negative certificate | `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` | Check active sanctions in CEIS, CNEP, and CEPIM |
+| Query CNJ negative certificate | `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` | Check civil convictions for administrative misconduct and ineligibility |
+| Query state debt negative certificate | `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | `cnpj` | Check state debts in any state |
+| Query Simples Nacional status | `SERVICE_SIMPLES_COMPANY` | `cnpj` | Check enrollment status in Simples Nacional and SIMEI |
+| Query economic group KYC | `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | `cnpj` | Get aggregated PEP and sanctions indicators for the economic group |
+| Query DAS MEI at the Federal Revenue | `SERVICE_DAS_MEI` | `cnpj` | Check DAS MEI fiscal status and payments |
+| Query extended addresses | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` | Get the CNPJ's complete address list |
+| Query business owners' media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` | Assess news and media alerts related to business owners |
+| Query PJ multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | `cnpj` | Get a PJ multi-data credit score |
+| Query PJ restrictive credit data | `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | `cnpj` | Check for and count PJ credit restrictions |
+| Query PJ negative credit flags | `SERVICE_QUOD_CREDIT_RISK_COMPANY` | `cnpj` | Check negative flags and PJ credit risk level |
+| Query labor lawsuits | `SERVICE_LABOR_LAWSUITS` | `cnpj` | Check labor lawsuits related to the company |
+| Query union agreements | `SERVICE_SYNDICATE_AGREEMENTS` | `cnpj` | Check agreements between the company and unions |
+| Query online ads | `SERVICE_ONLINE_ADS` | `cnpj` | Identify ads linked to the company in portals and marketplaces |
+| Query Simples Nacional - MEI collection | `SERVICE_PGMEI` | `cnpj` | Check DAS-MEI vouchers and status |
+| Query ratings and reputation | `SERVICE_REPUTATIONS_AND_REVIEWS` | `cnpj` | Consolidate the company's reputation across review platforms |
+| Query merchant category | `SERVICE_MERCHANT_CATEGORY_DATA` | `cnpj` | Get the company's MCC categorization |
+| Query investment fund data | `SERVICE_INVESTMENT_FUND_DATA` | `cnpj` | Get registration and operational data for funds linked to the CNPJ |
+| Query business owners' lawsuit distribution | `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | `cnpj` | Get aggregated statistics for business owners' lawsuits |
+| Query legal case distribution | `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | `cnpj` | Get aggregated statistics for the company's legal cases |
+| Query company evolution | `SERVICE_COMPANY_EVOLUTION` | `cnpj` | Track the evolution of capital, employees, branches, and business owners |
+| Query FGTS | `SERVICE_FGTS` | `cnpj` | Check the FGTS compliance certificate |
+| Query basic data history | `SERVICE_HISTORY_BASIC_DATA` | `cnpj` | Track basic registration changes to the CNPJ over time |
+| Query business owner influence | `SERVICE_OWNERS_INFLUENCE` | `cnpj` | Assess inferred influence from the business ownership structure |
+| Query employee KYC and compliance | `SERVICE_EMPLOYEES_KYC` | `cnpj` | Check PEP and sanctions for the company's employees |
+| Query marketplaces | `SERVICE_MARKETPLACE_DATA` | `cnpj` | Check the company's presence and performance in marketplaces |
+| Query Federal Revenue - QSA | `SERVICE_RF_QSA` | `cnpj` | Get the CNPJ's complete corporate/management ownership structure |
+| Query economic group relationships | `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | `cnpj` | Map entities in the CNPJ's same economic group |
+| Query phone numbers | `SERVICE_PHONES_EXTENDED_COMPANY` | `cnpj` | Get phone numbers associated with the company along with validity indicators |
+
+## Flows outside service-api
+
+| Goal | Endpoint | When to use |
+| --- | --- | --- |
+| Generate JWT token | `POST /api/token-generate` | Before protected calls |
+| Generate onboarding token | `POST /api/token-history-onboarding` | Before starting SDK integration |
+| Query onboarding | `GET /api/onboarding/report/{tokenOnboarding}` | To retrieve the structured JSON result |
+| Download onboarding report | `GET /api/history-onboarding-report/{tokenOnboarding}` | To get the final PDF |
+| Query customer | `GET /api/customer` | To locate a customer by CPF or CNPJ |
+| Change customer status | `POST /api/changeStatusOfCustomer` | To activate or deactivate a customer |
+
+## Next step
+
+After choosing the service, open [POST /api/service-api](/api-reference/serviços--pessoas/executar-serviço-de-dados-risco-ou-compliance) in the API Reference and copy the corresponding example.

@@ -1,0 +1,253 @@
+---
+title: Welcome
+description: Start implementing the idCerberus API endpoints
+---
+
+# Welcome
+
+Start your technical integration with the idCerberus API. This reference
+brings together the endpoints, request examples, response examples,
+authentication, and return structures used to integrate onboarding, KYC,
+biometrics, risk, compliance, and data enrichment products.
+
+Use this section when you're implementing in code. For product context,
+suggested flows, and domain explanations, see the guides.
+
+<Tip>
+  Every endpoint page has a test panel right in the browser, no need for
+  Postman. Fill in your `access_token` and the body fields right there and
+  click send to see the real response.
+</Tip>
+
+<CardGroup cols={2}>
+  <Card icon="key" title="Generate API token" href="/api-reference/autorização/gerar-token-de-api">
+    Open the `POST /api/token-generate` endpoint with request, response, and
+    a cURL example.
+  </Card>
+  <Card icon="mobile-screen" title="Generate TokenOnboarding" href="/api-reference/integração-via-sdk/gerar-tokenonboarding-para-sdk">
+    Create the token used to start an onboarding flow via SDK.
+  </Card>
+  <Card icon="magnifying-glass" title="Query onboarding" href="/api-reference/integração-via-sdk/consultar-resultado-de-onboarding">
+    Query the consolidated result of an onboarding process.
+  </Card>
+  <Card icon="server" title="Run external service" href="/api-reference/serviços--pessoas/executar-serviço-de-dados-risco-ou-compliance">
+    Use `POST /api/service-api` to run data, risk, document, biometric, and
+    compliance queries.
+  </Card>
+  <Card icon="image" title="Run OCR via Service API" href="/guides/service-api/sobre-ocr-service-api">
+    See payloads with images, base64, `documentType`, and clean examples in `result`.
+  </Card>
+  <Card icon="user-magnifying-glass" title="Query customer" href="/api-reference/customers/consultar-cliente">
+    Query customers by the CPF or CNPJ provided in `documentKey`.
+  </Card>
+  <Card icon="user-pen" title="Change customer status" href="/api-reference/customers/alterar-status-de-cliente">
+    Activate or deactivate customer records through the API.
+  </Card>
+</CardGroup>
+
+## Base URL
+
+The API has separate environments for staging and production. The endpoint
+structure is the same; what changes is the base URL.
+
+Use the same method, headers, and payload in both environments. To switch to
+production, just swap the staging URL for the production URL.
+
+| Environment | Base URL |
+| --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` |
+| Production | `https://backoffice.idcerberus.com` |
+
+Example of a full staging URL:
+
+```txt
+POST https://backoffice-hml.idcerberus.com/api/service-api
+```
+
+Example of a full production URL:
+
+```txt
+POST https://backoffice.idcerberus.com/api/service-api
+```
+
+## Authentication
+
+Protected calls require a JWT token in the `Authorization` header.
+
+<Steps>
+  <Step title="Generate the token">
+    Send `client` and `secret` to `POST /api/token-generate`.
+  </Step>
+  <Step title="Store the access_token">
+    The response contains `access_token` and `expires_in`.
+  </Step>
+  <Step title="Send the token in your next calls">
+    Use the format `Authorization: Bearer {jwt_token}`.
+  </Step>
+</Steps>
+
+Staging:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Production:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Response:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+## First request
+
+To run single-shot queries, use `POST /api/service-api`. The `service`
+field defines which product will be processed.
+
+Staging:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Production:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+## How to find the right example
+
+Inside `POST /api/service-api`, examples are separated by product name.
+Choose the example by the `service` code and replace the test values with
+real data.
+
+The endpoint is a single one, but the examples are organized as a technical
+catalog. In practice, each example represents a different product run
+through the same endpoint.
+
+| Need | `service` code |
+| --- | --- |
+| Enrich CPF data | `SERVICE_PERSON_DATA_ENRICHMENT` |
+| Check CPF at the Federal Revenue | `SERVICE_RFB_PF` |
+| Read a document via OCR | `SERVICE_OCR` |
+| Compare two faces | `SERVICE_FACE_MATCH` |
+| Check CNPJ status | `SERVICE_RFB_PJ` |
+| Query a company's relationships | `SERVICE_COMPANY_RELATIONSHIP` |
+| Query PJ active debts | `SERVICE_ACTIVE_DEBT_PJ` |
+| Query PJ betting compliance | `SERVICE_COMPLIANCE_BET_PJ` |
+
+To browse every group, see [Service families](/guides/service-api/familias-de-servicos).
+
+## How to read POST /api/service-api
+
+| Part | How to interpret it |
+| --- | --- |
+| `service` | Code of the product that will run |
+| Additional fields | Parameters required by the chosen product |
+| Request example | Ready-to-copy payload to adapt |
+| Response example | Expected structure of that product's return |
+| Schemas | Generic structures and supporting schemas for the most-used returns |
+
+## Reference conventions
+
+| Convention | How to apply it |
+| --- | --- |
+| `{jwt_token}` | Replace with the token returned by `POST /api/token-generate` |
+| `cpf` and `cnpj` | Send the documents in the format expected by your integration contract |
+| `base64` | Send only the encoded content of the image or document |
+| Optional fields | Send them only when the service requires extra support to increase accuracy |
+| `status.code` | Use to handle technical success or failure of the processing |
+| `result` | Use to map the business data returned by the product |
+
+## Response pattern
+
+Most queries return:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `result` | Business data returned by the query |
+| `status.code` | Technical processing code |
+| `status.message` | Technical processing message |
+| `externalId` | External query identifier, when returned |
+
+<Note>
+  Not every endpoint returns JSON. Downloading the onboarding report returns a PDF file.
+</Note>
+
+## Main endpoints
+
+| Operation | Endpoint |
+| --- | --- |
+| [Generate token](/api-reference/autorização/gerar-token-de-api) | `POST /api/token-generate` |
+| [Generate TokenOnboarding](/api-reference/integração-via-sdk/gerar-tokenonboarding-para-sdk) | `POST /api/token-history-onboarding` |
+| [Query onboarding](/api-reference/integração-via-sdk/consultar-resultado-de-onboarding) | `GET /api/onboarding/report/{tokenOnboarding}` |
+| [Download onboarding PDF](/api-reference/integração-via-sdk/baixar-relatório-pdf-do-onboarding) | `GET /api/history-onboarding-report/{tokenOnboarding}` |
+| [Run external service](/api-reference/serviços--pessoas/executar-serviço-de-dados-risco-ou-compliance) | `POST /api/service-api` |
+| [Query customer](/api-reference/customers/consultar-cliente) | `GET /api/customer?documentKey={documentKey}` |
+| [Change customer status](/api-reference/customers/alterar-status-de-cliente) | `POST /api/changeStatusOfCustomer` |
+
+## Status and errors
+
+Use `status.code` and `status.message` to interpret technical processing.
+When there's a failure, handle the returned message before repeating the
+call.
+
+```json
+{
+  "status": {
+    "code": 400,
+    "message": "Failed to fetch information"
+  }
+}
+```
+
+## Recommended path
+
+1. Generate a token at `POST /api/token-generate`.
+2. Open the endpoint you want to consume.
+3. If you're using `POST /api/service-api`, select the example by the `service` field.
+4. Test it in the page's own panel (with your `access_token` and staging data) before copying it into your code.
+5. Replace the test values with real data.
+6. Validate the expected response and map the `result` fields.
+7. Use the guides when you need to understand the product's business context.
