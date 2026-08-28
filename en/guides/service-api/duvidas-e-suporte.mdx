@@ -1,0 +1,163 @@
+---
+title: Questions and Support
+description: Guidance for possible questions when testing OCR via API, and cases for contacting technical support.
+---
+
+## Common responses
+
+| Scenario | Expected status | How to act |
+| --- | --- | --- |
+| OCR read and extracted data | `APPROVED` | Use the data in `result`. |
+| Document is legible, but the main field didn't come back | `REFUSED` | Check whether the image matches the correct service. |
+| Product without access to the service | `REFUSED` or an access message | Fix the product setup. |
+| Real failure in the provider, image, or storage | `ERROR` | Retry the test and contact technical support if it persists. |
+
+<CardGroup cols={2}>
+  <Card icon="lock" title="No access" href="#product-without-service-access">
+    When the token is valid, but the product doesn't have the service enabled for the API.
+  </Card>
+  <Card icon="image" title="Missing image" href="#missing-image">
+    When `image1`, `image2`, a URL, or `key` wasn't sent as the service expects.
+  </Card>
+  <Card icon="file-circle-question" title="Document not read" href="#document-not-read">
+    When the image arrives, but OCR doesn't extract enough data.
+  </Card>
+  <Card icon="bug" title="Internal error" href="#internal-error">
+    When the failure needs to be investigated by `externalId`, logs, and environment.
+  </Card>
+</CardGroup>
+
+Example of a decline due to a document not being read:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+## Error examples
+
+### Product without service access
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Action: check whether the service is active on the product and enabled for the API.
+
+### Missing image
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Action: check whether `image1`, `image2`, `image1Url`, or `key` were sent
+as required by the chosen service.
+
+### RG with no back
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Action: send `image1` with the front and `image2` with the back.
+
+### Document not read
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Action: check the image quality and whether the document matches the
+service used.
+
+### Internal error
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Falha ao realizar OCR"
+  },
+  "onboardingStatus": "ERROR",
+  "externalId": "..."
+}
+```
+
+Action: save the `externalId`, retry with a valid image, and contact
+technical support if it persists.
+
+## Checklist before handing off to the client
+
+1. Tested in staging with the correct product's token.
+2. Confirmed the service is active and has the API enabled.
+3. Confirmed the base64 isn't truncated (with or without the `data:image` prefix, both work).
+4. Validated a success case.
+5. Validated an expected decline case.
+6. Checked whether the return came back without `fieldsOutput` and without internal metadata.
+7. Checked whether `externalId` came back for tracing.
+8. Checked whether the returned data came back inside `result`.
+
+## Summary for support and CS
+
+When a client says OCR didn't work, check in this order:
+
+1. Whether the product and service are enabled for the API.
+2. The correct alias in the `service` field.
+3. The correct document type for the chosen service.
+4. Whether the image is legible and complete.
+5. The `status.message` returned.
+6. `externalId` to trace the execution.
+
+This avoids treating a configuration problem as an OCR problem, and also
+avoids swapping the payload when the real error is in the product.
+
+## Who to escalate to
+
+| Situation | Who to contact | What to send |
+| --- | --- | --- |
+| No access to the service | Product/configuration | Product, client, alias sent, and a screenshot of the configuration. |
+| OCR returns empty with a good image | Technical team | Payload without base64, the image used, and `externalId`. |
+| 500 error | Backend/logs | `externalId`, environment, approximate time, and service used. |
+| Wrong field extracted | Technical/OCR team | Image, return received, expected field, and `externalId`. |
+| Not sure which service to use | Product/CS | Document type and the query's goal. |
+| Mismatch between staging and production | Product + technical | Both environments' products, configured alias, and each environment's return. |

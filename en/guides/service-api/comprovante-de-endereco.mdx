@@ -1,0 +1,56 @@
+---
+title: Proof of address
+description: Service for extracting data from proof-of-address documents via API.
+---
+
+## Proof of address OCR
+
+Use `SERVICE_OCR_PROOF_OF_ADDRESS` for proof-of-address documents.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "PROOF_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "genericOcr": "extracted text",
+    "fullName": "EXTRACTED NAME",
+    "fullAddress": "EXTRACTED ADDRESS",
+    "docType": "Conta de consumo",
+    "issueDate": "2026-01-01",
+    "dueDate": "2026-01-10",
+    "invoiceAmount": "R$ 100,00",
+    "barcode": "00000000000000000000000000000000000000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Comprovante de endereço obtido com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Not every proof will have every field. The API should return the extracted
+fields without filling in fake data.
+
+## Expected fields by return
+
+| Service | Most common fields in `result` |
+| --- | --- |
+| `SERVICE_OCR_PROOF_OF_ADDRESS` | `genericOcr`, `fullName`, `fullAddress`, `docType`, `issueDate`, `dueDate`, `invoiceAmount`, `barcode` |
+
+Missing fields shouldn't show up as `null` just to fill out the contract.
+The Service API's public standard is to return only useful data.
+
+<Note>
+For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
+</Note>

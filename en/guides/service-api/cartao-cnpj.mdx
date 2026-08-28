@@ -1,0 +1,52 @@
+---
+title: CNPJ card
+description: Service for extracting data from the CNPJ card via API.
+---
+
+## CNPJ card OCR
+
+Use `SERVICE_OCR_CNPJ_CARD` for a CNPJ card image.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "CNPJ_CARD_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "text extracted from the CNPJ card"
+  },
+  "status": {
+    "code": 200,
+    "message": "Cartão CNPJ processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+If the CNPJ isn't found or is invalid, the expected outcome is a decline
+with a clear message. If the image, storage, or provider read fails, it
+can return an error.
+
+## Expected fields by return
+
+| Service | Most common fields in `result` |
+| --- | --- |
+| `SERVICE_OCR_CNPJ_CARD` | `cnpj`, `docType`, `genericOcr` |
+
+Missing fields shouldn't show up as `null` just to fill out the contract.
+The Service API's public standard is to return only useful data.
+
+<Note>
+For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
+</Note>

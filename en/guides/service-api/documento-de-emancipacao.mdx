@@ -1,0 +1,65 @@
+---
+title: Emancipation document
+description: Service for extracting data from emancipation documents via API.
+---
+
+## Emancipation OCR
+
+Use `SERVICE_OCR_EMANCIPATION` for emancipation documents.
+
+This document has no single layout. It can be a declaration, a deed, a
+certificate, or a notary document. Because of this, the service should
+prioritize OCR text and extract what it can, without declining just
+because a CPF, RG, or code didn't appear.
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "DOCUMENT_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "text extracted from the document",
+    "extractedFields": {
+      "cpf": "00000000000",
+      "rg": "000000000",
+      "authenticationCode": "ABC123456",
+      "dates": ["2026-01-01"]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "summary": "Document summary",
+      "confidence": "MEDIUM",
+      "evidence": ["Text mentions emancipation"],
+      "warnings": ["Authentication code not found"]
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Documento de emancipação processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+## Expected fields by return
+
+| Service | Most common fields in `result` |
+| --- | --- |
+| `SERVICE_OCR_EMANCIPATION` | `docType`, `genericOcr`, `extractedFields`, `analysis` |
+
+Missing fields shouldn't show up as `null` just to fill out the contract.
+The Service API's public standard is to return only useful data.
+
+<Note>
+For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
+</Note>
