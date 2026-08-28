@@ -69,6 +69,13 @@ curl.exe --location "$baseUrl/api/service-api" `
 
 ## Node.js
 
+<Info>
+  Os exemplos usam `fetch` global, disponível a partir do Node 18. Em versões
+  anteriores, instale um polyfill como `node-fetch`. O trecho final roda
+  dentro de uma função `async` imediatamente invocada para funcionar tanto em
+  projetos CommonJS quanto ESM sem configuração extra.
+</Info>
+
 ### Node.js com fetch
 
 ```js
@@ -113,45 +120,51 @@ async function executarServico(token) {
   return body.result;
 }
 
-const { access_token } = await gerarToken();
-const result = await executarServico(access_token);
-console.log(result);
+(async () => {
+  const { access_token } = await gerarToken();
+  const result = await executarServico(access_token);
+  console.log(result);
+})();
 ```
 
 ### Node.js com Axios
 
+Instale antes com `npm install axios`.
+
 ```js
-import axios from "axios";
+const axios = require("axios");
 
 const baseUrl = "https://backoffice-hml.idcerberus.com";
 
-const tokenResponse = await axios.post(`${baseUrl}/api/token-generate`, {
-  client: "{client}",
-  secret: "{secret}",
-});
+(async () => {
+  const tokenResponse = await axios.post(`${baseUrl}/api/token-generate`, {
+    client: "{client}",
+    secret: "{secret}",
+  });
 
-const token = tokenResponse.data.access_token;
+  const token = tokenResponse.data.access_token;
 
-const serviceResponse = await axios.post(
-  `${baseUrl}/api/service-api`,
-  {
-    service: "SERVICE_PERSON_DATA_ENRICHMENT",
-    cpf: "cpf",
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+  const serviceResponse = await axios.post(
+    `${baseUrl}/api/service-api`,
+    {
+      service: "SERVICE_PERSON_DATA_ENRICHMENT",
+      cpf: "cpf",
     },
-    timeout: 60000,
-  },
-);
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 60000,
+    },
+  );
 
-if (serviceResponse.data.status?.code !== 200) {
-  throw new Error(serviceResponse.data.status?.message || "Falha no processamento");
-}
+  if (serviceResponse.data.status?.code !== 200) {
+    throw new Error(serviceResponse.data.status?.message || "Falha no processamento");
+  }
 
-console.log(serviceResponse.data.result);
+  console.log(serviceResponse.data.result);
+})();
 ```
 
 ## Python
@@ -193,6 +206,7 @@ print(body["result"])
 ## C#
 
 ```csharp
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -235,7 +249,9 @@ Console.WriteLine(serviceBody);
 
 ## Java
 
-Exemplo usando `HttpClient`, disponível nas versões recentes do Java.
+Exemplo usando `HttpClient` (Java 11+) e text blocks (`"""`) para o JSON, que
+exigem Java 15+. Em Java 11-14, troque os text blocks por strings normais
+concatenadas.
 
 ```java
 import java.net.URI;
