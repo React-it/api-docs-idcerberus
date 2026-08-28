@@ -1,0 +1,85 @@
+---
+title: Backoffice
+description: idCerberus's visual interface, dashboard, onboarding history, and manual queries without writing code
+---
+
+# Backoffice
+
+## What it is, why it exists, what it's for
+
+1. **What it is:** idCerberus's web interface, accessed with a login
+  (username and password), separate from the API integration. It's the same
+  domain (`backoffice-hml.idcerberus.com` / `backoffice.idcerberus.com`)
+  that serves the `/api/...` endpoints. See why in
+  [Overview](/en/guides/visao-geral).
+2. **Why it exists:** not every task needs code. Tracking registration
+  volume, looking at a specific onboarding result, or testing a one-off
+  query shouldn't require opening Postman.
+3. **What it's for:** it's the place to view and explore, not to integrate.
+  Your application keeps consuming data through the API, SDK, or webhook;
+  the backoffice is the panel your team uses on top of that.
+
+## What you'll find there
+
+| Area | What it's for |
+| --- | --- |
+| Dashboard | Registration volume, onboarding summary, geographic and age distribution of processed customers |
+| Onboardings | List and detail of each processed registration, the same content that `GET /api/onboarding/report/{tokenOnboarding}` returns, but on screen. The detail view also shows that onboarding's webhook attempt history and lets you force a manual resend |
+| Quick queries | Run a one-off query (CPF, CNPJ, document with OCR, name, phone, face) directly in the interface, without building a payload or calling the API |
+
+<Tip>
+  Use the backoffice's quick queries to quickly confirm that a service does
+  what you expect, before replicating the same call in code via
+  `POST /api/service-api`. It's the fastest way to "see the result" without
+  writing anything.
+</Tip>
+
+## Backoffice or API: which to use
+
+| If you need to... | Use |
+| --- | --- |
+| Automate queries within your application's flow | API ([Quickstart](/en/guides/quickstart)) |
+| Guide a complete registration inside your app | SDK or Web Client ([Onboarding via SDK](/en/guides/onboarding-sdk)) |
+| Get notified when a registration changes status | Webhook ([Webhooks](/en/guides/webhooks)) |
+| Look at a specific result quickly, without coding | Backoffice, Onboardings screen |
+| Test a query before integrating | Backoffice, Quick queries |
+| Track volume and metrics | Backoffice, Dashboard |
+
+## Common questions
+
+<AccordionGroup>
+  <Accordion title="Is everything I do in the backoffice also available via the API?">
+    The dashboard and onboarding history reflect the same data that
+    `GET /api/onboarding/report/{tokenOnboarding}` exposes. Quick queries use
+    the same `POST /api/service-api` services underneath; it's the same
+    query, just triggered from the screen instead of code.
+  </Accordion>
+  <Accordion title="Is my backoffice credential the same as the API's client/secret?">
+    No. The backoffice login is a username and password, for a person.
+    `client` and `secret` authenticate your application. They're two
+    different authentication mechanisms for the same system. See
+    [Authentication](/en/guides/autenticacao) for the API side.
+  </Accordion>
+  <Accordion title="Can I configure a webhook from the backoffice?">
+    Webhook setup (URL and key) is currently done by React IT on request,
+    it's not yet a self-service screen. See
+    [Webhooks](/en/guides/webhooks) for how to request activation.
+  </Accordion>
+</AccordionGroup>
+
+## Next step
+
+<CardGroup cols={2}>
+  <Card icon="rocket" title="Quickstart" href="/en/guides/quickstart">
+    Make your first API call to compare against what you saw on screen.
+  </Card>
+  <Card icon="bolt" title="Webhooks" href="/en/guides/webhooks">
+    Set up an automatic notification instead of watching the screen manually.
+  </Card>
+  <Card icon="key" title="Authentication" href="/en/guides/autenticacao">
+    Understand the difference between your personal login and the API's `client`/`secret`.
+  </Card>
+  <Card icon="compass" title="Overview" href="/en/guides/visao-geral">
+    Go back to the big picture: service, onboarding, product, and backoffice.
+  </Card>
+</CardGroup>

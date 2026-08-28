@@ -1,0 +1,230 @@
+---
+title: Authentication
+description: Generate JWT tokens and authenticate protected calls to the idCerberus API
+---
+
+# Authentication
+
+Use this flow to generate the JWT token used in protected calls to the
+idCerberus API. Authentication is the first step before consuming onboarding,
+individual services, business services, or customer operations.
+
+Access credentials consist of `client` and `secret`, provided in advance by
+React IT.
+
+If you don't have these credentials yet, contact us by email at
+[contact@react-it.com](mailto:contact@react-it.com). Our team can guide you
+through creating an account and getting the access you need for API
+integration.
+
+## What it is, why it exists, what it's for
+
+1. **What it is:** the step that turns `client` + `secret` into a short-lived
+  `access_token` (JWT) that your application uses in every protected call.
+2. **Why it exists:** `client` and `secret` are long-lived credentials. If
+  they leak, the damage is permanent until they're rotated. The
+  `access_token` expires within minutes, so even if it leaks, the risk window
+  is small. That's why day-to-day calls use the token, not `client`/`secret`
+  directly.
+3. **What it's for:** it defines a piece of your application's
+  infrastructure, something in your back end that generates and renews the
+  token automatically, so the rest of your code never has to worry about it.
+
+<AccordionGroup>
+  <Accordion title="Do I need to generate a new token for every call?">
+    No. Generate a token and reuse it until it expires (`expires_in`).
+    Generating a new one for every call works, but it wastes an extra call
+    per request.
+  </Accordion>
+  <Accordion title="What happens if I call the API with an expired token?">
+    The call returns an authentication error (401). Generate a new token and
+    repeat the original call. See [Status and errors](/guides/status-e-erros)
+    for the full handling.
+  </Accordion>
+  <Accordion title="Are client and secret the same in staging and production?">
+    No. They're different credentials per environment. A staging
+    `client`/`secret` doesn't generate a valid token to call production, and
+    vice versa.
+  </Accordion>
+</AccordionGroup>
+
+## When to use it
+
+Use this page when you need to:
+
+1. generate an access token for protected calls;
+2. understand how to send the `Authorization` header;
+3. identify the token's expiration time;
+4. set up authentication before testing the API Reference endpoints.
+
+## Recommended flow
+
+1. Receive the `client` and `secret` credentials.
+2. Generate a token at `POST /api/token-generate`.
+3. Store the `access_token` value in your application's back end.
+4. Send the token in the `Authorization` header.
+5. Generate a new token when the previous one expires.
+
+## Environments
+
+The authentication endpoint exists in staging and production. The payload is
+the same; just change the base URL for the environment.
+
+In practice, the production `curl` is the same as the staging one; the only
+difference is the URL in `--location`.
+
+| Environment | Endpoint |
+| --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+| Production | `https://backoffice.idcerberus.com/api/token-generate` |
+
+## Generate a token
+
+Generate a token to access the API's services by sending `client` and
+`secret`.
+
+```http
+POST /api/token-generate
+```
+
+```json
+{
+  "client": "{client}",
+  "secret": "{secret}"
+}
+```
+
+The response contains the access token and its expiration time.
+
+| Field | Description |
+| --- | --- |
+| `access_token` | JWT token |
+| `expires_in` | Token expiration time |
+
+## How to test it
+
+You can generate the token through Postman, PowerShell/CMD on Windows, or the
+macOS/Linux terminal.
+
+### In Postman
+
+1. Create a `POST` request.
+2. Use the URL `https://backoffice-hml.idcerberus.com/api/token-generate`.
+3. In the **Headers** tab, add `Content-Type` with value `application/json`.
+4. In the **Body** tab, select **raw** and then **JSON**.
+5. Paste the body with `client` and `secret`.
+6. Click **Send**.
+7. Copy the returned `access_token` field.
+
+### On Windows
+
+In PowerShell, use `curl.exe` to avoid conflicts with built-in commands:
+
+```powershell
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" `
+  --header "Content-Type: application/json" `
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+In CMD, use `^` to break lines:
+
+```bat
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
+  --header "Content-Type: application/json" ^
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+### On macOS or Linux
+
+Use the `curl` command in the terminal:
+
+Example with `curl` in staging:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Example with `curl` in production:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+## Using the token
+
+Send the returned token in the `Authorization` header of your next protected
+requests.
+
+```http
+Authorization: Bearer {access_token}
+```
+
+Example in a service call in staging:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Example in a service call in production:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+## Best practices
+
+1. Keep `client` and `secret` only in your application's back end.
+2. Don't expose credentials in mobile apps, front ends, or repositories.
+3. Renew the token when `expires_in` indicates it's about to expire.
+4. Handle invalid authentication responses by regenerating the token before repeating the call.
+
+For technical endpoint details, see the
+[API Reference](/api-reference/autorização/gerar-token-de-api).
+
+## Next step
+
+<CardGroup cols={2}>
+  <Card icon="rocket" title="Quickstart" href="/en/guides/quickstart">
+    Use your freshly generated token to make your first full call.
+  </Card>
+  <Card icon="list-check" title="Choose the right service" href="/en/guides/escolha-o-servico-certo">
+    Find the right `service` code to use after the token.
+  </Card>
+  <Card icon="triangle-exclamation" title="Status and errors" href="/guides/status-e-erros">
+    See how to handle expired tokens and other authentication errors.
+  </Card>
+  <Card icon="display" title="Backoffice" href="/en/guides/backoffice">
+    Different from `client`/`secret`: see how the personal login works.
+  </Card>
+</CardGroup>

@@ -1,0 +1,203 @@
+---
+title: Choose the right service
+description: Find the idCerberus services best suited for each use case
+---
+
+# Choose the right service
+
+Use this page to go from a business need to the `service` codes you should
+use in `POST /api/service-api`.
+
+Useful search terms: CPF Federal Revenue, RFB PF, CNPJ Federal Revenue, RFB
+PJ, KYC PF, KYC PJ, OCR, document extraction, FaceMatch, facial comparison,
+Liveness, proof of life, fraud score, financial risk, electoral data, active
+debts, protests, business owners, and compliance.
+
+<Info>
+  This page is a decision guide by need, not the complete list of services.
+  The full technical catalog lives in
+  [Individual Services](/guides/servicos-pessoa-fisica) and
+  [Business Services](/guides/servicos-pessoa-juridica).
+</Info>
+
+## Before the tables, what's your role?
+
+<Tabs>
+<Tab title="I'm in product or business">
+You don't need to read `SERVICE_SOMETHING` codes to decide anything. Skip
+straight to the table for your need (validate identity, analyze risk,
+validate contact, analyze a company) and read the **Need** column. It
+describes what the service does in plain language. The code in the column
+next to it is just what your technical team will copy afterward.
+
+If you'd rather have a conversation than a table, start with the
+[Overview](/en/guides/visao-geral), which explains what a service and an
+onboarding are without technical jargon.
+</Tab>
+<Tab title="I'm a dev integrating the API">
+Follow the normal process: find the service in the table, copy the exact
+code, and go to the [API Reference](/api-reference/autorização/gerar-token-de-api)
+to get the full contract (payload, response, errors). If you haven't made
+your first call yet, start with the [Quickstart](/en/guides/quickstart)
+before choosing the final service.
+</Tab>
+<Tab title="I'm on mobile or using the SDK">
+This page is about `POST /api/service-api` (single-shot queries). If your
+case is capturing a user's document and selfie in an app, the flow is
+different. See [Onboarding via SDK](/en/guides/onboarding-sdk). You can
+still come back here later to complement onboarding with extra single-shot
+queries.
+</Tab>
+<Tab title="I'm QA or working in staging">
+The tables below apply to staging and production with no code difference.
+After choosing the service, see [Environments](/guides/ambientes) to confirm
+the URL and test credentials, and [Status and errors](/guides/status-e-erros)
+to know how to interpret responses before reporting a bug.
+</Tab>
+</Tabs>
+
+## How to decide
+
+1. Identify whether the query is for an individual, a business, onboarding, or a customer.
+2. Confirm the main document: `cpf`, `cnpj`, `phone`, images, or `tokenOnboarding`.
+3. Choose the service by business need, not by its technical name.
+4. Copy the exact name from the [Service index](/guides/indice-de-services).
+5. Build the request in staging.
+6. Read `status.code`, `status.message`, and `result` before releasing to production.
+
+<Tip>
+If the person integrating doesn't know the API, start with the CPF, CNPJ,
+FaceMatch, or document analysis examples in
+[Examples by environment](/guides/exemplos-por-ambiente).
+</Tip>
+
+## Shortcuts by need
+
+| If you want to... | Use this service |
+| --- | --- |
+| Query a CPF's registration data | `SERVICE_PERSON_DATA_ENRICHMENT` |
+| Check a CPF at the Federal Revenue | `SERVICE_RFB_PF` |
+| Check a CPF at the Federal Revenue in on-demand mode | `SERVICE_RFB_PF_ON_DEMAND` |
+| Consolidate a person's data modeling | `SERVICE_PERSON_DATA_MODELING` |
+| Generate an AI-powered analytical summary of a person | `SERVICE_PERSON_AI_PROMPT` |
+| Extract data from a document | `SERVICE_OCR` |
+| Compare a selfie and a document | `SERVICE_FACE_MATCH` |
+| Validate a driver's license (CNH) with DataValid | `SERVICE_DATAVALID_CNH` |
+| Query a biometric score | `SERVICE_DATAVALID_CNH` |
+| Check for politically exposed person (PEP) status | `SERVICE_PEP` |
+| Query an individual's KYC/compliance | `SERVICE_PERSON_KYC` |
+| Query financial risk | `SERVICE_FINANCIAL_RISK_SCORE` |
+| Query an individual's legal cases | `SERVICE_JURIDICAL_PROCESSES` |
+| Query a person's financial data and addresses | `SERVICE_PF_FINANCIAL_AND_ADDRESS` |
+| Query the account holder's professional history | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` |
+| Assess propensity for online betting | `SEVICE_ONLINE_BETTING_PROPENSITY` (no R, official spelling) |
+| Validate a CPF with a phone number | `SERVICE_CPF_PHONE_VALIDATION` |
+| Validate a CPF with an address | `SERVICE_CPF_ADDRESS_VALIDATION` |
+| Query phone history | `SERVICE_PHONE_HISTORY` |
+| Query email history | `SERVICE_EMAILS_EXTENDED` |
+| Query related people | `SERVICE_RELATED_PEOPLE` |
+| Query a CNPJ's registration data | `SERVICE_CORPORATE_DATA_ENRICHMENT` |
+| Check a CNPJ at the Federal Revenue | `SERVICE_RFB_PJ` |
+| Check a CNPJ at the Federal Revenue in on-demand mode | `SERVICE_RFB_PJ_ON_DEMAND` |
+| Query a company's business owners or relationships | `SERVICE_COMPANY_RELATIONSHIP`, `SERVICE_FIRST_LEVEL_PARTNER` |
+| Query a company's debts | `SERVICE_ACTIVE_DEBT_PJ` |
+| Query business owners' KYC | `SERVICE_COMPANY_KYC_OWNERS` |
+| Query a company's protests | `SERVICE_PROTEST_PJ` |
+
+## Validate a person's identity
+
+| Need | Recommended services | When to use |
+| --- | --- | --- |
+| Confirm CPF registration data | `SERVICE_PERSON_DATA_ENRICHMENT`, `SERVICE_RFB_PF` | Validate name, date of birth, registration status, and Federal Revenue source |
+| Update CPF data with an on-demand query | `SERVICE_RFB_PF_ON_DEMAND` | Fetch registration data at request time |
+| Extract data from a document | `SERVICE_OCR` | Read RG/CIN, CNH, OAB, RNE/CRNM, passport, and auto-identification |
+| Compare a selfie and a document | `SERVICE_FACE_MATCH` | Validate whether two images belong to the same person |
+| Query government biometrics | `SERVICE_DATAVALID_CNH` | Get a similarity score against government databases |
+| Validate a CNH with DataValid | `SERVICE_DATAVALID_CNH` | Support document validation with a document-validation integration |
+| Run a full document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Extract data and match a document with a selfie in a single flow |
+
+## Build a complete onboarding
+
+| Step | Services or endpoints |
+| --- | --- |
+| Start a journey via SDK | `POST /api/token-history-onboarding` |
+| Capture document and selfie | SDK or Web Client |
+| Query the result | `GET /api/onboarding/report/{tokenOnboarding}` |
+| Download evidence | `GET /api/history-onboarding-report/{tokenOnboarding}` |
+| Complement with single-shot queries | `SERVICE_RFB_PF`, `SERVICE_PEP`, `SERVICE_FACE_MATCH`, `SERVICE_DATAVALID_CNH` |
+
+## Analyze an individual's risk and compliance
+
+| Need | Recommended services |
+| --- | --- |
+| Politically exposed person | `SERVICE_PEP` |
+| Consolidated KYC/compliance | `SERVICE_PERSON_KYC` |
+| Fraud score | `SERVICE_FRAUD_RISK_SCORE` |
+| Financial risk | `SERVICE_FINANCIAL_RISK_SCORE` |
+| Default risk score | `SERVICE_DEFAULT_RISK_SCORE` |
+| Propensity for online betting | `SEVICE_ONLINE_BETTING_PROPENSITY` (no R, official spelling) |
+| Government debts | `SERVICE_ACTIVE_DEBT_PF` |
+| Legal cases and certificates | `SERVICE_JURIDICAL_PROCESSES`, `SERVICE_NOTHING_RECORD_LAWSUITS`, `SERVICE_CRIMINAL_RECORD_FEDERAL`, `SERVICE_CRIMINAL_RECORD_CIVIL` |
+| Protests | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+| Arrest warrant | `SERVICE_ARREST_WARRANT` |
+| Credit bureau score or data | `SERVICE_QUOD_CREDIT_SCORE_PERSON`, `SERVICE_BOAVISTA_ONE_SCORE_PERSON`, `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON`, `SERVICE_QUOD_CREDIT_RISK_PERSON` |
+
+## Validate contact and residence
+
+| Need | Recommended services |
+| --- | --- |
+| Validate email | `SERVICE_EMAIL_VALIDATION` |
+| Confirm CPF with a phone number | `SERVICE_CPF_PHONE_VALIDATION` |
+| Find a person by phone number | `SERVICE_CONFIRM_PHONE` |
+| Confirm CPF with an address | `SERVICE_CPF_ADDRESS_VALIDATION` |
+| Query addresses | `SERVICE_ADDRESS` |
+| Emails of related people | `SERVICE_RELATED_PEOPLE_EMAILS` |
+| Phones of related people | `SERVICE_RELATED_PEOPLE_PHONES` |
+| Addresses of related people | `SERVICE_RELATED_PEOPLE_ADDRESSES` |
+
+## Analyze political and electoral history
+
+| Need | Recommended services |
+| --- | --- |
+| Candidacies and elections | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` |
+| Individual electoral donations | `SERVICE_ELECTORAL_DONORS_CPF` |
+| Consolidated political involvement | `SERVICE_POLITICAL_INVOLVEMENT` |
+| Political family history | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` |
+| Individual electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CPF` |
+| Polling place at the TSE | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` |
+
+## Analyze a company
+
+| Need | Recommended services |
+| --- | --- |
+| CNPJ registration data | `SERVICE_CORPORATE_DATA_ENRICHMENT`, `SERVICE_RFB_PJ` |
+| CNPJ registration data on-demand | `SERVICE_RFB_PJ_ON_DEMAND` |
+| State tax registration and operation | `SERVICE_SINTEGRA_CONSULTATION` |
+| Business owners and relationships | `SERVICE_COMPANY_RELATIONSHIP`, `SERVICE_COMPANY_RFB_OWNERS`, `SERVICE_FIRST_LEVEL_PARTNER` |
+| Business owners' legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` |
+| Business owners' KYC and compliance | `SERVICE_COMPANY_KYC_OWNERS` |
+| Debts, protests, and regularity | `SERVICE_ACTIVE_DEBT_PJ`, `SERVICE_PROTEST_PJ`, `SERVICE_DAS_MEI` |
+| Ultimate beneficial owners and equity stakes | `SERVICE_ULTIMATE_BENEFICIAL_OWNERS`, `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` |
+| Business credit score | `SERVICE_QUOD_CREDIT_SCORE_COMPANY`, `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` |
+| Federal and state negative certificates | `SERVICE_PGFN_COMPANY`, `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY`, `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY`, `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` |
+| PCD (disability) quota and Simples Nacional | `SERVICE_PCD_COMPANY`, `SERVICE_SIMPLES_COMPANY` |
+| Economic group KYC | `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` |
+| Public projects and civil construction | `SERVICE_PUBLIC_PROJECTS`, `SERVICE_CIVIL_CONSTRUCTION` |
+| Company electoral donations | `SERVICE_ELECTORAL_DONORS_CNPJ` |
+| Business owners' electoral donations | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` |
+| Business electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` |
+| Betting compliance | `SERVICE_COMPLIANCE_BET_PJ` |
+
+## Common combinations
+
+| Flow | Recommended combination |
+| --- | --- |
+| Simple CPF registration | `SERVICE_RFB_PF` + `SERVICE_PERSON_DATA_ENRICHMENT` |
+| Onboarding with a document | `SERVICE_OCR` + `SERVICE_FACE_MATCH` |
+| Individual KYC | `SERVICE_PEP` + certificates + debts + risk score |
+| Business registration | `SERVICE_RFB_PJ` + `SERVICE_CORPORATE_DATA_ENRICHMENT` + `SERVICE_SINTEGRA_CONSULTATION` |
+| Business KYC | PJ data + business owners + owners' KYC + debts + protests |
+
+## Next step
+
+After choosing the service, open the [API Reference](/api-reference/serviços--pessoas/executar-serviço-de-dados-risco-ou-compliance) or use the ready-made files in [Examples by environment](/guides/exemplos-por-ambiente).
