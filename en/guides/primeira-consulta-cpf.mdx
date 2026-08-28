@@ -1,0 +1,125 @@
+---
+title: First CPF query
+description: Run a simple individual query from start to finish
+---
+
+# First CPF query
+
+This guide shows, step by step, how to run a first individual query using
+the `POST /api/service-api` endpoint.
+
+The example uses the `SERVICE_PERSON_DATA_ENRICHMENT` service, which
+queries a CPF's registration data.
+
+## What you'll do
+
+1. Choose the environment.
+2. Generate a token.
+3. Copy the `access_token`.
+4. Run a CPF query.
+5. Read `result` and `status`.
+
+## 1. Choose the environment
+
+Use staging for testing:
+
+```txt
+https://backoffice-hml.idcerberus.com
+```
+
+Use production only once the integration is validated:
+
+```txt
+https://backoffice.idcerberus.com
+```
+
+## 2. Generate the token
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Expected response:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+Copy the `access_token` value.
+
+## 3. Run the query
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Replace:
+
+| Value | What to put |
+| --- | --- |
+| `{jwt_token}` | Token generated in the previous step |
+| `cpf` | CPF to query |
+
+## 4. Understand the body
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `service` | Defines the product that will run |
+| `cpf` | The queried individual's document |
+
+## 5. Read the response
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "REGULAR",
+    "name": "PERSON NAME"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+| Field | How to use it |
+| --- | --- |
+| `result` | Data returned by the query |
+| `status.code` | Technical processing code |
+| `status.message` | Technical processing message |
+
+## 6. Common next services
+
+| Need | Service |
+| --- | --- |
+| Check CPF status at the Federal Revenue | `SERVICE_RFB_PF` |
+| Validate CPF with phone | `SERVICE_CPF_PHONE_VALIDATION` |
+| Validate CPF with address | `SERVICE_CPF_ADDRESS_VALIDATION` |
+| Check for politically exposed person (PEP) status | `SERVICE_PEP` |
+| Run document OCR | `SERVICE_OCR` |
+| Compare faces | `SERVICE_FACE_MATCH` |
+
+To see every individual service, see
+[Individual Services](/guides/servicos-pessoa-fisica).

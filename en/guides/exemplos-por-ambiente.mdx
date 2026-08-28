@@ -1,0 +1,131 @@
+---
+title: Examples by environment
+description: Copy equivalent calls for staging and production without swapping parameters by mistake
+---
+
+# Examples by environment
+
+Use this page when you need to quickly check the same call in staging and
+production. The request structure is the same; what changes is the base
+URL.
+
+<Warning>
+Use credentials, a token, and a base URL from the same environment. A
+staging token shouldn't be used in production, and a production token
+shouldn't be used in staging.
+</Warning>
+
+## Base URLs
+
+| Environment | Base URL | When to use |
+| --- | --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` | Testing, payload validation, and staging the integration |
+| Production | `https://backoffice.idcerberus.com` | Real operation, with production credentials |
+
+## Generate a token
+
+<Tabs>
+<Tab title="Staging">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+</Tab>
+<Tab title="Production">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+</Tab>
+</Tabs>
+
+## CPF query
+
+<Tabs>
+<Tab title="Staging">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+</Tab>
+<Tab title="Production">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+</Tab>
+</Tabs>
+
+## CNPJ query
+
+<Tabs>
+<Tab title="Staging">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+<Tab title="Production">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+</Tab>
+</Tabs>
+
+## Ready-made files
+
+Some examples are also published as `.curl` files:
+
+| File | Use |
+| --- | --- |
+| [`auth.hml.curl`](https://api-docs.idcerberus.com/examples/auth.hml.curl) | Generate a token in staging |
+| [`auth.prod.curl`](https://api-docs.idcerberus.com/examples/auth.prod.curl) | Generate a token in production |
+| [`service-api-cpf.hml.curl`](https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl) | Query a CPF in staging |
+| [`service-api-cpf.prod.curl`](https://api-docs.idcerberus.com/examples/service-api-cpf.prod.curl) | Query a CPF in production |
+| [`service-api-cnpj.hml.curl`](https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl) | Query a CNPJ in staging |
+| [`service-api-cnpj.prod.curl`](https://api-docs.idcerberus.com/examples/service-api-cnpj.prod.curl) | Query a CNPJ in production |
+| [`facematch.hml.curl`](https://api-docs.idcerberus.com/examples/facematch.hml.curl) | Run FaceMatch in staging |
+| [`documentoscopia.hml.curl`](https://api-docs.idcerberus.com/examples/documentoscopia.hml.curl) | Run document analysis in staging |

@@ -1,0 +1,450 @@
+---
+title: Ready-made recipes
+description: Practical flows to test CPF, CNPJ, OCR, Face Index, risk, and score via the Service API
+---
+
+# Ready-made recipes
+
+Use this page when you want to test a common flow without hunting service by service.
+
+All the queries below use:
+
+```txt
+POST /api/service-api
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+<CardGroup cols={3}>
+  <Card icon="id-card" title="CPF" href="#test-cpf">
+    Registration data and enrichment for individuals.
+  </Card>
+  <Card icon="building" title="CNPJ" href="#test-cnpj">
+    Registration data and business status.
+  </Card>
+  <Card icon="image" title="OCR" href="#test-ocr-cnh">
+    CNH, RG, CNPJ card, and proof of address.
+  </Card>
+  <Card icon="face-smile" title="Face Index" href="#test-face-index">
+    Search for a selfie in the facial base.
+  </Card>
+  <Card icon="chart-line" title="PJ risk" href="#test-pj-credit-risk">
+    Score, rating, and business risk signals.
+  </Card>
+  <Card icon="gauge" title="PF score" href="#test-pf-credit-score">
+    Credit score query for a CPF.
+  </Card>
+</CardGroup>
+
+## Before testing
+
+1. Generate a token in the same environment as the call.
+2. Confirm the product has the service active and enabled for the API.
+3. Use valid staging data.
+4. For OCR, send the full base64 (with or without the `data:image/...;base64,` prefix, both work).
+5. Read `result`, `status.message`, `onboardingStatus`, and `externalId`.
+
+## Test CPF
+
+Use this when you want to validate a simple individual query.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_PERSON_DATA_ENRICHMENT` |
+| Required field | `cpf` |
+| Curl example | [`service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "00000000000"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "name": "FICTITIOUS NAME",
+    "birthDate": "2000-01-01",
+    "status": "REGULAR"
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "externalId": "..."
+}
+```
+
+Common error:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+## Test CNPJ
+
+Use this when you want to validate a company's registration data.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_REGISTRATION_DATA_CNPJ` |
+| Required field | `cnpj` |
+| Curl example | [`service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "00000000000000"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "officialName": "FICTITIOUS COMPANY LTDA",
+    "tradeName": "FICTITIOUS COMPANY",
+    "status": "ATIVA",
+    "openingDate": "2020-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "externalId": "..."
+}
+```
+
+Common error: a CNPJ with no data in staging can return an empty `result` or a document-not-found message.
+
+## Test OCR CNH
+
+Use this when you have a sharp image of the full CNH.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_OCR` |
+| Required fields | `documentType`, `image1` |
+| Curl example | [`service-api-ocr-cnh.hml.curl`](/examples/service-api-ocr-cnh.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "CNH_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "CNH",
+    "name": "FICTITIOUS NAME",
+    "birthDate": "2000-01-01",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000",
+    "validDate": "2030-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Common error: illegible image, cropped document, or `documentType` that doesn't match the document sent.
+
+## Test OCR RG
+
+Use this when you have the front and back of the RG.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_OCR` |
+| Required fields | `documentType`, `image1`, `image2` |
+| Curl example | [`service-api-ocr-rg.hml.curl`](/examples/service-api-ocr-rg.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "RG",
+  "image1": "FRONT_BASE64",
+  "image2": "BACK_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "docType": "RG",
+    "name": "FICTITIOUS NAME",
+    "birthDate": "2000-01-01",
+    "fatherName": "FATHER'S NAME",
+    "motherName": "MOTHER'S NAME",
+    "rgIssuer": "SSP/UF",
+    "rgIssueDate": "2024-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Common error:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+## Test OCR CNPJ card
+
+Use this when you have a legible image of the CNPJ card.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_OCR_CNPJ_CARD` |
+| Required field | `image1` |
+| Curl example | [`service-api-ocr-cnpj-card.hml.curl`](/examples/service-api-ocr-cnpj-card.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "CNPJ_CARD_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "text extracted from the CNPJ card"
+  },
+  "status": {
+    "code": 200,
+    "message": "Cartão CNPJ processado com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Common error: the image doesn't contain a valid CNPJ or isn't a CNPJ card.
+
+## Test OCR proof of address
+
+Use this when you have a bill, invoice, or accepted proof with a visible address.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_OCR_PROOF_OF_ADDRESS` |
+| Required field | `image1` |
+| Curl example | [`service-api-ocr-proof-of-address.hml.curl`](/examples/service-api-ocr-proof-of-address.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "PROOF_BASE64"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "genericOcr": "text extracted from the proof",
+    "fullName": "FICTITIOUS NAME",
+    "fullAddress": "EXAMPLE STREET, 100, DOWNTOWN, CITY - STATE",
+    "docType": "Conta de consumo",
+    "dueDate": "2026-01-10",
+    "invoiceAmount": "R$ 100,00"
+  },
+  "status": {
+    "code": 200,
+    "message": "Comprovante de endereço obtido com sucesso!"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Common error: a personal document image, an invoice without a residential address, or a low-quality proof.
+
+## Test Face Index
+
+Use this when you want to search for a selfie in the facial base.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_FACE_INDEX` |
+| Required fields | `image1` |
+| Curl example | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_FACE_INDEX",
+  "image1": "SELFIE_BASE64"
+}
+```
+
+Expected response when the face is found:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "similarity": 99.9,
+    "faceFound": true
+  },
+  "status": {
+    "code": 200,
+    "message": "Face encontrada na base"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Common error: using a photo of an RG, CNH, or a document screenshot instead of a real selfie.
+
+## Test PJ credit risk
+
+Use this when you want to check a company's score, rating, and risk signals.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_CREDIT_RISK_COMPANY` |
+| Required field | `cnpj` |
+| Curl example | [`service-api-credit-risk-company.hml.curl`](/examples/service-api-credit-risk-company.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "00000000000000"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "creditRisk": {
+      "status": "ACTIVE",
+      "score": "750",
+      "rating": "A",
+      "expectedDefault": "LOW",
+      "legalProcess": "NOT_FOUND"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Common error: staging data with no score/rating available can return fewer fields inside `result`.
+
+## Test PF credit score
+
+Use this when you want to check a credit score by CPF.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_CREDIT_SCORE` |
+| Required field | `cpf` |
+| Curl example | [`service-api-credit-score.hml.curl`](/examples/service-api-credit-score.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_CREDIT_SCORE",
+  "cpf": "00000000000"
+}
+```
+
+Expected response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "score": "650",
+    "riskLevel": "MEDIUM",
+    "message": "Score consultado com sucesso"
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta realizada com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Common error: an external processing failure or a CPF with no return in the test data.
+
+## How to adapt a recipe
+
+1. Swap only the `service` and the required fields.
+2. Keep the `Authorization: Bearer {jwt_token}` header.
+3. Use staging to validate the payload and data.
+4. Don't automatically treat a missing field as an error.
+5. Save `externalId` when you need to investigate.

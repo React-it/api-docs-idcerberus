@@ -1,0 +1,118 @@
+---
+title: First CNPJ query
+description: Run a simple business query from start to finish
+---
+
+# First CNPJ query
+
+This guide shows how to run a first business query using the
+`POST /api/service-api` endpoint.
+
+The example uses the `SERVICE_CORPORATE_DATA_ENRICHMENT` service, which
+returns a company's registration data.
+
+## What you'll do
+
+1. Choose the environment.
+2. Generate a token.
+3. Copy the `access_token`.
+4. Run a CNPJ query.
+5. Read `result` and `status`.
+
+## 1. Choose the environment
+
+Staging:
+
+```txt
+https://backoffice-hml.idcerberus.com
+```
+
+Production:
+
+```txt
+https://backoffice.idcerberus.com
+```
+
+## 2. Generate the token
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Expected response:
+
+```json
+{
+  "access_token": "{jwt_token}",
+  "expires_in": "300"
+}
+```
+
+## 3. Run the query
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+    "cnpj": "cnpj"
+  }'
+```
+
+Replace:
+
+| Value | What to put |
+| --- | --- |
+| `{jwt_token}` | Token generated in the previous step |
+| `cnpj` | CNPJ to query |
+
+## 4. Understand the body
+
+```json
+{
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+  "cnpj": "cnpj"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `service` | Defines the product that will run |
+| `cnpj` | The queried business's document |
+
+## 5. Read the response
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "status": "ATIVA",
+    "name": "REACT IT SOLUCOES EM TECNOLOGIA LTDA",
+    "fantasyName": "REACT IT SOLUTIONS"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+## 6. Common next services
+
+| Need | Service |
+| --- | --- |
+| Check CNPJ status at the Federal Revenue | `SERVICE_RFB_PJ` |
+| Query SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION` |
+| Query the company's relationships | `SERVICE_COMPANY_RELATIONSHIP` |
+| Query first-level partners | `SERVICE_FIRST_LEVEL_PARTNER` |
+| Query business owners' KYC | `SERVICE_COMPANY_KYC_OWNERS` |
+| Query PJ active debts | `SERVICE_ACTIVE_DEBT_PJ` |
+
+To see every business service, see
+[Business Services](/guides/servicos-pessoa-juridica).
