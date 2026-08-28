@@ -259,7 +259,7 @@ api-docs-idcerberus/
 ## Conteúdo Principal
 
 - `index.mdx`: página inicial da documentação.
-- `docs.json`: configuração do Mintlify, tema, logo, navegação e OpenAPI.
+- `docs.json`: configuração do Mintlify, tema, logo, navegação, OpenAPI, botão de suporte (`navbar`) e menu contextual (`contextual`).
 - `api-reference/openapi.json`: definição OpenAPI usada pela aba API Reference.
 - `api-reference/boas-vindas.mdx`: introdução da API Reference.
 - `api-reference/como-executar-service.mdx`: passo a passo para autenticar, escolher ambiente e executar um service.
@@ -269,6 +269,9 @@ api-docs-idcerberus/
 - `guides/indice-de-services.mdx`: índice navegável dos services documentados.
 - `guides/exemplos-por-ambiente.mdx`: chamadas equivalentes de HML e produção.
 - `guides/erros-comuns-integracao.mdx`: diagnóstico de falhas comuns.
+- `guides/duvidas-e-solucoes.mdx`: perguntas e respostas diretas por tema, para checar antes de abrir chamado de suporte.
+- `guides/webhooks.mdx`: como funciona o webhook, payload por origem e por que não há reenvio automático.
+- `guides/backoffice.mdx`: o que a interface visual mostra (dashboard, onboardings, consultas rápidas) e quando usar em vez da API.
 - `guides/llms.mdx`: página pública com links diretos para arquivos de contexto.
 
 ## Organização da Navegação
@@ -366,3 +369,9 @@ Não commitar:
 - `node_modules/`;
 - exports zipados locais;
 - credenciais, tokens, secrets ou exemplos com dados reais de cliente.
+
+Ao adicionar um exemplo de CPF ou CNPJ, use um valor com dígito verificador
+inválido (como `00000000000` / `00000000000000`), não apenas um número
+"aleatório" — números de 11 ou 14 dígitos escolhidos à mão às vezes passam no
+cálculo do dígito verificador por coincidência e acabam parecendo um
+documento real.
