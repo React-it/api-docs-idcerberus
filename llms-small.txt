@@ -4,14 +4,14 @@ Use este arquivo quando precisar de contexto rápido para integrar com a API idC
 
 ## Regras para assistentes de IA
 
-- Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.
-- Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.
-- Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
-- Use homologação para testes e produção somente quando o usuário pedir explicitamente.
-- Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
-- Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).
-- Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.
-- Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
+1. Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.
+2. Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.
+3. Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
+4. Use homologação para testes e produção somente quando o usuário pedir explicitamente.
+5. Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.
+6. Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).
+7. Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.
+8. Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.
 
 ## Como escolher o arquivo certo
 
@@ -54,23 +54,23 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 ### Regras para o MCP
 
-- Operar como fonte somente leitura da documentação.
-- Não chamar HML, produção, banco ou endpoints idCerberus.
-- Não solicitar nem armazenar `client`, `secret`, JWT, CPF, CNPJ ou imagem real.
-- Usar homologação como ambiente padrão quando gerar exemplos.
-- Se o service não existir no catálogo, responder que precisa ser confirmado antes de integrar.
-- Preferir `result` como contrato público; não usar `fieldsOutput` ou metadados internos.
+1. Operar como fonte somente leitura da documentação.
+2. Não chamar HML, produção, banco ou endpoints idCerberus.
+3. Não solicitar nem armazenar `client`, `secret`, JWT, CPF, CNPJ ou imagem real.
+4. Usar homologação como ambiente padrão quando gerar exemplos.
+5. Se o service não existir no catálogo, responder que precisa ser confirmado antes de integrar.
+6. Preferir `result` como contrato público; não usar `fieldsOutput` ou metadados internos.
 
 ## Contrato base do POST /api/service-api
 
-- Endpoint de homologação: `POST https://backoffice-hml.idcerberus.com/api/service-api`.
-- Endpoint de produção: `POST https://backoffice.idcerberus.com/api/service-api`.
-- Header obrigatório: `Authorization: Bearer {jwt_token}`.
-- Header recomendado: `Content-Type: application/json`.
-- Campo obrigatório no body: `service`.
-- O alias enviado em `service` deve ser o alias configurado no produto do cliente.
-- Leia dados públicos em `result`; não trate `fieldsOutput` ou metadados internos como contrato público.
-- Preserve `status`, `onboardingStatus` e `externalId` ao explicar respostas.
+1. Endpoint de homologação: `POST https://backoffice-hml.idcerberus.com/api/service-api`.
+2. Endpoint de produção: `POST https://backoffice.idcerberus.com/api/service-api`.
+3. Header obrigatório: `Authorization: Bearer {jwt_token}`.
+4. Header recomendado: `Content-Type: application/json`.
+5. Campo obrigatório no body: `service`.
+6. O alias enviado em `service` deve ser o alias configurado no produto do cliente.
+7. Leia dados públicos em `result`; não trate `fieldsOutput` ou metadados internos como contrato público.
+8. Preserve `status`, `onboardingStatus` e `externalId` ao explicar respostas.
 
 ## Atalhos de services mais usados
 
@@ -89,15 +89,15 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 ## Notas rápidas para OCR e imagem
 
-- OCR usa imagem do documento, não selfie.
-- Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
-- `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,` — os dois formatos funcionam.
-- RG normalmente usa frente e verso: `image1` e `image2`.
-- CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
-- Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
-- Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.
-- Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.
-- Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.
+1. OCR usa imagem do documento, não selfie.
+2. Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
+3. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.
+4. RG normalmente usa frente e verso: `image1` e `image2`.
+5. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
+6. Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
+7. Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.
+8. Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.
+9. Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.
 
 ## Diagnóstico rápido de erro
 
@@ -112,163 +112,163 @@ Estes arquivos podem ser usados como fonte de contexto para um MCP da documenta�
 
 ## Ambientes
 
-- Homologação: `https://backoffice-hml.idcerberus.com`
-- Produção: `https://backoffice.idcerberus.com`
+1. Homologação: `https://backoffice-hml.idcerberus.com`
+2. Produção: `https://backoffice.idcerberus.com`
 
 ## Autenticação
 
-- Gere token em `POST /api/token-generate` com `client` e `secret`.
-- Envie o token nas chamadas protegidas com `Authorization: Bearer {jwt_token}`.
-- Quando expirar, gere um novo token.
+1. Gere token em `POST /api/token-generate` com `client` e `secret`.
+2. Envie o token nas chamadas protegidas com `Authorization: Bearer {jwt_token}`.
+3. Quando expirar, gere um novo token.
 
 ## Endpoint principal
 
-- Use `POST /api/service-api` para consultas de dados, risco, compliance, biometria e enriquecimento.
-- O campo `service` define qual produto será executado.
-- Os demais campos variam conforme o serviço escolhido.
+1. Use `POST /api/service-api` para consultas de dados, risco, compliance, biometria e enriquecimento.
+2. O campo `service` define qual produto será executado.
+3. Os demais campos variam conforme o serviço escolhido.
 
 ## Fluxos principais
 
-- [Quickstart](https://api-docs.idcerberus.com/guides/quickstart): Faça sua primeira chamada na API idCerberus com Postman, Windows, macOS ou Linux
-- [Autenticação](https://api-docs.idcerberus.com/guides/autenticacao): Gere tokens JWT e autentique chamadas protegidas da API idCerberus
-- [Primeira consulta CPF](https://api-docs.idcerberus.com/guides/primeira-consulta-cpf): Execute uma consulta simples de pessoa física do início ao fim
-- [Primeira consulta CNPJ](https://api-docs.idcerberus.com/guides/primeira-consulta-cnpj): Execute uma consulta simples de pessoa jurídica do início ao fim
-- [Onboarding via SDK](https://api-docs.idcerberus.com/guides/onboarding-sdk): Gere TokenOnboarding, acompanhe o status do cadastro e baixe o relatório final
-- [Matriz de serviços](https://api-docs.idcerberus.com/guides/matriz-de-servicos): Visão resumida dos principais serviços por tipo de documento, entrada e momento de uso
+1. [Quickstart](https://api-docs.idcerberus.com/guides/quickstart): Faça sua primeira chamada na API idCerberus com Postman, Windows, macOS ou Linux
+2. [Autenticação](https://api-docs.idcerberus.com/guides/autenticacao): Gere tokens JWT e autentique chamadas protegidas da API idCerberus
+3. [Primeira consulta CPF](https://api-docs.idcerberus.com/guides/primeira-consulta-cpf): Execute uma consulta simples de pessoa física do início ao fim
+4. [Primeira consulta CNPJ](https://api-docs.idcerberus.com/guides/primeira-consulta-cnpj): Execute uma consulta simples de pessoa jurídica do início ao fim
+5. [Onboarding via SDK](https://api-docs.idcerberus.com/guides/onboarding-sdk): Gere TokenOnboarding, acompanhe o status do cadastro e baixe o relatório final
+6. [Matriz de serviços](https://api-docs.idcerberus.com/guides/matriz-de-servicos): Visão resumida dos principais serviços por tipo de documento, entrada e momento de uso
 
 ## Services documentados no API Reference
 
-- Pessoa Física - Antecedentes criminais civis: `SERVICE_CRIMINAL_RECORD_CIVIL` | campos: cpf, rg, uf | busca: PF - Antecedentes criminais civis
-- Pessoa Física - Antecedentes criminais federais: `SERVICE_CRIMINAL_RECORD_FEDERAL` | campos: cpf | busca: PF - Antecedentes criminais federais
-- Pessoa Física - Benefícios sociais estendidos: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | campos: cpf | busca: PF - Benefícios sociais estendidos
-- Pessoa Física - Benefícios sociais familiares: `SERVICE_FAMILY_SOCIAL_BENEFITS` | campos: cpf | busca: PF - Benefícios sociais familiares
-- Pessoa Física - Busca de face na base: `SERVICE_FACE_INDEX` | campos: image1 | busca: PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces
-- Pessoa Física - Cartão SUS: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Cartão SUS
-- Pessoa Física - Certidão de Nada Consta: `SERVICE_NOTHING_RECORD_LAWSUITS` | campos: cpf, court, uf, sphere | busca: PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão
-- Pessoa Física - Certidão negativa de protesto: `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | campos: cpf | busca: PF - Certidão negativa de protesto
-- Pessoa Física - Certidão negativa de protesto PF: `SERVICE_PROTEST_PF` | campos: cpf | busca: PF - Certidão negativa de protesto PF
-- Pessoa Física - Consulta de MEI: `SERVICE_MEI` | campos: cpf | busca: PF - Consulta de MEI
-- Pessoa Física - CPF na Receita Federal on-demand: `SERVICE_RFB_PF_ON_DEMAND` | campos: cpf | busca: CPF Receita Federal, PF - CPF na Receita Federal on-demand
-- Pessoa Física - Dados demográficos: `SERVICE_DEMOGRAPHIC_DATA_CPF` | campos: cpf, birthDate | busca: CPF Receita Federal, PF - Dados demográficos
-- Pessoa Física - Dados eleitorais de candidato: `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Dados eleitorais de candidato
-- Pessoa Física - Dados financeiros e endereços: `SERVICE_PF_FINANCIAL_AND_ADDRESS` | campos: cpf, birthDate | busca: PF - Dados financeiros e endereços
-- Pessoa Física - Dados pelo telefone: `SERVICE_CONFIRM_PHONE` | campos: phone | busca: PF - Dados pelo telefone, telefone celular validação contato
-- Pessoa Física - Dados PIS: `SERVICE_PIS_CONSULTATION` | campos: cpf | busca: PF - Dados PIS
-- Pessoa Física - Dados Restritivos: `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | campos: cpf | busca: PF - Dados Restritivos, score risco crédito rating inadimplência
-- Pessoa Física - Dívida ativa: `SERVICE_ACTIVE_DEBT_PF` | campos: cpf | busca: PF - Dívida ativa, dívida ativa débito cobrança inadimplência
-- Pessoa Física - Doações eleitorais: `SERVICE_ELECTORAL_DONORS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato
-- Pessoa Física - Documentoscopia digital: `SERVICE_DIGITAL_DOCUMENTOSCOPY` | campos: key, image1, image2, selfie1 | busca: PF - Documentoscopia digital, documentoscopia documento selfie validação
-- Pessoa Física - Domínios: `SERVICE_DOMAINS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Domínios, domínios sites presença digital
-- Pessoa Física - E-mails de Pessoas Relacionadas: `SERVICE_RELATED_PEOPLE_EMAILS` | campos: cpf | busca: PF - E-mails de Pessoas Relacionadas, email validação contato
-- Pessoa Física - Endereços: `SERVICE_ADDRESS` | campos: cpf | busca: PF - Endereços
-- Pessoa Física - Endereços de Pessoas Relacionadas: `SERVICE_RELATED_PEOPLE_ADDRESSES` | campos: cnpj | busca: PF - Endereços de Pessoas Relacionadas
-- Pessoa Física - Enriquecimento de dados: `SERVICE_PERSON_DATA_ENRICHMENT` | campos: cpf | busca: PF - Enriquecimento de dados
-- Pessoa Física - Envolvimento político: `SERVICE_POLITICAL_INVOLVEMENT` | campos: cpf | busca: PF - Envolvimento político
-- Pessoa Física - Envolvimento político PF: `SERVICE_POLITICAL_INVOLVEMENT_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Envolvimento político PF
-- Pessoa Física - Exposição e perfil na mídia: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | campos: cpf | busca: PF - Exposição e perfil na mídia
-- Pessoa Física - FaceMatch: `SERVICE_FACE_MATCH` | campos: image1, image2 | busca: PF - FaceMatch, comparação facial biometria selfie rosto
-- Pessoa Física - Flags Negativos: `SERVICE_QUOD_CREDIT_RISK_PERSON` | campos: cpf | busca: PF - Flags Negativos
-- Pessoa Física - Histórico de e-mails: `SERVICE_EMAILS_EXTENDED` | campos: cpf, limit | busca: PF - Histórico de e-mails, email validação contato
-- Pessoa Física - Histórico de telefones: `SERVICE_PHONE_HISTORY` | campos: cpf, birthDate, limit | busca: PF - Histórico de telefones, telefone celular validação contato
-- Pessoa Física - Histórico familiar político: `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Histórico familiar político
-- Pessoa Física - Histórico profissional: `SERVICE_PROFESSIONAL_HISTORY` | campos: cpf | busca: PF - Histórico profissional
-- Pessoa Física - Histórico profissional do titular: `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | campos: cpf, birthDate | busca: PF - Histórico profissional do titular
-- Pessoa Física - Indicadores de atividades: `SERVICE_ACTIVITIES_INDICATORS` | campos: cpf | busca: PF - Indicadores de atividades
-- Pessoa Física - Informações financeiras: `SERVICE_FINANCIAL_INFORMATION` | campos: cpf | busca: PF - Informações financeiras
-- Pessoa Física - KYC e compliance: `SERVICE_PERSON_KYC` | campos: cpf, birthDate | busca: PF - KYC e compliance, compliance KYC sanções PEP mídia
-- Pessoa Física - Mandado de prisão: `SERVICE_ARREST_WARRANT` | campos: nome, motherName, fatherName, birthDate, cpf | busca: PF - Mandado de prisão
-- Pessoa Física - Modelagem de dados: `SERVICE_PERSON_DATA_MODELING` | campos: cpf | busca: PF - Modelagem de dados
-- Pessoa Física - OCR de comprovante de endereço: `SERVICE_OCR_PROOF_OF_ADDRESS` | campos: image1 | busca: OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço
-- Pessoa Física - OCR de emancipação: `SERVICE_OCR_EMANCIPATION` | campos: image1 | busca: OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração
-- Pessoa Física - OCR React: `SERVICE_OCR` | campos: documentType, image1, image2 | busca: OCR documento imagem base64 leitura extração, PF - OCR React
-- Pessoa Física - Pessoa politicamente exposta: `SERVICE_PEP` | campos: cpf | busca: PF - Pessoa politicamente exposta
-- Pessoa Física - Pessoas relacionadas: `SERVICE_RELATED_PEOPLE` | campos: cpf, birthDate | busca: PF - Pessoas relacionadas
-- Pessoa Física - Prêmios e certificações: `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Prêmios e certificações
-- Pessoa Física - Prestadores de serviço eleitorais: `SERVICE_ELECTORAL_PROVIDERS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato
-- Pessoa Física - Processos jurídicos e administrativos: `SERVICE_JURIDICAL_PROCESSES` | campos: cpf | busca: PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão
-- Pessoa Física - Prompt de IA para pessoa: `SERVICE_PERSON_AI_PROMPT` | campos: cpf | busca: PF - Prompt de IA para pessoa
-- Pessoa Física - Propensão a apostas online: `SEVICE_ONLINE_BETTING_PROPENSITY` | campos: cpf | busca: PF - Propensão a apostas online, apostas bets compliance bet
-- Pessoa Física - Relacionamentos econômicos: `SERVICE_ECONOMIC_RELATIONSHIP` | campos: cpf | busca: PF - Relacionamentos econômicos
-- Pessoa Física - Resultado da documentoscopia digital: `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | campos: key | busca: PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação
-- Pessoa Física - Risco financeiro: `SERVICE_FINANCIAL_RISK_SCORE` | campos: cpf, birthDate | busca: PF - Risco financeiro, score risco crédito rating inadimplência
-- Pessoa Física - Score biométrico: `SERVICE_DATAVALID_CNH` | campos: cpf, image1 | busca: PF - Score biométrico, score risco crédito rating inadimplência
-- Pessoa Física - Score de crédito: `SERVICE_CREDIT_SCORE` | campos: cpf | busca: PF - Score de crédito, score risco crédito rating inadimplência
-- Pessoa Física - Score de Crédito: `SERVICE_QUOD_CREDIT_SCORE_PERSON` | campos: cpf | busca: PF - Score de Crédito, score risco crédito rating inadimplência
-- Pessoa Física - Score de Crédito Multidados: `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | campos: cpf | busca: PF - Score de Crédito Multidados, score risco crédito rating inadimplência
-- Pessoa Física - Score de inadimplência: `SERVICE_DEFAULT_RISK_SCORE` | campos: cpf | busca: PF - Score de inadimplência, score risco crédito rating inadimplência
-- Pessoa Física - Score de risco de fraude: `SERVICE_FRAUD_RISK_SCORE` | campos: cpf, factor | busca: PF - Score de risco de fraude, score risco crédito rating inadimplência
-- Pessoa Física - Servidores públicos: `SERVICE_PUBLIC_SERVANTS` | campos: cpf | busca: PF - Servidores públicos
-- Pessoa Física - Status do CPF na Receita Federal: `SERVICE_RFB_PF` | campos: cpf, birthDate | busca: CPF Receita Federal, PF - Status do CPF na Receita Federal
-- Pessoa Física - Telefones de Pessoas Relacionadas: `SERVICE_RELATED_PEOPLE_PHONES` | campos: cpf | busca: PF - Telefones de Pessoas Relacionadas, telefone celular validação contato
-- Pessoa Física - TSE - Local de votação: `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | campos: cpf, birthDate, motherName | busca: CPF Receita Federal, PF - TSE - Local de votação
-- Pessoa Física - Validação de CPF com endereço: `SERVICE_CPF_ADDRESS_VALIDATION` | campos: cpf, zipcode, numberAddress | busca: CPF Receita Federal, PF - Validação de CPF com endereço
-- Pessoa Física - Validação de CPF com telefone: `SERVICE_CPF_PHONE_VALIDATION` | campos: cpf, phone | busca: CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato
-- Pessoa Física - Validação de e-mail: `SERVICE_EMAIL_VALIDATION` | campos: email | busca: PF - Validação de e-mail, email validação contato
-- Pessoa Física - Validação do E-Social: `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | campos: cpf, nit | busca: PF - Validação do E-Social
-- Pessoa Jurídica - Ações Trabalhistas: `SERVICE_LABOR_LAWSUITS` | campos: cnpj | busca: PJ - Ações Trabalhistas, processos judiciais jurídicos tribunal certidão
-- Pessoa Jurídica - Acordos Sindicais: `SERVICE_SYNDICATE_AGREEMENTS` | campos: cnpj | busca: PJ - Acordos Sindicais
-- Pessoa Jurídica - Anúncios Online: `SERVICE_ONLINE_ADS` | campos: cnpj | busca: PJ - Anúncios Online
-- Pessoa Jurídica - Arrecadação Simples Nacional - MEI: `SERVICE_PGMEI` | campos: cnpj | busca: PJ - Arrecadação Simples Nacional - MEI
-- Pessoa Jurídica - Avaliações e Reputação: `SERVICE_REPUTATIONS_AND_REVIEWS` | campos: cnpj | busca: PJ - Avaliações e Reputação
-- Pessoa Jurídica - Beneficiários Finais: `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | campos: cnpj | busca: PJ - Beneficiários Finais
-- Pessoa Jurídica - Categoria Comercial: `SERVICE_MERCHANT_CATEGORY_DATA` | campos: cnpj | busca: PJ - Categoria Comercial
-- Pessoa Jurídica - Certidão Negativa CNJ: `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | campos: cnpj | busca: PJ - Certidão Negativa CNJ
-- Pessoa Jurídica - Certidão Negativa Correcional CGU: `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | campos: cnpj | busca: PJ - Certidão Negativa Correcional CGU
-- Pessoa Jurídica - Certidão Negativa de Débitos Estaduais: `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | campos: cnpj | busca: PJ - Certidão Negativa de Débitos Estaduais, dívida ativa débito cobrança inadimplência
-- Pessoa Jurídica - Certidão negativa de protesto: `SERVICE_PROTEST_PJ` | campos: cnpj | busca: PJ - Certidão negativa de protesto
-- Pessoa Jurídica - CNPJ na Receita Federal on-demand: `SERVICE_RFB_PJ_ON_DEMAND` | campos: cnpj | busca: CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand
-- Pessoa Jurídica - Compliance de casas de apostas: `SERVICE_COMPLIANCE_BET_PJ` | campos: cnpj | busca: PJ - Compliance de casas de apostas, apostas bets compliance bet
-- Pessoa Jurídica - Compliance de casas de apostas (alias curto): `SERVICE_COMPLIANCE_BET` | campos: cnpj | busca: PJ - Compliance de casas de apostas (alias curto), apostas bets compliance bet
-- Pessoa Jurídica - Cota de PCD: `SERVICE_PCD_COMPANY` | campos: cnpj | busca: PJ - Cota de PCD
-- Pessoa Jurídica - Dados cadastrais de CNPJ: `SERVICE_REGISTRATION_DATA_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ
-- Pessoa Jurídica - Dados de Fundos de Investimento: `SERVICE_INVESTMENT_FUND_DATA` | campos: cnpj | busca: PJ - Dados de Fundos de Investimento
-- Pessoa Jurídica - Dados Restritivos PJ: `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | campos: cnpj | busca: PJ - Dados Restritivos PJ, score risco crédito rating inadimplência
-- Pessoa Jurídica - DAS MEI na Receita: `SERVICE_DAS_MEI` | campos: cnpj | busca: CPF Receita Federal, PJ - DAS MEI na Receita
-- Pessoa Jurídica - Débitos ativos: `SERVICE_ACTIVE_DEBT_PJ` | campos: cnpj | busca: PJ - Débitos ativos, dívida ativa débito cobrança inadimplência
-- Pessoa Jurídica - Débitos com a PGFN: `SERVICE_PGFN_COMPANY` | campos: cnpj | busca: PJ - Débitos com a PGFN, dívida ativa débito cobrança inadimplência
-- Pessoa Jurídica - Distribuição de Processos dos Sócios: `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | campos: cnpj | busca: PJ - Distribuição de Processos dos Sócios, processos judiciais jurídicos tribunal certidão
-- Pessoa Jurídica - Distribuição de Processos Judiciais: `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | campos: cnpj | busca: PJ - Distribuição de Processos Judiciais, processos judiciais jurídicos tribunal certidão
-- Pessoa Jurídica - Doações eleitorais: `SERVICE_ELECTORAL_DONORS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato
-- Pessoa Jurídica - Doações eleitorais dos sócios: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato
-- Pessoa Jurídica - Domínios CNPJ: `SERVICE_DOMAINS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital
-- Pessoa Jurídica - Endereços estendidos: `SERVICE_ADDRESSES_EXTENDED_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Endereços estendidos
-- Pessoa Jurídica - Enriquecimento de dados: `SERVICE_CORPORATE_DATA_ENRICHMENT` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Enriquecimento de dados
-- Pessoa Jurídica - Evolução da Empresa: `SERVICE_COMPANY_EVOLUTION` | campos: cnpj | busca: PJ - Evolução da Empresa
-- Pessoa Jurídica - Exposição e perfil na mídia dos sócios: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | campos: cnpj | busca: PJ - Exposição e perfil na mídia dos sócios
-- Pessoa Jurídica - FGTS: `SERVICE_FGTS` | campos: cnpj | busca: PJ - FGTS
-- Pessoa Jurídica - Flags Negativos PJ: `SERVICE_QUOD_CREDIT_RISK_COMPANY` | campos: cnpj | busca: PJ - Flags Negativos PJ
-- Pessoa Jurídica - Fornecedores eleitorais: `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato
-- Pessoa Jurídica - Histórico de Dados Básicos: `SERVICE_HISTORY_BASIC_DATA` | campos: cnpj | busca: PJ - Histórico de Dados Básicos
-- Pessoa Jurídica - Influência do Quadro Societário: `SERVICE_OWNERS_INFLUENCE` | campos: cnpj | busca: PJ - Influência do Quadro Societário
-- Pessoa Jurídica - KYC e Compliance do Grupo Econômico: `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | campos: cnpj | busca: PJ - KYC e Compliance do Grupo Econômico, compliance KYC sanções PEP mídia
-- Pessoa Jurídica - KYC e Compliance dos Funcionários: `SERVICE_EMPLOYEES_KYC` | campos: cnpj | busca: PJ - KYC e Compliance dos Funcionários, compliance KYC sanções PEP mídia
-- Pessoa Jurídica - KYC e compliance dos sócios: `SERVICE_COMPANY_KYC_OWNERS` | campos: cnpj | busca: PJ - KYC e compliance dos sócios, compliance KYC sanções PEP sancionado interpol ofac
-- Pessoa Jurídica - Marketplaces: `SERVICE_MARKETPLACE_DATA` | campos: cnpj | busca: PJ - Marketplaces
-- Pessoa Jurídica - Obras Civis: `SERVICE_CIVIL_CONSTRUCTION` | campos: cnpj | busca: PJ - Obras Civis
-- Pessoa Jurídica - OCR de cartão CNPJ: `SERVICE_OCR_CNPJ_CARD` | campos: image1 | busca: CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ
-- Pessoa Jurídica - Optante pelo Simples Nacional: `SERVICE_SIMPLES_COMPANY` | campos: cnpj | busca: PJ - Optante pelo Simples Nacional
-- Pessoa Jurídica - Percentual de Participação Societária: `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | campos: cnpj | busca: PJ - Percentual de Participação Societária
-- Pessoa Jurídica - Processos jurídicos: `SERVICE_JURIDICAL_PROCESSES_PJ` | campos: cnpj | busca: PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão
-- Pessoa Jurídica - Processos jurídicos dos sócios: `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | campos: cnpj | busca: PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão
-- Pessoa Jurídica - Projetos Públicos: `SERVICE_PUBLIC_PROJECTS` | campos: cnpj | busca: PJ - Projetos Públicos
-- Pessoa Jurídica - Receita Federal - QSA: `SERVICE_RF_QSA` | campos: cnpj | busca: CPF Receita Federal, PJ - Receita Federal - QSA
-- Pessoa Jurídica - Relacionamentos da empresa: `SERVICE_COMPANY_RELATIONSHIP` | campos: cnpj | busca: PJ - Relacionamentos da empresa
-- Pessoa Jurídica - Relacionamentos do Grupo Econômico: `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | campos: cnpj | busca: PJ - Relacionamentos do Grupo Econômico
-- Pessoa Jurídica - Risco de crédito: `SERVICE_CREDIT_RISK_COMPANY` | campos: cnpj | busca: PJ - Risco de crédito, score risco crédito rating inadimplência
-- Pessoa Jurídica - Score de Crédito Multidados PJ: `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | campos: cnpj | busca: PJ - Score de Crédito Multidados PJ, score risco crédito rating inadimplência
-- Pessoa Jurídica - Score de Crédito PJ: `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | campos: cnpj | busca: PJ - Score de Crédito PJ, score risco crédito rating inadimplência
-- Pessoa Jurídica - Score de Crédito Quantum PJ: `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | campos: cnpj | busca: PJ - Score de Crédito Quantum PJ, score risco crédito rating inadimplência
-- Pessoa Jurídica - SINTEGRA: `SERVICE_SINTEGRA_CONSULTATION` | campos: cnpj, uf | busca: PJ - SINTEGRA
-- Pessoa Jurídica - Sócios de primeiro nível: `SERVICE_FIRST_LEVEL_PARTNER` | campos: cnpj | busca: PJ - Sócios de primeiro nível
-- Pessoa Jurídica - Sócios na Receita Federal: `SERVICE_COMPANY_RFB_OWNERS` | campos: cnpj | busca: CPF Receita Federal, PJ - Sócios na Receita Federal
-- Pessoa Jurídica - Status do CNPJ na Receita Federal: `SERVICE_RFB_PJ` | campos: cnpj | busca: CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal
-- Pessoa Jurídica - Telefones: `SERVICE_PHONES_EXTENDED_COMPANY` | campos: cnpj | busca: PJ - Telefones, telefone celular validação contato
+**Pessoa Física - Antecedentes criminais civis**: `SERVICE_CRIMINAL_RECORD_CIVIL` | campos: cpf, rg, uf | busca: PF - Antecedentes criminais civis
+**Pessoa Física - Antecedentes criminais federais**: `SERVICE_CRIMINAL_RECORD_FEDERAL` | campos: cpf | busca: PF - Antecedentes criminais federais
+**Pessoa Física - Benefícios sociais estendidos**: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | campos: cpf | busca: PF - Benefícios sociais estendidos
+**Pessoa Física - Benefícios sociais familiares**: `SERVICE_FAMILY_SOCIAL_BENEFITS` | campos: cpf | busca: PF - Benefícios sociais familiares
+**Pessoa Física - Busca de face na base**: `SERVICE_FACE_INDEX` | campos: image1 | busca: PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces
+**Pessoa Física - Cartão SUS**: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Cartão SUS
+**Pessoa Física - Certidão de Nada Consta**: `SERVICE_NOTHING_RECORD_LAWSUITS` | campos: cpf, court, uf, sphere | busca: PF - Certidão de Nada Consta, processos judiciais jurídicos tribunal certidão
+**Pessoa Física - Certidão negativa de protesto**: `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | campos: cpf | busca: PF - Certidão negativa de protesto
+**Pessoa Física - Certidão negativa de protesto PF**: `SERVICE_PROTEST_PF` | campos: cpf | busca: PF - Certidão negativa de protesto PF
+**Pessoa Física - Consulta de MEI**: `SERVICE_MEI` | campos: cpf | busca: PF - Consulta de MEI
+**Pessoa Física - CPF na Receita Federal on-demand**: `SERVICE_RFB_PF_ON_DEMAND` | campos: cpf | busca: CPF Receita Federal, PF - CPF na Receita Federal on-demand
+**Pessoa Física - Dados demográficos**: `SERVICE_DEMOGRAPHIC_DATA_CPF` | campos: cpf, birthDate | busca: CPF Receita Federal, PF - Dados demográficos
+**Pessoa Física - Dados eleitorais de candidato**: `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Dados eleitorais de candidato
+**Pessoa Física - Dados financeiros e endereços**: `SERVICE_PF_FINANCIAL_AND_ADDRESS` | campos: cpf, birthDate | busca: PF - Dados financeiros e endereços
+**Pessoa Física - Dados pelo telefone**: `SERVICE_CONFIRM_PHONE` | campos: phone | busca: PF - Dados pelo telefone, telefone celular validação contato
+**Pessoa Física - Dados PIS**: `SERVICE_PIS_CONSULTATION` | campos: cpf | busca: PF - Dados PIS
+**Pessoa Física - Dados Restritivos**: `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | campos: cpf | busca: PF - Dados Restritivos, score risco crédito rating inadimplência
+**Pessoa Física - Dívida ativa**: `SERVICE_ACTIVE_DEBT_PF` | campos: cpf | busca: PF - Dívida ativa, dívida ativa débito cobrança inadimplência
+**Pessoa Física - Doações eleitorais**: `SERVICE_ELECTORAL_DONORS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Doações eleitorais, dados eleitorais campanha doações candidato
+**Pessoa Física - Documentoscopia digital**: `SERVICE_DIGITAL_DOCUMENTOSCOPY` | campos: key, image1, image2, selfie1 | busca: PF - Documentoscopia digital, documentoscopia documento selfie validação
+**Pessoa Física - Domínios**: `SERVICE_DOMAINS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Domínios, domínios sites presença digital
+**Pessoa Física - E-mails de Pessoas Relacionadas**: `SERVICE_RELATED_PEOPLE_EMAILS` | campos: cpf | busca: PF - E-mails de Pessoas Relacionadas, email validação contato
+**Pessoa Física - Endereços**: `SERVICE_ADDRESS` | campos: cpf | busca: PF - Endereços
+**Pessoa Física - Endereços de Pessoas Relacionadas**: `SERVICE_RELATED_PEOPLE_ADDRESSES` | campos: cnpj | busca: PF - Endereços de Pessoas Relacionadas
+**Pessoa Física - Enriquecimento de dados**: `SERVICE_PERSON_DATA_ENRICHMENT` | campos: cpf | busca: PF - Enriquecimento de dados
+**Pessoa Física - Envolvimento político**: `SERVICE_POLITICAL_INVOLVEMENT` | campos: cpf | busca: PF - Envolvimento político
+**Pessoa Física - Envolvimento político PF**: `SERVICE_POLITICAL_INVOLVEMENT_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Envolvimento político PF
+**Pessoa Física - Exposição e perfil na mídia**: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | campos: cpf | busca: PF - Exposição e perfil na mídia
+**Pessoa Física - FaceMatch**: `SERVICE_FACE_MATCH` | campos: image1, image2 | busca: PF - FaceMatch, comparação facial biometria selfie rosto
+**Pessoa Física - Flags Negativos**: `SERVICE_QUOD_CREDIT_RISK_PERSON` | campos: cpf | busca: PF - Flags Negativos
+**Pessoa Física - Histórico de e-mails**: `SERVICE_EMAILS_EXTENDED` | campos: cpf, limit | busca: PF - Histórico de e-mails, email validação contato
+**Pessoa Física - Histórico de telefones**: `SERVICE_PHONE_HISTORY` | campos: cpf, birthDate, limit | busca: PF - Histórico de telefones, telefone celular validação contato
+**Pessoa Física - Histórico familiar político**: `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Histórico familiar político
+**Pessoa Física - Histórico profissional**: `SERVICE_PROFESSIONAL_HISTORY` | campos: cpf | busca: PF - Histórico profissional
+**Pessoa Física - Histórico profissional do titular**: `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | campos: cpf, birthDate | busca: PF - Histórico profissional do titular
+**Pessoa Física - Indicadores de atividades**: `SERVICE_ACTIVITIES_INDICATORS` | campos: cpf | busca: PF - Indicadores de atividades
+**Pessoa Física - Informações financeiras**: `SERVICE_FINANCIAL_INFORMATION` | campos: cpf | busca: PF - Informações financeiras
+**Pessoa Física - KYC e compliance**: `SERVICE_PERSON_KYC` | campos: cpf, birthDate | busca: PF - KYC e compliance, compliance KYC sanções PEP mídia
+**Pessoa Física - Mandado de prisão**: `SERVICE_ARREST_WARRANT` | campos: nome, motherName, fatherName, birthDate, cpf | busca: PF - Mandado de prisão
+**Pessoa Física - Modelagem de dados**: `SERVICE_PERSON_DATA_MODELING` | campos: cpf | busca: PF - Modelagem de dados
+**Pessoa Física - OCR de comprovante de endereço**: `SERVICE_OCR_PROOF_OF_ADDRESS` | campos: image1 | busca: OCR documento imagem base64 leitura extração, PF - OCR de comprovante de endereço, comprovante de endereço conta fatura endereço
+**Pessoa Física - OCR de emancipação**: `SERVICE_OCR_EMANCIPATION` | campos: image1 | busca: OCR documento imagem base64 leitura extração, PF - OCR de emancipação, documento emancipação cartório certidão declaração
+**Pessoa Física - OCR React**: `SERVICE_OCR` | campos: documentType, image1, image2 | busca: OCR documento imagem base64 leitura extração, PF - OCR React
+**Pessoa Física - Pessoa politicamente exposta**: `SERVICE_PEP` | campos: cpf | busca: PF - Pessoa politicamente exposta
+**Pessoa Física - Pessoas relacionadas**: `SERVICE_RELATED_PEOPLE` | campos: cpf, birthDate | busca: PF - Pessoas relacionadas
+**Pessoa Física - Prêmios e certificações**: `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Prêmios e certificações
+**Pessoa Física - Prestadores de serviço eleitorais**: `SERVICE_ELECTORAL_PROVIDERS_CPF` | campos: cpf | busca: CPF Receita Federal, PF - Prestadores de serviço eleitorais, dados eleitorais campanha doações candidato
+**Pessoa Física - Processos jurídicos e administrativos**: `SERVICE_JURIDICAL_PROCESSES` | campos: cpf | busca: PF - Processos jurídicos e administrativos, processos judiciais jurídicos tribunal certidão
+**Pessoa Física - Prompt de IA para pessoa**: `SERVICE_PERSON_AI_PROMPT` | campos: cpf | busca: PF - Prompt de IA para pessoa
+**Pessoa Física - Propensão a apostas online**: `SEVICE_ONLINE_BETTING_PROPENSITY` | campos: cpf | busca: PF - Propensão a apostas online, apostas bets compliance bet
+**Pessoa Física - Relacionamentos econômicos**: `SERVICE_ECONOMIC_RELATIONSHIP` | campos: cpf | busca: PF - Relacionamentos econômicos
+**Pessoa Física - Resultado da documentoscopia digital**: `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | campos: key | busca: PF - Resultado da documentoscopia digital, documentoscopia documento selfie validação
+**Pessoa Física - Risco financeiro**: `SERVICE_FINANCIAL_RISK_SCORE` | campos: cpf, birthDate | busca: PF - Risco financeiro, score risco crédito rating inadimplência
+**Pessoa Física - Score biométrico**: `SERVICE_DATAVALID_CNH` | campos: cpf, image1 | busca: PF - Score biométrico, score risco crédito rating inadimplência
+**Pessoa Física - Score de crédito**: `SERVICE_CREDIT_SCORE` | campos: cpf | busca: PF - Score de crédito, score risco crédito rating inadimplência
+**Pessoa Física - Score de Crédito**: `SERVICE_QUOD_CREDIT_SCORE_PERSON` | campos: cpf | busca: PF - Score de Crédito, score risco crédito rating inadimplência
+**Pessoa Física - Score de Crédito Multidados**: `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | campos: cpf | busca: PF - Score de Crédito Multidados, score risco crédito rating inadimplência
+**Pessoa Física - Score de inadimplência**: `SERVICE_DEFAULT_RISK_SCORE` | campos: cpf | busca: PF - Score de inadimplência, score risco crédito rating inadimplência
+**Pessoa Física - Score de risco de fraude**: `SERVICE_FRAUD_RISK_SCORE` | campos: cpf, factor | busca: PF - Score de risco de fraude, score risco crédito rating inadimplência
+**Pessoa Física - Servidores públicos**: `SERVICE_PUBLIC_SERVANTS` | campos: cpf | busca: PF - Servidores públicos
+**Pessoa Física - Status do CPF na Receita Federal**: `SERVICE_RFB_PF` | campos: cpf, birthDate | busca: CPF Receita Federal, PF - Status do CPF na Receita Federal
+**Pessoa Física - Telefones de Pessoas Relacionadas**: `SERVICE_RELATED_PEOPLE_PHONES` | campos: cpf | busca: PF - Telefones de Pessoas Relacionadas, telefone celular validação contato
+**Pessoa Física - TSE - Local de votação**: `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | campos: cpf, birthDate, motherName | busca: CPF Receita Federal, PF - TSE - Local de votação
+**Pessoa Física - Validação de CPF com endereço**: `SERVICE_CPF_ADDRESS_VALIDATION` | campos: cpf, zipcode, numberAddress | busca: CPF Receita Federal, PF - Validação de CPF com endereço
+**Pessoa Física - Validação de CPF com telefone**: `SERVICE_CPF_PHONE_VALIDATION` | campos: cpf, phone | busca: CPF Receita Federal, PF - Validação de CPF com telefone, telefone celular validação contato
+**Pessoa Física - Validação de e-mail**: `SERVICE_EMAIL_VALIDATION` | campos: email | busca: PF - Validação de e-mail, email validação contato
+**Pessoa Física - Validação do E-Social**: `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | campos: cpf, nit | busca: PF - Validação do E-Social
+**Pessoa Jurídica - Ações Trabalhistas**: `SERVICE_LABOR_LAWSUITS` | campos: cnpj | busca: PJ - Ações Trabalhistas, processos judiciais jurídicos tribunal certidão
+**Pessoa Jurídica - Acordos Sindicais**: `SERVICE_SYNDICATE_AGREEMENTS` | campos: cnpj | busca: PJ - Acordos Sindicais
+**Pessoa Jurídica - Anúncios Online**: `SERVICE_ONLINE_ADS` | campos: cnpj | busca: PJ - Anúncios Online
+**Pessoa Jurídica - Arrecadação Simples Nacional - MEI**: `SERVICE_PGMEI` | campos: cnpj | busca: PJ - Arrecadação Simples Nacional - MEI
+**Pessoa Jurídica - Avaliações e Reputação**: `SERVICE_REPUTATIONS_AND_REVIEWS` | campos: cnpj | busca: PJ - Avaliações e Reputação
+**Pessoa Jurídica - Beneficiários Finais**: `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | campos: cnpj | busca: PJ - Beneficiários Finais
+**Pessoa Jurídica - Categoria Comercial**: `SERVICE_MERCHANT_CATEGORY_DATA` | campos: cnpj | busca: PJ - Categoria Comercial
+**Pessoa Jurídica - Certidão Negativa CNJ**: `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | campos: cnpj | busca: PJ - Certidão Negativa CNJ
+**Pessoa Jurídica - Certidão Negativa Correcional CGU**: `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | campos: cnpj | busca: PJ - Certidão Negativa Correcional CGU
+**Pessoa Jurídica - Certidão Negativa de Débitos Estaduais**: `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | campos: cnpj | busca: PJ - Certidão Negativa de Débitos Estaduais, dívida ativa débito cobrança inadimplência
+**Pessoa Jurídica - Certidão negativa de protesto**: `SERVICE_PROTEST_PJ` | campos: cnpj | busca: PJ - Certidão negativa de protesto
+**Pessoa Jurídica - CNPJ na Receita Federal on-demand**: `SERVICE_RFB_PJ_ON_DEMAND` | campos: cnpj | busca: CNPJ Receita Federal, CPF Receita Federal, PJ - CNPJ na Receita Federal on-demand
+**Pessoa Jurídica - Compliance de casas de apostas**: `SERVICE_COMPLIANCE_BET_PJ` | campos: cnpj | busca: PJ - Compliance de casas de apostas, apostas bets compliance bet
+**Pessoa Jurídica - Compliance de casas de apostas (alias curto)**: `SERVICE_COMPLIANCE_BET` | campos: cnpj | busca: PJ - Compliance de casas de apostas (alias curto), apostas bets compliance bet
+**Pessoa Jurídica - Cota de PCD**: `SERVICE_PCD_COMPANY` | campos: cnpj | busca: PJ - Cota de PCD
+**Pessoa Jurídica - Dados cadastrais de CNPJ**: `SERVICE_REGISTRATION_DATA_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Dados cadastrais de CNPJ
+**Pessoa Jurídica - Dados de Fundos de Investimento**: `SERVICE_INVESTMENT_FUND_DATA` | campos: cnpj | busca: PJ - Dados de Fundos de Investimento
+**Pessoa Jurídica - Dados Restritivos PJ**: `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | campos: cnpj | busca: PJ - Dados Restritivos PJ, score risco crédito rating inadimplência
+**Pessoa Jurídica - DAS MEI na Receita**: `SERVICE_DAS_MEI` | campos: cnpj | busca: CPF Receita Federal, PJ - DAS MEI na Receita
+**Pessoa Jurídica - Débitos ativos**: `SERVICE_ACTIVE_DEBT_PJ` | campos: cnpj | busca: PJ - Débitos ativos, dívida ativa débito cobrança inadimplência
+**Pessoa Jurídica - Débitos com a PGFN**: `SERVICE_PGFN_COMPANY` | campos: cnpj | busca: PJ - Débitos com a PGFN, dívida ativa débito cobrança inadimplência
+**Pessoa Jurídica - Distribuição de Processos dos Sócios**: `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | campos: cnpj | busca: PJ - Distribuição de Processos dos Sócios, processos judiciais jurídicos tribunal certidão
+**Pessoa Jurídica - Distribuição de Processos Judiciais**: `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | campos: cnpj | busca: PJ - Distribuição de Processos Judiciais, processos judiciais jurídicos tribunal certidão
+**Pessoa Jurídica - Doações eleitorais**: `SERVICE_ELECTORAL_DONORS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Doações eleitorais, dados eleitorais campanha doações candidato
+**Pessoa Jurídica - Doações eleitorais dos sócios**: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Doações eleitorais dos sócios, dados eleitorais campanha doações candidato
+**Pessoa Jurídica - Domínios CNPJ**: `SERVICE_DOMAINS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Domínios CNPJ, domínios sites presença digital
+**Pessoa Jurídica - Endereços estendidos**: `SERVICE_ADDRESSES_EXTENDED_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Endereços estendidos
+**Pessoa Jurídica - Enriquecimento de dados**: `SERVICE_CORPORATE_DATA_ENRICHMENT` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Enriquecimento de dados
+**Pessoa Jurídica - Evolução da Empresa**: `SERVICE_COMPANY_EVOLUTION` | campos: cnpj | busca: PJ - Evolução da Empresa
+**Pessoa Jurídica - Exposição e perfil na mídia dos sócios**: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | campos: cnpj | busca: PJ - Exposição e perfil na mídia dos sócios
+**Pessoa Jurídica - FGTS**: `SERVICE_FGTS` | campos: cnpj | busca: PJ - FGTS
+**Pessoa Jurídica - Flags Negativos PJ**: `SERVICE_QUOD_CREDIT_RISK_COMPANY` | campos: cnpj | busca: PJ - Flags Negativos PJ
+**Pessoa Jurídica - Fornecedores eleitorais**: `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | campos: cnpj | busca: CNPJ Receita Federal, PJ - Fornecedores eleitorais, dados eleitorais campanha doações candidato
+**Pessoa Jurídica - Histórico de Dados Básicos**: `SERVICE_HISTORY_BASIC_DATA` | campos: cnpj | busca: PJ - Histórico de Dados Básicos
+**Pessoa Jurídica - Influência do Quadro Societário**: `SERVICE_OWNERS_INFLUENCE` | campos: cnpj | busca: PJ - Influência do Quadro Societário
+**Pessoa Jurídica - KYC e Compliance do Grupo Econômico**: `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | campos: cnpj | busca: PJ - KYC e Compliance do Grupo Econômico, compliance KYC sanções PEP mídia
+**Pessoa Jurídica - KYC e Compliance dos Funcionários**: `SERVICE_EMPLOYEES_KYC` | campos: cnpj | busca: PJ - KYC e Compliance dos Funcionários, compliance KYC sanções PEP mídia
+**Pessoa Jurídica - KYC e compliance dos sócios**: `SERVICE_COMPANY_KYC_OWNERS` | campos: cnpj | busca: PJ - KYC e compliance dos sócios, compliance KYC sanções PEP sancionado interpol ofac
+**Pessoa Jurídica - Marketplaces**: `SERVICE_MARKETPLACE_DATA` | campos: cnpj | busca: PJ - Marketplaces
+**Pessoa Jurídica - Obras Civis**: `SERVICE_CIVIL_CONSTRUCTION` | campos: cnpj | busca: PJ - Obras Civis
+**Pessoa Jurídica - OCR de cartão CNPJ**: `SERVICE_OCR_CNPJ_CARD` | campos: image1 | busca: CNPJ Receita Federal, OCR cartão CNPJ comprovante inscrição empresa, OCR documento imagem base64 leitura extração, PJ - OCR de cartão CNPJ
+**Pessoa Jurídica - Optante pelo Simples Nacional**: `SERVICE_SIMPLES_COMPANY` | campos: cnpj | busca: PJ - Optante pelo Simples Nacional
+**Pessoa Jurídica - Percentual de Participação Societária**: `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | campos: cnpj | busca: PJ - Percentual de Participação Societária
+**Pessoa Jurídica - Processos jurídicos**: `SERVICE_JURIDICAL_PROCESSES_PJ` | campos: cnpj | busca: PJ - Processos jurídicos, processos judiciais jurídicos tribunal certidão
+**Pessoa Jurídica - Processos jurídicos dos sócios**: `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | campos: cnpj | busca: PJ - Processos jurídicos dos sócios, processos judiciais jurídicos tribunal certidão
+**Pessoa Jurídica - Projetos Públicos**: `SERVICE_PUBLIC_PROJECTS` | campos: cnpj | busca: PJ - Projetos Públicos
+**Pessoa Jurídica - Receita Federal - QSA**: `SERVICE_RF_QSA` | campos: cnpj | busca: CPF Receita Federal, PJ - Receita Federal - QSA
+**Pessoa Jurídica - Relacionamentos da empresa**: `SERVICE_COMPANY_RELATIONSHIP` | campos: cnpj | busca: PJ - Relacionamentos da empresa
+**Pessoa Jurídica - Relacionamentos do Grupo Econômico**: `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | campos: cnpj | busca: PJ - Relacionamentos do Grupo Econômico
+**Pessoa Jurídica - Risco de crédito**: `SERVICE_CREDIT_RISK_COMPANY` | campos: cnpj | busca: PJ - Risco de crédito, score risco crédito rating inadimplência
+**Pessoa Jurídica - Score de Crédito Multidados PJ**: `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | campos: cnpj | busca: PJ - Score de Crédito Multidados PJ, score risco crédito rating inadimplência
+**Pessoa Jurídica - Score de Crédito PJ**: `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | campos: cnpj | busca: PJ - Score de Crédito PJ, score risco crédito rating inadimplência
+**Pessoa Jurídica - Score de Crédito Quantum PJ**: `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | campos: cnpj | busca: PJ - Score de Crédito Quantum PJ, score risco crédito rating inadimplência
+**Pessoa Jurídica - SINTEGRA**: `SERVICE_SINTEGRA_CONSULTATION` | campos: cnpj, uf | busca: PJ - SINTEGRA
+**Pessoa Jurídica - Sócios de primeiro nível**: `SERVICE_FIRST_LEVEL_PARTNER` | campos: cnpj | busca: PJ - Sócios de primeiro nível
+**Pessoa Jurídica - Sócios na Receita Federal**: `SERVICE_COMPANY_RFB_OWNERS` | campos: cnpj | busca: CPF Receita Federal, PJ - Sócios na Receita Federal
+**Pessoa Jurídica - Status do CNPJ na Receita Federal**: `SERVICE_RFB_PJ` | campos: cnpj | busca: CNPJ Receita Federal, CPF Receita Federal, PJ - Status do CNPJ na Receita Federal
+**Pessoa Jurídica - Telefones**: `SERVICE_PHONES_EXTENDED_COMPANY` | campos: cnpj | busca: PJ - Telefones, telefone celular validação contato
 
 ## Arquivos auxiliares
 
-- Catálogo JSON: https://api-docs.idcerberus.com/services-catalog.json
-- Catálogo leve: https://api-docs.idcerberus.com/services-catalog.min.json
-- API Reference para LLM: https://api-docs.idcerberus.com/llms-api-reference.txt
-- Manifesto MCP: https://api-docs.idcerberus.com/mcp-manifest.json
-- Exemplos curl: https://api-docs.idcerberus.com/examples/auth.hml.curl
-- Lista de exemplos curl: https://api-docs.idcerberus.com/llms.txt#exemplos-curl
+1. Catálogo JSON: https://api-docs.idcerberus.com/services-catalog.json
+2. Catálogo leve: https://api-docs.idcerberus.com/services-catalog.min.json
+3. API Reference para LLM: https://api-docs.idcerberus.com/llms-api-reference.txt
+4. Manifesto MCP: https://api-docs.idcerberus.com/mcp-manifest.json
+5. Exemplos curl: https://api-docs.idcerberus.com/examples/auth.hml.curl
+6. Lista de exemplos curl: https://api-docs.idcerberus.com/llms.txt#exemplos-curl
