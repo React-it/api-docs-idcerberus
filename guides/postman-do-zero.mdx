@@ -7,22 +7,29 @@ description: Configure o Postman para testar token, service-api e OCR sem escrev
 
 Use este guia para montar uma collection simples e testar a API idCerberus em homologação.
 
+<Tip>
+  Se você só quer testar rápido sem instalar nada, cada página de endpoint na
+  [API Reference](/api-reference/autorização/gerar-token-de-api) já tem um
+  painel de teste embutido no navegador. Use o Postman quando quiser guardar
+  uma collection reutilizável para o time.
+</Tip>
+
 O objetivo é sair com dois requests funcionando:
 
 - `POST /api/token-generate`
 - `POST /api/service-api`
 
 <CardGroup cols={2}>
-  <Card title="Token primeiro" href="#3-crie-o-request-de-token">
+  <Card icon="key" title="Token primeiro" href="#3-crie-o-request-de-token">
     Sem token válido, nenhum service protegido deve ser testado.
   </Card>
-  <Card title="Service API depois" href="#4-crie-o-request-de-service-api">
+  <Card icon="server" title="Service API depois" href="#4-crie-o-request-de-service-api">
     Troque apenas o campo `service` e os campos obrigatórios de cada consulta.
   </Card>
-  <Card title="OCR com base64" href="#7-testar-ocr-com-imagem">
+  <Card icon="image" title="OCR com base64" href="#7-testar-ocr-com-imagem">
     Use PowerShell para copiar imagem em base64 e colar no body do Postman.
   </Card>
-  <Card title="Diagnóstico rápido" href="#9-se-der-erro">
+  <Card icon="stethoscope" title="Diagnóstico rápido" href="#9-se-der-erro">
     Veja o que olhar quando vier falta de acesso, imagem ausente, `{}` ou `ERROR`.
   </Card>
 </CardGroup>
@@ -184,7 +191,7 @@ Se quiser copiar um curl já montado, use:
 
 ## 7. Testar OCR com imagem
 
-Para OCR, o campo `image1` deve receber base64 puro. Não envie prefixo `data:image/jpeg;base64,`.
+Para OCR, o campo `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/jpeg;base64,` — os dois formatos funcionam.
 
 ### CNH
 

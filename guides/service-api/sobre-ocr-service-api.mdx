@@ -11,17 +11,26 @@ o que conferir antes de abrir chamado ou mexer na implementação.
 > ter o service ativo com API habilitada. Se a configuração do produto estiver
 > incompleta, a chamada pode autenticar e ainda assim retornar falta de acesso.
 
+<Info>
+  `SERVICE_OCR` pode ser processado por parceiros diferentes dependendo da
+  configuração do seu produto. Isso normalmente não muda o que você faz na
+  integração, mas pode fazer variar um campo pontual do `result` de tempos em
+  tempos (por exemplo, o tipo do documento reconhecido). Trate o contrato como
+  "os campos desta página costumam vir assim", não como uma garantia rígida
+  campo a campo.
+</Info>
+
 <CardGroup cols={2}>
-  <Card title="Documentos de identificação" href="./identificacao-de-documentos">
+  <Card icon="id-card" title="Documentos de identificação" href="./identificacao-de-documentos">
     Use `SERVICE_OCR` quando o documento for RG, CNH, OAB, RNE ou PASSAPORTE e o payload tiver `documentType`.
   </Card>
-  <Card title="Cartão CNPJ" href="./cartao-cnpj">
+  <Card icon="building" title="Cartão CNPJ" href="./cartao-cnpj">
     Use `SERVICE_OCR_CNPJ_CARD` para extrair CNPJ e texto OCR do cartão CNPJ.
   </Card>
-  <Card title="Comprovante de endereço" href="./comprovante-de-endereco">
+  <Card icon="house" title="Comprovante de endereço" href="./comprovante-de-endereco">
     Use `SERVICE_OCR_PROOF_OF_ADDRESS` para contas, faturas e comprovantes aceitos.
   </Card>
-  <Card title="Documento de emancipação" href="./documento-de-emancipacao">
+  <Card icon="file-signature" title="Documento de emancipação" href="./documento-de-emancipacao">
     Use `SERVICE_OCR_EMANCIPATION` para documentos variáveis, sem layout fixo.
   </Card>
 </CardGroup>
@@ -31,16 +40,16 @@ o que conferir antes de abrir chamado ou mexer na implementação.
 Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
 
 <CardGroup cols={2}>
-  <Card title="CNH" href="/examples/service-api-ocr-cnh.hml.curl">
+  <Card icon="id-card" title="CNH" href="/examples/service-api-ocr-cnh.hml.curl">
     Curl pronto com `SERVICE_OCR`, `documentType: CNH` e `image1`.
   </Card>
-  <Card title="RG frente e verso" href="/examples/service-api-ocr-rg.hml.curl">
+  <Card icon="id-card" title="RG frente e verso" href="/examples/service-api-ocr-rg.hml.curl">
     Curl pronto com `SERVICE_OCR`, `documentType: RG`, `image1` e `image2`.
   </Card>
-  <Card title="Cartão CNPJ" href="/examples/service-api-ocr-cnpj-card.hml.curl">
+  <Card icon="building" title="Cartão CNPJ" href="/examples/service-api-ocr-cnpj-card.hml.curl">
     Curl pronto para `SERVICE_OCR_CNPJ_CARD` com imagem do cartão CNPJ.
   </Card>
-  <Card title="Comprovante de endereço" href="/examples/service-api-ocr-proof-of-address.hml.curl">
+  <Card icon="house" title="Comprovante de endereço" href="/examples/service-api-ocr-proof-of-address.hml.curl">
     Curl pronto para `SERVICE_OCR_PROOF_OF_ADDRESS` com comprovante em base64.
   </Card>
 </CardGroup>
@@ -52,13 +61,13 @@ Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
 ## Jornada visual do OCR
 
 <CardGroup cols={3}>
-  <Card title="1. Escolha o documento">
+  <Card icon="clipboard-list" title="1. Escolha o documento">
     Defina se o teste é CNH, RG, cartão CNPJ, comprovante de endereço ou documento de emancipação antes de montar o payload.
   </Card>
-  <Card title="2. Use imagem real">
-    Envie imagem nítida, sem corte e em base64 puro. OCR ruim quase sempre começa com imagem ruim ou documento errado.
+  <Card icon="image" title="2. Use imagem real">
+    Envie imagem nítida e sem corte, em base64 (com ou sem o prefixo `data:image/...;base64,` — os dois funcionam). OCR ruim quase sempre começa com imagem ruim ou documento errado.
   </Card>
-  <Card title="3. Leia o result">
+  <Card icon="database" title="3. Leia o result">
     O retorno útil fica em `result`. Use `status`, `onboardingStatus` e `externalId` para rastrear o processamento.
   </Card>
 </CardGroup>
@@ -66,16 +75,16 @@ Se você só precisa validar a chamada em HML, comece pelos exemplos prontos:
 ## Blocos de decisão
 
 <CardGroup cols={2}>
-  <Card title="Tenho RG ou CNH">
+  <Card icon="id-card" title="Tenho RG ou CNH">
     Use `SERVICE_OCR` com `documentType`. Para RG, envie frente e verso quando o documento exigir os dois lados.
   </Card>
-  <Card title="Tenho cartão CNPJ">
+  <Card icon="building" title="Tenho cartão CNPJ">
     Use `SERVICE_OCR_CNPJ_CARD`. O mínimo esperado é CNPJ válido, `docType` coerente e `genericOcr` preenchido.
   </Card>
-  <Card title="Tenho comprovante">
+  <Card icon="house" title="Tenho comprovante">
     Use `SERVICE_OCR_PROOF_OF_ADDRESS`. O documento precisa ter endereço visível e texto suficiente para leitura.
   </Card>
-  <Card title="Tenho documento variável">
+  <Card icon="file-signature" title="Tenho documento variável">
     Use `SERVICE_OCR_EMANCIPATION`. Não trate CPF, RG ou código como obrigatórios, porque o layout pode variar.
   </Card>
 </CardGroup>
@@ -115,8 +124,9 @@ produto autorizou a chamada e qual `externalId` voltou.
 | Documento de emancipação | `SERVICE_OCR_EMANCIPATION` | `image1` | Texto OCR, campos extraídos e análise estruturada |
 | Comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Nome, endereço, tipo do documento, datas e valores |
 
-O campo `image1` deve receber base64 puro da imagem. Não envie prefixo como
-`data:image/jpeg;base64,`.
+O campo `image1` recebe o base64 da imagem. Funciona com base64 puro ou com o
+prefixo `data:image/jpeg;base64,` — o sistema aceita os dois formatos e
+remove o prefixo automaticamente quando presente.
 
 ## Qual imagem usar
 
@@ -160,7 +170,9 @@ Para copiar apenas o base64 da imagem:
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\caminho\documento.jpg")) | Set-Clipboard
 ```
 
-O valor copiado deve ser base64 puro. Não envie prefixo como `data:image/jpeg;base64,`.
+Esse valor já é base64 puro. Se a sua ferramenta gerar com o prefixo
+`data:image/jpeg;base64,` (comum em navegador, por exemplo), não precisa
+remover — o sistema aceita os dois formatos.
 
 ## Copiar e testar
 
@@ -237,7 +249,7 @@ Content-Type: application/json
 | Produto | O token usado pertence ao produto em que o service está ativo. |
 | Payload | O campo `service` usa o alias liberado no produto. |
 | Imagem | A imagem abre normalmente e o texto está legível para uma pessoa. |
-| Base64 | O valor enviado não tem prefixo `data:image/...;base64,`. |
+| Base64 | O valor decodifica de volta pra uma imagem válida (com ou sem prefixo `data:image/...;base64,`, os dois são aceitos). |
 | Retorno | Guarde `externalId`, `status.message` e o horário do teste. |
 
 Se esses pontos estiverem corretos e o OCR ainda falhar, o chamado já chega com
@@ -322,7 +334,7 @@ em `result`, ele não deve ser usado como contrato público da API.
 
 | Evite | Motivo |
 | --- | --- |
-| Enviar `data:image/jpeg;base64,...` | A API espera base64 puro. |
+| Enviar base64 truncado ou cortado no meio | O arquivo fica corrompido e o OCR falha ao decodificar. |
 | Usar foto de RG/CNH em service de face | Face e OCR usam fluxos diferentes. |
 | Usar selfie em OCR de documento | OCR precisa da imagem do documento. |
 | Testar RG enviando só a frente | O verso pode conter campos importantes. |
