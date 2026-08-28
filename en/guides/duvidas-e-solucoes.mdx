@@ -1,0 +1,244 @@
+---
+title: FAQ
+description: Direct answers to the most common integration questions, organized by topic, before opening a ticket
+---
+
+# FAQ
+
+This page brings together, in one place, the questions that come up most
+often during an idCerberus integration. The idea is simple: before opening a
+support ticket, look for your question here. A good share of reported "bugs"
+are expected behaviors that just weren't clear in the technical
+documentation.
+
+<Tip>
+  Use `Ctrl + F` (or `Cmd + F` on Mac) to search for a keyword on this page before going through the sections manually.
+</Tip>
+
+## Authentication and token
+
+<AccordionGroup>
+  <Accordion title="Do I need to generate a new token for every call?">
+    No. Generate an `access_token` at `POST /api/token-generate` and reuse it
+    until it expires, according to the `expires_in` field in the response.
+    Generating a new one for every call works, but it wastes an extra call
+    per request.
+  </Accordion>
+  <Accordion title="What happens if I call the API with an expired token?">
+    You get HTTP 401. Generate a new token with `client` and `secret` and
+    repeat the original call. This is a real HTTP status, different from
+    service permission failures that also show up as "401 in the body" (see
+    the status section below).
+  </Accordion>
+  <Accordion title="Are client and secret the same in staging and production?">
+    No. They're different credentials per environment. A staging
+    `client`/`secret` doesn't generate a valid token to call production, and
+    vice versa. The databases and the authentication realm are physically
+    separated between the two environments.
+  </Accordion>
+  <Accordion title="I don't have a client and secret yet. What do I do?">
+    This pair is released by React IT along with the contracted product,
+    it's not something you generate yourself. Request it by email at
+    [contact@react-it.com](mailto:contact@react-it.com).
+  </Accordion>
+</AccordionGroup>
+
+## Single-shot query (POST /api/service-api)
+
+<AccordionGroup>
+  <Accordion title="I got HTTP 200, but the query didn't work. Is that normal?">
+    Yes, and it's the number-one source of confusion in this API.
+    `POST /api/service-api` almost always returns HTTP 200, even when the
+    query failed completely. The real reason lives inside the body, in
+    `status.code` and `status.message`. Never decide success or failure
+    based only on the HTTP status.
+  </Accordion>
+  <Accordion title="What's the difference between a real 401/403 and an access error in the body?">
+    A real HTTP 401/403 only happens due to an authentication problem
+    (missing, expired, or wrong-environment token), and the call doesn't
+    even reach service processing. "Product not enabled for the service" and
+    "inactive product" don't generate HTTP 401/403 on this endpoint: the
+    call returns HTTP 200 with the problem described in `status.code` (400
+    for payload/service permission, 401 for inactive or not-found product)
+    inside the body.
+  </Accordion>
+  <Accordion title="The call returned 200/200, but result came back empty. Why?">
+    There are at least three distinct causes: the data source found nothing
+    for that document (a valid behavior, not every empty return is an
+    error), the image wasn't read successfully during OCR, or, if your
+    product is prepaid, the organization's balance is insufficient. That
+    last case is tricky because it also comes with HTTP 200 and
+    `status.code` 200, with `status.message` saying something like "Not
+    enough balance." Always read `status.message` when `result` comes back
+    empty, even with 200/200.
+  </Accordion>
+  <Accordion title="Can the alias I'm using be different in another product?">
+    No. Each service's alias (the value you send in `service`) is unique in
+    the system: there's no product-customized alias. If a service doesn't
+    work, the issue is that it's not enabled for your product, not that the
+    alias name is wrong (unless you typed it incorrectly).
+  </Accordion>
+  <Accordion title="An alias looks like it has a typo. Should I fix it?">
+    Only in one specific case: `SEVICE_ONLINE_BETTING_PROPENSITY` is
+    documented without the letter R in `SERVICE` on purpose. That's the
+    spelling implemented in the backend. Fixing that alias when you copy it
+    breaks the call. Outside that case, copy aliases exactly as they appear
+    in the [service catalog](/guides/indice-de-services).
+  </Accordion>
+</AccordionGroup>
+
+## Onboarding via SDK or Web Client
+
+<AccordionGroup>
+  <Accordion title="Are access_token and tokenOnboarding the same thing?">
+    No, and mixing up the two is a common source of errors. `access_token`
+    authenticates your application and expires within minutes.
+    `tokenOnboarding` identifies a specific registration and stays valid
+    throughout the whole process, even after the `access_token` expires. If
+    the `access_token` expires mid-flow, generate a new one: the
+    `tokenOnboarding` doesn't change.
+  </Accordion>
+  <Accordion title="How long does it take for an onboarding to leave IN_PROCESS?">
+    There's no fixed guaranteed time. Automatic processing is checked every
+    few seconds internally, but the total time depends on how many services
+    are in the pipeline and whether any of them depend on slow external
+    sources. Treat it as observed behavior, not a contractual SLA, and
+    always implement a maximum wait limit in your application.
+  </Accordion>
+  <Accordion title="Is REFUSED an error I should treat as a technical failure?">
+    No. `REFUSED` is a business result: the call itself succeeded (HTTP
+    200), and it's the registration that wasn't approved by the product's
+    rules. Don't treat `REFUSED` as something to retry; treat it as a
+    decision your application needs to reflect to the user.
+  </Accordion>
+</AccordionGroup>
+
+## Webhooks
+
+<AccordionGroup>
+  <Accordion title="I configured the webhook and got nothing. What happened?">
+    First, confirm that the event you're expecting actually triggers a
+    webhook: onboarding status change, manual review decision, or a
+    single-shot query at `POST /api/service-api` (when the product has a
+    webhook configured). Second, remember that a single-shot query fires the
+    webhook about 10 seconds after the HTTP response, not instantly. Third,
+    check that your URL is publicly reachable (idCerberus can't deliver to
+    an endpoint behind a firewall without access granted).
+  </Accordion>
+  <Accordion title="My endpoint failed to process an event. Will it be resent automatically?">
+    No. There's no automatic process that keeps resending deliveries that
+    failed. A new delivery only happens if the same onboarding's content
+    changes again later (which fires as a new delivery, not a retry), or if
+    someone with access to the [Backoffice](/en/guides/backoffice) manually
+    forces a resend on the screen. Because of this, never rely only on the
+    webhook. Keep polling
+    (`GET /api/onboarding/report/{tokenOnboarding}`) as a real safety net.
+  </Accordion>
+  <Accordion title="Does the webhook payload change depending on where it came from?">
+    Yes. A webhook originating from onboarding uses the full report format
+    (`tokenOnboarding`, `status`, `fields`, `services`). A webhook
+    originating from a single-shot query uses the same JSON that already
+    came back in the call's synchronous HTTP response (`result`, `status`,
+    `onboardingStatus`, `externalId`). They're different formats, so don't
+    assume a single structure.
+  </Accordion>
+</AccordionGroup>
+
+## OCR and images
+
+<AccordionGroup>
+  <Accordion title="Do I need to remove the data:image/...;base64, prefix before sending?">
+    No. The system accepts base64 with or without that prefix and removes
+    it automatically when present. If your tool generates base64 with the
+    prefix (common in browsers, for example), don't waste time stripping it.
+  </Accordion>
+  <Accordion title="OCR came back empty even with a good image. What should I check?">
+    Confirm three things in order: whether `documentType` matches the actual
+    document sent, whether the image is complete and legible (no cropped
+    edges), and whether the base64 wasn't truncated partway through sending.
+    That last one is common when the payload is built manually and the cut
+    happens with no visible error until it reaches the API.
+  </Accordion>
+  <Accordion title="Is the document-type field called docType or doc?">
+    It can vary. `SERVICE_OCR` is processed by different partners depending
+    on your product's configuration, and that can change one specific
+    `result` field (most commonly the field name that indicates the
+    recognized document type). Treat this page's contract as "the fields
+    usually come like this," not as a rigid field-by-field guarantee, and
+    always validate against the `result` returned in your real environment.
+  </Accordion>
+</AccordionGroup>
+
+## Backoffice
+
+<AccordionGroup>
+  <Accordion title="Does my backoffice login work to generate an API token?">
+    No. They're two different authentication mechanisms for the same
+    system. The backoffice login is a personal username and password.
+    `client` and `secret` authenticate your application and generate
+    `access_token` via `POST /api/token-generate`. See
+    [Authentication](/en/guides/autenticacao) for the API side.
+  </Accordion>
+  <Accordion title="Can I configure the webhook from the backoffice?">
+    Webhook setup (URL and key) is currently done by React IT on request,
+    it's not yet a self-service screen. See
+    [Webhooks](/en/guides/webhooks) for how to request activation.
+  </Accordion>
+  <Accordion title="Why is the API URL called backoffice-hml.idcerberus.com?">
+    `backoffice-hml.idcerberus.com` and `backoffice.idcerberus.com` are the
+    same URLs used by the admin panel. When you call `/api/...` on them,
+    you're talking to the API, not the visual interface. There's no
+    separate URL just for the API: it's the same domain, different
+    endpoints.
+  </Accordion>
+</AccordionGroup>
+
+## Environments
+
+<AccordionGroup>
+  <Accordion title="Can I test in production with no impact, just to see the return?">
+    Not recommended. Staging and production use completely separate
+    databases and credentials. Always test in staging first; use production
+    only after validating the flow, with real data and awareness that
+    production queries usually have a cost.
+  </Accordion>
+  <Accordion title="An error only happens in production, not in staging. Where do I start?">
+    Confirm, in this order: whether the token used is a production one (not
+    staging), whether the production product has the same services enabled
+    as the staging one, and whether the data tested in production is real
+    (staging usually has fake data that doesn't exist in production
+    sources). Configuration mismatch between environments is the most
+    common cause here.
+  </Accordion>
+</AccordionGroup>
+
+## Before opening a ticket
+
+If your question isn't here, gather this information before contacting
+support. It avoids back-and-forth and speeds up the response.
+
+| Information | Where to find it |
+| --- | --- |
+| Environment (staging or production) | The base URL used in the call |
+| `service` sent | The `service` field in your payload |
+| `status.code` and `status.message` | The response body, not the HTTP status |
+| `externalId` | Returned in the body, when present |
+| Approximate time of the call | To cross-reference with internal logs |
+
+See the full ticket format in
+[Common integration errors](/en/guides/erros-comuns-integracao#how-to-request-support).
+
+<CardGroup cols={2}>
+  <Card icon="triangle-exclamation" title="Common integration errors" href="/en/guides/erros-comuns-integracao">
+    Diagnosis by category: token, payload, image, and technical error.
+  </Card>
+  <Card icon="stethoscope" title="Troubleshooting" href="/en/guides/troubleshooting">
+    Specific technical symptoms, like PowerShell breaking curl.
+  </Card>
+  <Card icon="bolt" title="Webhooks" href="/en/guides/webhooks">
+    How it works, payload by source, and why there's no automatic retry.
+  </Card>
+  <Card icon="book-open" title="Glossary" href="/en/guides/glossario">
+    Technical terms used on this page and throughout the documentation.
+  </Card>
+</CardGroup>

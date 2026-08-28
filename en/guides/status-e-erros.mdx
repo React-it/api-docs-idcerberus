@@ -1,0 +1,207 @@
+---
+title: Status and errors
+description: Understand how to interpret responses, failures, and cases with no JSON body
+---
+
+# Status and errors
+
+The idCerberus API separates the HTTP status from the technical status
+returned in the body. When integrating, read both.
+
+## Standard structure
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "8e1ac243-4510-4ebf-ac7d-4b6d133dd619"
+}
+```
+
+| Field | Use |
+| --- | --- |
+| `result` | Data returned by the queried product |
+| `status.code` | Technical processing code |
+| `status.message` | Technical processing message |
+| `externalId` | External query identifier, when returned |
+
+## How to interpret it
+
+| Case | Practical meaning | Recommended action |
+| --- | --- | --- |
+| HTTP 200 and `status.code` 200 | The call was processed | Read `result` and follow the business rule |
+| HTTP 200 and `status.code` 400 | Invalid payload or service without permission on the product | Read `status.message`, validate parameters and permission |
+| HTTP 200 and `status.code` 401 | Product inactive or not found for the `client` used | Confirm whether the product is active, it's not a token problem |
+| HTTP 401 or 403 (real) | Token missing, expired, or from another environment, rejected before processing | Generate a new token in the correct environment |
+| Timeout | External source or network may have been slow | Apply controlled retry, without an aggressive loop |
+| No JSON body | The endpoint returns another type of content | Handle it per the contract, like a PDF in the onboarding report |
+
+<Warning>
+  A real exception to the first row of the table: if your product is prepaid
+  and the balance is insufficient, the call returns HTTP 200 **and**
+  `status.code` 200, but `status.message` carries something like "Not enough
+  balance" and `result` comes back empty. Always read `status.message` when
+  `result` comes back empty, even with HTTP 200 and `status.code` 200.
+</Warning>
+
+## Common problems
+
+| Problem | Possible cause | How to resolve it |
+| --- | --- | --- |
+| Invalid token | Token generated with wrong credentials or environment | Generate a new token in the same environment as the call |
+| Expired token | The token's validity period ended | Generate a new token and repeat the call |
+| Missing `Authorization` | Header wasn't sent | Send `Authorization: Bearer {jwt_token}` |
+| Missing `Content-Type` | JSON body sent without the correct header | Send `Content-Type: application/json` |
+| Missing `service` field | Payload didn't specify which product to run | Include the `service` field in the body |
+| Invalid CPF or CNPJ | Incomplete, masked, or out-of-format document | Review the value sent before calling the API |
+| Service without permission | Product not enabled for the account | Confirm the service's release with the responsible team |
+| External source unavailable | Query depends on an external agency, base, or processing | Retry with a controlled backoff or try again later |
+| Wrong environment URL | Staging token used in production, or the reverse | Check whether the base URL and token are from the same environment |
+
+## Error examples
+
+### Missing or invalid token
+
+When the `Authorization` header isn't sent, is expired, or belongs to
+another environment, the API can return an authentication error.
+
+```http
+HTTP/1.1 401 Unauthorized
+```
+
+How to fix it:
+
+1. Generate a new token at `POST /api/token-generate`.
+2. Confirm the token was generated in the same environment as the call.
+3. Send the header in the format below.
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+### Missing `service` field
+
+The `POST /api/service-api` endpoint needs the `service` field to know which
+product to run.
+
+Incorrect payload:
+
+```json
+{
+  "cpf": "cpf"
+}
+```
+
+Correct payload:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+### Missing required document
+
+If the service requires `cpf`, `cnpj`, an image, or another required field,
+send the corresponding field in the body.
+
+Example response:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CPF não encontrado."
+  }
+}
+```
+
+How to fix it:
+
+```json
+{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf"
+}
+```
+
+### Product without permission or not enabled
+
+If the credential doesn't have access to the product, the call can fail
+even with a valid token.
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Serviço não disponível para este cliente."
+  }
+}
+```
+
+How to fix it:
+
+1. confirm that `service` is written exactly as in the documentation;
+2. validate whether the product is enabled for the account;
+3. confirm you're calling the correct environment.
+
+### External source unavailable
+
+Some queries depend on external databases. When the source fails or is
+slow, the API can return a technical error.
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Failed to fetch information"
+  }
+}
+```
+
+How to handle it:
+
+1. record the `externalId`, when it exists;
+2. try again later with a limited retry;
+3. don't run an infinite loop of calls;
+4. if the error persists, send the payload and the attempt time to support.
+
+## A negative result isn't a technical error
+
+Some services return a negative query as a technical success. Examples:
+
+| Result | Example |
+| --- | --- |
+| Nothing on record | Criminal certificates or legal cases |
+| Customer not found | CPF validation with an address |
+| No debts | Active debts with zeroed totals |
+| Not PEP | Person not politically exposed |
+
+In these cases, the call can have `status.code` 200 and still represent a
+negative business response.
+
+## Handling best practices
+
+1. Record the `externalId` when it's returned.
+2. Don't use only the HTTP status to decide business success.
+3. Handle an expired token by generating a new one.
+4. Validate required fields before calling the API.
+5. Avoid automatic retry on payload errors.
+6. Use limited retries for timeouts or temporary external source failures.
+
+## Decision example
+
+```js
+if (response.status?.code !== 200) {
+    throw new Error(response.status?.message || "Falha no processamento");
+}
+
+return response.result;
+```

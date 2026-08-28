@@ -1,0 +1,93 @@
+---
+title: Integration best practices
+description: Recommendations for integrating the idCerberus API securely and reliably
+---
+
+# Integration best practices
+
+Use these recommendations to reduce failures, avoid exposing credentials,
+and get your integration ready for production.
+
+## Credentials and token
+
+| Practice | Reason |
+| --- | --- |
+| Generate the token in the back end | Avoids exposing `client` and `secret` |
+| Don't put `client` and `secret` in the front end | Users could inspect the credentials |
+| Don't version credentials in Git | Avoids accidental leaks |
+| Renew the token when it expires | The token has limited validity |
+| Don't log the full JWT | The token can allow protected calls |
+
+## Environments
+
+1. Use staging for development and testing.
+2. Use production only after validating the flow.
+3. Don't mix a staging token with the production URL.
+4. Don't mix a production token with the staging URL.
+
+| Environment | Base URL |
+| --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` |
+| Production | `https://backoffice.idcerberus.com` |
+
+## Requests
+
+1. Always send `Content-Type: application/json` on requests with a JSON body.
+2. Always send `Authorization: Bearer {jwt_token}` on protected calls.
+3. Validate required fields before calling the API.
+4. Send CPF/CNPJ in the format expected by your flow.
+5. Use a timeout on HTTP calls.
+
+## Retry
+
+Use retry only when it makes sense.
+
+| Situation | Retry? |
+| --- | --- |
+| Timeout | Yes, with a limit |
+| Temporary network failure | Yes, with a limit |
+| Expired token | Generate a new token and repeat |
+| Invalid payload | No |
+| Service without permission | No |
+| Invalid CPF/CNPJ | No |
+
+## Responses
+
+1. Don't use only the HTTP status to decide business success.
+2. Also read `status.code` and `status.message`.
+3. Handle a `status.code` other than 200.
+4. Save `externalId` when it's returned.
+5. Remember that a negative result isn't necessarily a technical error.
+
+Example:
+
+```js
+if (body.status?.code !== 200) {
+  throw new Error(body.status?.message || "Falha no processamento");
+}
+
+return body.result;
+```
+
+## Logs
+
+Record useful information for investigation, but without exposing sensitive
+data.
+
+| Safe to log | Avoid logging |
+| --- | --- |
+| Endpoint called | `client` and `secret` |
+| `service` code | Full JWT token |
+| `status.code` | Full document without a need |
+| `status.message` | Base64 images |
+| `externalId` | Selfies and documents |
+
+When you need to log CPF, CNPJ, phone, or email for investigation, prefer
+masking part of the value. Tokens, images, selfies, and documents in base64
+shouldn't be written to open logs.
+
+## Production
+
+Before going to production, validate the flow in staging, generate a token
+with the correct environment's credentials, and confirm your application
+handles success, error, and timeout responses.

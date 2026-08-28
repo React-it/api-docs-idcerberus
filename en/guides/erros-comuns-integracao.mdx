@@ -1,0 +1,200 @@
+---
+title: Common integration errors
+description: Practical diagnosis for token, access, payload, base64, OCR, empty return, and external failures
+---
+
+# Common integration errors
+
+Use this page when a call fails, returns empty, or looks different than expected.
+
+The most important rule: in `POST /api/service-api`, look at the response body, not just the HTTP status. A call can return HTTP 200 and still have processing come back as `REFUSED` or `ERROR`.
+
+<Info>
+  Looking for a specific technical symptom (environment error, PowerShell
+  breaking `curl`, a response that isn't JSON)? See
+  [Troubleshooting](/en/guides/troubleshooting), which is more to the point
+  for those cases.
+</Info>
+
+<CardGroup cols={2}>
+  <Card icon="key" title="Token or access" href="#token-or-access">
+    Missing/expired token (HTTP 401/403) or product without permission for
+    the service (HTTP 200, `status.code` in the body).
+  </Card>
+  <Card icon="code" title="Payload" href="#payload">
+    Missing required field, wrong alias, invalid CPF/CNPJ, or malformed JSON.
+  </Card>
+  <Card icon="image" title="Image and OCR" href="#image-and-ocr">
+    Base64, `image1`, `image2`, illegible document, or OCR without the expected field.
+  </Card>
+  <Card icon="bug" title="Technical error" href="#technical-error">
+    `ERROR`, `500`, external failure, timeout, or investigation by `externalId`.
+  </Card>
+</CardGroup>
+
+## Quick diagnosis
+
+| Symptom | Common cause | How to fix it |
+| --- | --- | --- |
+| `401` or `403` | Token missing, expired, invalid, or from another environment | Generate a new token in the same environment as the call |
+| `Don't have access to the service` | Product without the service active or without API enabled | Check the product setup before touching the payload |
+| `Unable to convert http message` | Invalid JSON, broken base64, or malformed body | Validate the JSON and generate the base64 again |
+| API returns HTTP 200 with `REFUSED` | The call authenticated, but the business rule declined it | Read `status.message` and treat it as a valid decline |
+| API returns HTTP 200 with `ERROR` | A technical failure happened during processing | Save `externalId`, the time, and the service called |
+| Empty result `{}` | Data without a match, image not readable, or service with no return for that case | Test valid data and check `status.message` |
+| Empty result `{}` with HTTP 200 and `status.code` 200 | On a prepaid product, it could be insufficient balance (`status.message`: "Not enough balance") | Check the organization's balance before investigating the payload |
+| Expected field didn't come back | Field doesn't exist in the source or wasn't safely extracted | Don't make up data; treat a missing field as optional when the contract allows it |
+| Base64 rejected | Broken encoding, truncated base64, or invalid file | Generate the base64 again from the original file (with or without the `data:image/...;base64,` prefix, both are accepted) |
+| CPF/CNPJ not found | Masked or incomplete document, bad data, or wrong environment | Test without a mask and check the base URL |
+| Timeout | External source was slow or unavailable | Apply controlled retry and record the `externalId`, when present |
+
+## Token or access
+
+Before investigating your code, confirm:
+
+1. The call is going to the right environment.
+2. The token was generated in the same environment.
+3. The header is `Authorization: Bearer {jwt_token}`.
+4. The product linked to the token has the service active.
+5. The service is enabled for the API.
+6. The alias sent in `service` is the calling alias configured for the product.
+
+Typical example:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+In this case, the first thing to check is the product configuration. There's no point swapping the CPF, CNPJ, or image before confirming access.
+
+## Payload
+
+Fields that most often cause errors:
+
+| Field | Watch out for |
+| --- | --- |
+| `service` | Must match the alias enabled on the product |
+| `cpf` | Send without a mask when the service doesn't document another format |
+| `cnpj` | Send the full CNPJ, preferably without a mask |
+| `birthDate` | Use the format documented for the service |
+| `documentType` | For React OCR, use `CNH` or `RG` depending on the document |
+| `image1`, `image2`, `selfie1` | Confirm whether the service expects an image, selfie, front, back, or comparison |
+| `key` | Use only when the flow supports a key for an already-stored file |
+
+Minimal valid JSON example:
+
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "00000000000000"
+}
+```
+
+## Image and OCR
+
+For OCR services:
+
+1. Use a real, sharp, complete image.
+2. Send the full base64, without truncating it (with or without the `data:image/jpeg;base64,` prefix, both formats work).
+3. For RG, send front and back when the service requires it.
+4. For face queries, use a real selfie, not a photo of a document.
+5. Check that the document sent matches the service.
+
+Example error for a missing image:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Action: review the payload. For RG, send `image1` with the front and `image2` with the back.
+
+If the return is:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Action: test a sharper image and confirm the document type matches the service.
+
+## Technical error
+
+A technical error usually shows up as `ERROR` or a failure message in the body:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Falha ao realizar OCR"
+  },
+  "onboardingStatus": "ERROR",
+  "externalId": "..."
+}
+```
+
+In this situation, save:
+
+1. environment;
+2. endpoint;
+3. service sent;
+4. approximate time;
+5. `externalId`;
+6. `status.code`;
+7. `status.message`;
+8. the payload without sensitive data.
+
+Don't send a JWT token, `client`, `secret`, CPF, CNPJ, a real image, or full base64 over open channels.
+
+## Checklist before contacting support
+
+1. I confirmed the call's environment.
+2. I generated a new token in the same environment.
+3. I checked the service's alias in the product.
+4. I validated that the service is active and has the API enabled.
+5. I validated the JSON before sending it.
+6. I removed the mask when the contract didn't require one.
+7. For OCR, I checked whether the base64 is clean.
+8. For OCR, I opened the image and confirmed it's legible.
+9. I saved `externalId`, the time, and `status.message`.
+
+## How to request support
+
+Send a summary in this format:
+
+```txt
+Environment: HML or PROD
+Endpoint: POST /api/service-api
+Service: SERVICE_EXAMPLE
+Approximate time: 2026-01-01 10:30
+ExternalId: ...
+Status code: ...
+Status message: ...
+What was expected: ...
+What came back: ...
+```
+
+Don't include credentials, tokens, real documents, real images, or full base64.

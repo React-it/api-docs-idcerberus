@@ -1,0 +1,136 @@
+---
+title: Troubleshooting
+description: Fix common problems when integrating with the idCerberus API
+---
+
+# Troubleshooting
+
+Use this page when a call isn't working as expected.
+
+<Info>
+  Page focused on specific technical symptoms (401/403, wrong environment,
+  PowerShell). For a broader diagnosis, with cards by category and a
+  message template to request support, see
+  [Common integration errors](/en/guides/erros-comuns-integracao).
+</Info>
+
+## I got a 401 or 403 (HTTP)
+
+In `POST /api/service-api`, a real HTTP 401/403 only happens due to an
+authentication problem: the call doesn't even reach service processing.
+
+1. Missing token.
+2. Expired token.
+3. Token generated in another environment.
+
+How to fix it:
+
+1. Generate a new token.
+2. Confirm whether the URL is staging or production.
+3. Send the header:
+
+```txt
+Authorization: Bearer {jwt_token}
+```
+
+<Warning>
+  "Product not enabled for the account" and "service without permission"
+  **don't** generate HTTP 401/403 on this endpoint. The call returns HTTP
+  200 with the problem described in `status.message` (`status.code` 400 or
+  401 inside the body). See the next section.
+</Warning>
+
+## HTTP 200, but status.code other than 200
+
+This is the most common error case in `POST /api/service-api`: the call
+"worked" in the HTTP sense, but the body shows the real problem.
+
+| `status.code` in the body | Cause | Note |
+| --- | --- | --- |
+| 400 | Invalid body, missing required field, wrong `service`, invalid CPF/CNPJ, external source unavailable | Read `status.message` for the exact reason |
+| 401 | Product not found or inactive for the `client` used | Different from HTTP 401: here the token is valid, it's the product that's disabled |
+
+How to fix it:
+
+1. Read `status.message`.
+2. Check whether the body is valid JSON.
+3. Check whether you sent `Content-Type: application/json`.
+4. Check whether the `service` field is correct.
+5. Compare the body with the API Reference example.
+
+## The token works in staging, but not in production
+
+The token and URL need to be from the same environment.
+
+| Environment | URL |
+| --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` |
+| Production | `https://backoffice.idcerberus.com` |
+
+Generate a new token in production using production credentials.
+
+## cURL works, but my code doesn't
+
+Check:
+
+1. Base URL.
+2. HTTP method.
+3. Headers.
+4. JSON body.
+5. Timeout.
+6. JSON serialization.
+7. `Authorization` header.
+8. `Content-Type` header.
+
+Compare your code's request with the API Reference request.
+
+## PowerShell breaks the cURL command
+
+On Windows, use `curl.exe` instead of `curl`.
+
+```powershell
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" `
+  --header "Content-Type: application/json" `
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+Plain `curl` alone can be interpreted by PowerShell as a different alias.
+
+## The query returned success, but not the data I expected
+
+Not every return with no data is a technical error.
+
+Examples:
+
+1. certificate with "nothing on record";
+2. CPF not found in an address validation;
+3. person not politically exposed;
+4. company with no debts;
+5. empty list of relationships.
+
+Read `result` and apply your product's business rule.
+
+## The response didn't come back as JSON
+
+Some endpoints return another type of content. Example:
+
+```txt
+GET /api/history-onboarding-report/{tokenOnboarding}
+```
+
+This endpoint returns a PDF, not JSON.
+
+## Quick checklist
+
+Before requesting support, check:
+
+1. Is the URL correct?
+2. Is the HTTP method correct?
+3. Was the token generated in the same environment?
+4. Was the `Authorization` header sent?
+5. Was the `Content-Type` header sent?
+6. Is the body valid JSON?
+7. Is the `service` field correct?
+8. Is the CPF/CNPJ in the expected field?
+9. Is the service enabled for the account?
+10. Did you read `status.message`?
