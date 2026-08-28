@@ -390,7 +390,7 @@ const additionalPublicApiServices = [
   ['SERVICE_PROTEST_PF', 'Certidão negativa de protesto PF', 'Pessoa Física', { service: 'SERVICE_PROTEST_PF', cpf: 'cpf' }],
   ['SERVICE_PUBLIC_SERVANTS', 'Servidores públicos', 'Pessoa Física', { service: 'SERVICE_PUBLIC_SERVANTS', cpf: 'cpf' }],
   ['SERVICE_RELATED_PEOPLE', 'Pessoas relacionadas', 'Pessoa Física', { service: 'SERVICE_RELATED_PEOPLE', cpf: 'cpf' }],
-  ['SERVICE_RFB_PF', 'CPF na Receita Federal', 'Pessoa Física', { service: 'SERVICE_RFB_PF', cpf: 'cpf', dataDeNascimento: 'yyyy-MM-dd (opcional)' }],
+  ['SERVICE_RFB_PF', 'CPF na Receita Federal', 'Pessoa Física', { service: 'SERVICE_RFB_PF', cpf: 'cpf', birthDate: 'yyyy-MM-dd (opcional)' }],
   ['SERVICE_SOCIAL_ASSISTANCE_EXTENDED', 'Benefícios sociais estendidos PF', 'Pessoa Física', { service: 'SERVICE_SOCIAL_ASSISTANCE_EXTENDED', cpf: 'cpf' }],
   ['SERVICE_ACTIVE_DEBT_PJ', 'Débitos ativos PJ', 'Pessoa Jurídica', { service: 'SERVICE_ACTIVE_DEBT_PJ', cnpj: 'cnpj' }],
   ['SERVICE_ADDRESSES_EXTENDED_CNPJ', 'Endereços estendidos CNPJ', 'Pessoa Jurídica', { service: 'SERVICE_ADDRESSES_EXTENDED_CNPJ', cnpj: 'cnpj' }],
@@ -671,7 +671,7 @@ function mcpHintsForService(service, curlExampleUrls) {
   const notes = [];
 
   if (tags.has('ocr')) {
-    notes.push('Use imagem real e legível do documento. Base64 deve ser puro, sem prefixo data:image.');
+    notes.push('Use imagem real e legível do documento. Base64 com ou sem prefixo data:image funciona.');
     notes.push('Se o OCR não extrair um campo, explique que o retorno depende da leitura da imagem e não invente valor.');
   }
 
@@ -991,7 +991,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'SERVICE_RFB_PF', cpf: '00000000000', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
+        body: { service: 'SERVICE_RFB_PF', cpf: '00000000000', birthDate: 'yyyy-MM-dd (opcional)' },
       }),
     },
     {
@@ -1001,7 +1001,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'SERVICE_RFB_PF', cpf: '00000000000', dataDeNascimento: 'yyyy-MM-dd (opcional)' },
+        body: { service: 'SERVICE_RFB_PF', cpf: '00000000000', birthDate: 'yyyy-MM-dd (opcional)' },
       }),
     },
     {
@@ -1206,16 +1206,16 @@ function pushSearchHowTo(lines) {
   lines.push('A busca funciona melhor quando o termo aparece como título, alias ou texto da página. Se não souber o alias exato, pesquise pelo tipo de documento, dado ou problema que quer resolver.');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Tenho um CPF" href="#pessoa-fisica">');
+  lines.push(' <Card icon="id-card" title="Tenho um CPF" href="#pessoa-fisica">');
   lines.push(' Pesquise por \`cpf\`, \`receita\`, \`score\`, \`risco\`, \`telefone\`, \`email\`, \`ocr\`, \`face\` ou \`processos\`.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Tenho um CNPJ" href="#pessoa-juridica">');
+  lines.push(' <Card icon="building" title="Tenho um CNPJ" href="#pessoa-juridica">');
   lines.push(' Pesquise por \`cnpj\`, \`receita\`, \`risco de crédito\`, \`sócios\`, \`domínios\`, \`cartão CNPJ\` ou \`compliance\`.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">');
+  lines.push(' <Card icon="image" title="Tenho uma imagem" href="/guides/service-api/sobre-ocr-service-api">');
   lines.push(' Pesquise por \`OCR\`, \`CNH\`, \`RG\`, \`cartão CNPJ\`, \`comprovante de endereço\`, \`base64\` ou \`image1\`.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">');
+  lines.push(' <Card icon="code" title="Quero copiar payload" href="/api-reference/services-pessoa-fisica">');
   lines.push(' Vá para o API Reference quando precisar de body, curl, response resumido e erro comum.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -1232,7 +1232,7 @@ function pushSearchHowTo(lines) {
     ['telefone ou email', 'Validações e histórico de contato.'],
   ];
   for (const [title, body] of shortcuts) {
-    lines.push(' <Card title="' + title + '">');
+    lines.push(' <Card icon="layer-group" title="' + title + '">');
     lines.push(' ' + body);
     lines.push(' </Card>');
   }
@@ -1283,10 +1283,10 @@ function renderServicesIndex(catalog) {
   lines.push('## Services por tipo de pessoa');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Pessoa Física" href="#pessoa-fisica">');
+  lines.push(' <Card icon="id-card" title="Pessoa Física" href="#pessoa-fisica">');
   lines.push(' ' + catalog.filter((service) => service.category === 'Pessoa Física').length + ' services para CPF, biometria, OCR, contatos, risco, crédito, compliance e dados eleitorais.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Pessoa Jurídica" href="#pessoa-juridica">');
+  lines.push(' <Card icon="building" title="Pessoa Jurídica" href="#pessoa-juridica">');
   lines.push(' ' + catalog.filter((service) => service.category === 'Pessoa Jurídica').length + ' services para CNPJ, Receita Federal, sócios, contatos, risco, compliance, OCR e dados societários.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -1317,10 +1317,10 @@ function renderServicesIndex(catalog) {
   lines.push('Use o API Reference para copiar body, curl e response resumido de cada produto:');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Services de pessoa física" href="/api-reference/services-pessoa-fisica">');
+  lines.push(' <Card icon="id-card" title="Services de pessoa física" href="/api-reference/services-pessoa-fisica">');
   lines.push(' Catálogo completo com payloads e responses para services de CPF.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Services de pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
+  lines.push(' <Card icon="building" title="Services de pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
   lines.push(' Catálogo completo com payloads e responses para services de CNPJ.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -1916,7 +1916,7 @@ const serviceReturnDetails = {
   },
   SERVICE_PERSON_DATA_ENRICHMENT: {
     summary: 'Retorna dados cadastrais do CPF, incluindo nome, nascimento, situacao cadastral, filiacao, obito, idade, genero e atributos disponiveis.',
-    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', registrationStatus: 'REGULAR', motherName: 'Nome da mae' },
+    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', status: 'REGULAR', motherName: 'Nome da mae' },
   },
   SERVICE_PERSON_DATA_MODELING: {
     summary: 'Retorna modelagem consolidada da pessoa, reunindo dados cadastrais, contatos, enderecos, vinculos, indicadores e resumos derivados.',
@@ -1980,11 +1980,11 @@ const serviceReturnDetails = {
   },
   SERVICE_RFB_PF: {
     summary: 'Retorna situacao do CPF na Receita Federal, incluindo nome, nascimento, status cadastral, comprovante/protocolo e dados fiscais disponiveis.',
-    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', registrationStatus: 'REGULAR', protocol: 'protocolo' },
+    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', status: 'REGULAR', protocol: 'protocolo' },
   },
   SERVICE_RFB_PF_ON_DEMAND: {
     summary: 'Retorna situacao atualizada do CPF consultada sob demanda na Receita Federal, com nome, nascimento, status cadastral e protocolo.',
-    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', registrationStatus: 'REGULAR', protocol: 'protocolo' },
+    result: { cpf: 'cpf', name: 'Nome completo', birthDate: 'yyyy-MM-dd', status: 'REGULAR', protocol: 'protocolo' },
   },
   SERVICE_RFB_PJ: {
     summary: 'Retorna situacao do CNPJ na Receita Federal, incluindo razao social, nome fantasia, situacao cadastral, abertura, CNAEs e endereco.',
@@ -2003,7 +2003,7 @@ const serviceReturnDetails = {
     result: { cpf: 'cpf', totalBenefits: 1, benefits: [{ program: 'Programa social', status: 'ACTIVE' }], indicators: [] },
   },
   SEVICE_ONLINE_BETTING_PROPENSITY: {
-    summary: 'Retorna propensao do CPF a apostas online, com score, faixa de propensao, indicadores comportamentais e sinais associados quando disponiveis.',
+    summary: 'Retorna propensão do CPF a apostas online, com score, faixa de propensão, indicadores comportamentais e sinais associados quando disponíveis. Atenção: o alias é `SEVICE_ONLINE_BETTING_PROPENSITY` (sem a letra R em SERVICE) — essa é a grafia implementada no backend, copie exatamente assim.',
     result: { cpf: 'cpf', propensityScore: 78, propensityLevel: 'HIGH', indicators: ['sinal encontrado'] },
   },
   SERVICE_QUOD_CREDIT_SCORE_COMPANY: {
@@ -2589,16 +2589,16 @@ function resultKeysSummary(service) {
 
 function pushServiceSummaryCards(lines, service, required, optional) {
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Entrada">');
+  lines.push(' <Card icon="arrow-right-to-bracket" title="Entrada">');
   lines.push(' Campos obrigatórios: ' + required + '.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Resultado">');
+  lines.push(' <Card icon="list-check" title="Resultado">');
   lines.push(' Principais campos em \`result\`: ' + resultKeysSummary(service) + '.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Status da chamada">');
+  lines.push(' <Card icon="circle-info" title="Status da chamada">');
   lines.push(' Use \`status.code\` e \`status.message\` para entender se a consulta processou corretamente.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Campos opcionais">');
+  lines.push(' <Card icon="sliders" title="Campos opcionais">');
   lines.push(' ' + optional);
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -2609,16 +2609,16 @@ function pushPublicResponseCards(lines) {
   lines.push('### Como consumir o retorno');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="result">');
+  lines.push(' <Card icon="database" title="result">');
   lines.push(' Dados públicos do service. É o objeto principal para mapear no sistema do cliente.');
   lines.push(' </Card>');
-  lines.push(' <Card title="status">');
+  lines.push(' <Card icon="circle-check" title="status">');
   lines.push(' Status técnico da chamada, com \`code\` e \`message\`.');
   lines.push(' </Card>');
-  lines.push(' <Card title="onboardingStatus">');
+  lines.push(' <Card icon="flag" title="onboardingStatus">');
   lines.push(' Quando retornado, resume o desfecho operacional: \`APPROVED\`, \`REFUSED\` ou \`ERROR\`.');
   lines.push(' </Card>');
-  lines.push(' <Card title="externalId">');
+  lines.push(' <Card icon="fingerprint" title="externalId">');
   lines.push(' Identificador para rastrear a consulta em suporte, logs ou auditoria.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -2660,16 +2660,16 @@ function pushApiReferenceReturnCards(lines) {
   lines.push('## Como interpretar qualquer retorno');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Dados úteis">');
+  lines.push(' <Card icon="database" title="Dados úteis">');
   lines.push(' Leia primeiro o objeto `result`. Ele concentra os campos de negócio que o cliente deve consumir.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Status técnico">');
+  lines.push(' <Card icon="gauge" title="Status técnico">');
   lines.push(' Use `status.code` e `status.message` para entender se a chamada processou, recusou ou falhou.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Rastreio">');
+  lines.push(' <Card icon="magnifying-glass" title="Rastreio">');
   lines.push(' Guarde `externalId` em testes, suporte e auditoria. Ele é o identificador mais prático da consulta.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Contrato limpo">');
+  lines.push(' <Card icon="file-lines" title="Contrato limpo">');
   lines.push(' Não dependa de metadados internos. A integração deve mapear somente os campos públicos documentados.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -2680,16 +2680,16 @@ function pushApiReferenceChecklist(lines) {
   lines.push('## Checklist antes de abrir chamado');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Acesso">');
+  lines.push(' <Card icon="key" title="Acesso">');
   lines.push(' Confirme se o token pertence ao produto certo e se o service está ativo para API.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Payload">');
+  lines.push(' <Card icon="code" title="Payload">');
   lines.push(' Confirme o valor exato de `service` e os campos obrigatórios listados no accordion.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Ambiente">');
+  lines.push(' <Card icon="globe" title="Ambiente">');
   lines.push(' Valide se a chamada foi feita em HML ou produção com o token do mesmo ambiente.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Evidência">');
+  lines.push(' <Card icon="camera" title="Evidência">');
   lines.push(' Separe body sem dados sensíveis, horário, ambiente, `status.message` e `externalId`.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -2974,13 +2974,13 @@ function renderUseCasePage(catalog) {
   lines.push('</Info>');
   lines.push('');
   lines.push('<CardGroup cols={3}>');
-  lines.push(' <Card title="Pessoa física" href="/api-reference/services-pessoa-fisica">');
+  lines.push(' <Card icon="id-card" title="Pessoa física" href="/api-reference/services-pessoa-fisica">');
   lines.push(' CPF, dados cadastrais, OCR, biometria, risco, compliance e contatos.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
+  lines.push(' <Card icon="building" title="Pessoa jurídica" href="/api-reference/services-pessoa-juridica">');
   lines.push(' CNPJ, Receita Federal, risco de crédito, sócios, domínios, compliance e OCR.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Receitas prontas" href="/guides/receitas-prontas">');
+  lines.push(' <Card icon="list-check" title="Receitas prontas" href="/guides/receitas-prontas">');
   lines.push(' Fluxos prontos com payload, retorno esperado e erro comum.');
   lines.push(' </Card>');
   lines.push('</CardGroup>');
@@ -3043,24 +3043,24 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
   lines.push('## Antes de testar');
   lines.push('');
   lines.push('<CardGroup cols={2}>');
-  lines.push(' <Card title="Contrato base" href="/api-reference/como-executar-service">');
+  lines.push(' <Card icon="file-contract" title="Contrato base" href="/api-reference/como-executar-service">');
   lines.push(' Veja token, headers, body padr\u00e3o, `result`, `status` e `externalId`.');
   lines.push(' </Card>');
-  lines.push(' <Card title="Postman do zero" href="/guides/postman-do-zero">');
+  lines.push(' <Card icon="paper-plane" title="Postman do zero" href="/guides/postman-do-zero">');
   lines.push(' Configure HML, gere token e execute `POST /api/service-api` com um payload real.');
   lines.push(' </Card>');
   if (category === 'Pessoa Jurídica') {
-    lines.push(' <Card title="OCR de cart\u00e3o CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
+    lines.push(' <Card icon="id-card" title="OCR de cart\u00e3o CNPJ" href="/guides/service-api/sobre-ocr-service-api#ocr-de-cartao-cnpj">');
     lines.push(' Payload, imagem esperada, retorno limpo e diagn\u00f3stico de erro para cart\u00e3o CNPJ.');
     lines.push(' </Card>');
-    lines.push(' <Card title="Fluxos prontos" href="/guides/receitas-prontas">');
+    lines.push(' <Card icon="list-check" title="Fluxos prontos" href="/guides/receitas-prontas">');
     lines.push(' Exemplos completos para CNPJ, risco, cadastro e OCR.');
     lines.push(' </Card>');
   } else {
-    lines.push(' <Card title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">');
+    lines.push(' <Card icon="image" title="OCR e imagem" href="/guides/service-api/sobre-ocr-service-api">');
     lines.push(' Payloads para CNH, RG, comprovante, cart\u00e3o CNPJ, base64 e erros de imagem.');
     lines.push(' </Card>');
-    lines.push(' <Card title="Fluxos prontos" href="/guides/receitas-prontas">');
+    lines.push(' <Card icon="list-check" title="Fluxos prontos" href="/guides/receitas-prontas">');
     lines.push(' Exemplos completos para CPF, OCR, Face Index, risco e score.');
     lines.push(' </Card>');
   }
@@ -3088,7 +3088,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description) {
     const sorted = services.slice().sort((a, b) => a.name.localeCompare(b.name));
     const examples = sorted.slice(0, 3).map((service) => `\`${service.service}\``).join(', ');
     const suffix = sorted.length > 3 ? ` e mais ${sorted.length - 3}` : '';
-    lines.push(` <Card title="${escapeAttribute(family)}">`);
+    lines.push(` <Card icon="layer-group" title="${escapeAttribute(family)}">`);
     lines.push(` ${sorted.length} service${sorted.length === 1 ? '' : 's'}: ${examples}${suffix}.`);
     lines.push(' </Card>');
   }
@@ -3209,7 +3209,7 @@ function pushOcrLlmNotes(lines) {
   lines.push('');
   lines.push('- OCR usa imagem do documento, não selfie.');
   lines.push('- Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.');
-  lines.push('- `image1` deve receber base64 puro, sem prefixo `data:image/...;base64,`.');
+  lines.push('- `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,` — os dois formatos funcionam.');
   lines.push('- RG normalmente usa frente e verso: `image1` e `image2`.');
   lines.push('- CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.');
   lines.push('- Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.');
@@ -3500,7 +3500,7 @@ const llmRules = [
   '- Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.',
   '- Use homologação para testes e produção somente quando o usuário pedir explicitamente.',
   '- Nunca exponha tokens, secrets, CPFs, CNPJs ou imagens reais em exemplos.',
-  '- Para OCR, use base64 puro em `image1`/`image2` e não inclua prefixo `data:image/...;base64,`.',
+  '- Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).',
   '- Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.',
   '- Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.',
   '',
