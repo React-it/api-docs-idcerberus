@@ -37,7 +37,8 @@ function pushServiceAliasNote(lines, { includeDocumentPayloadNote = false } = {}
 }
 
 function read(filePath) {
-  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+  if (!fs.existsSync(filePath)) return '';
+  return fs.readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
 }
 
 function write(filePath, content) {
@@ -168,18 +169,23 @@ function cleanMdx(content) {
     .trim();
 }
 
+function flattenGroupPages(tabName, groupName, pages, items) {
+  for (const page of pages) {
+    if (typeof page === 'string') {
+      items.push({ tab: tabName, group: groupName, slug: page });
+    } else if (page && typeof page === 'object' && Array.isArray(page.pages)) {
+      // nested subgroup (e.g. docs.json "OCR via service API" inside "POST /api/service-api")
+      flattenGroupPages(tabName, page.group ?? groupName, page.pages, items);
+    }
+  }
+}
+
 function flattenPages(navigation) {
   const items = [];
   for (const tab of navigation?.tabs ?? []) {
     for (const group of tab.groups ?? []) {
       if (group.pages) {
-        for (const page of group.pages) {
-          items.push({
-            tab: tab.tab,
-            group: group.group,
-            slug: page,
-          });
-        }
+        flattenGroupPages(tab.tab, group.group, group.pages, items);
       }
       if (group.openapi) {
         items.push({
@@ -3267,7 +3273,7 @@ function pushLlmCommonErrors(lines) {
   lines.push('| `Don\'t have access to the service` | Produto sem service ativo/API habilitada ou alias errado. | Conferir configuração do produto e alias de chamada. |');
   lines.push('| Imagem ausente | Payload não enviou `image1`, `image2`, URL ou `key` esperado. | Conferir o OCR chamado e montar o JSON novamente. |');
   lines.push('| `result: {}` | Consulta processou, mas não retornou dado útil. | Validar imagem, massa, configuração do produto e tipo correto do service. |');
-  lines.push('| `onboardingStatus: ERROR` | Falha técnica , storage, processamento externo ou processamento. | Usar `externalId`, horário e ambiente para investigar. |');
+  lines.push('| `onboardingStatus: ERROR` | Falha técnica no processamento, no storage ou em fonte externa. | Usar `externalId`, horário e ambiente para investigar. |');
   lines.push('| Campo esperado ausente | O campo pode não existir no documento/base ou não ter sido extraído. | Não inventar valor; explicar que o retorno traz apenas dados disponíveis. |');
   lines.push('');
 }
@@ -3439,7 +3445,7 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
         action: 'Ler `status.message`, conferir imagem/massa e não tratar como falha técnica automaticamente.',
       },
       ERROR: {
-        meaning: 'Falha técnica , storage, processamento ou processamento externo.',
+        meaning: 'Falha técnica no processamento, no storage ou em fonte externa.',
         action: 'Investigar com `externalId`, horário, ambiente e service chamado.',
       },
       'result:{}': {
@@ -3581,6 +3587,9 @@ let currentGroup = '';
 for (const page of mdxPages) {
   const groupName = `${page.tab} / ${page.group}`;
   if (groupName !== currentGroup) {
+    if (currentGroup !== '') {
+      llmsLines.push('');
+    }
     currentGroup = groupName;
     llmsLines.push(`### ${groupName}`);
     llmsLines.push('');
