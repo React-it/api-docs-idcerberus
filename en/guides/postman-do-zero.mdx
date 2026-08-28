@@ -1,0 +1,264 @@
+---
+title: Postman from scratch
+description: Set up Postman to test tokens, service-api, and OCR without writing code
+---
+
+# Postman from scratch
+
+Use this guide to build a simple collection and test the idCerberus API in
+staging.
+
+<Tip>
+  If you just want to test quickly without installing anything, every
+  endpoint page in the [API Reference](/api-reference/autorização/gerar-token-de-api)
+  already has a test panel built right into the browser. Use Postman when you
+  want to keep a reusable collection for your team.
+</Tip>
+
+The goal is to end up with two working requests:
+
+1. `POST /api/token-generate`
+2. `POST /api/service-api`
+
+<CardGroup cols={2}>
+  <Card icon="key" title="Token first" href="#3-create-the-token-request">
+    Without a valid token, no protected service should be tested.
+  </Card>
+  <Card icon="server" title="Service API next" href="#4-create-the-service-api-request">
+    Just swap the `service` field and the required fields for each query.
+  </Card>
+  <Card icon="image" title="OCR with base64" href="#7-test-ocr-with-an-image">
+    Use PowerShell to copy an image as base64 and paste it into the Postman body.
+  </Card>
+  <Card icon="stethoscope" title="Quick diagnosis" href="#9-if-something-goes-wrong">
+    See what to check when you get an access failure, a missing image, `{}`, or `ERROR`.
+  </Card>
+</CardGroup>
+
+## 1. Create a collection
+
+1. Open Postman.
+2. Click **Collections**.
+3. Click **New Collection**.
+4. Name it `idCerberus API`.
+5. Save.
+
+## 2. Create a staging environment
+
+1. Click **Environments**.
+2. Click **New Environment**.
+3. Name it `idCerberus HML`.
+4. Create the `base_url` variable.
+5. Set the value to:
+
+```txt
+https://backoffice-hml.idcerberus.com
+```
+
+6. Create the `jwt_token` variable.
+7. Leave the value empty for now.
+8. Save the environment.
+9. Select `idCerberus HML` in the top-right corner of Postman.
+
+## 3. Create the token request
+
+1. Inside the collection, click **Add request**.
+2. Name it `Generate token`.
+3. Select the `POST` method.
+4. Use the URL:
+
+```txt
+{{base_url}}/api/token-generate
+```
+
+5. In the **Headers** tab, add:
+
+| Key | Value |
+| --- | --- |
+| `Content-Type` | `application/json` |
+
+6. In the **Body** tab, choose **raw**.
+7. Select **JSON**.
+8. Paste:
+
+```json
+{
+  "client": "{client}",
+  "secret": "{secret}"
+}
+```
+
+9. Click **Send**.
+10. Copy the `access_token` value.
+11. Paste that value into the environment's `jwt_token` variable.
+
+<Tip>
+  If you prefer, set up a test script on the token request to save the token automatically:
+</Tip>
+
+```js
+const data = pm.response.json();
+pm.environment.set("jwt_token", data.access_token || data.token);
+```
+
+## 4. Create the service-api request
+
+1. Inside the collection, click **Add request**.
+2. Name it `Run service-api`.
+3. Select the `POST` method.
+4. Use the URL:
+
+```txt
+{{base_url}}/api/service-api
+```
+
+5. In the **Headers** tab, add:
+
+| Key | Value |
+| --- | --- |
+| `Authorization` | `Bearer {{jwt_token}}` |
+| `Content-Type` | `application/json` |
+
+6. In the **Body** tab, choose **raw**.
+7. Select **JSON**.
+8. Paste a test payload.
+
+CPF example:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "00000000000"
+}
+```
+
+CNPJ example:
+
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "00000000000000"
+}
+```
+
+## 5. Read the response
+
+A business response usually follows this format:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Read it like this:
+
+| Field | What it means |
+| --- | --- |
+| `result` | Useful data returned by the service |
+| `status.code` | Technical processing code |
+| `status.message` | Technical processing message |
+| `onboardingStatus` | Operational result of the service, when it exists |
+| `externalId` | Identifier to trace the call in support/logs |
+
+<Warning>
+  Don't rely only on the HTTP status to decide if it worked. The API can respond with HTTP 200 while the body shows `REFUSED` or `ERROR`.
+</Warning>
+
+## 6. Ready-made examples
+
+If you'd rather copy an already-built curl, use:
+
+| Case | Example |
+| --- | --- |
+| Staging token | [`auth.hml.curl`](/examples/auth.hml.curl) |
+| Staging CPF | [`service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) |
+| Staging CNPJ | [`service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) |
+| OCR CNH | [`service-api-ocr-cnh.hml.curl`](/examples/service-api-ocr-cnh.hml.curl) |
+| OCR RG | [`service-api-ocr-rg.hml.curl`](/examples/service-api-ocr-rg.hml.curl) |
+| OCR CNPJ card | [`service-api-ocr-cnpj-card.hml.curl`](/examples/service-api-ocr-cnpj-card.hml.curl) |
+| OCR proof of address | [`service-api-ocr-proof-of-address.hml.curl`](/examples/service-api-ocr-proof-of-address.hml.curl) |
+| Face Index | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
+
+<Tip>
+  If you want payload, expected return, and common errors in one place, open [Ready-made recipes](/guides/receitas-prontas).
+</Tip>
+
+## 7. Test OCR with an image
+
+For OCR, the `image1` field receives the image's base64, with or without the `data:image/jpeg;base64,` prefix (both formats work).
+
+### CNH
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\cnh.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "CNH"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### RG front and back
+
+```powershell
+$front = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\rg-front.jpg"))
+$back = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\rg-back.jpg"))
+@{
+  service = "SERVICE_OCR"
+  documentType = "RG"
+  image1 = $front
+  image2 = $back
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### CNPJ card
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\cnpj-card.jpg"))
+@{
+  service = "SERVICE_OCR_CNPJ_CARD"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+### Proof of address
+
+```powershell
+$b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\proof.jpg"))
+@{
+  service = "SERVICE_OCR_PROOF_OF_ADDRESS"
+  image1 = $b64
+} | ConvertTo-Json -Compress | Set-Clipboard
+```
+
+After running the command, paste it into **Body > raw > JSON** in Postman.
+
+## 8. Switch to production
+
+To create a production environment, repeat the process and use:
+
+```txt
+https://backoffice.idcerberus.com
+```
+
+Use production credentials and generate a new token. Don't reuse a staging token in production.
+
+## 9. If something goes wrong
+
+| Symptom | What to check first | Action |
+| --- | --- | --- |
+| `401` or `403` | Token expired, missing, or from another environment | Generate a new token in the same environment as the call |
+| `Don't have access to the service` | Product doesn't have the service enabled for the API | Check the product setup before touching the payload |
+| `Image ... not found` | Image field wasn't included in the body | Check `image1`, `image2`, `image1Url`, `image2Url`, or `key` |
+| Returned `{}` | Service has no data for that record, or the image wasn't readable | Test valid data/image and check `status.message` |
+| Got `ERROR` | Technical failure during processing | Save `externalId`, the time, and the service called |
+| Expected field didn't come back | Field doesn't exist in the document or wasn't extracted | Validate the image, document type, and the service's contract |
+
+For a more complete diagnosis, see [Common integration errors](/guides/erros-comuns-integracao).
