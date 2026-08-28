@@ -1,0 +1,2608 @@
+---
+title: Individual Services
+description: External services available for CPF queries
+---
+
+# Individual Services
+
+Individual services let you query, validate, and enrich CPF data across
+onboarding, KYC, fraud prevention, registration analysis, biometrics,
+documents, compliance, and electoral data flows.
+
+All of them run through the central services endpoint. The `service` field
+defines which product will be processed, and the other fields vary
+depending on the query chosen.
+
+Before building the body, check the client's product to see which alias is
+enabled. That's the value that should go in the `service` field.
+
+```http
+POST /api/service-api
+```
+
+In the `curl` examples, `{base_url}` represents the URL of the chosen
+environment:
+
+| Environment | Base URL |
+| --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` |
+| Production | `https://backoffice.idcerberus.com` |
+
+Example request:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+## How to use this catalog
+
+This is the full technical reference for individuals. Use it when you need
+a service's full contract. To navigate by goal or product family first, see
+[Choose the right service](/en/guides/escolha-o-servico-certo),
+[Service matrix](/en/guides/matriz-de-servicos), or
+[Service families](/en/guides/service-api/familias-de-servicos).
+
+Use this page to look up the full list of CPF services, their `service`
+codes, main fields, and more extensive request and response examples.
+
+<Warning>
+  The catalog shows the functional name and the documented alias for the
+  service. If the client's product was configured with a short alias, use
+  the product's alias in the `service` field. This avoids access errors
+  even when the product is active.
+</Warning>
+
+Quick step to avoid errors:
+
+1. Open the client's product in the Backoffice.
+2. Confirm the alias enabled for the service.
+3. Send that alias in the `service` field.
+4. Use the table's other fields as the query's main input.
+
+| Documented alias | Product's short alias |
+| --- | --- |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
+| `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+| `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
+| `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
+| `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+
+<Info>
+  OCR, document analysis, FaceMatch, and Liveness need a real image/base64,
+  URL, or `key` to return complete data. A short payload helps validate
+  authentication, product access, and the basic call format, but doesn't
+  validate the full processing return.
+</Info>
+
+## Related guides
+
+| Guide | When to use it |
+| --- | --- |
+| [Choose the right service](/en/guides/escolha-o-servico-certo) | To decide the service by use case. |
+| [Service families](/en/guides/service-api/familias-de-servicos) | To navigate by product group. |
+| [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api) | For document, image, base64 payloads and return examples. |
+| [API Reference](/api-reference/autorização/gerar-token-de-api) | For endpoint-by-endpoint details. |
+
+## Status and errors
+
+In the query response, the API includes a `status` object that indicates
+the query's status. This object has `code` and `message` attributes, used
+to interpret technical processing.
+
+```json
+{
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+For handling details, see [Status and errors](/en/guides/status-e-erros).
+
+## Available services
+
+### Registration and identity
+
+| Service | `service` code | Main fields |
+| --- | --- | --- |
+| PF data enrichment | `SERVICE_PERSON_DATA_ENRICHMENT` | `cpf` |
+| CPF status at the Federal Revenue | `SERVICE_RFB_PF` | `cpf`, `birthDate` |
+| CPF at the Federal Revenue on-demand | `SERVICE_RFB_PF_ON_DEMAND` | `cpf` |
+| Individual data modeling | `SERVICE_PERSON_DATA_MODELING` | `cpf` |
+| AI prompt for a person | `SERVICE_PERSON_AI_PROMPT` | `cpf` |
+| MEI query | `SERVICE_MEI` | `cpf` |
+| Data by phone number | `SERVICE_CONFIRM_PHONE` | `phone` |
+| Addresses | `SERVICE_ADDRESS` | `cpf` |
+| Phone history | `SERVICE_PHONE_HISTORY` | `cpf`, `birthDate`, `limit` |
+| Related people | `SERVICE_RELATED_PEOPLE` | `cpf`, `birthDate` |
+| Email history | `SERVICE_EMAILS_EXTENDED` | `cpf`, `limit` |
+| Economic relationships | `SERVICE_ECONOMIC_RELATIONSHIP` | `cpf` |
+| Professional history | `SERVICE_PROFESSIONAL_HISTORY` | `cpf` |
+| Account holder's professional history | `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | `cpf`, `birthDate` |
+| PF financial data and addresses | `SERVICE_PF_FINANCIAL_AND_ADDRESS` | `cpf`, `birthDate` |
+| Demographic data | `SERVICE_DEMOGRAPHIC_DATA_CPF` | `cpf`, `birthDate` |
+| Activity indicators | `SERVICE_ACTIVITIES_INDICATORS` | `cpf` |
+| PF domains | `SERVICE_DOMAINS_CPF` | `cpf` |
+| SUS card | `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | `cpf` |
+| Related people's emails | `SERVICE_RELATED_PEOPLE_EMAILS` | `cpf` |
+| Related people's phones | `SERVICE_RELATED_PEOPLE_PHONES` | `cpf` |
+| Related people's addresses | `SERVICE_RELATED_PEOPLE_ADDRESSES` | `cnpj` |
+| TSE - Polling place | `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | `cpf`, `birthDate`, `motherName` |
+
+### Biometrics and documents
+
+| Service | `service` code | Main fields |
+| --- | --- | --- |
+| React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
+| Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | `image1` |
+| Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
+| Face search in the base | `SERVICE_FACE_INDEX` | `image1` |
+| FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
+| Biometric score / CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
+| Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
+| Document analysis result | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `key` |
+
+### Risk, compliance, and validations
+
+| Service | `service` code | Main fields |
+| --- | --- | --- |
+| Politically exposed person | `SERVICE_PEP` | `cpf` |
+| Individual KYC and compliance | `SERVICE_PERSON_KYC` | `cpf`, `birthDate` |
+| PF media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | `cpf` |
+| PF active debt | `SERVICE_ACTIVE_DEBT_PF` | `cpf` |
+| Fraud risk score | `SERVICE_FRAUD_RISK_SCORE` | `cpf`, `factor` |
+| Financial risk | `SERVICE_FINANCIAL_RISK_SCORE` | `cpf`, `birthDate` |
+| Default risk score | `SERVICE_DEFAULT_RISK_SCORE` | `cpf` |
+| Credit score | `SERVICE_CREDIT_SCORE` | `cpf` |
+| Credit score | `SERVICE_QUOD_CREDIT_SCORE_PERSON` | `cpf` |
+| Multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | `cpf` |
+| Restrictive data | `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | `cpf` |
+| Negative flags | `SERVICE_QUOD_CREDIT_RISK_PERSON` | `cpf` |
+| Nothing on record in lawsuits | `SERVICE_NOTHING_RECORD_LAWSUITS` | `cpf`, `court`, `uf`, `sphere` |
+| Federal criminal records | `SERVICE_CRIMINAL_RECORD_FEDERAL` | `cpf` |
+| Civil criminal records | `SERVICE_CRIMINAL_RECORD_CIVIL` | `cpf`, `rg`, `uf` |
+| Negative protest certificate | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | `cpf` |
+| Email validation | `SERVICE_EMAIL_VALIDATION` | `email` |
+| CPF validation with phone | `SERVICE_CPF_PHONE_VALIDATION` | `cpf`, `phone` |
+| CPF validation with address | `SERVICE_CPF_ADDRESS_VALIDATION` | `cpf`, `zipcode`, `numberAddress` |
+| Financial information | `SERVICE_FINANCIAL_INFORMATION` | `cpf` |
+| PIS data | `SERVICE_PIS_CONSULTATION` | `cpf` |
+| Awards and certifications | `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | `cpf` |
+| Family social benefits | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` |
+| Extended social assistance | `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | `cpf` |
+| E-Social validation | `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | `cpf`, `nit` |
+| Legal cases | `SERVICE_JURIDICAL_PROCESSES` | `cpf` |
+| Public servants | `SERVICE_PUBLIC_SERVANTS` | `cpf` |
+| Propensity for online betting | `SEVICE_ONLINE_BETTING_PROPENSITY` | `cpf` |
+| Arrest warrant | `SERVICE_ARREST_WARRANT` | `name`, `motherName`, `fatherName`, `birthDate`, `cpf` |
+| Candidate electoral data | `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | `cpf` |
+| PF electoral donations | `SERVICE_ELECTORAL_DONORS_CPF` | `cpf` |
+| Political involvement | `SERVICE_POLITICAL_INVOLVEMENT` | `cpf` |
+| PF political involvement | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | `cpf` |
+| Political family history | `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | `cpf` |
+| PF electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CPF` | `cpf` |
+
+## Advanced queries added
+
+Some services return consolidated information or analyses derived from
+complementary sources. They follow the same call pattern for the
+`POST /api/service-api` endpoint, but can have broader responses depending
+on data availability for the query.
+
+| Service | When to use it | Body example |
+| --- | --- | --- |
+| `SERVICE_RFB_PF_ON_DEMAND` | Look up the CPF at the Federal Revenue at query time | `{ "service": "SERVICE_RFB_PF_ON_DEMAND", "cpf": "cpf" }` |
+| `SERVICE_PERSON_DATA_MODELING` | Consolidate modeling data, contacts, relationships, lawsuits, and addresses | `{ "service": "SERVICE_PERSON_DATA_MODELING", "cpf": "cpf" }` |
+| `SERVICE_PERSON_AI_PROMPT` | Generate an analytical text summary from the person's consolidated data | `{ "service": "SERVICE_PERSON_AI_PROMPT", "cpf": "cpf" }` |
+| `SERVICE_DATAVALID_CNH` | Validate a CNH with document-validation support | `{ "service": "SERVICE_DATAVALID_CNH", "cpf": "cpf", "image1": "base64" }` |
+| `SERVICE_FINANCIAL_RISK_SCORE` | Query the financial risk score | `{ "service": "SERVICE_FINANCIAL_RISK_SCORE", "cpf": "cpf" }` |
+| `SERVICE_PF_FINANCIAL_AND_ADDRESS` | Combine registration data, addresses, and financial information | `{ "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS", "cpf": "cpf" }` |
+| `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | Return professional history where the person appears as the account holder or partner | `{ "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY", "cpf": "cpf" }` |
+| `SEVICE_ONLINE_BETTING_PROPENSITY` | Assess propensity for online betting | `{ "service": "SEVICE_ONLINE_BETTING_PROPENSITY", "cpf": "cpf" }` |
+
+<Warning>
+  The alias `SEVICE_ONLINE_BETTING_PROPENSITY` is documented without the
+  letter `R` in `SERVICE` because that's the spelling implemented in the
+  backend. Don't change this spelling without technical validation, since
+  the call may stop being recognized.
+</Warning>
+
+## Examples
+
+### Individual data enrichment
+
+The individual data enrichment query returns information about an
+individual that exists in the Federal Revenue's site. The return can
+include registration status, the query's protocol, an indication of death
+when available, and other information related to the queried CPF.
+
+This query's information is obtained from the Federal Revenue's public
+individual query.
+
+```http
+POST /api/service-api
+```
+
+Authorization:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status in the Federal Revenue's base |
+| `result.statusDate` | Date of the status in the Federal Revenue's base |
+| `result.name` | Name |
+| `result.fatherName` | Father's name |
+| `result.motherName` | Mother's name |
+| `result.birthdate` | Date of birth |
+| `result.birthCountry` | Country of birth |
+| `result.dead` | Indication of death |
+| `result.deathYear` | Year of death |
+| `result.gender` | Gender |
+| `result.age` | Age |
+| `result.origin` | Source of the information |
+| `result.fiscalRegion` | CPF's tax region |
+| `result.numberOfPeopleWithTheSameName` | Number of people with the same full name |
+| `result.nameWordCount` | Number of names in the full name |
+| `result.nameUniqueScore` | Name uniqueness score, where `1` means unique and `0` extremely common |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "REGULAR",
+    "statusDate": "2022-05-29T00:00:00",
+    "name": "PERSON NAME",
+    "gender": "M",
+    "fatherName": "FATHER'S NAME",
+    "motherName": "MOTHER'S NAME",
+    "birthDate": "1998-07-05",
+    "birthCountry": "BRASILEIRA",
+    "dead": false,
+    "country": "BRAZIL",
+    "fiscalRegion": "DF-GO-MS-MT-TO",
+    "numberOfPeopleWithTheSameName": "3",
+    "nameWordCount": "3",
+    "nameUniqueScore": "0.994",
+    "origin": "RECEITA FEDERAL",
+    "age": 24
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### CPF status at the Federal Revenue
+
+The CPF status query at the Federal Revenue returns the registration
+status of a CPF that exists in the Federal Revenue's public base.
+
+```http
+POST /api/service-api
+```
+
+Authorization:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status in the Federal Revenue's base |
+| `result.statusDate` | Date of the status in the Federal Revenue's base |
+| `result.origin` | Source of the information |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_RFB_PF",
+    "cpf": "cpf",
+    "birthDate": "yyyy-MM-dd (optional)"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "123414124",
+    "status": "REGULAR",
+    "name": "EXAMPLE NAME",
+    "birthDate": "yyyy-MM-ddT00:00",
+    "dead": false,
+    "origin": "RECEITA FEDERAL",
+    "age": 30
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  },
+  "externalId": "1782ea0a-8663-41a8-b156-688527f5363b"
+}
+```
+
+### CPF at the Federal Revenue on-demand
+
+Runs the CPF query at the Federal Revenue in on-demand mode. Use it when
+you need to fetch or update registration data directly at request time.
+
+```json
+{
+  "service": "SERVICE_RFB_PF_ON_DEMAND",
+  "cpf": "cpf"
+}
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "123414124",
+    "status": "REGULAR",
+    "name": "EXAMPLE NAME",
+    "birthDate": "1994-05-21T00:00",
+    "dead": false,
+    "origin": "RECEITA FEDERAL",
+    "age": 30
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Individual data modeling
+
+Consolidates modeling information, phone history, lawsuits, economic
+relationships, professional history, and addresses to support more
+complete analyses of a person.
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_MODELING",
+  "cpf": "cpf"
+}
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "modelData": "Dados de modelagem consolidados para o CPF consultado."
+  },
+  "results": [
+    {
+      "modelData": "Dados de modelagem consolidados para o CPF consultado."
+    }
+  ],
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### AI prompt for a person
+
+Generates an analytical summary from the consolidated data of the queried
+person. This service is useful when the integration needs to turn multiple
+signals into a structured text explanation.
+
+```json
+{
+  "service": "SERVICE_PERSON_AI_PROMPT",
+  "cpf": "cpf"
+}
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "modelData": "Resumo analítico gerado a partir dos dados consolidados da pessoa consultada."
+  },
+  "results": [
+    {
+      "modelData": "Resumo analítico gerado a partir dos dados consolidados da pessoa consultada."
+    }
+  ],
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### React OCR
+
+Use `SERVICE_OCR` to extract data from identification documents such as
+RG/CIN, CNH, OAB, RNE/CRNM, and PASSPORT. To let the API identify the
+document, send `documentType: IDENTIFICATION_DOCUMENT`.
+
+```http
+POST /api/service-api
+```
+
+Authorization:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "base64"
+}
+```
+
+Supported document types:
+
+| Document | Value |
+| --- | --- |
+| CNH | `CNH` |
+| RG / CIN | `RG` |
+| OAB | `OAB` |
+| RNE / CRNM | `RNE` |
+| Passport | `PASSAPORT` |
+| Automatic identification | `IDENTIFICATION_DOCUMENT` |
+
+For full responses by document type, see
+[Identification documents](/en/guides/service-api/identificacao-de-documentos).
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_OCR",
+    "documentType": "CNH",
+    "image1": "base64"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "name": "PERSON NAME",
+    "fatherName": "FATHER'S NAME",
+    "motherName": "MOTHER'S NAME",
+    "birthDate": "1992-01-05",
+    "cnhCategory": "AB",
+    "cnhNumber": "07796497926",
+    "emissionPlace": "DETRAN DE",
+    "rg": "3451620",
+    "rgIssuer": "SSP/UF",
+    "cnhIssueDate": "2020-04-13",
+    "renach": "DF767732467",
+    "state": "DF"
+  },
+  "status": {
+    "code": 200,
+    "message": "OCR realizado com sucesso"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+### FaceMatch
+
+This service compares two images and returns the similarity between the
+people in the images. The images can be sent as base64 or by URL,
+depending on the integration.
+
+```http
+POST /api/service-api
+```
+
+Authorization:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "SERVICE_FACE_MATCH",
+  "image1": "base64",
+  "image2": "base64"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.status` | Facial similarity status for the images |
+| `result.similarity` | Facial similarity for the images |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_FACE_MATCH",
+    "image1": "base64",
+    "image2": "base64"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "status": "Face picture match",
+    "similarity": 99.95
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Politically exposed person
+
+Queries an individual's CPF and returns whether the person is politically
+exposed.
+
+```json
+{
+  "service": "SERVICE_PEP",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Status indicating whether the person is politically exposed |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_PEP",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "Pessoa não exposta politicamente"
+  },
+  "status": {
+    "code": 200,
+    "message": "success"
+  }
+}
+```
+
+### Individual KYC and compliance
+
+Consolidates an individual's compliance signals, including PEP exposure,
+active sanctions, and a history of occurrences found in the queried
+databases.
+
+```json
+{
+  "service": "SERVICE_PERSON_KYC",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | Queried CPF |
+| `result.isPep` | Indicates whether the person is politically exposed |
+| `result.isCurrentlySanctioned` | Indicates whether there's an active sanction associated with the person |
+| `result.sanctionsHistory` | History of sanctions found |
+| `result.pepHistories` | PEP exposure history |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "12345678901",
+    "isPep": false,
+    "isCurrentlySanctioned": false,
+    "sanctionsHistory": [],
+    "pepHistories": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  }
+}
+```
+
+### Individual media exposure and profile
+
+Queries public exposure and media profile associated with the CPF,
+including exposure level, celebrity status, unpopularity, name uniqueness,
+and related news when available.
+
+```json
+{
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | Queried CPF |
+| `result.mediaExposureLevel` | Media exposure level |
+| `result.celebrityLevel` | Public notoriety level |
+| `result.unpopularityLevel` | Unpopularity level |
+| `result.fullName` | Full name returned |
+| `result.shortName` | Short name returned |
+| `result.fullNameUniquenessScore` | Full name uniqueness score |
+| `result.shortNameUniquenessScore` | Short name uniqueness score |
+| `result.newsItems` | Related news found |
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "12345678901",
+    "mediaExposureLevel": "MEDIUM",
+    "celebrityLevel": "LOW",
+    "unpopularityLevel": "LOW",
+    "fullName": "EXAMPLE NAME",
+    "shortName": "EXAMPLE NAME",
+    "fullNameUniquenessScore": 0.98,
+    "shortNameUniquenessScore": 0.91,
+    "newsItems": [
+      {
+        "title": "Example news item",
+        "url": "https://www.exemplo.com/noticia",
+        "publicationDate": "2024-01-15",
+        "sentimentAnalysis": "NEUTRAL"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  }
+}
+```
+
+### Active debt - Individual
+
+Queries the status of debts related to federal tax credits and the
+Union's Active Debt, available at the Federal Revenue and the Attorney
+General's Office for the National Treasury (PGFN).
+
+```json
+{
+  "service": "SERVICE_ACTIVE_DEBT_PF",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Active debt status |
+| `result.statusDate` | Status date |
+| `result.origin` | Status source |
+| `result.validDate` | Expiration date |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "SERVICE_ACTIVE_DEBT_PF",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "NEGATIVA",
+    "statusDate": "2022-08-16",
+    "origin": "Receita-Federal PGFN",
+    "validDate": "0001-01-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Fraud risk score
+
+The fraud risk score measures the fraud propensity of an interaction
+associated with a CPF. This propensity is calculated using statistical
+inference based on historical fraud information, and supports fraud
+prevention and risk analysis decisions.
+
+```json
+{
+  "service": "SERVICE_FRAUD_RISK_SCORE",
+  "cpf": "cpf",
+  "factor": "minRisk or minattrition"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.score` | Fraud risk score |
+| `result.factor` | Risk status returned by DataRisk: `HIGH RISK`, `MEDIUM RISK`, or `LOW RISK` |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_FRAUD_RISK_SCORE",
+    "cpf": "cpf",
+    "factor": "minRisk or minattrition"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "score": "8.0691",
+    "factor": "MEDIUM RISK",
+    "message": "Success calculating score"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Financial risk
+
+Calculates a financial risk score for the given CPF. The response returns
+the normalized score and a message with a summarized reading of the
+analysis.
+
+```json
+{
+  "service": "SERVICE_FINANCIAL_RISK_SCORE",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | Queried CPF |
+| `result.score` | Calculated score |
+| `result.message` | Message with score and risk interpretation |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "score": "650",
+    "message": "Score: 650 | Análise: RISCO MÉDIO"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Default risk score
+
+The default risk score identifies a customer or prospect's default risk
+level. The result ranges from 0 to 1000; the higher the value, the lower
+the default risk.
+
+```json
+{
+  "service": "SERVICE_DEFAULT_RISK_SCORE",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.score` | Default risk score |
+| `result.origin` | Score source |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_DEFAULT_RISK_SCORE",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "{00000000000}",
+    "status": "REGULAR",
+    "origin": "Datarisk",
+    "score": "462",
+    "rank": "E",
+    "expectedDefault": "58.94%",
+    "processType": "SEM PROCESSOS"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Biometric score
+
+The biometric score query compares a CPF and a selfie against images
+present in Federal Government databases, such as CPF, CNPJ, and CNH. The
+return indicates the similarity index found.
+
+```json
+{
+  "service": "SERVICE_DATAVALID_CNH",
+  "cpf": "cpf",
+  "image1": "{base64Image}"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Biometric score query status |
+| `result.message` | Query message |
+| `result.similarity` | Image similarity score against the Federal Government's base |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_DATAVALID_CNH",
+    "cpf": "cpf",
+    "image1": "{base64Image}"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "Altíssima probabilidade",
+    "message": "Biometrics exist at the base of the Government",
+    "similarity": 99.66
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### CNH validation with DataValid
+
+Validates CNH data with document-validation support. The service takes the
+CPF and a reference image, usually in base64, to run the validation
+available in the integration.
+
+```json
+{
+  "service": "SERVICE_DATAVALID_CNH",
+  "cpf": "cpf",
+  "image1": "base64"
+}
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+<Note>
+  Currently, the return exposed by this service can be minimal and vary
+  based on the availability of the document-validation integration. Use the
+  call's status and the fields returned in `result` as the response's
+  effective contract.
+</Note>
+
+### Nothing on Record Certificate - Lawsuits
+
+Issues a "nothing on record" certificate at federal regional courts. In the
+electoral sphere, the query is only available for TRF1 and TRF4 sources.
+
+```json
+{
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
+  "cpf": "cpf",
+  "court": "TRF1",
+  "uf": "uf",
+  "sphere": "CIVIL"
+}
+```
+
+Optional parameters:
+
+| Field | Description |
+| --- | --- |
+| `court` | Court: `TRF1`, `TRF2`, `TRF3`, `TRF4`, or `TRF5` |
+| `uf` | Brazilian federation state |
+| `sphere` | Sphere: `CIVIL`, `CRIMINAL`, or `ELEITORAL` |
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | "Nothing on record" status |
+| `result.origin` | "Nothing on record" source |
+| `result.uf` | State for the record, when returned under this name |
+| `result.state` | Court or state returned in the API example |
+| `result.name` | Individual's name |
+| `result.certificateNumber` | Certificate number |
+| `result.certificateText` | Certificate text |
+| `result.expirationDate` | Expiration date |
+| `result.emissionDate` | Issue date |
+| `result.type` | Certificate type |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
+    "cpf": "cpf",
+    "court": "TRF1",
+    "uf": "uf",
+    "sphere": "CIVIL"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "NADA CONSTA",
+    "origin": "NadaConsta",
+    "state": "TRF1",
+    "name": "Fulano",
+    "certificateNumber": "212312312311231",
+    "certificateText": "A Polícia Federal CERTIFICA, após pesquisa no Sistema Nacional de Informações Criminais - SINIC, que até a presente data, NÃO CONSTA decisão judicial condenatória com trânsito em julgado* em nome de NOME DA PESSOA, nascido(a) aos 05/07/1998",
+    "expirationDate": "2022-10-20",
+    "emissionDate": "2022-10-20",
+    "type": "CIVEL E CRIMINAL"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Criminal Record Certificate - Federal
+
+Issues a criminal record certificate with the Federal Police. When there's
+no record, the result's status returns as `NADA CONSTA`.
+
+```json
+{
+  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
+  "cpf": "cpf"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Criminal record certificate status |
+| `result.expirationDate` | Certificate expiration date |
+| `result.certificateNumber` | Criminal record certificate number |
+| `result.certificateText` | Criminal record certificate text |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "NADA CONSTA",
+    "certificateNumber": "79222652022",
+    "certificateText": "A Polícia Federal CERTIFICA, após pesquisa no Sistema Nacional de Informações Criminais - SINIC, que até a presente data, NÃO CONSTA decisão judicial condenatória com trânsito em julgado* em nome de NOME DA PESSOA, nascido(a) aos 05/07/1998",
+    "expirationDate": "2022-10-20"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Criminal Record Certificate - Civil
+
+Issues a criminal record certificate with the queried state's Civil
+Police. If the person has no record, the result's status returns as
+`NADA CONSTA`. When there is a record, this query doesn't return a
+description of the records.
+
+```json
+{
+  "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
+  "cpf": "cpf",
+  "rg": "rg",
+  "uf": "uf"
+}
+```
+
+Accepted parameters:
+
+| Field | Description | Accepted value |
+| --- | --- | --- |
+| `cpf` | CPF number | Any text |
+| `rg` | ID card (RG) number | Any text |
+| `uf` | State | Any text |
+| `motherName` | Mother's name | Any text |
+| `fatherName` | Father's name | Any text |
+| `rgIssuingAgency` | Document's issuing agency | Any text |
+| `rgIssuingUf` | State of the document's issuing agency | Any text |
+| `rgExpeditionDate` | Document's issue date | Any valid date |
+| `dateFormat` | Format of the document's issue date | Example: `yyyy-MM-dd` |
+| `placeOfBirth` | Place of birth | Any text |
+| `address` | Address | Any text |
+| `numberAddress` | Address number | Any number |
+| `zipcode` | Postal code | Any text |
+| `neighborhood` | Neighborhood | Any text |
+| `city` | City | Any text |
+
+Required parameters by state:
+
+| State | CPF | UF | RG | MOTHERNAME | FATHERNAME | RGISSUINGAGENCY | RGISSUINGUF | RGEXPEDITIONDATE | DATEFORMAT | PLACEOFBIRTH | ADDRESS | NUMBERADDRESS | NEIGHBORHOOD | CITY | ZIPCODE |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MG | Required | Required | Required | Semi-required | - | - | - | - | - | - | - | - | - | - | - |
+| CE | Required | Required | Required | Semi-required | - | - | - | - | - | - | - | - | - | - | - |
+| RR | Required | Required | Required | Semi-required | - | - | - | - | - | - | - | - | - | - | - |
+| MT | Required | Required | Required | Semi-required | Optional | Required | Required | - | - | Required | - | - | - | - | - |
+| RJ | Required | Required | Required | Semi-required | Optional | Required | - | Required | - | - | Semi-required | Semi-required | Semi-required | Semi-required | Semi-required |
+| PE | Required | Required | Required | Semi-required | - | Required | Required | - | - | Required | Semi-required | - | Semi-required | Semi-required | - |
+| PA | Required | Required | Required | Semi-required | - | - | Required | - | - | Required | - | - | - | - | - |
+| MS | Required | Required | Required | Semi-required | - | Required | Required | - | - | - | - | - | - | - | - |
+| SE | Required | Required | Required | Semi-required | Optional | - | - | - | - | - | - | - | - | - | - |
+| BA | Required | Required | Required | Semi-required | Optional | - | - | - | - | - | - | - | - | - | - |
+| SP | Required | Required | Required | Semi-required | Optional | - | - | Required | Required | - | - | - | - | - | - |
+| ES | Required | Required | Required | Semi-required | Optional | - | Required | - | - | - | - | - | - | - | - |
+| RS | Required | Required | Required | - | - | - | - | - | - | - | - | - | - | - | - |
+
+States available for query: `BA`, `CE`, `ES`, `MG`, `MS`, `MT`, `PA`,
+`PE`, `RJ`, `RR`, `RS`, `SE`, and `SP`.
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Criminal record certificate status |
+| `result.uf` | Queried state |
+| `result.emissionDate` | Certificate issue date |
+| `result.expirationDate` | Certificate expiration date, when returned |
+| `result.certificateNumber` | Criminal record certificate number |
+| `result.certificateText` | Criminal record certificate text |
+| `result.origin` | Certificate source |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
+    "cpf": "cpf",
+    "rg": "rg",
+    "uf": "uf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "NADA CONSTA",
+    "uf": "BA",
+    "emissionDate": "00:00 de 20/12/2022",
+    "certificateNumber": "00000000-0000-0000-0000-000000000000",
+    "certificateText": "Antecedentes Criminais CERTIFICADO DE ANTECEDENTES CRIMINAIS Nome: NOME DA PESSOA Número do Rg: 14781688 Nome do Pai: NOME DO PAI Nome da Mãe: NOME DA MÃE Data de Nascimento: 19/6/1997 Naturalidade: \"Certifico que o requerente acima qualificado NÃO registra antecedentes criminais até a presente data no Centro de Documentação e Estatística Policial (CEDEP), da Polícia Civil \". IMPORTANTE: Este certificado é válido somente com a apresentação da cédula de Identidade expedida pelo Instituto de Identificação Pedro Melo/DPT/SSP. Este certificado foi emitido terça-feira, 20 de dezembro de 2022 e está disponível para consulta no endereço https://exemplo.com/validar, informando o código 00000000-0000-0000-0000-000000000000 Obs: Este certificado tem validade até a data 20/3/2023 Imprimir Fechar Janela",
+    "origin": "PoliciaCivilAntecedentes"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Negative protest certificate
+
+Queries protest information at notary offices. When there are no title
+protests against the individual, it returns a certificate issued by the
+Brazilian Institute of Title Protest Studies.
+
+```json
+{
+  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+  "cpf": "cpf"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "protestos": [
+      {
+        "cartorio": "CARTÓRIO LARANJEIRAS - 32º OFÍCIO DE NOTAS DO RIO DE JANEIRO",
+        "cidade": "RIO DE JANEIRO",
+        "quantidadeTitulos": "",
+        "endereco": "R. DAS LARANJEIRAS - LARANJEIRAS, RIO DE JANEIRO - RJ, 22221-060",
+        "telefone": "19 3396-2809",
+        "protestos": [
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2017-10-10",
+            "dataProtesto": "2017-10-10",
+            "dataVencimento": "",
+            "valor": "9.900,00"
+          },
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2018-01-01",
+            "dataProtesto": "2018-01-01",
+            "dataVencimento": "",
+            "valor": "16.000,00"
+          }
+        ]
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Email validation
+
+Runs a real-time verification of the given email, applied to scenarios
+such as fraud prevention, correct email identification, marketing,
+campaigns, and sending billing communications.
+
+```json
+{
+  "service": "SERVICE_EMAIL_VALIDATION",
+  "email": "email@email.com"
+}
+```
+
+Possible statuses:
+
+| Status | Description |
+| --- | --- |
+| `VALID` | The email is valid and has no restrictions |
+| `INVALID` | The email is invalid |
+| `UNKNOWN` | Validation wasn't completed within the time limit |
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.email` | Email |
+| `result.status` | Email status |
+| `result.normalizedEmail` | Normalized email |
+| `result.address` | Address |
+| `result.account` | Email account |
+| `result.domain` | Email domain |
+| `result.disposable` | Indicates whether the email is temporary |
+| `result.roleAddress` | Indicates whether the email references a group |
+| `result.riskyAccount` | Indicates a risky account pattern |
+| `result.riskyDomain` | Indicates a risky domain pattern |
+| `result.junk` | Indicates possible spam or junk mail |
+| `result.limited` | Indicates volume-based filtering rules |
+| `result.acceptAll` | Indicates whether the domain accepts any email |
+| `result.possibleSpamTrap` | Indicates a possible spam trap email |
+| `result.wasSyntaxValid` | Indicates whether the original syntax is valid |
+| `result.wasSyntaxNormalized` | Indicates whether the syntax was normalized |
+| `result.wasOwnershipFound` | Indicates whether domain ownership was found |
+| `result.possibleStoogeDomain` | Indicates a possible front-man domain |
+| `result.domainType` | Domain type |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+    "service": "SERVICE_EMAIL_VALIDATION",
+    "email": "usuario@example.com"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "email": "usuario@example.com",
+    "status": "VALID",
+    "normalizedEmail": "usuario@example.com",
+    "address": "usuario@example.com",
+    "account": "teste",
+    "domain": "test.com",
+    "disposable": false,
+    "roleAddress": false,
+    "riskyAccount": false,
+    "riskyDomain": false,
+    "junk": false,
+    "limited": false,
+    "acceptAll": false,
+    "possibleSpamTrap": false,
+    "wasSyntaxValid": true,
+    "wasSyntaxNormalized": false,
+    "wasSiteFound": true,
+    "wasOwnershipFound": false,
+    "possibleStoogeDomain": false,
+    "domainType": "BLOG"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### CPF validation with phone
+
+Checks the association between a CPF and a phone number at Brazil's main
+carriers. This service can help reduce costs and validate before sending
+messages.
+
+```json
+{
+  "service": "SERVICE_CPF_PHONE_VALIDATION",
+  "cpf": "cpf",
+  "phone": "11900000000"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.phone` | Phone number |
+| `result.operator` | Carrier name returned in the API example |
+| `result.carrierName` | Carrier name, when returned under this name |
+| `result.validCarrierPhone` | Indicates whether the phone number is valid |
+| `result.matchRateCpfPhone` | Match rate between the CPF and the phone number |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_CPF_PHONE_VALIDATION",
+    "cpf": "cpf",
+    "phone": "11900000000"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "phone": "5561982358585",
+    "operator": "EXAMPLE CARRIER",
+    "validCarrierPhone": true,
+    "matchRateCpfPhone": 100
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### CPF validation with address
+
+Validates the association between a CPF and an address at Brazil's main
+telecom carriers. This query helps confirm whether the individual is
+associated with the given address, and also supports location-related
+checks.
+
+```json
+{
+  "service": "SERVICE_CPF_ADDRESS_VALIDATION",
+  "cpf": "cpf",
+  "zipcode": "00000-000",
+  "numberAddress": 13
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.zipcode` | Postal code |
+| `result.numberAddress` | Address number |
+| `result.carrierName` | Telecom carrier name |
+| `result.zipCodeMatchRate` | Match rate between CPF and postal code |
+| `result.numberMatchRate` | Match rate between CPF, postal code, and the given number |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "SERVICE_CPF_ADDRESS_VALIDATION",
+    "cpf": "cpf",
+    "zipcode": "00000-000",
+    "numberAddress": 13
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "message": "Customer not found",
+    "carrierName": "CLARO S.A.",
+    "zipcode": "00000000",
+    "zipCodeMatchRate": -1,
+    "numberMatchRate": -1,
+    "numberAddress": "13"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Financial information query
+
+Queries financial information associated with the given CPF.
+
+```http
+POST /api/service-api
+```
+
+Authorization:
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+Body:
+
+```json
+{
+  "service": "SERVICE_FINANCIAL_INFORMATION",
+  "cpf": "cpf"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_FINANCIAL_INFORMATION",
+    "cpf": "cpf"
+  }'
+```
+
+This service doesn't have a documented JSON response body example in this
+reference.
+
+### PIS data query
+
+The PIS data query looks up Social Integration Program information
+available in the National Social Information Registry (CNIS) portal.
+
+```http
+POST /api/service-api
+```
+
+Authorization:
+
+```http
+Authorization: Bearer {jwt_token}
+Content-Type: application/json
+```
+
+Body:
+
+```json
+{
+  "service": "SERVICE_PIS_CONSULTATION",
+  "cpf": "cpf"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_PIS_CONSULTATION",
+    "cpf": "cpf"
+  }'
+```
+
+This service appears as unavailable in this reference and doesn't have a
+documented response body.
+
+### E-Social validation
+
+The E-Social validation queries the individual's registration status in
+E-Social. Although the query can use the NIT, this field isn't required.
+If the NIT isn't sent, the API uses the data available in the base.
+
+```http
+POST /api/service-api
+```
+
+Authorization:
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+Body:
+
+```json
+{
+  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+  "cpf": "cpf",
+  "nit": "(optional)"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.status` | Registration validation status |
+| `result.message` | Query message |
+| `result.name` | Name |
+| `result.birthdate` | Date of birth |
+| `result.pis` | PIS number |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+    "cpf": "cpf",
+    "nit": "(optional)"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "status": "VERIFIED",
+    "message": "Os dados estão corretos.",
+    "name": "EXAMPLE NAME",
+    "birthDate": "1971-11-23",
+    "pis": "12460888617"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Digital document analysis
+
+This service extracts information from the sent document and runs
+FaceMatch between the given selfie and the document, and can also compare
+it against government databases.
+
+```json
+{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}
+```
+
+Input fields:
+
+| Field | Description |
+| --- | --- |
+| `key` | Key used to query the document analysis result. Can be a UUID or another key defined by the integration |
+| `image1` | Document in base64, PDF, or image, with the front side of the RG or CNH. Can also contain the full CNH photo. Required field |
+| `image2` | Document in base64 with the back of the RG or CNH. Optional field |
+| `selfie1` | Selfie of the person on the document for FaceMatch. Optional field |
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.name` | Name |
+| `result.fatherName` | Father's name |
+| `result.motherName` | Mother's name |
+| `result.birthdate` | Date of birth |
+| `result.cnhCategory` | CNH category |
+| `result.expeditionDate` | Issue date |
+| `result.rg` | RG number |
+| `result.rgUf` | RG's state |
+| `result.reanch` | RENACH number |
+| `result.place` | Document's place of issue |
+| `result.validDate` | Expiration date |
+| `result.biometry` | FaceMatch between the document and selfie against the government base |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+    "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+    "image1": "base64",
+    "image2": "base64",
+    "selfie1": "base64"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "name": "PERSON NAME",
+    "fatherName": "FATHER'S NAME",
+    "motherName": "MOTHER'S NAME",
+    "birthDate": "1984-05-21",
+    "cnhCategory": "AD",
+    "expeditionDate": "19/03/2021",
+    "rg": "3261880",
+    "rgUf": "DF",
+    "reanch": "DF765309297",
+    "place": "Distrito Federal, Goiás, Mato Grosso, Mato Grosso do Sul ou Tocantins",
+    "validDate": "2026-02-24",
+    "biometry": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Query digital document analysis result
+
+Queries the digital document analysis result using the key sent in the
+creation request.
+
+```json
+{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF |
+| `result.name` | Name |
+| `result.fatherName` | Father's name |
+| `result.motherName` | Mother's name |
+| `result.birthdate` | Date of birth |
+| `result.cnhCategory` | CNH category |
+| `result.cnhNumber` | CNH number |
+| `result.expeditionDate` | Issue date |
+| `result.rg` | RG number |
+| `result.rgUf` | RG's state |
+| `result.doc` | Document type |
+| `result.place` | Document's place of issue |
+| `result.validDate` | Document's expiration date |
+| `result.reanch` | RENACH number |
+| `result.biometry` | FaceMatch between document and selfie against the government base |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+    "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "name": "PERSON NAME",
+    "fatherName": "FATHER'S NAME",
+    "motherName": "MOTHER'S NAME",
+    "birthDate": "1992-01-05",
+    "cnhCategory": "AB",
+    "cnhNumber": "07796497926",
+    "expeditionDate": "2020-04-13",
+    "rg": "3451620",
+    "rgUf": "DF",
+    "doc": "CNH",
+    "place": "BRASILIA-DISTRITO FEDERAL, DF",
+    "validDate": "2021-02-13",
+    "REANCH": "DF767732467",
+    "biometry": 3
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### MEI query
+
+Queries the MEI businesses a CPF holds.
+
+```json
+{
+  "service": "SERVICE_MEI",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.meis` | MEI businesses for the given CPF |
+| `result.meis.cpf` | CPF |
+| `result.meis.cnpj` | MEI's CNPJ |
+| `result.meis.companyName` | Business name |
+| `result.meis.sector` | Business sector |
+| `result.meis.classification` | Business classification |
+| `result.meis.startDate` | Business start date |
+| `result.meis.endDate` | Business end date |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "SERVICE_MEI",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "meis": [
+      {
+        "cpf": "00000000000",
+        "cnpj": "00000000000000",
+        "companyName": "EXAMPLE MEI COMPANY",
+        "sector": "PRIVATE - 9511800 - REPARACAO E MANUTENCAO DE COMPUTADORES E DE EQUIPAMENTOS PERIFERICOS",
+        "classification": "SELF-EMPLOYED",
+        "startDate": "2022-02-03",
+        "endDate": "2022-02-10"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Legal and administrative cases
+
+Queries legal and administrative cases associated with the given CPF.
+
+```json
+{
+  "service": "SERVICE_JURIDICAL_PROCESSES",
+  "cpf": "cpf"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_JURIDICAL_PROCESSES",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "processes": [
+      {
+        "cpf": "",
+        "numberLegalProcess": "",
+        "trialCourt": "",
+        "processDate": "",
+        "mainSubjectProcess": "",
+        "classification": "",
+        "relatedParties": ""
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Public servants query
+
+Queries relationships related to public servants for the given CPF.
+
+```json
+{
+  "service": "SERVICE_PUBLIC_SERVANTS",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.totalPublicPositions` | Total public relationships or positions found |
+| `result.inServiceServices` | Total active public relationships |
+| `result.income` | Income value returned by the query |
+| `result.isCurrentlyPublicServant` | Indicates whether the person is currently a public servant |
+| `result.professionalHistory` | Professional history related to public service |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PUBLIC_SERVANTS",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "totalPublicPositions": 6,
+    "inServiceServices": 0,
+    "income": 0,
+    "isCurrentlyPublicServant": false,
+    "professionalHistory": []
+  },
+  "status": {
+    "code": 400,
+    "message": "Failed to fetch information"
+  }
+}
+```
+
+### Address query
+
+Queries addresses associated with the given CPF.
+
+```json
+{
+  "service": "SERVICE_ADDRESS",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.addresses` | List of addresses associated with the CPF |
+| `result.addresses.zipcode` | Postal code |
+| `result.addresses.country` | Country |
+| `result.addresses.address` | Street address |
+| `result.addresses.city` | City |
+| `result.addresses.addressType` | Address type |
+| `result.addresses.neighborhood` | Neighborhood |
+| `result.addresses.state` | State |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_ADDRESS",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "addresses": [
+      {
+        "zipcode": "",
+        "country": "BRASIL",
+        "address": "",
+        "city": "SALVADOR",
+        "addressType": "HOME",
+        "neighborhood": "GRACA",
+        "state": "BA"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Economic relationships query
+
+Queries economic relationships associated with the given CPF.
+
+```json
+{
+  "service": "SERVICE_ECONOMIC_RELATIONSHIP",
+  "cpf": "cpf"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_ECONOMIC_RELATIONSHIP",
+    "cpf": "cpf"
+  }'
+```
+
+This service's return wasn't documented in the current excerpt of the
+original documentation.
+
+### Professional history query
+
+Queries professional history associated with the given CPF.
+
+```json
+{
+  "service": "SERVICE_PROFESSIONAL_HISTORY",
+  "cpf": "cpf"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PROFESSIONAL_HISTORY",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "professionalHistory": [
+      {
+        "endDate": "2007-12-23",
+        "companyName": "CRN CURSOS PROFISSIONALIZANTES LTDA",
+        "cnpj": "00000000000000",
+        "classification": "EMPLOYEE",
+        "sector": "PRIVATE - 8599604 - TREINAMENTO EM DESENVOLVIMENTO PROFISSIONAL E GERENCIAL",
+        "startDate": "2004-02-10"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Data by phone number query
+
+Queries a person's data based on the given phone number.
+
+```json
+{
+  "service": "SERVICE_CONFIRM_PHONE",
+  "phone": "+5561123456789"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `cpf` | CPF |
+| `name` | Person's name |
+| `phone` | Queried phone number |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_CONFIRM_PHONE",
+    "phone": "+5561123456789"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cpf": "11111111111",
+    "name": "PERSON NAME",
+    "phone": "+5561123456789"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Arrest warrant query
+
+Queries an arrest warrant associated with the given data.
+
+```json
+{
+  "service": "SERVICE_ARREST_WARRANT",
+  "nome": "name",
+  "motherName": "mother's name",
+  "fatherName": "father's name",
+  "birthDate": "dd/MM/yyyy",
+  "cpf": "cpf"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `message` | Return message |
+| `arrestWarrantFound` | Indicates whether an arrest warrant exists |
+
+### Active debts query
+
+Queries active debts associated with the given CPF.
+
+```json
+{
+  "service": "SERVICE_ACTIVE_DEBT_PF",
+  "cpf": "cpf"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `result.totalDebtValue` | Total debt amount |
+| `result.totalDebts` | Total number of debts |
+| `result.debts` | List of debts |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+### Candidate electoral data query
+
+Queries electoral data associated with a candidate.
+
+```json
+{
+  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `hasRunForOffice` | Indicates whether the individual has ever run for public office |
+| `hasBeenElected` | Indicates whether the individual has ever been elected |
+| `numberOfTimesRanForOffice` | Number of times the individual ran for public office |
+| `numberOfTimesElected` | Number of times the individual was elected |
+| `lastElectedRole` | Last office the individual was elected to |
+| `electionData` | Detailed data about candidacies and elections |
+| `accountability` | Accountability data |
+| `assetsList` | List of declared assets |
+| `suppliersRanking` | Supplier ranking |
+| `donorsRanking` | Donor ranking |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "hasRunForOffice": true,
+    "hasBeenElected": true,
+    "numberOfTimesRanForOffice": 1,
+    "numberOfTimesElected": 1,
+    "lastElectedRole": "Vereador",
+    "firstElectionYearRanForOffice": "2016",
+    "lastElectionYearRanForOffice": "2020",
+    "firstElectionYearElected": "2020",
+    "lastElectionYearElected": "2020",
+    "electionData": [
+      {
+        "ballotName": "EXAMPLE BALLOT NAME",
+        "ballotNumber": 12345,
+        "fullName": "CANDIDATE FULL NAME",
+        "normalizedName": "CANDIDATE FULL NAME",
+        "docNumber": "00000000000",
+        "voterNumber": "000000000000",
+        "url": "https://exemplo.com/candidatura",
+        "electionYear": "2020",
+        "electionType": "Municipal",
+        "applicationRole": "Vereador",
+        "applicationPlace": "EXAMPLE MUNICIPALITY",
+        "applicationUf": "UF",
+        "campaignCNPJ": "00000000000000",
+        "status": "Eleito por QP",
+        "wasElected": true,
+        "candidateSituation": "Consta da urna",
+        "applicationSituation": "Deferido",
+        "partyNumber": 12,
+        "partyAcronym": "PARTY",
+        "partyName": "Example Party",
+        "campaignSpendingFirstRound": 100000,
+        "totalAssetsValue": 90000,
+        "assetsList": [
+          {
+            "description": "personal savings",
+            "type": "Dinheiro em espécie - moeda nacional",
+            "value": 8000
+          }
+        ],
+        "accountability": {
+          "accountabilityControlNumber": "000000000000",
+          "consolidatedRevenueValues": {
+            "totalReceivedResources": 13000,
+            "totalFinancialResources": 9000
+          },
+          "consolidatedExpensesValues": {
+            "expensesThreshold": 100000,
+            "totalExpensesContracted": 9000
+          }
+        }
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Electoral donations query
+
+Queries electoral donations made by a person.
+
+```json
+{
+  "service": "SERVICE_ELECTORAL_DONORS_CPF",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `totalDonationsAmount` | Total number of donations made |
+| `totalDonatedValue` | Total value donated |
+| `quantityOfDonationsLastElection` | Number of donations in the last election |
+| `quantityOfDonationsLastTwoElections` | Number of donations in the last two elections |
+| `quantityOfDonationsLastThreeElection` | Number of donations in the last three elections |
+| `donatedValueLastElection` | Value donated in the last election |
+| `donatedValueLastTwoElections` | Value donated in the last two elections |
+| `donatedValueLastThreeElection` | Value donated in the last three elections |
+| `partiesThatReceivedDonation` | List of parties that received donations |
+| `maxDonationValue` | Maximum donation value |
+| `averageDonationValue` | Average donation value |
+| `minDonationValue` | Minimum donation value |
+| `electionDonationData` | Detailed data on donations made in elections |
+| `electionDonationData.politicianBallotNumber` | Ballot number of the politician who received the donation |
+| `electionDonationData.politicianFullName` | Full name of the politician who received the donation |
+| `electionDonationData.electionYear` | Year of the election the donation was made in |
+| `electionDonationData.partyName` | Name of the party that received the donation |
+| `electionDonationData.donationsAmount` | Number of donations made to the politician or party |
+| `electionDonationData.totalDonationValue` | Total value of donations made to the politician or party |
+| `electionDonationData.isCrowdfunding` | Indicates whether the donation was made via crowdfunding |
+| `electionDonationData.donationRecipient` | Donation recipient |
+| `electionDonationData.isCrossDonation` | Indicates whether the donation was a cross donation |
+| `electionDonationData.partyCrossDonationValue` | Cross donation value for the party |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_ELECTORAL_DONORS_CPF",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "totalDonationsAmount": 15,
+    "totalDonatedValue": 50000,
+    "quantityOfDonationsLastElection": 0,
+    "quantityOfDonationsLastTwoElections": 0,
+    "quantityOfDonationsLastThreeElection": 1,
+    "donatedValueLastElection": 0,
+    "donatedValueLastTwoElections": 0,
+    "donatedValueLastThreeElection": 25000,
+    "partiesThatReceivedDonation": [
+      "PARTY"
+    ],
+    "maxDonationValue": 10000,
+    "averageDonationValue": 5000,
+    "minDonationValue": 500,
+    "electionDonationData": [
+      {
+        "politicianBallotNumber": 0,
+        "politicianFullName": "CANDIDATE FULL NAME",
+        "electionYear": "2020",
+        "partyName": "PARTY",
+        "donationsAmount": "6",
+        "totalDonationValue": 5000,
+        "isCrowdfunding": false,
+        "donationRecipient": "CANDIDATE",
+        "isCrossDonation": false,
+        "partyCrossDonationValue": 0
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Political involvement query
+
+Queries a person's political involvement indicators.
+
+```json
+{
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
+  "cpf": "cpf"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `electionsCount` | Number of elections the individual participated in |
+| `isCurrentlyInOffice` | Indicates whether the individual currently holds public office |
+| `wasFormerlyElected` | Indicates whether the individual was previously elected |
+| `isPep` | Indicates whether the individual is a Politically Exposed Person |
+| `amountDonated` | Total amount donated |
+| `amountReceived` | Total amount received |
+| `politicalInvolvementScore` | Political involvement score |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_POLITICAL_INVOLVEMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "electionsCount": 5,
+    "isCurrentlyInOffice": true,
+    "wasFormerlyElected": true,
+    "isPep": true,
+    "amountDonated": 19804076,
+    "amountReceived": 20599420,
+    "politicalInvolvementScore": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Political family history query
+
+Queries a person's political family history.
+
+```json
+{
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+<Note>
+  Some fields below keep the original spelling returned by the API, even
+  when it looks inconsistent. This avoids a mismatch between the
+  documentation and the response's real contract.
+</Note>
+
+| Field | Description |
+| --- | --- |
+| `totalMembers` | Total number of family members |
+| `policalMembers` | Number of political members in the family |
+| `currentlyElectedMembers` | Number of currently elected members |
+| `totalDisputedElections` | Total elections the family contested |
+| `totalWonElections` | Total elections won |
+| `familyFirstDisputedElectionYear` | Year of the family's first contested election |
+| `familyFirstWonElectionYear` | Year of the family's first won election |
+| `familyLastDisputedElectionYear` | Year of the family's last contested election |
+| `familyLastWonElectionYear` | Year of the family's last won election |
+| `relationshipTypeWithMoreWonElections` | Relationship type with the most won elections |
+| `relationshipTypeWithMoreDisputedElections` | Relationship type with the most contested elections |
+| `highestDisputedPolicalPosition` | Highest political position contested |
+| `highestHeldPolicalPosition` | Highest political position held |
+| `electionsTimeline` | Timeline of contested elections |
+| `disputedPoliticalPositionsDistribution` | Distribution of contested positions |
+| `heldPoliticalPositionsDistribution` | Distribution of held positions |
+| `totalDisputedElectionsByRelationshipType` | Total contested elections by relationship type |
+| `totalWonElectionsByRelationshipType` | Total won elections by relationship type |
+| `totalDisputedElectionsByPartyAcronym` | Total contested elections by party acronym |
+| `totalDisputedElectionsByRegion` | Total contested elections by region |
+
+Example response:
+
+```json
+{
+  "result": {
+    "totalMembers": 10,
+    "policalMembers": 3,
+    "currentlyElectedMembers": 2,
+    "totalDisputedElections": 22,
+    "totalWonElections": 11,
+    "familyFirstDisputedElectionYear": 1998,
+    "familyFirstWonElectionYear": 1998,
+    "familyLastDisputedElectionYear": 2022,
+    "familyLastWonElectionYear": 2022,
+    "relationshipTypeWithMoreWonElections": "SON",
+    "relationshipTypeWithMoreDisputedElections": "SON",
+    "highestDisputedPolicalPosition": "PRESIDENTE",
+    "highestHeldPolicalPosition": "PRESIDENTE",
+    "electionsTimeline": [
+      {
+        "eelationshipType": "SELF",
+        "electionYear": 2022,
+        "electionType": "FEDERAL",
+        "electionRegion": "BRASIL - BR",
+        "role": "PRESIDENTE",
+        "partyAcronym": "PL",
+        "wasElected": false
+      }
+    ],
+    "disputedPoliticalPositionsDistribution": {
+      "DEPUTADO FEDERAL": 9,
+      "VEREADOR": 9,
+      "PRESIDENTE": 2,
+      "PREFEITO": 2
+    },
+    "heldPoliticalPositionsDistribution": {
+      "DEPUTADO FEDERAL": 6,
+      "VEREADOR": 4,
+      "PRESIDENTE": 1
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Electoral service providers query
+
+Queries electoral service providers associated with the person.
+
+```json
+{
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
+  "cpf": "cpf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `name` | Name of the individual or entity |
+| `partiesThatReceivedProvision` | List of parties that received provisions |
+| `electionProvisionData` | Detailed data on electoral provisions |
+| `politicianBallotNumber` | Ballot number of the politician who received the provision |
+| `politicianFullName` | Full name of the politician who received the provision |
+| `politicianDocNumber` | Politician's document number |
+| `partyName` | Name of the party that received the provision |
+| `provisionRequester` | Provision requester |
+| `electionYear` | Election year |
+| `applicationRole` | Office the candidate ran for |
+| `numberOfProvisions` | Number of provisions made |
+| `totalProvisionValue` | Total value of provisions |
+| `crossDonationFlagFound` | Indicates whether a cross donation was found |
+| `entityCrossDonationValue` | Cross donation value by the entity |
+| `entityCrossDonationYield` | Cross donation yield by the entity |
+| `crossDonationRelationshipLevel` | Cross donation relationship level |
+| `minProvisionValue` | Minimum provision value |
+| `maxProvisionValue` | Maximum provision value |
+| `avgProvisionValue` | Average provision value |

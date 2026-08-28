@@ -1,0 +1,1053 @@
+---
+title: Business Services
+description: External services available for CNPJ queries
+---
+
+# Business Services
+
+Business services let you query, validate, and enrich CNPJ data across PJ
+onboarding flows, registration analysis, business KYC, business owner
+assessment, tax standing, debts, protests, and compliance.
+
+Just like individual services, all of them run through the central
+services endpoint. The `service` field defines which product will be
+processed.
+
+Before building the body, check the client's product to see which alias is
+enabled. That's the value that should go in the `service` field.
+
+```http
+POST /api/service-api
+```
+
+In the `curl` examples, `{base_url}` represents the URL of the chosen
+environment:
+
+| Environment | Base URL |
+| --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` |
+| Production | `https://backoffice.idcerberus.com` |
+
+Example request:
+
+```json
+{
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+  "cnpj": "cnpj"
+}
+```
+
+## How to use this catalog
+
+This is the full technical reference for businesses. Use it when you need
+a service's full contract. To navigate by goal or product family first, see
+[Choose the right service](/en/guides/escolha-o-servico-certo),
+[Service matrix](/en/guides/matriz-de-servicos), or
+[Service families](/en/guides/service-api/familias-de-servicos).
+
+Use this page to look up the full list of CNPJ services, their `service`
+codes, main fields, and more extensive request and response examples.
+
+## Related guides
+
+| Guide | When to use it |
+| --- | --- |
+| [Service families](/en/guides/service-api/familias-de-servicos) | To navigate by product group. |
+| [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api) | For CNPJ card, image, base64 payloads and return examples. |
+| [API Reference](/api-reference/autorização/gerar-token-de-api) | For endpoint-by-endpoint details. |
+
+<Warning>
+  For PJ protests, some products use a short alias in the body. If
+  `SERVICE_PROTEST_PJ` or `SERVICE_PROTEST_PJ` are documented, but the
+  product is configured with a short alias, send
+  `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` in the `service` field.
+</Warning>
+
+Quick step to avoid errors:
+
+1. Open the client's product in the Backoffice.
+2. Confirm the alias enabled for the service.
+3. Send that alias in the `service` field.
+4. Use the table's other fields as the query's main input.
+
+## Available services
+
+### Registration and registration status
+
+| Service | `service` code | Main fields |
+| --- | --- | --- |
+| PJ data enrichment | `SERVICE_CORPORATE_DATA_ENRICHMENT` | `cnpj` |
+| CNPJ status at the Federal Revenue | `SERVICE_RFB_PJ` | `cnpj` |
+| CNPJ at the Federal Revenue on-demand | `SERVICE_RFB_PJ_ON_DEMAND` | `cnpj` |
+| CNPJ registration data | `SERVICE_REGISTRATION_DATA_CNPJ` | `cnpj` |
+| SINTEGRA | `SERVICE_SINTEGRA_CONSULTATION` | `cnpj`, `uf` |
+| Extended business addresses | `SERVICE_ADDRESSES_EXTENDED_CNPJ` | `cnpj` |
+| CNPJ domains | `SERVICE_DOMAINS_CNPJ` | `cnpj` |
+| PJ electoral donations | `SERVICE_ELECTORAL_DONORS_CNPJ` | `cnpj` |
+| PJ electoral service providers | `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | `cnpj` |
+| DAS MEI at the Federal Revenue | `SERVICE_DAS_MEI` | `cnpj` |
+| Ratings and reputation | `SERVICE_REPUTATIONS_AND_REVIEWS` | `cnpj` |
+| Investment fund data | `SERVICE_INVESTMENT_FUND_DATA` | `cnpj` |
+| Simples Nacional - MEI collection | `SERVICE_PGMEI` | `cnpj` |
+| Marketplaces | `SERVICE_MARKETPLACE_DATA` | `cnpj` |
+| Online ads | `SERVICE_ONLINE_ADS` | `cnpj` |
+| Basic data history | `SERVICE_HISTORY_BASIC_DATA` | `cnpj` |
+| Merchant category | `SERVICE_MERCHANT_CATEGORY_DATA` | `cnpj` |
+| Phone numbers | `SERVICE_PHONES_EXTENDED_COMPANY` | `cnpj` |
+| Company evolution | `SERVICE_COMPANY_EVOLUTION` | `cnpj` |
+| Public projects | `SERVICE_PUBLIC_PROJECTS` | `cnpj` |
+| Civil construction | `SERVICE_CIVIL_CONSTRUCTION` | `cnpj` |
+
+### Risk and credit
+
+| Service | `service` code | Main fields |
+| --- | --- | --- |
+| PJ credit score | `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | `cnpj` |
+| PJ multi-data credit score | `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | `cnpj` |
+| PJ restrictive data | `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | `cnpj` |
+| PJ negative flags | `SERVICE_QUOD_CREDIT_RISK_COMPANY` | `cnpj` |
+| PJ Quantum credit score | `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | `cnpj` |
+| PJ credit risk | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` |
+
+### Business owners, relationships, and compliance
+
+| Service | `service` code | Main fields |
+| --- | --- | --- |
+| Company relationships | `SERVICE_COMPANY_RELATIONSHIP` | `cnpj` |
+| Business owners at the Federal Revenue | `SERVICE_COMPANY_RFB_OWNERS` | `cnpj` |
+| First-level partners | `SERVICE_FIRST_LEVEL_PARTNER` | `cnpj` |
+| Economic group relationships | `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | `cnpj` |
+| Business ownership influence | `SERVICE_OWNERS_INFLUENCE` | `cnpj` |
+| Federal Revenue - QSA | `SERVICE_RF_QSA` | `cnpj` |
+| Business owners' lawsuit distribution | `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | `cnpj` |
+| PJ legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` |
+| Business owners' legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | `cnpj` |
+| Legal case distribution | `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | `cnpj` |
+| Labor lawsuits | `SERVICE_LABOR_LAWSUITS` | `cnpj` |
+| Business owners' KYC and compliance | `SERVICE_COMPANY_KYC_OWNERS` | `cnpj` |
+| Employee KYC and compliance | `SERVICE_EMPLOYEES_KYC` | `cnpj` |
+| Union agreements | `SERVICE_SYNDICATE_AGREEMENTS` | `cnpj` |
+| Business owners' media exposure and profile | `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | `cnpj` |
+| Business owners' electoral donations | `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | `cnpj` |
+| PJ active debts | `SERVICE_ACTIVE_DEBT_PJ` | `cnpj` |
+| FGTS | `SERVICE_FGTS` | `cnpj` |
+| PJ negative protest certificate | `SERVICE_PROTEST_PJ` | `cnpj` |
+| Betting compliance | `SERVICE_COMPLIANCE_BET` | `cnpj` |
+| PJ betting compliance | `SERVICE_COMPLIANCE_BET_PJ` | `cnpj` |
+| Ultimate beneficial owners | `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | `cnpj` |
+| Equity stake percentage | `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | `cnpj` |
+| PGFN debts | `SERVICE_PGFN_COMPANY` | `cnpj` |
+| PCD quota | `SERVICE_PCD_COMPANY` | `cnpj` |
+| CGU negative certificate | `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` |
+| CNJ negative certificate | `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | `cnpj` |
+| State debt negative certificate | `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | `cnpj` |
+| Simples Nacional status | `SERVICE_SIMPLES_COMPANY` | `cnpj` |
+| Economic group KYC and compliance | `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | `cnpj` |
+| CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | `image1` |
+
+## CNPJ on-demand query
+
+The `SERVICE_RFB_PJ_ON_DEMAND` service runs the CNPJ query at the Federal
+Revenue in on-demand mode. Use it when the integration needs to fetch or
+update the company's registration information directly at request time.
+
+```json
+{
+  "service": "SERVICE_RFB_PJ_ON_DEMAND",
+  "cnpj": "cnpj"
+}
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+<Note>
+  This service runs the on-demand query, but the response currently exposed
+  can be minimal. For a more complete registration view of the company, also
+  use `SERVICE_CORPORATE_DATA_ENRICHMENT`.
+</Note>
+
+## Examples
+
+### Business data enrichment
+
+Returns information about a business that exists at the Federal Revenue,
+such as official name, trade name, founding date, activities, legal
+nature, and share capital.
+
+```json
+{
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+  "cnpj": "cnpj"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --data '{
+    "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+    "cnpj": "cnpj"
+  }'
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.status` | CNPJ status at the Federal Revenue |
+| `result.statusDate` | Status update date |
+| `result.name` | Official name |
+| `result.country` | Country where the company was created |
+| `result.fantasyName` | Trade name |
+| `result.origin` | Source of the information |
+| `result.regime` | Tax regime type |
+| `result.age` | Company age in years |
+| `result.registrationStatusDate` | Registration status update date |
+| `result.foundedDate` | Founding date |
+| `result.activities` | Company activities |
+| `result.legalNatureCode` | Legal nature code |
+| `result.legalNatureActivity` | Legal nature description |
+| `result.capital` | Initial capital, written out |
+| `result.capitalRS` | Initial capital in reais |
+| `result.nire` | Business Registry Identification Number |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "status": "ATIVA",
+    "statusDate": "2022-07-26T00:00:00Z",
+    "name": "EXAMPLE COMPANY LTDA",
+    "country": "Brazil",
+    "fantasyName": "EXAMPLE COMPANY",
+    "origin": "Receita Federal",
+    "regime": "SIMPLES",
+    "age": 4,
+    "registrationStatusDate": "2018-04-04T00:00:00Z",
+    "foundedDate": "2018-04-04T00:00:00Z",
+    "activities": [
+      {
+        "IsMain": true,
+        "Code": "6209100",
+        "Activity": "SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201501",
+        "Activity": "DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201502",
+        "Activity": "WEB DESIGN"
+      },
+      {
+        "IsMain": false,
+        "Code": "6202300",
+        "Activity": "DESENVOLVIMENTO E LICENCIAMENTO DE PROGRAMAS DE COMPUTADOR CUSTOMIZAVEIS"
+      }
+    ],
+    "legalNatureCode": "2062",
+    "legalNatureActivity": "SOCIEDADE EMPRESARIA LIMITADA",
+    "capital": "DEZ MIL REAIS",
+    "capitalRS": "10000.00",
+    "nire": ""
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### CNPJ status at the Federal Revenue
+
+Returns the registration status of a CNPJ that exists at the Federal
+Revenue.
+
+```json
+{
+  "service": "SERVICE_RFB_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.status` | CNPJ status at the Federal Revenue |
+| `result.statusDate` | Status update date |
+| `result.origin` | Source of the information |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+### Company relationships query
+
+Queries the company's relationships, including owners, employees, owned
+companies, and ownership ties.
+
+```json
+{
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.isFamilyCompany` | Indicates whether the owners belong to the same family |
+| `result.isFamilyEmployees` | Indicates whether employees belong to an owner's family |
+| `result.relationshipTotal` | Total number of relationships |
+| `result.totalOwners` | Total number of owners |
+| `result.totalEmployees` | Total number of employees |
+| `result.totalOwned` | Total number of owned companies |
+| `result.companyRelationships` | The company's relationships |
+| `result.companyRelationships.cpf` | Related CPF |
+| `result.companyRelationships.name` | Name |
+| `result.companyRelationships.relationshipName` | Relationship name |
+| `result.companyRelationships.relationshipType` | Relationship type |
+| `result.companyRelationships.origin` | Source of the information |
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "isFamilyCompany": false,
+    "isFamilyEmployees": false,
+    "relationshipTotal": 1,
+    "totalOwners": 1,
+    "totalEmployees": 1,
+    "totalOwned": 1,
+    "companyRelationships": [
+      {
+        "cpf": "77272722314",
+        "name": "EXAMPLE NAME",
+        "country": "Brazil",
+        "relationshipName": "SOCIO-ADMINISTRADOR",
+        "relationshipType": "REPRESENTANTELEGAL",
+        "origin": "RECEITA FEDERAL",
+        "relationshipStartDate": "2021-03-01",
+        "relationshipEndDate": "2021-03-01"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### SINTEGRA query
+
+The SINTEGRA query looks up information in the Integrated System for
+Information on Interstate Goods and Services Operations, on the official
+government site. SINTEGRA tracks interstate operations carried out by ICMS
+taxpayers and helps businesses issue invoices for customers.
+
+```json
+{
+  "service": "SERVICE_SINTEGRA_CONSULTATION",
+  "cnpj": "cnpj",
+  "uf": "uf"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.status` | CNPJ status in SINTEGRA |
+| `result.uf` | CNPJ's state |
+| `result.cfdf` | Federal District Tax Registration, exclusive to companies registered in the DF |
+| `result.origin` | Source of the information |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example request:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_SINTEGRA_CONSULTATION",
+    "cnpj": "cnpj",
+    "uf": "uf (optional)"
+}'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "30108283000000",
+    "status": "NOT REGISTERED",
+    "uf": "DF",
+    "cfdf": "0785286100111",
+    "origin": "Sintegra"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Extended business addresses
+
+Returns the complete list of addresses associated with the queried CNPJ
+(current and historical), with normalized data on street, neighborhood,
+city, state, country, postal code, and address type, plus an aggregated
+summary with totals and pass-through dates. Use this query when the
+registration analysis needs to go beyond the main address returned by
+basic CNPJ queries.
+
+```json
+{
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | Queried CNPJ |
+| `result.addresses` | List of addresses associated with the company (all values come as text/string) |
+| `result.addresses.address` | Street address |
+| `result.addresses.number` | Number |
+| `result.addresses.complement` | Complement, when present |
+| `result.addresses.neighborhood` | Neighborhood |
+| `result.addresses.city` | City |
+| `result.addresses.state` | State |
+| `result.addresses.country` | Country |
+| `result.addresses.zipcode` | Postal code |
+| `result.addresses.addressType` | Address type (e.g., `COMMERCIAL`, `RESIDENTIAL`) |
+| `result.addresses.isActive` | `"true"`/`"false"`, indicates whether the address is currently active |
+| `result.addresses.isMainForEntity` | `"true"`/`"false"`, indicates whether it's the company's main address |
+| `result.addressesExtendedTotal` | Total number of addresses found |
+| `result.addressesExtendedTotalActive` | How many are active |
+| `result.addressesExtendedOldestPassageDate` / `result.addressesExtendedNewestPassageDate` | Date of the oldest and most recent pass-through across all addresses |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "addresses": [
+      {
+        "address": "EXAMPLE AVENUE",
+        "number": "1000",
+        "neighborhood": "CENTRO",
+        "city": "SAO PAULO",
+        "state": "SP",
+        "country": "BRASIL",
+        "zipcode": "01001000",
+        "addressType": "COMMERCIAL",
+        "isActive": "true",
+        "isMainForEntity": "true"
+      }
+    ],
+    "addressesExtendedTotal": 1,
+    "addressesExtendedTotalActive": 1,
+    "addressesExtendedOldestPassageDate": "2018-02-10",
+    "addressesExtendedNewestPassageDate": "2026-05-12"
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  }
+}
+```
+
+### First-level partners query
+
+Searches for aggregated circles of individuals related to the given CNPJ.
+These people are retrieved from the companies' ownership structure data.
+
+Notes:
+
+1. A circle can exist with no participating individuals.
+2. The circles' return is contained in the main result object.
+
+```json
+{
+  "service": "SERVICE_FIRST_LEVEL_PARTNER",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | CNPJ |
+| `result.circleType` | Circle type |
+| `result.totalEntities` | Total number of related entities |
+| `result.totalDistinctAddresses` | Total number of distinct related addresses |
+| `result.totalDistinctPhones` | Total number of distinct related phone numbers |
+| `result.totalDistinctEmails` | Total number of distinct related emails |
+| `result.totalEmployedEntities` | Total number of related people who are employed |
+| `result.totalCompaniesOwned` | Total number of owned companies |
+| `result.totalRelatedEntities` | Total number of related people |
+| `result.totalPEPs` | Total number of politically exposed people |
+| `result.totalPublicServants` | Total number of related public servants |
+| `result.totalClassMember` | Total number of people registered with professional bodies |
+| `result.totalLivingPeople` | Total number of living people in the circles |
+| `result.totalDeceasedPeople` | Total number of deceased people in the circles |
+| `result.minAge` | Minimum age among the entities |
+| `result.maxAge` | Maximum age among the entities |
+| `result.avgAge` | Average age among the entities |
+| `result.circleTotalIncomeRange` | Total income range for the entities |
+| `result.entitiesAvgIncomeRange` | Average income range for the entities |
+| `result.avgGeographicDistance` | Average geographic distance |
+| `result.totalLawSuits` | Total number of lawsuits |
+| `result.genderDistribution` | Distribution by gender |
+| `result.ageRangeDistribution` | Distribution by age range |
+| `result.incomeRangeDistribution` | Distribution by income range |
+| `result.stateDistribution` | Distribution by state |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+Example request:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --data '{
+    "service": "SERVICE_FIRST_LEVEL_PARTNER",
+    "cnpj": "cnpj"
+}'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "circleType": "FIRST_LEVEL_OWNERS",
+    "totalEntities": 2,
+    "totalDistinctAddresses": 11,
+    "totalDistinctPhones": 7,
+    "totalDistinctEmails": 7,
+    "totalEmployedEntities": 2,
+    "totalCompaniesOwned": 4,
+    "totalRelatedEntities": 4,
+    "totalPEPs": 0,
+    "totalPublicServants": 0,
+    "totalClassMember": 0,
+    "totalLivingPeople": 2,
+    "totalDeceasedPeople": 0,
+    "minAge": 28,
+    "maxAge": 38,
+    "avgAge": 33,
+    "circleTotalIncomeRange": "ACIMA DE 20 SM",
+    "entitiesAvgIncomeRange": "10 A 20 SM",
+    "entitiesMaxIncomeRange": "10 A 20 SM",
+    "entitiesMinIncomeRange": "4 A 10 SM",
+    "minEducationLevel": "SEM INFORMACAO",
+    "avgEducationLevel": "6 A 9 FUND",
+    "maxEducationLevel": "MEDIO COMPL",
+    "avgGeographicDistance": 11490.88926949,
+    "maxGeographicDistance": 22580.48025219,
+    "minGeographicDistance": 401.29828679,
+    "maxEShopperLevel": "A",
+    "totalEShopperLevel": "A",
+    "minEShopperLevel": "A",
+    "maxESellerLevel": "D",
+    "minESellerLevel": "H",
+    "totalESellerLevel": "F",
+    "totalLawSuits": 0,
+    "totalLawSuitsAsDefendant": 0,
+    "totalLawSuitsAsAuthor": 0,
+    "totalPassages": 50,
+    "totalBadPassages": 4,
+    "monthAveragePassages": 50,
+    "firstPassageDate": "0001-01-01T00:00:00",
+    "lastPassageDate": "0001-01-01T00:00:00",
+    "last3MonthsPassages": -3,
+    "last6MonthsPassages": -3,
+    "last12MonthsPassages": -3,
+    "last18MonthsPassages": -3,
+    "genderDistribution": {
+      "U": 0,
+      "F": 0,
+      "M": 2
+    },
+    "ageRangeDistribution": {
+      "30-40": 1,
+      "25-30": 1,
+      "SEM INFORMACAO": 0
+    },
+    "incomeRangeDistribution": {
+      "4 A 10 SM": 1,
+      "10 A 20 SM": 1,
+      "SEM INFORMACAO": 0
+    },
+    "educationLevelDistribution": {
+      "MEDIO COMPL": 1,
+      "SEM INFORMACAO": 1
+    },
+    "stateDistribution": {
+      "DF": 1,
+      "SP": 0,
+      "RJ": 0,
+      "BA": 0
+    },
+    "eShopperDistribution": {
+      "A": 2,
+      "B": 0,
+      "C": 0
+    },
+    "eSellerDistribution": {
+      "D": 1,
+      "H": 1
+    },
+    "taxIdStatusDistribution": {
+      "Regular": 2
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### DAS MEI at the Federal Revenue query
+
+Queries DAS MEI periods at the Federal Revenue, returning paid periods, the
+invoice URL, and barcode.
+
+```json
+{
+  "service": "SERVICE_DAS_MEI",
+  "cnpj": "cnpj"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `result.periodos` | List of periods linked to the MEI |
+| `result.periodos.url_das` | DAS invoice payment URL |
+| `result.periodos.codigo_barras_das` | Invoice barcode |
+
+Example request:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_DAS_MEI",
+    "cnpj": "cnpj"
+}'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "periodos": {
+      "201707": {
+        "mensagem": "Example text",
+        "mensagem_site": "Example text",
+        "url_das": "https://www.exemplo.com/exemplo-de-url",
+        "codigo_barras_das": "",
+        "periodo": "Julho/2017",
+        "apurado": "Sim",
+        "situacao": "",
+        "principal": "",
+        "multas": "",
+        "juros": "",
+        "total": "",
+        "data_vencimento": "",
+        "data_acolhimento": "",
+        "data_pagamento": "",
+        "icms": "",
+        "iss": "",
+        "inss": "",
+        "numero_apuracao": "",
+        "numero_das": "",
+        "normalizado_principal": 0.0,
+        "normalizado_multas": 0.0,
+        "normalizado_juros": 0.0,
+        "normalizado_total": 0.0,
+        "normalizado_icms": 0.0,
+        "normalizado_iss": 0.0,
+        "normalizado_inss": 0.0
+      },
+      "201708": {
+        "mensagem": "Example text",
+        "mensagem_site": "Example text",
+        "url_das": "https://www.exemplo.com/exemplo-de-url",
+        "codigo_barras_das": "",
+        "periodo": "Agosto/2017",
+        "apurado": "Sim",
+        "situacao": "",
+        "principal": "",
+        "multas": "",
+        "juros": "",
+        "total": "",
+        "data_vencimento": "",
+        "data_acolhimento": "",
+        "data_pagamento": "",
+        "icms": "",
+        "iss": "",
+        "inss": "",
+        "numero_apuracao": "",
+        "numero_das": "",
+        "normalizado_principal": 0.0,
+        "normalizado_multas": 0.0,
+        "normalizado_juros": 0.0,
+        "normalizado_total": 0.0,
+        "normalizado_icms": 0.0,
+        "normalizado_iss": 0.0,
+        "normalizado_inss": 0.0
+      }
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### Business owners' legal cases query
+
+Queries legal and administrative cases related to business owners.
+
+```json
+{
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.totalLawsuitsOwners` | Total number of business owners' lawsuits |
+| `result.totalLawsuitsReplaceOwners` | Total number of substitute owners' lawsuits |
+| `result.totalLawsuitsAsAuthorOwners` | Total number of lawsuits as plaintiff |
+| `result.totalLawsuitsAsOtherOwners` | Total number of lawsuits in other roles |
+| `result.avgLawsuitsOwners` | Average number of lawsuits per business owner |
+| `result.lawSuitsOwners` | Lawsuits grouped by business owner |
+
+### Business owners' KYC and compliance query
+
+Queries KYC and compliance information for all of the company's business
+owners in a single call (individuals and businesses), including political
+exposure (PEP) and sanctions on national and international restrictive
+lists.
+
+```json
+{
+  "service": "SERVICE_COMPANY_KYC_OWNERS",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.totalCurrentPep` | Number of business owners currently classified as PEP |
+| `result.totalHistoricallyPEP` | Number of business owners with a PEP history (includes anyone who was PEP and no longer is) |
+| `result.totalCurrentSanctioned` | Number of currently sanctioned business owners |
+| `result.totalHistoricallySanctioned` | Number of business owners with a sanctions history |
+| `result.averageSanctionsPerOwner` | Average number of sanctions per business owner (rounded) |
+| `result.pepPercentage` | Percentage of business owners classified as PEP |
+| `result.kycOwners` | Combined list with the KYC breakdown for each business owner (individuals and businesses) |
+| `result.companyOwners` / `result.peopleOwners` | The same breakdown as `kycOwners`, but already split into business and individual owners |
+| `kycOwners[].isPep` | Indicates whether the business owner is currently PEP |
+| `kycOwners[].isCurrentlySanctioned` | Indicates whether the business owner is currently sanctioned |
+| `kycOwners[].sanctionsHistory` | The business owner's full sanctions history |
+| `kycOwners[].highConfidenceSanctionsHistory` | The same history, filtered to a `matchRate` above 90; use this list for automated decisions |
+| `kycOwners[].pepHistories` | The business owner's history of positions and political exposure |
+
+There's no `partnersHistory` field in this service's return. The
+per-business-owner breakdown comes in `kycOwners` (or
+`companyOwners`/`peopleOwners`).
+
+### Business owners' media exposure and profile
+
+Queries public exposure and media profile for the business owners related
+to the CNPJ. The return carries a list in `results`, with one item per
+individual found.
+
+```json
+{
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `results.cpf` | Queried business owner's CPF |
+| `results.mediaExposureLevel` | Media exposure level |
+| `results.celebrityLevel` | Public notoriety level |
+| `results.unpopularityLevel` | Unpopularity level |
+| `results.fullName` | Full name returned |
+| `results.shortName` | Short name returned |
+| `results.fullNameUniquenessScore` | Full name uniqueness score |
+| `results.shortNameUniquenessScore` | Short name uniqueness score |
+| `results.newsItems` | Related news found |
+
+### Active debts query
+
+Queries the company's debts with the government.
+
+```json
+{
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `result.totalDebtValue` | Total debt amount |
+| `result.totalDebtValuePerOrigin` | Total debt amount by source |
+| `result.totalDebts` | Total number of debts |
+| `result.totalDebtsPerOrigin` | Number of debts by source |
+| `result.debts` | List of debts |
+| `status.code` | Status message code |
+| `status.message` | Status code message |
+
+### PJ negative protest certificate
+
+Queries protest information at notary offices for businesses. When there
+are no protests, it returns a certificate issued by the Brazilian
+Institute of Title Protest Studies.
+
+```json
+{
+  "service": "SERVICE_PROTEST_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PROTEST_PJ",
+    "cnpj": "cnpj"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000",
+    "protestos": [
+      {
+        "cartorio": "CARTÓRIO LARANJEIRAS - 32º OFÍCIO DE NOTAS DO RIO DE JANEIRO",
+        "cidade": "RIO DE JANEIRO",
+        "quantidadeTitulos": "",
+        "endereco": "R. DAS LARANJEIRAS - LARANJEIRAS, RIO DE JANEIRO - RJ, 22221-060",
+        "telefone": "19 3396-2809",
+        "protestos": [
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2017-10-10",
+            "dataProtesto": "2017-10-10",
+            "dataVencimento": "",
+            "valor": "9.900,00"
+          },
+          {
+            "cpfCnpj": "00000000000000",
+            "data": "2018-01-01",
+            "dataProtesto": "2018-01-01",
+            "dataVencimento": "",
+            "valor": "16.000,00"
+          }
+        ]
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  }
+}
+```
+
+### PJ betting compliance query
+
+Queries betting-house compliance information related to the given CNPJ.
+
+```json
+{
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}
+```
+
+Main response fields:
+
+| Field | Description |
+| --- | --- |
+| `cnpj` | Company's CNPJ |
+| `status` | Company's current status at the Federal Revenue |
+| `statusDate` | Date of the last status update |
+| `origin` | Source of the information |
+| `age` | Company age in years |
+| `foundedDate` | Founding date |
+| `taxIdCountry` | CNPJ's issuing country |
+| `officialName` | Full official name |
+| `tradeName` | Trade name |
+| `isHeadquarter` | Indicates whether the CNPJ is the headquarters |
+| `isConglomerate` | Indicates whether it's part of a conglomerate |
+| `taxRegime` | Tax regime |
+| `activities` | Company's economic activities |
+| `isBet` | Indicates whether the company is related to betting |
+| `onlineBettingCompliance` | List of online betting compliance information |
+| `onlineBettingCompliance.SportsExposure` | Sports exposure information |
+| `onlineBettingCompliance.ForbiddenBet` | Restriction or forbidden-bet information |
+
+Example with `curl`:
+
+```bash
+curl --location '{base_url}/api/service-api' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_COMPLIANCE_BET_PJ",
+    "cnpj": "cnpj"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "result": {
+    "cnpj": "00000000000000",
+    "status": "ATIVA",
+    "statusDate": "2024-06-08",
+    "origin": "Receita Federal",
+    "age": 6,
+    "foundedDate": "2018-04-04T00:00:00Z",
+    "taxIdCountry": "Brazil",
+    "officialName": "ANONYMIZED OFFICIAL NAME",
+    "tradeName": "ANONYMIZED TRADE NAME",
+    "isHeadquarter": true,
+    "isConglomerate": false,
+    "taxRegime": "SIMPLES",
+    "taxIdStatusRegistrationDate": "2018-04-04T00:00:00Z",
+    "taxRegimes": "SIMPLES",
+    "activities": [
+      {
+        "IsMain": true,
+        "Code": "6209100",
+        "Activity": "SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201501",
+        "Activity": "DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA"
+      },
+      {
+        "IsMain": false,
+        "Code": "6201502",
+        "Activity": "WEB DESIGN"
+      }
+    ],
+    "isBet": false,
+    "onlineBettingCompliance": [
+      {
+        "SportsExposure": {
+          "Sports": [
+            {
+              "SportName": "SO**ER",
+              "Region": "BRAZIL",
+              "TotalRelatedEntities": 1,
+              "RelatedEntities": [
+                {
+                  "DocNumber": "00000000000000",
+                  "DocType": "CPF",
+                  "RelationshipLevel": "BUSINESS PARTNER",
+                  "InstitutionName": "ANONYMIZED INSTITUTION",
+                  "InstitutionActivity": "CLUBES SOCIAIS, ESPORTIVOS E SIMILARES",
+                  "Role": "MANAGER",
+                  "IsActive": true,
+                  "StartDate": "0001-01-01T00:00:00",
+                  "EndDate": "9999-12-31T23:59:59.9999999",
+                  "Source": "ANONYMIZED SOURCE"
+                }
+              ]
+            }
+          ]
+        },
+        "ForbiddenBet": {
+          "Name": "ANONYMIZED NAME",
+          "Age": "30",
+          "IsFromMinisterioDaFazenda": false,
+          "IsBookmakerOwner": false,
+          "BookmakerOwnerMotives": [
+            {
+              "Source": "SIGAP",
+              "CNPJ": "00000000000000",
+              "CompanyName": "ANONYMIZED COMPANY",
+              "EconomicActivityCodes": "6463800;7319004;9200399",
+              "AdditionalDetails": {
+                "SIGAPApplicationNumber": "000**024",
+                "SIGAPRegistrationDate": "2024-05-26 22:35:16"
+              }
+            }
+          ],
+          "MinisterioDaFazendaMotives": {}
+        }
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Consulta de API Realizada com Sucesso"
+  },
+  "externalId": "8e1ac243-4510-4ebf-ac7d-4b6d133dd619"
+}
+```
