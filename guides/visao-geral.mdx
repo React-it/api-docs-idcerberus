@@ -18,26 +18,26 @@ que serve na sua implementação.
 
 ### Service
 
-- **O que é:** uma consulta ou verificação específica, como "situação do CPF na
+1. **O que é:** uma consulta ou verificação específica, como "situação do CPF na
   Receita Federal" ou "comparar selfie com documento". Tem um código próprio
   (`SERVICE_ALGUMA_COISA`) e devolve um resultado isolado.
-- **Por que existem mais de 300:** cada tipo de dado ou verificação vira um
+2. **Por que existem mais de 300:** cada tipo de dado ou verificação vira um
   service diferente, porque cada empresa usa uma combinação diferente deles.
   Você nunca precisa de todos.
-- **Pra que serve pra você:** é a unidade que você efetivamente chama. Toda
+3. **Pra que serve pra você:** é a unidade que você efetivamente chama. Toda
   implementação começa por decidir quais services resolvem o seu problema —
   veja [Escolha o serviço certo](/guides/escolha-o-servico-certo).
 
 ### Consulta avulsa vs. onboarding
 
-- **O que é:** duas formas de usar um service. Avulsa é chamar um service
+1. **O que é:** duas formas de usar um service. Avulsa é chamar um service
   sozinho, na hora, direto em `POST /api/service-api`. Onboarding é combinar
   vários services em uma jornada guiada, com etapas, campos capturados e um
   status final (`APPROVED`, `IN_PROCESS`, `REFUSED`).
-- **Por que as duas existem:** nem toda necessidade é um cadastro completo.
+2. **Por que as duas existem:** nem toda necessidade é um cadastro completo.
   Às vezes você só precisa confirmar um dado pontual (avulsa); às vezes precisa
   conduzir o usuário por um fluxo de KYC inteiro (onboarding).
-- **Pra que serve pra você:** define o modelo de integração que você vai
+3. **Pra que serve pra você:** define o modelo de integração que você vai
   construir. Se a resposta é "só confirmar um dado agora", é avulsa via API. Se
   é "cadastrar o usuário do zero, com documento e selfie", é onboarding via
   SDK ou Cliente Web.
@@ -61,13 +61,13 @@ O webhook é o mesmo mecanismo para os dois caminhos — veja
 
 ### Produto
 
-- **O que é:** a configuração específica da sua empresa — quais services estão
+1. **O que é:** a configuração específica da sua empresa — quais services estão
   liberados, em qual ordem entram no onboarding e quais ficam disponíveis para
   consulta avulsa.
-- **Por que existe:** cada cliente da idCerberus usa um conjunto diferente de
+2. **Por que existe:** cada cliente da idCerberus usa um conjunto diferente de
   services. O produto é o que amarra "API idCerberus" a "o que a sua empresa
   efetivamente contratou".
-- **Pra que serve pra você:** você nunca escolhe entre todos os 300+ services —
+3. **Pra que serve pra você:** você nunca escolhe entre todos os 300+ services —
   escolhe dentro do que já foi habilitado para o seu produto. Se um service que
   você precisa não responde ou não aparece, o primeiro suspeito é ele não estar
   liberado no seu produto, não um erro de implementação.
@@ -122,9 +122,9 @@ integração abaixo.
 Além desses três, existem dois complementos que não são modelos de
 integração por si só, mas se somam a qualquer um deles:
 
-- [Backoffice](/guides/backoffice): interface visual da idCerberus, para
+1. [Backoffice](/guides/backoffice): interface visual da idCerberus, para
   olhar resultados e testar consultas sem escrever código.
-- [Webhooks](/guides/webhooks): avisa sua aplicação quando o status mudar —
+2. [Webhooks](/guides/webhooks): avisa sua aplicação quando o status mudar —
   vale tanto para onboarding quanto para consulta avulsa — em vez de ela
   ficar perguntando (polling).
 
@@ -236,8 +236,8 @@ A maioria das consultas retorna:
 
 ## Próximos passos
 
-- Para autenticação, veja [Autenticação](/guides/autenticacao).
-- Para onboarding via SDK, veja [Onboarding via SDK](/guides/onboarding-sdk).
-- Para catálogo de CPF, veja [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica).
-- Para catálogo de CNPJ, veja [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
-- Para implementação endpoint a endpoint, use a [API Reference](/api-reference/autorização/gerar-token-de-api).
+1. Para autenticação, veja [Autenticação](/guides/autenticacao).
+2. Para onboarding via SDK, veja [Onboarding via SDK](/guides/onboarding-sdk).
+3. Para catálogo de CPF, veja [Serviços de Pessoa Física](/guides/servicos-pessoa-fisica).
+4. Para catálogo de CNPJ, veja [Serviços de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
+5. Para implementação endpoint a endpoint, use a [API Reference](/api-reference/autorização/gerar-token-de-api).

@@ -11,13 +11,13 @@ vez de sua aplicação precisar ficar perguntando (polling).
 
 ## O que é, por que existe, pra que serve
 
-- **O que é:** uma URL da sua aplicação que a idCerberus chama automaticamente
+1. **O que é:** uma URL da sua aplicação que a idCerberus chama automaticamente
   (`POST`) toda vez que o processamento de um onboarding muda de status.
-- **Por que existe:** consultar `GET /api/onboarding/report/{tokenOnboarding}`
+2. **Por que existe:** consultar `GET /api/onboarding/report/{tokenOnboarding}`
   em loop até o status sair de `IN_PROCESS` funciona, mas gasta chamadas e
   atrasa a reação da sua aplicação. O webhook inverte isso: você é avisado no
   momento em que há novidade.
-- **Pra que serve pra você:** é a forma recomendada de acompanhar onboarding
+3. **Pra que serve pra você:** é a forma recomendada de acompanhar onboarding
   em produção. Reserve o polling (veja [Onboarding via SDK](/guides/onboarding-sdk))
   para quando o webhook ainda não estiver configurado, ou como conferência
   ocasional.
@@ -121,16 +121,16 @@ veio mesmo da idCerberus, e não de terceiros que descobriram sua URL.
 
 ## Boas práticas
 
-- Responda rápido (idealmente abaixo de alguns segundos) e processe o
+1. Responda rápido (idealmente abaixo de alguns segundos) e processe o
   conteúdo depois, de forma assíncrona. Um endpoint lento pode ser
   interpretado como falha.
-- Sempre valide o header `id-cerberus-token` antes de confiar no payload.
-- Trate eventos repetidos. Reprocessar o mesmo `tokenOnboarding` com o mesmo
+2. Sempre valide o header `id-cerberus-token` antes de confiar no payload.
+3. Trate eventos repetidos. Reprocessar o mesmo `tokenOnboarding` com o mesmo
   status não deve causar efeito colateral duplicado.
-- Não trate `REFUSED` como erro técnico — é um resultado de negócio, igual ao
+4. Não trate `REFUSED` como erro técnico — é um resultado de negócio, igual ao
   consumo avulso via polling. Veja
   [Status e erros](/guides/status-e-erros).
-- Mantenha um fallback de polling. Como não existe reenvio automático para
+5. Mantenha um fallback de polling. Como não existe reenvio automático para
   entregas que falharam (veja "Como funciona" acima), esse fallback é o que
   garante que sua aplicação não fique presa esperando um evento que não vai
   chegar sozinho.

@@ -24,13 +24,13 @@ PDF.
 
 ## O que é, por que existe, pra que serve
 
-- **O que é:** um componente (mobile ou web) fornecido pela idCerberus que
+1. **O que é:** um componente (mobile ou web) fornecido pela idCerberus que
   captura documento, selfie e dados do usuário diretamente na tela dele,
   seguindo o roteiro de onboarding configurado para o seu produto.
-- **Por que existe:** capturar documento e biometria com qualidade suficiente
+2. **Por que existe:** capturar documento e biometria com qualidade suficiente
   para validação (foco, iluminação, ângulo, prova de vida) é um problema já
   resolvido pelo SDK. Reimplementar isso do zero é caro e propenso a erro.
-- **Pra que serve pra você:** sua aplicação não processa imagem nem
+3. **Pra que serve pra você:** sua aplicação não processa imagem nem
   implementa câmera — só gera o `tokenOnboarding`, entrega ao SDK e depois lê
   o resultado já pronto. Se seu caso de uso é só consultar dados (sem capturar
   documento do usuário), você provavelmente não precisa do SDK — veja
@@ -40,11 +40,11 @@ PDF.
 
 Use esta integração quando precisar:
 
-- iniciar um fluxo de onboarding em aplicativo mobile ou experiência web
+1. iniciar um fluxo de onboarding em aplicativo mobile ou experiência web
   integrada ao SDK;
-- enviar documentos ou dados iniciais para apoiar o cadastro;
-- consultar status, campos capturados e serviços executados;
-- baixar o relatório final em PDF para auditoria ou armazenamento.
+2. enviar documentos ou dados iniciais para apoiar o cadastro;
+3. consultar status, campos capturados e serviços executados;
+4. baixar o relatório final em PDF para auditoria ou armazenamento.
 
 ## Fluxo de integração
 
@@ -369,24 +369,24 @@ entrega de webhook que falha não é reenviada automaticamente (detalhes em
 Consulte `GET /api/onboarding/report/{tokenOnboarding}` até o `status` sair de
 `IN_PROCESS`.
 
-- Espere alguns segundos entre uma consulta e outra. Não faça polling a cada
+1. Espere alguns segundos entre uma consulta e outra. Não faça polling a cada
   poucos milissegundos — os serviços por trás do onboarding podem depender de
   bases externas e levar mais tempo que uma chamada avulsa.
-- Defina um limite de tentativas ou um tempo máximo de espera na sua
+2. Defina um limite de tentativas ou um tempo máximo de espera na sua
   aplicação, com um caminho claro para "ainda não terminou, avise o usuário e
   tente de novo depois" em vez de travar a tela esperando.
-- `REFUSED` é um resultado final do negócio, não um erro técnico. A chamada em
+3. `REFUSED` é um resultado final do negócio, não um erro técnico. A chamada em
   si teve sucesso (HTTP 200); o cadastro é que não foi aprovado. Não trate
   `REFUSED` como falha para retry — trate como decisão de negócio que a sua
   aplicação precisa refletir para o usuário.
 
 ## Boas práticas
 
-- Gere o `tokenOnboarding` no back-end, nunca diretamente no aplicativo.
-- Entregue ao SDK apenas o token necessário para iniciar o fluxo.
-- Use o mesmo `tokenOnboarding` para consultar resultado e baixar relatório.
-- Trate `IN_PROCESS` como estado intermediário e consulte novamente depois.
-- Armazene o relatório PDF somente quando houver necessidade operacional,
+1. Gere o `tokenOnboarding` no back-end, nunca diretamente no aplicativo.
+2. Entregue ao SDK apenas o token necessário para iniciar o fluxo.
+3. Use o mesmo `tokenOnboarding` para consultar resultado e baixar relatório.
+4. Trate `IN_PROCESS` como estado intermediário e consulte novamente depois.
+5. Armazene o relatório PDF somente quando houver necessidade operacional,
   regulatória ou de auditoria.
 
 Para detalhes técnicos dos endpoints, consulte a
