@@ -1,0 +1,230 @@
+---
+title: Files for LLMs
+description: Use context files to support integrations, automations, and AI assistants
+---
+
+# Files for LLMs
+
+The documentation also publishes plain-text and JSON files for use by LLMs,
+code assistants, and automation tools.
+
+These files help quickly look up guides, endpoints, services, environments,
+and examples from the idCerberus API.
+
+<Info>
+The links below are static files. When clicked, the browser opens the
+file's content in a new page. To use it with an AI tool or automation, copy
+the full URL.
+</Info>
+
+## Available files
+
+| File | When to use it |
+| --- | --- |
+| [`llms.txt`](https://api-docs.idcerberus.com/llms.txt) | Short documentation index, with main links and an overview. |
+| [`llms-small.txt`](https://api-docs.idcerberus.com/llms-small.txt) | Operational summary for integrations: environments, authentication, `POST /api/service-api`, flows, and documented services. |
+| [`llms-full.txt`](https://api-docs.idcerberus.com/llms-full.txt) | Full consolidated content from the guides, API Reference, and OpenAPI. |
+| [`llms-api-reference.txt`](https://api-docs.idcerberus.com/llms-api-reference.txt) | Operational version of the API Reference, with services and curl examples ready for AI lookup. |
+| [`services-catalog.json`](https://api-docs.idcerberus.com/services-catalog.json) | Structured JSON catalog for automations, validators, and agents. |
+| [`services-catalog.min.json`](https://api-docs.idcerberus.com/services-catalog.min.json) | Lightweight index for quick lookup by service, category, tag, and field. |
+| [`mcp-manifest.json`](https://api-docs.idcerberus.com/mcp-manifest.json) | Manifest for MCPs and agents, with resources, reading order, rules, and suggested tools. |
+| [`examples/auth.hml.curl`](https://api-docs.idcerberus.com/examples/auth.hml.curl) | Ready-made authentication example in staging. |
+
+## Recommended use
+
+For quick questions about the documentation's structure, use:
+
+```txt
+https://api-docs.idcerberus.com/llms.txt
+```
+
+To ask for implementation help, `curl` generation, service selection, or a
+flow explanation, use:
+
+```txt
+https://api-docs.idcerberus.com/llms-small.txt
+```
+
+To generate request examples from the documented services, use:
+
+```txt
+https://api-docs.idcerberus.com/llms-api-reference.txt
+```
+
+For deeper analysis or questions that depend on the documentation's full
+content, use:
+
+```txt
+https://api-docs.idcerberus.com/llms-full.txt
+```
+
+For automations that need structured data, use:
+
+```txt
+https://api-docs.idcerberus.com/services-catalog.json
+```
+
+For a quick lookup before opening a service's full contract, use:
+
+```txt
+https://api-docs.idcerberus.com/services-catalog.min.json
+```
+
+To set up an MCP or agent with the list of recommended resources, use:
+
+```txt
+https://api-docs.idcerberus.com/mcp-manifest.json
+```
+
+## Using it as a base for an MCP
+
+These files already work as the base for a documentation MCP. The idea is
+for the MCP to consult the published files and answer questions about
+services, payloads, examples, and guides without calling the idCerberus
+API.
+
+Recommended order:
+
+1. Use `llms.txt` as the starting manifest.
+2. Use `services-catalog.min.json` for a quick lookup by `service`, name, category, field, or tag.
+3. Use `services-catalog.json` to open a service's full contract.
+4. Use `mcp-manifest.json` to list resources, suggested tools, security rules, and reading order.
+5. Use `llms-api-reference.txt` for the payload, a summarized response, and an example per service.
+6. Use the `examples/*.curl` files to return ready-made calls.
+7. Use `llms-full.txt` when you need the full context of the guides and API Reference.
+
+A documentation MCP should be read-only. It doesn't need to call staging,
+production, a database, or a real endpoint. It also shouldn't ask for a
+token, `client`, `secret`, CPF, CNPJ, or a real image.
+
+### Practical flow for using it in an MCP
+
+1. Read `mcp-manifest.json` to discover which files exist, what order to use them in, and which rules to follow.
+2. Search `services-catalog.min.json` first to find the right service without loading too much context.
+3. Open `services-catalog.json` when you need the calling alias, fields, tags, common errors, a payload example, and agent tips.
+4. Open `llms-api-reference.txt` when you need to explain the service's contract with more text.
+5. Use `examples/*.curl` when the answer needs a ready-to-copy call.
+6. Use `llms-full.txt` only when the question depends on the guides' full context.
+
+In practice, the MCP doesn't need to "guess" anything. First it finds the
+service in the catalog, then it uses the right guide to explain the
+payload, the return, and common errors.
+
+### What each file solves
+
+| Question | Best source |
+| --- | --- |
+| Which service should I use? | `services-catalog.min.json` |
+| Which alias goes in the body? | `services-catalog.json` under `callingAlias` |
+| Which fields do I send? | `services-catalog.json` under `requiredFields`, `optionalFields`, and `payloadExample` |
+| How do I test it in Postman/curl? | `examples/*.curl` and `llms-api-reference.txt` |
+| What do I do about a common error? | `commonErrors` in the catalog and `llms-api-reference.txt` |
+| I need a complete explanation of the flow? | `llms-full.txt` |
+
+### Ready-made prompts
+
+Use these prompts as a starting point when you want to test the
+documentation with an AI or build a more targeted MCP.
+
+**Choose a service**
+
+```txt
+Use https://api-docs.idcerberus.com/services-catalog.min.json and, if
+needed, https://api-docs.idcerberus.com/services-catalog.json.
+
+I want to solve this case: {describe the goal}.
+Tell me which service to use, which alias goes in the body, which fields
+are required, and which guide I should open before testing.
+Don't make up a service outside the catalog.
+```
+
+**Build a curl**
+
+```txt
+Use https://api-docs.idcerberus.com/mcp-manifest.json,
+https://api-docs.idcerberus.com/services-catalog.json, and the files at
+https://api-docs.idcerberus.com/examples/*.curl.
+
+Build a staging curl for the {SERVICE} service.
+Use placeholders for token, CPF, CNPJ, client, secret, and image.
+Don't use real data.
+```
+
+**Explain an error**
+
+```txt
+Use the troubleshootingByStatus block in mcp-manifest.json and the
+service's commonErrors in services-catalog.json.
+
+Explain this response: {paste the response without sensitive data}.
+Tell me the likely cause, what to check first, and the next safe test.
+Don't treat REFUSED as a technical failure without analyzing
+status.message.
+```
+
+**OCR**
+
+```txt
+Use services-catalog.json, llms-api-reference.txt, and the OCR guide.
+
+I want to test OCR for {RG/CNH/CNPJ card/proof of address}.
+Tell me the minimum payload, the expected image type, the expected public
+return, and common errors. Don't say OCR guarantees extracting every field.
+```
+
+### Responses the MCP should avoid
+
+1. Don't say Face Index provides definitive identity validation. It searches for a match in the face base.
+2. Don't treat `fieldsOutput` as a public contract.
+3. Don't promise that OCR always extracts every field.
+4. Don't make up a field's return when the field doesn't appear in the documentation.
+5. Don't ask for a real CPF, CNPJ, token, client, secret, or image to build an example.
+6. Don't suggest a real call in staging or production; this base is read-only.
+
+Examples of questions this base should answer:
+
+1. OCR: which service should I use for RG, CNH, CNPJ card, or proof of address?
+2. CPF/CNPJ: what's the minimum payload for Federal Revenue, score, risk, or registration?
+3. Face: how do I test `SERVICE_FACE_INDEX` and which image should I use?
+4. Error: what does `Don't have access to the service` or `onboardingStatus: ERROR` mean?
+5. Curl: how do I build a staging call without using real data?
+
+## Example prompt
+
+```txt
+Use the documentation below as the primary source:
+https://api-docs.idcerberus.com/llms-small.txt
+https://api-docs.idcerberus.com/llms-api-reference.txt
+
+Goal:
+I want to integrate the idCerberus API to query individual data in
+staging.
+
+What I need you to deliver:
+1. Explain the full flow, in order: authentication, generating the token,
+   and calling the query endpoint.
+2. State which endpoint I should use and which headers are required.
+3. Choose the correct `service` to query a CPF at the Federal Revenue.
+4. Generate a `curl` example to generate the token.
+5. Generate a `curl` example to run the query at `POST /api/service-api`.
+6. Show a summarized example of the expected response.
+7. Explain how to validate success using `status.code`, `status.message`,
+   and `result`.
+8. List the most common errors and how to fix them.
+
+Rules:
+1. Use staging, unless I explicitly ask for production.
+2. Don't make up endpoints, fields, services, or examples outside the
+   documentation.
+3. Don't use a real CPF, CNPJ, token, client, or secret.
+4. Use placeholders like `{client}`, `{secret}`, `{jwt_token}`, and
+   `"cpf"`.
+5. If the documentation doesn't cover some information, say it needs to be
+   confirmed before implementing.
+
+Response format:
+1. A short step by step.
+2. Then the `curl` examples.
+3. Then a "How to handle the response" section.
+4. Then a "Checklist before testing" section.
+```

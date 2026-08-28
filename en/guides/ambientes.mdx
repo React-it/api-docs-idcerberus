@@ -1,0 +1,97 @@
+---
+title: Environments
+description: Understand the difference between staging and production in the idCerberus API
+---
+
+# Environments
+
+The idCerberus API has two main environments: staging and production. The
+endpoints, methods, headers, and bodies are the same. Only the base URL
+used in the call changes.
+
+| Environment | Base URL | When to use |
+| --- | --- | --- |
+| Staging | `https://backoffice-hml.idcerberus.com` | Testing, validation, and staging the integration |
+| Production | `https://backoffice.idcerberus.com` | Real queries in operation |
+
+<Warning>
+  Don't mix credentials and data from different environments. A token
+  generated in staging must be used with the staging URL. A token generated
+  in production must be used with the production URL.
+</Warning>
+
+## How to switch environments
+
+To switch from staging to production, change only the base URL.
+
+| Item | Staging | Production |
+| --- | --- | --- |
+| Base URL | `https://backoffice-hml.idcerberus.com` | `https://backoffice.idcerberus.com` |
+| Generate token | `/api/token-generate` | `/api/token-generate` |
+| Run service | `/api/service-api` | `/api/service-api` |
+| Header | Same | Same |
+| Body | Same | Same |
+
+## Example: generate a token
+
+Staging:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+Production:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "client": "{client}",
+    "secret": "{secret}"
+  }'
+```
+
+## Example: run a service
+
+Staging:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+Production:
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+  --header 'Authorization: Bearer {jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+    "cpf": "cpf"
+  }'
+```
+
+## Common errors
+
+| Situation | How to resolve it |
+| --- | --- |
+| Staging token used in production | Generate a new token at the production URL |
+| Production token used in staging | Generate a new token at the staging URL |
+| Wrong environment in the URL | Check whether you're using `backoffice-hml` or `backoffice` |
+| Invalid credentials | Check `client`, `secret`, and the enabled environment |
+
+## Recommendation
+
+Always start with staging. Once the flow is validated, switch the base URL
+and credentials to production.
