@@ -180,9 +180,17 @@ function flattenGroupPages(tabName, groupName, pages, items) {
   }
 }
 
+function resolveDefaultTabs(navigation) {
+  if (navigation?.languages) {
+    const defaultLanguage = navigation.languages.find((lang) => lang.default) ?? navigation.languages[0];
+    return defaultLanguage?.tabs ?? [];
+  }
+  return navigation?.tabs ?? [];
+}
+
 function flattenPages(navigation) {
   const items = [];
-  for (const tab of navigation?.tabs ?? []) {
+  for (const tab of resolveDefaultTabs(navigation)) {
     for (const group of tab.groups ?? []) {
       if (group.pages) {
         flattenGroupPages(tab.tab, group.group, group.pages, items);

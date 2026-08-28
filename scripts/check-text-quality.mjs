@@ -35,11 +35,13 @@ const checks = [
   },
   {
     name: 'acentuacao quebrada',
+    ptOnly: true,
     pattern:
       /(n\?o|est\?|p\?blico|cat\?logo|pr\?tica|requisi\?\?o|documenta\?\?o|integra\?\?o|autentica\?\?o|b\?sico|cr\?dito|cart\?o|endere\?o|identifica\?\?o|varia\?\?es|al\?m|p\?gina|fam\?lia|descri\?\?o|servi\?o|valida\?\?o|produ\?\?o|homologa\?\?o)/i,
   },
   {
     name: 'texto quebrado',
+    ptOnly: true,
     pattern:
       /(Deascri[cç][aã]o|Hist[oó]rco|Profissonal|estrnahos|caracetres|toas as paginas|consutla|mensallidade|perioddos|dee empresas|stutus|carrinerName|Complice|Antecedenes|Fderal)/i,
   },
@@ -125,8 +127,11 @@ for (const file of walk(root)) {
     }
   }
 
+  const isEnglishContent = relative === 'en' || relative.startsWith('en/');
+
   for (const [index, line] of lines.entries()) {
     for (const check of checks) {
+      if (check.ptOnly && isEnglishContent) continue;
       if (failsCheck(check, line)) {
         findings.push({
           file: relative,
