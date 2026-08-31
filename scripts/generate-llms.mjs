@@ -78,7 +78,12 @@ function slugToFile(slug) {
 
 function slugToUrl(slug) {
   if (slug === 'index') return `${siteUrl}/`;
+  if (slug.endsWith('/index')) return `${siteUrl}/${slug.slice(0, -'/index'.length)}`;
   return `${siteUrl}/${slug}`;
+}
+
+function siteRootUrl(lang = 'pt') {
+  return lang === 'en' ? `${siteUrl}/en` : siteUrl;
 }
 
 function csvParse(content, delimiter = ',') {
@@ -225,6 +230,27 @@ function flattenPages(navigation) {
   return items;
 }
 
+function flattenPagesForLanguage(navigation, languageCode) {
+  const items = [];
+  const languageEntry = navigation?.languages?.find((entry) => entry.language === languageCode);
+  for (const tab of languageEntry?.tabs ?? []) {
+    for (const group of tab.groups ?? []) {
+      if (group.pages) {
+        flattenGroupPages(tab.tab, group.group, group.pages, items);
+      }
+      if (group.openapi) {
+        items.push({
+          tab: tab.tab,
+          group: group.group,
+          slug: group.openapi,
+          openapi: true,
+        });
+      }
+    }
+  }
+  return items;
+}
+
 function getPageMeta(slug) {
   const filePath = slugToFile(slug);
   const content = read(filePath);
@@ -240,7 +266,7 @@ function getPageMeta(slug) {
   };
 }
 
-function extractOpenApiSummary(content) {
+function extractOpenApiSummary(content, lang = 'pt') {
   const lines = [];
   const services = [];
   const seen = new Set();
@@ -295,7 +321,7 @@ function extractOpenApiSummary(content) {
     }
 
     services.push({
-      summary: lastSummary || 'Servico de API',
+      summary: lastSummary || (lang === 'en' ? 'API Service' : 'Servico de API'),
       service,
       requestBody,
     });
@@ -303,7 +329,11 @@ function extractOpenApiSummary(content) {
 
   lines.push('## API Reference - services');
   lines.push('');
-  lines.push('A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo campo `service` no body.');
+  if (lang === 'en') {
+    lines.push('Most queries use `POST /api/service-api` and select the product through the `service` field in the body.');
+  } else {
+    lines.push('A maioria das consultas usa `POST /api/service-api` e seleciona o produto pelo campo `service` no body.');
+  }
   lines.push('');
   for (const item of services.sort((a, b) => a.summary.localeCompare(b.summary))) {
     lines.push(`**${item.summary}**: \`${item.service}\``);
@@ -1282,8 +1312,73 @@ function writeExampleFiles(catalog) {
   }));
 }
 
-function renderApiReferenceText(servicesCatalog) {
+function renderApiReferenceText(servicesCatalog, lang = 'pt') {
   const lines = [];
+
+  if (lang === 'en') {
+    lines.push('# idCerberus API Reference - operational summary for LLM');
+    lines.push('');
+    lines.push('Use this file to generate request examples, explain API calls and choose the correct `service` without relying on the full OpenAPI.');
+    lines.push('');
+    lines.push('## Mandatory rules');
+    lines.push('');
+    lines.push('1. Do not invent endpoints, parameters or services.');
+    lines.push('2. For external queries, use `POST /api/service-api` and select the product through the `service` field.');
+    lines.push('3. Before answering with a payload, confirm the alias is the calling alias configured on the product.');
+    lines.push('4. Use staging for tests: `https://backoffice-hml.idcerberus.com`.');
+    lines.push('5. Use production only when the user explicitly asks for it: `https://backoffice.idcerberus.com`.');
+    lines.push('6. Never expose `client`, `secret`, a real JWT, a real CPF, a real CNPJ or real images in examples.');
+    lines.push('7. When a service is missing from the catalog, say it needs to be confirmed before documenting or integrating it.');
+    lines.push('');
+    lines.push('## Authentication');
+    lines.push('');
+    lines.push('```bash');
+    lines.push("curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \\");
+    lines.push("--header 'Content-Type: application/json' \\");
+    lines.push("--data '{");
+    lines.push(' "client": "{client}",');
+    lines.push(' "secret": "{secret}"');
+    lines.push("}'");
+    lines.push('```');
+    lines.push('');
+
+    let currentCategory = '';
+    for (const service of servicesCatalog) {
+      if (service.category !== currentCategory) {
+        currentCategory = service.category;
+        lines.push(`## ${currentCategory}`);
+        lines.push('');
+      }
+
+      lines.push(`### ${service.name}`);
+      lines.push('');
+      lines.push(`1. Service: \`${service.service}\``);
+      lines.push(`2. Endpoint: \`${service.endpoint}\``);
+      lines.push(`3. Request fields: ${service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : 'no additional fields mapped'}`);
+      lines.push(`4. Search terms: ${displaySearchTerms(service, 10)}`);
+      lines.push(`5. Main return: ${service.responseSummary}`);
+      lines.push('');
+      lines.push('Summarized response:');
+      lines.push('');
+      lines.push('```json');
+      lines.push(JSON.stringify(serviceResponseExample(service), null, 2));
+      lines.push('```');
+      lines.push('');
+      lines.push('Staging curl:');
+      lines.push('');
+      lines.push('```bash');
+      lines.push(renderCurl({
+        baseUrl: 'https://backoffice-hml.idcerberus.com',
+        path: '/api/service-api',
+        body: jsonBodyFromRequestExample(service.requestExample),
+      }));
+      lines.push('```');
+      lines.push('');
+    }
+
+    return lines.join('\n');
+  }
+
   lines.push('# idCerberus API Reference - resumo operacional para LLM');
   lines.push('');
   lines.push('Use este arquivo para gerar exemplos de request, explicar chamadas da API e escolher o `service` correto sem depender do OpenAPI completo.');
@@ -4860,22 +4955,80 @@ const openApiSummary = extractOpenApiSummary(openApiContent);
 const baseServicesCatalog = filterActiveServiceApiServices(mergeAdditionalPublicApiServices(buildServicesCatalog(openApiSummary.services)));
 const exampleFiles = writeExampleFiles(baseServicesCatalog);
 const servicesCatalog = baseServicesCatalog.map((service) => enrichServiceForMcp(service, exampleFiles));
-function pushLlmFileMap(lines) {
+function pushLlmFileMap(lines, lang = 'pt') {
+  const base = siteRootUrl(lang);
+  if (lang === 'en') {
+    lines.push('## How to choose the right file');
+    lines.push('');
+    lines.push('| Need | Use |');
+    lines.push('| --- | --- |');
+    lines.push(`| Understand the documentation structure | ${base}/llms.txt |`);
+    lines.push(`| Generate an integration, curl or choose a service | ${base}/llms-small.txt |`);
+    lines.push(`| Look up payloads and responses per service | ${base}/llms-api-reference.txt |`);
+    lines.push(`| Search for a service in a lightweight index | ${base}/services-catalog.min.json |`);
+    lines.push(`| Run structured search from automation | ${base}/services-catalog.json |`);
+    lines.push(`| Configure an MCP or agent with structured resources | ${base}/mcp-manifest.json |`);
+    lines.push(`| Answer with the full documentation context | ${base}/llms-full.txt |`);
+    lines.push('');
+    return;
+  }
+
   lines.push('## Como escolher o arquivo certo');
   lines.push('');
   lines.push('| Necessidade | Use |');
   lines.push('| --- | --- |');
-  lines.push(`| Entender a estrutura da documentação | ${siteUrl}/llms.txt |`);
-  lines.push(`| Gerar integração, curl ou escolher service | ${siteUrl}/llms-small.txt |`);
-  lines.push(`| Consultar payloads e responses por service | ${siteUrl}/llms-api-reference.txt |`);
-  lines.push(`| Buscar service em um índice leve | ${siteUrl}/services-catalog.min.json |`);
-  lines.push(`| Fazer busca estruturada por automação | ${siteUrl}/services-catalog.json |`);
-  lines.push(`| Configurar MCP ou agente com recursos estruturados | ${siteUrl}/mcp-manifest.json |`);
-  lines.push(`| Responder com todo o contexto da documentação | ${siteUrl}/llms-full.txt |`);
+  lines.push(`| Entender a estrutura da documentação | ${base}/llms.txt |`);
+  lines.push(`| Gerar integração, curl ou escolher service | ${base}/llms-small.txt |`);
+  lines.push(`| Consultar payloads e responses por service | ${base}/llms-api-reference.txt |`);
+  lines.push(`| Buscar service em um índice leve | ${base}/services-catalog.min.json |`);
+  lines.push(`| Fazer busca estruturada por automação | ${base}/services-catalog.json |`);
+  lines.push(`| Configurar MCP ou agente com recursos estruturados | ${base}/mcp-manifest.json |`);
+  lines.push(`| Responder com todo o contexto da documentação | ${base}/llms-full.txt |`);
   lines.push('');
 }
 
-function pushMcpUsageNotes(lines) {
+function pushMcpUsageNotes(lines, lang = 'pt') {
+  const base = siteRootUrl(lang);
+  if (lang === 'en') {
+    lines.push('## Use as a base for MCP and agents');
+    lines.push('');
+    lines.push('These files can be used as context sources for a documentation MCP. The MCP should query the documentation, not execute calls against the idCerberus API.');
+    lines.push('');
+    lines.push('### Recommended reading order');
+    lines.push('');
+    lines.push('1. Read `llms.txt` as the initial manifest of the documentation.');
+    lines.push('2. Use `services-catalog.min.json` for a quick search by service, name, category, field and tag.');
+    lines.push('3. Use `services-catalog.json` when you need the full contract of a service.');
+    lines.push('4. Use `mcp-manifest.json` to list resources, suggested tools, safety rules and reading order.');
+    lines.push('5. Use `llms-api-reference.txt` for payloads, summarized responses and examples per service.');
+    lines.push('6. Use `examples/*.curl` when the answer needs a ready-to-use curl.');
+    lines.push('7. Use `llms-full.txt` only when the question requires the full context of the guides, API Reference and OpenAPI.');
+    lines.push('');
+    lines.push('### Resources an MCP can expose');
+    lines.push('');
+    lines.push('| Resource | Use in the MCP |');
+    lines.push('| --- | --- |');
+    lines.push(`| ${base}/llms.txt | Manifest, rules, main URLs and shortcuts. |`);
+    lines.push(`| ${base}/llms-small.txt | Short context to generate an integration, curl and explanation. |`);
+    lines.push(`| ${base}/llms-api-reference.txt | Payloads, responses and examples per service. |`);
+    lines.push(`| ${base}/llms-full.txt | Full context for broad questions. |`);
+    lines.push(`| ${base}/services-catalog.min.json | Lightweight index for a quick search by service, category, tag and fields. |`);
+    lines.push(`| ${base}/services-catalog.json | Structured search and filters by service/category/field. |`);
+    lines.push(`| ${base}/mcp-manifest.json | Manifest with resources, suggested tools, rules and reading order. |`);
+    lines.push(`| ${siteUrl}/examples/*.curl | Ready-to-use examples to copy and test. |`);
+    lines.push('');
+    lines.push('### Rules for the MCP');
+    lines.push('');
+    lines.push('1. Operate as a read-only source of the documentation.');
+    lines.push('2. Do not call staging, production, database or idCerberus endpoints.');
+    lines.push('3. Do not request or store `client`, `secret`, a JWT, CPF, CNPJ or a real image.');
+    lines.push('4. Use staging as the default environment when generating examples.');
+    lines.push('5. If the service does not exist in the catalog, answer that it needs to be confirmed before integrating.');
+    lines.push('6. Prefer `result` as the public contract; do not use `fieldsOutput` or internal metadata.');
+    lines.push('');
+    return;
+  }
+
   lines.push('## Uso como base para MCP e agentes');
   lines.push('');
   lines.push('Estes arquivos podem ser usados como fonte de contexto para um MCP da documentação. O MCP deve consultar a documentação, não executar chamadas na API idCerberus.');
@@ -4914,7 +5067,21 @@ function pushMcpUsageNotes(lines) {
   lines.push('');
 }
 
-function pushServiceApiContract(lines) {
+function pushServiceApiContract(lines, lang = 'pt') {
+  if (lang === 'en') {
+    lines.push('## Base contract of POST /api/service-api');
+    lines.push('');
+    lines.push('1. Staging endpoint: `POST https://backoffice-hml.idcerberus.com/api/service-api`.');
+    lines.push('2. Production endpoint: `POST https://backoffice.idcerberus.com/api/service-api`.');
+    lines.push('3. Required header: `Authorization: Bearer {jwt_token}`.');
+    lines.push('4. Recommended header: `Content-Type: application/json`.');
+    lines.push('5. Required body field: `service`.');
+    lines.push('6. The alias sent in `service` must be the alias configured on the client\'s product.');
+    lines.push('7. Read public data in `result`; do not treat `fieldsOutput` or internal metadata as the public contract.');
+    lines.push('8. Preserve `status`, `onboardingStatus` and `externalId` when explaining responses.');
+    lines.push('');
+    return;
+  }
   lines.push('## Contrato base do POST /api/service-api');
   lines.push('');
   lines.push('1. Endpoint de homologação: `POST https://backoffice-hml.idcerberus.com/api/service-api`.');
@@ -4928,7 +5095,22 @@ function pushServiceApiContract(lines) {
   lines.push('');
 }
 
-function pushOcrLlmNotes(lines) {
+function pushOcrLlmNotes(lines, lang = 'pt') {
+  if (lang === 'en') {
+    lines.push('## Quick notes for OCR and images');
+    lines.push('');
+    lines.push('1. OCR uses a document image, not a selfie.');
+    lines.push('2. Face, FaceMatch and Face Index use a selfie/face, not a photo of an RG or CNH.');
+    lines.push('3. `image1` takes the image\'s base64, with or without the `data:image/...;base64,` prefix: both formats work.');
+    lines.push('4. RG usually needs front and back: `image1` and `image2`.');
+    lines.push('5. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.');
+    lines.push('6. CNPJ card uses `SERVICE_OCR_CNPJ_CARD` and `image1`.');
+    lines.push('7. Proof of address uses `SERVICE_OCR_PROOF_OF_ADDRESS` and `image1`.');
+    lines.push('8. Emancipation uses `SERVICE_OCR_EMANCIPATION`; the document varies and success depends on OCR finding usable text.');
+    lines.push('9. If the image is missing, illegible or the wrong type, expect `REFUSED` with a clear message, do not invent success.');
+    lines.push('');
+    return;
+  }
   lines.push('## Notas rápidas para OCR e imagem');
   lines.push('');
   lines.push('1. OCR usa imagem do documento, não selfie.');
@@ -4943,7 +5125,20 @@ function pushOcrLlmNotes(lines) {
   lines.push('');
 }
 
-function pushServiceAliasLlmNotes(lines) {
+function pushServiceAliasLlmNotes(lines, lang = 'pt') {
+  if (lang === 'en') {
+    lines.push('## Important calling aliases');
+    lines.push('');
+    lines.push('Use the public service enabled on the product in the `service` field.');
+    lines.push('');
+    lines.push('| Service |');
+    lines.push('| --- |');
+    for (const alias of [...new Set(serviceAliasRows.map(([, callingAlias]) => callingAlias))].sort()) {
+      lines.push(`| \`${alias}\` |`);
+    }
+    lines.push('');
+    return;
+  }
   lines.push('## Aliases importantes de chamada');
   lines.push('');
   lines.push('Use o service p\u00fablico liberado no produto no campo `service`.');
@@ -4956,7 +5151,33 @@ function pushServiceAliasLlmNotes(lines) {
   lines.push('');
 }
 
-function pushFeaturedServiceShortcuts(lines, catalog) {
+function pushFeaturedServiceShortcuts(lines, catalog, lang = 'pt') {
+  if (lang === 'en') {
+    lines.push('## Most used service shortcuts');
+    lines.push('');
+    lines.push('| Case | Service | Main fields | Guide/API |');
+    lines.push('| --- | --- | --- | --- |');
+    const aliasesEn = [
+      ['CPF at the Federal Revenue', 'SERVICE_RFB_PF'],
+      ['CNPJ at the Federal Revenue', 'SERVICE_RFB_PJ'],
+      ['React OCR', 'SERVICE_OCR'],
+      ['CNPJ card OCR', 'SERVICE_OCR_CNPJ_CARD'],
+      ['Proof of address OCR', 'SERVICE_OCR_PROOF_OF_ADDRESS'],
+      ['Face Index', 'SERVICE_FACE_INDEX'],
+      ['Business (PJ) credit risk', 'SERVICE_CREDIT_RISK_COMPANY'],
+      ['Individual (PF) credit score', 'SERVICE_CREDIT_SCORE'],
+      ['Business (PJ) legal cases', 'SERVICE_JURIDICAL_PROCESSES_PJ'],
+      ['Family social benefits', 'SERVICE_FAMILY_SOCIAL_BENEFITS'],
+    ];
+    for (const [label, alias] of aliasesEn) {
+      const service = catalog.find((item) => item.service === alias);
+      if (!service) continue;
+      const fields = service.requestFields.length ? service.requestFields.map((field) => `\`${field}\``).join(', ') : '-';
+      lines.push(`| ${label} | \`${service.service}\` | ${fields} | ${service.documentationUrl} |`);
+    }
+    lines.push('');
+    return;
+  }
   lines.push('## Atalhos de services mais usados');
   lines.push('');
   lines.push('| Caso | Service | Campos principais | Guia/API |');
@@ -4982,7 +5203,21 @@ function pushFeaturedServiceShortcuts(lines, catalog) {
   lines.push('');
 }
 
-function pushLlmCommonErrors(lines) {
+function pushLlmCommonErrors(lines, lang = 'pt') {
+  if (lang === 'en') {
+    lines.push('## Quick error diagnosis');
+    lines.push('');
+    lines.push('| Symptom | Likely interpretation | Recommended action |');
+    lines.push('| --- | --- | --- |');
+    lines.push('| `401 Unauthorized` | Missing, expired or invalid token. | Generate a new token at `/api/token-generate`. |');
+    lines.push('| `Don\'t have access to the service` | Product without an active service/enabled API, or wrong alias. | Check the product configuration and calling alias. |');
+    lines.push('| Missing image | The payload did not send `image1`, `image2`, a URL or the expected `key`. | Check which OCR was called and rebuild the JSON. |');
+    lines.push('| `result: {}` | The query processed, but did not return useful data. | Validate the image, data, product configuration and the service\'s correct type. |');
+    lines.push('| `onboardingStatus: ERROR` | Technical failure in processing, storage or an external source. | Use `externalId`, time and environment to investigate. |');
+    lines.push('| Expected field missing | The field may not exist in the document/database or was not extracted. | Do not invent a value; explain that the return only carries available data. |');
+    lines.push('');
+    return;
+  }
   lines.push('## Diagnóstico rápido de erro');
   lines.push('');
   lines.push('| Sintoma | Interpretação provável | Ação recomendada |');
@@ -4996,7 +5231,8 @@ function pushLlmCommonErrors(lines) {
   lines.push('');
 }
 
-function buildMcpManifest(servicesCatalog, exampleFiles) {
+function buildMcpManifest(servicesCatalog, exampleFiles, lang = 'pt') {
+  const base = siteRootUrl(lang);
   const serviceCountByCategory = servicesCatalog.reduce((acc, service) => {
     acc[service.category] = (acc[service.category] || 0) + 1;
     return acc;
@@ -5028,6 +5264,195 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
       })),
   ]));
 
+  if (lang === 'en') {
+    return {
+      name: 'idcerberus-docs',
+      title: 'idCerberus API Docs',
+      description: "Read-only manifest for MCPs and agents to query idCerberus API's public documentation.",
+      version: '1.0.0',
+      generatedBy,
+      artifactVersion,
+      baseUrl: base,
+      generatedFrom: [
+        'docs.json',
+        'en/api-reference/openapi.json',
+        'en/guides/*.mdx',
+        'en/api-reference/*.mdx',
+        'en/services-catalog.json',
+        'en/services-catalog.min.json',
+      ],
+      recommendedReadOrder: [
+        `${base}/llms.txt`,
+        `${base}/services-catalog.min.json`,
+        `${base}/services-catalog.json`,
+        `${base}/mcp-manifest.json`,
+        `${base}/llms-api-reference.txt`,
+        `${siteUrl}/examples/*.curl`,
+        `${base}/llms-full.txt`,
+      ],
+      resources: [
+        {
+          name: 'llms.txt',
+          url: `${base}/llms.txt`,
+          contentType: 'text/plain',
+          use: 'Initial manifest, main rules, shortcuts and important URLs.',
+        },
+        {
+          name: 'llms-small.txt',
+          url: `${base}/llms-small.txt`,
+          contentType: 'text/plain',
+          use: 'Short context to generate a payload, curl and integration explanation.',
+        },
+        {
+          name: 'llms-api-reference.txt',
+          url: `${base}/llms-api-reference.txt`,
+          contentType: 'text/plain',
+          use: 'Operational summary of services, expected payloads and responses.',
+        },
+        {
+          name: 'llms-full.txt',
+          url: `${base}/llms-full.txt`,
+          contentType: 'text/plain',
+          use: 'Full context for broad questions or comparisons between guides.',
+        },
+        {
+          name: 'services-catalog.json',
+          url: `${base}/services-catalog.json`,
+          contentType: 'application/json',
+          use: 'Structured catalog to search services by alias, field, category, tag or common error.',
+        },
+        {
+          name: 'services-catalog.min.json',
+          url: `${base}/services-catalog.min.json`,
+          contentType: 'application/json',
+          use: "Lightweight catalog for a quick search before opening a service's full contract.",
+        },
+        {
+          name: 'mcp-manifest.json',
+          url: `${base}/mcp-manifest.json`,
+          contentType: 'application/json',
+          use: 'Map of resources, reading order, suggested tools and rules for MCPs/agents.',
+        },
+        {
+          name: 'examples',
+          url: `${siteUrl}/examples/`,
+          contentType: 'text/plain',
+          use: 'Ready-to-use curl files for staging tests.',
+        },
+      ],
+      suggestedTools: [
+        {
+          name: 'search_services',
+          source: 'services-catalog.json',
+          purpose: 'Find services by text, tag, category, input field or alias.',
+          inputs: ['query', 'category', 'tag', 'field'],
+          returns: ['service', 'callingAlias', 'name', 'requestFields', 'documentationUrl'],
+        },
+        {
+          name: 'get_service',
+          source: 'services-catalog.json',
+          purpose: "Look up a specific service's contract.",
+          inputs: ['service'],
+          returns: ['payloadExample', 'successResponseExample', 'commonErrors', 'curlExampleUrls'],
+        },
+        {
+          name: 'get_curl_example',
+          source: 'examples/*.curl',
+          purpose: 'Return a ready-to-use curl example for staging.',
+          inputs: ['service', 'useCase'],
+          returns: ['curl'],
+        },
+        {
+          name: 'read_full_context',
+          source: 'llms-full.txt',
+          purpose: 'Query the full context when the catalog is not enough.',
+          inputs: ['topic'],
+          returns: ['relevant_sections'],
+        },
+      ],
+      safetyRules: [
+        'Operate as a read-only source of the documentation.',
+        'Do not call staging, production, database or real idCerberus endpoints.',
+        'Do not request, store or repeat client, secret, JWT, CPF, CNPJ or real images.',
+        'Use placeholders in examples and prefer staging as the default environment.',
+        'Do not invent a service, field, endpoint or return missing from the documentation.',
+        'Use `result` as the API\'s public contract and ignore `fieldsOutput`/internal metadata.',
+      ],
+      doNotAnswerAs: [
+        'Do not claim Face Index provides definitive identity validation; it searches for a match in the face database.',
+        "Do not treat `fieldsOutput` as the API's public contract.",
+        'Do not say OCR guarantees extraction of every field; the return depends on the image and the document.',
+        "Do not invent a field's return when the field does not appear in the documentation.",
+        'Do not ask for a real CPF, CNPJ, token, client, secret or image to build an example.',
+        'Do not suggest a real call to staging/production; this MCP is a documentation source.',
+      ],
+      troubleshootingByStatus: {
+        '401': {
+          meaning: 'Missing, expired or invalid token.',
+          action: 'Generate a new token at `/api/token-generate` and resend with `Authorization: Bearer {jwt_token}`.',
+        },
+        '400': {
+          meaning: 'Invalid payload, service without access, missing image or missing required field.',
+          action: 'Check `service`, required fields, the configured product and the payload example in the catalog.',
+        },
+        REFUSED: {
+          meaning: "The call was processed, but the service's rule refused the result.",
+          action: 'Read `status.message`, check the image/data and do not automatically treat it as a technical failure.',
+        },
+        ERROR: {
+          meaning: 'Technical failure in processing, storage or an external source.',
+          action: 'Investigate using `externalId`, time, environment and the service called.',
+        },
+        'result:{}': {
+          meaning: 'The call responded, but did not return useful public data.',
+          action: 'Check whether the service has an expected return for the data used and whether the image/document is correct.',
+        },
+        "Don't have access to the service": {
+          meaning: "Product without an active service/enabled API, or an incorrect calling alias.",
+          action: 'Check the product configuration, calling alias and API flag.',
+        },
+      },
+      catalogSummary: {
+        totalServices: servicesCatalog.length,
+        categories: serviceCountByCategory,
+        tags,
+        serviceFamilies,
+        examples: exampleFiles.map((example) => ({
+          title: example.title,
+          url: example.url,
+        })),
+      },
+      exampleQuestionsByUseCase: {
+        ocr: [
+          'Which service should I use for CNH OCR?',
+          'How do I build the payload for front-and-back RG OCR?',
+          'What is the expected public return for CNPJ card OCR?',
+          'What should I check when OCR returns an empty result?',
+        ],
+        cpfCnpj: [
+          'Which service should I use to query a CPF at the Federal Revenue?',
+          'What is the minimum payload to query a CNPJ at the Federal Revenue?',
+          'How do I tell apart a calling alias and a documented alias?',
+        ],
+        faceBiometrics: [
+          'How do I test SERVICE_FACE_INDEX in staging?',
+          'Does Face Index confirm identity or only search for a face in the database?',
+          'Which image should I use for Face Index?',
+        ],
+        errors: [
+          "What does \"Don't have access to the service\" mean?",
+          'What should I do when the response comes back with onboardingStatus ERROR?',
+          'How do I investigate a call using externalId?',
+        ],
+        payloadAndCurl: [
+          'Generate a staging curl for SERVICE_CREDIT_RISK_COMPANY.',
+          'Generate a staging curl for SERVICE_OCR_PROOF_OF_ADDRESS.',
+          'Which headers are required on POST /api/service-api?',
+        ],
+      },
+    };
+  }
+
   return {
     name: 'idcerberus-docs',
     title: 'idCerberus API Docs',
@@ -5045,60 +5470,60 @@ function buildMcpManifest(servicesCatalog, exampleFiles) {
       'services-catalog.min.json',
     ],
     recommendedReadOrder: [
-      `${siteUrl}/llms.txt`,
-      `${siteUrl}/services-catalog.min.json`,
-      `${siteUrl}/services-catalog.json`,
-      `${siteUrl}/mcp-manifest.json`,
-      `${siteUrl}/llms-api-reference.txt`,
-      `${siteUrl}/examples/*.curl`,
-      `${siteUrl}/llms-full.txt`,
+      `${base}/llms.txt`,
+      `${base}/services-catalog.min.json`,
+      `${base}/services-catalog.json`,
+      `${base}/mcp-manifest.json`,
+      `${base}/llms-api-reference.txt`,
+      `${base}/examples/*.curl`,
+      `${base}/llms-full.txt`,
     ],
     resources: [
       {
         name: 'llms.txt',
-        url: `${siteUrl}/llms.txt`,
+        url: `${base}/llms.txt`,
         contentType: 'text/plain',
         use: 'Manifesto inicial, regras principais, atalhos e URLs importantes.',
       },
       {
         name: 'llms-small.txt',
-        url: `${siteUrl}/llms-small.txt`,
+        url: `${base}/llms-small.txt`,
         contentType: 'text/plain',
         use: 'Contexto curto para gerar payload, curl e explicação de integração.',
       },
       {
         name: 'llms-api-reference.txt',
-        url: `${siteUrl}/llms-api-reference.txt`,
+        url: `${base}/llms-api-reference.txt`,
         contentType: 'text/plain',
         use: 'Resumo operacional dos services, payloads e responses esperados.',
       },
       {
         name: 'llms-full.txt',
-        url: `${siteUrl}/llms-full.txt`,
+        url: `${base}/llms-full.txt`,
         contentType: 'text/plain',
         use: 'Contexto completo para perguntas amplas ou comparação entre guias.',
       },
       {
         name: 'services-catalog.json',
-        url: `${siteUrl}/services-catalog.json`,
+        url: `${base}/services-catalog.json`,
         contentType: 'application/json',
         use: 'Catálogo estruturado para buscar services por alias, campo, categoria, tag ou erro comum.',
       },
       {
         name: 'services-catalog.min.json',
-        url: `${siteUrl}/services-catalog.min.json`,
+        url: `${base}/services-catalog.min.json`,
         contentType: 'application/json',
         use: 'Catálogo leve para busca rápida antes de abrir o contrato completo do service.',
       },
       {
         name: 'mcp-manifest.json',
-        url: `${siteUrl}/mcp-manifest.json`,
+        url: `${base}/mcp-manifest.json`,
         contentType: 'application/json',
         use: 'Mapa de recursos, ordem de leitura, ferramentas sugeridas e regras para MCPs/agentes.',
       },
       {
         name: 'examples',
-        url: `${siteUrl}/examples/`,
+        url: `${base}/examples/`,
         contentType: 'text/plain',
         use: 'Arquivos curl prontos para testes em homologação.',
       },
@@ -5230,6 +5655,20 @@ const llmRules = [
   '',
 ].join('\n');
 
+const llmRulesEn = [
+  '## Rules for AI assistants',
+  '',
+  '1. Use the documentation as the primary source and do not invent endpoints, parameters or services.',
+  '2. For external queries, use `POST /api/service-api` and select the product through the `service` field.',
+  '3. Use `Authorization: Bearer {jwt_token}` in protected calls.',
+  '4. Use staging for tests and production only when the user explicitly asks for it.',
+  '5. Never expose tokens, secrets, real CPFs, real CNPJs or real images in examples.',
+  '6. For OCR, send the complete base64 in `image1`/`image2` (with or without the `data:image/...;base64,` prefix, both formats work).',
+  '7. Do not use `fieldsOutput`, null fields or internal metadata as the public contract; use `result`.',
+  '8. If a service does not appear in the catalog, say it needs to be confirmed before documenting or integrating it.',
+  '',
+].join('\n');
+
 write(path.join(root, 'services-catalog.json'), `${JSON.stringify({
   generatedBy,
   artifactVersion,
@@ -5256,7 +5695,7 @@ write(path.join(root, 'api-reference', 'services-pessoa-juridica.mdx'), renderAp
 ));
 
 const openApiContentEn = read(path.join(root, 'en', 'api-reference', 'openapi.json'));
-const openApiSummaryEn = extractOpenApiSummary(openApiContentEn);
+const openApiSummaryEn = extractOpenApiSummary(openApiContentEn, 'en');
 const baseServicesCatalogEn = filterActiveServiceApiServices(mergeAdditionalPublicApiServices(buildServicesCatalog(openApiSummaryEn.services, 'en'), 'en'));
 const servicesCatalogEn = baseServicesCatalogEn.map((service) => enrichServiceForMcp(service, exampleFiles));
 
@@ -5278,7 +5717,23 @@ write(path.join(root, 'en', 'api-reference', 'services-pessoa-juridica.mdx'), re
   'en',
 ));
 
+write(path.join(root, 'en', 'services-catalog.json'), `${JSON.stringify({
+  generatedBy,
+  artifactVersion,
+  totalServices: servicesCatalogEn.length,
+  services: servicesCatalogEn,
+}, null, 2)}\n`);
+write(path.join(root, 'en', 'services-catalog.min.json'), `${JSON.stringify(buildServicesCatalogMin(servicesCatalogEn), null, 2)}\n`);
+write(path.join(root, 'en', 'mcp-manifest.json'), `${JSON.stringify(buildMcpManifest(servicesCatalogEn, exampleFiles, 'en'), null, 2)}\n`);
+write(path.join(root, 'en', 'llms-api-reference.txt'), renderApiReferenceText(servicesCatalogEn, 'en'));
+
 mdxPages = pages.filter((page) => !page.openapi).map((page) => ({
+  ...page,
+  ...getPageMeta(page.slug),
+}));
+
+const pagesEn = flattenPagesForLanguage(docsConfig.navigation, 'en');
+const mdxPagesEn = pagesEn.filter((page) => !page.openapi).map((page) => ({
   ...page,
   ...getPageMeta(page.slug),
 }));
@@ -5303,6 +5758,18 @@ const guidesSearchIndex = mdxPages
   }));
 
 write(path.join(root, 'guides-search-index.json'), `${JSON.stringify({ generatedBy, artifactVersion, guides: guidesSearchIndex }, null, 2)}\n`);
+
+const guidesSearchIndexEn = mdxPagesEn
+  .filter((page) => page.tab === 'Guides')
+  .map((page) => ({
+    title: page.title,
+    description: page.description,
+    group: page.group,
+    url: slugToUrl(page.slug),
+    body: searchBodyText(page.body, 2000),
+  }));
+
+write(path.join(root, 'en', 'guides-search-index.json'), `${JSON.stringify({ generatedBy, artifactVersion, guides: guidesSearchIndexEn }, null, 2)}\n`);
 
 const llmsLines = [];
 llmsLines.push('# idCerberus API Docs');
@@ -5363,6 +5830,66 @@ llmsLines.push('');
 exampleFiles.forEach((example, idx) => llmsLines.push(`${idx + 1}. [${example.file}](${example.url}): ${example.title}. ${example.description}`));
 
 write(path.join(root, 'llms.txt'), llmsLines.join('\n'));
+
+const llmsLinesEn = [];
+llmsLinesEn.push('# idCerberus API Docs');
+llmsLinesEn.push('');
+llmsLinesEn.push('> idCerberus API documentation for digital onboarding, KYC, biometrics, FaceMatch, Liveness, risk analysis, compliance, data enrichment, and individual (PF) and business (PJ) queries.');
+llmsLinesEn.push('');
+llmsLinesEn.push('Base URLs:');
+llmsLinesEn.push('');
+llmsLinesEn.push('1. Staging: `https://backoffice-hml.idcerberus.com`');
+llmsLinesEn.push('2. Production: `https://backoffice.idcerberus.com`');
+llmsLinesEn.push('3. Published documentation: `https://api-docs.idcerberus.com/en`');
+llmsLinesEn.push('');
+llmsLinesEn.push(llmRulesEn);
+pushLlmFileMap(llmsLinesEn, 'en');
+pushMcpUsageNotes(llmsLinesEn, 'en');
+pushServiceApiContract(llmsLinesEn, 'en');
+pushFeaturedServiceShortcuts(llmsLinesEn, servicesCatalogEn, 'en');
+pushOcrLlmNotes(llmsLinesEn, 'en');
+llmsLinesEn.push('## Main content');
+llmsLinesEn.push('');
+
+let currentGroupEn = '';
+let groupItemIdxEn = 0;
+for (const page of mdxPagesEn) {
+  const groupName = `${page.tab} / ${page.group}`;
+  if (groupName !== currentGroupEn) {
+    if (currentGroupEn !== '') {
+      llmsLinesEn.push('');
+    }
+    currentGroupEn = groupName;
+    groupItemIdxEn = 0;
+    llmsLinesEn.push(`### ${groupName}`);
+    llmsLinesEn.push('');
+  }
+  groupItemIdxEn++;
+  const desc = page.description ? `: ${page.description}` : '';
+  llmsLinesEn.push(`${groupItemIdxEn}. [${page.title}](${slugToUrl(page.slug)})${desc}`);
+}
+
+llmsLinesEn.push('');
+llmsLinesEn.push('## API Reference');
+llmsLinesEn.push('');
+llmsLinesEn.push(`1. [OpenAPI reference](${slugToUrl('en/api-reference/boas-vindas')}): endpoints, request/response examples and schemas.`);
+llmsLinesEn.push('2. Main query endpoint: `POST /api/service-api`.');
+llmsLinesEn.push('3. Authentication: `POST /api/token-generate` returns `access_token`; use `Authorization: Bearer {jwt_token}` in protected calls.');
+llmsLinesEn.push('');
+llmsLinesEn.push('## Full file for LLM');
+llmsLinesEn.push('');
+llmsLinesEn.push(`1. [llms-small.txt](${siteUrl}/en/llms-small.txt): operational summary with flows, authentication, service-api and documented services.`);
+llmsLinesEn.push(`2. [llms-full.txt](${siteUrl}/en/llms-full.txt): consolidated version of the guides and the API Reference.`);
+llmsLinesEn.push(`3. [llms-api-reference.txt](${siteUrl}/en/llms-api-reference.txt): operational reference for services with curl examples.`);
+llmsLinesEn.push(`4. [services-catalog.min.json](${siteUrl}/en/services-catalog.min.json): lightweight index for a quick search by service, category, tag and fields.`);
+llmsLinesEn.push(`5. [services-catalog.json](${siteUrl}/en/services-catalog.json): structured catalog for tools and automations.`);
+llmsLinesEn.push(`6. [mcp-manifest.json](${siteUrl}/en/mcp-manifest.json): manifest for MCPs and agents with resources, rules and suggested tools.`);
+llmsLinesEn.push('');
+llmsLinesEn.push('## Curl examples');
+llmsLinesEn.push('');
+exampleFiles.forEach((example, idx) => llmsLinesEn.push(`${idx + 1}. [${example.file}](${example.url}): ${example.title}. ${example.description}`));
+
+write(path.join(root, 'en', 'llms.txt'), llmsLinesEn.join('\n'));
 
 const smallLines = [];
 smallLines.push('# idCerberus API Docs - resumo operacional para LLM');
@@ -5428,6 +5955,70 @@ smallLines.push('6. Lista de exemplos curl: ' + siteUrl + '/llms.txt#exemplos-cu
 
 write(path.join(root, 'llms-small.txt'), smallLines.join('\n'));
 
+const smallLinesEn = [];
+smallLinesEn.push('# idCerberus API Docs - operational summary for LLM');
+smallLinesEn.push('');
+smallLinesEn.push('Use this file when you need quick context to integrate with the idCerberus API.');
+smallLinesEn.push('');
+smallLinesEn.push(llmRulesEn);
+pushLlmFileMap(smallLinesEn, 'en');
+pushMcpUsageNotes(smallLinesEn, 'en');
+pushServiceApiContract(smallLinesEn, 'en');
+pushFeaturedServiceShortcuts(smallLinesEn, servicesCatalogEn, 'en');
+pushOcrLlmNotes(smallLinesEn, 'en');
+pushLlmCommonErrors(smallLinesEn, 'en');
+smallLinesEn.push('## Environments');
+smallLinesEn.push('');
+smallLinesEn.push('1. Staging: `https://backoffice-hml.idcerberus.com`');
+smallLinesEn.push('2. Production: `https://backoffice.idcerberus.com`');
+smallLinesEn.push('');
+smallLinesEn.push('## Authentication');
+smallLinesEn.push('');
+smallLinesEn.push('1. Generate a token at `POST /api/token-generate` with `client` and `secret`.');
+smallLinesEn.push('2. Send the token in protected calls with `Authorization: Bearer {jwt_token}`.');
+smallLinesEn.push('3. When it expires, generate a new token.');
+smallLinesEn.push('');
+smallLinesEn.push('## Main endpoint');
+smallLinesEn.push('');
+smallLinesEn.push('1. Use `POST /api/service-api` for data, risk, compliance, biometrics and enrichment queries.');
+smallLinesEn.push('2. The `service` field defines which product will run.');
+smallLinesEn.push('3. The other fields vary depending on the service chosen.');
+smallLinesEn.push('');
+smallLinesEn.push('## Main flows');
+smallLinesEn.push('');
+{
+  let flowIdxEn = 1;
+  for (const slug of [
+    'en/guides/quickstart',
+    'en/guides/autenticacao',
+    'en/guides/primeira-consulta-cpf',
+    'en/guides/primeira-consulta-cnpj',
+    'en/guides/onboarding-sdk',
+    'en/guides/matriz-de-servicos',
+  ]) {
+    const page = mdxPagesEn.find((item) => item.slug === slug);
+    if (page) smallLinesEn.push(`${flowIdxEn++}. [${page.title}](${slugToUrl(page.slug)}): ${page.description || 'idCerberus documentation guide.'}`);
+  }
+}
+smallLinesEn.push('');
+smallLinesEn.push('## Services documented in the API Reference');
+smallLinesEn.push('');
+for (const item of servicesCatalogEn) {
+  const terms = displaySearchTerms(item, 4);
+  smallLinesEn.push(`**${item.category} - ${item.name}**: \`${item.service}\` | fields: ${item.requestFields.length ? item.requestFields.join(', ') : 'no additional fields'} | search: ${terms}`);
+}
+smallLinesEn.push('');
+smallLinesEn.push('## Supporting files');
+smallLinesEn.push('');
+smallLinesEn.push(`1. JSON catalog: ${siteUrl}/en/services-catalog.json`);
+smallLinesEn.push(`2. Lightweight catalog: ${siteUrl}/en/services-catalog.min.json`);
+smallLinesEn.push(`3. API Reference for LLM: ${siteUrl}/en/llms-api-reference.txt`);
+smallLinesEn.push(`4. MCP manifest: ${siteUrl}/en/mcp-manifest.json`);
+smallLinesEn.push('5. Curl examples: ' + siteUrl + '/examples/auth.hml.curl');
+smallLinesEn.push('6. List of curl examples: ' + siteUrl + '/en/llms.txt#curl-examples');
+
+write(path.join(root, 'en', 'llms-small.txt'), smallLinesEn.join('\n'));
+
 const fullLines = [];
 fullLines.push('# idCerberus API Docs - conteúdo completo para LLM');
 fullLines.push('');
@@ -5481,6 +6072,59 @@ fullLines.push('```');
 
 write(path.join(root, 'llms-full.txt'), fullLines.join('\n'));
 
+const fullLinesEn = [];
+fullLinesEn.push('# idCerberus API Docs - full content for LLM');
+fullLinesEn.push('');
+fullLinesEn.push('This file consolidates the idCerberus API guides and reference into plain text for use by LLMs, agents and development assistants.');
+fullLinesEn.push('');
+fullLinesEn.push('Base URLs:');
+fullLinesEn.push('');
+fullLinesEn.push('1. Staging: `https://backoffice-hml.idcerberus.com`');
+fullLinesEn.push('2. Production: `https://backoffice.idcerberus.com`');
+fullLinesEn.push('');
+fullLinesEn.push(llmRulesEn);
+pushLlmFileMap(fullLinesEn, 'en');
+pushMcpUsageNotes(fullLinesEn, 'en');
+pushServiceApiContract(fullLinesEn, 'en');
+pushServiceAliasLlmNotes(fullLinesEn, 'en');
+pushFeaturedServiceShortcuts(fullLinesEn, servicesCatalogEn, 'en');
+pushOcrLlmNotes(fullLinesEn, 'en');
+pushLlmCommonErrors(fullLinesEn, 'en');
+
+for (const page of mdxPagesEn) {
+  fullLinesEn.push('---');
+  fullLinesEn.push('');
+  fullLinesEn.push(`# ${page.title}`);
+  fullLinesEn.push('');
+  fullLinesEn.push(`URL: ${slugToUrl(page.slug)}`);
+  fullLinesEn.push(`Source: ${page.slug}.mdx`);
+  if (page.description) fullLinesEn.push(`Description: ${page.description}`);
+  fullLinesEn.push('');
+  fullLinesEn.push(page.body);
+  fullLinesEn.push('');
+}
+
+fullLinesEn.push('---');
+fullLinesEn.push('');
+fullLinesEn.push('# API Reference');
+fullLinesEn.push('');
+fullLinesEn.push(`URL: ${slugToUrl('en/api-reference/boas-vindas')}`);
+fullLinesEn.push('Source: en/api-reference/openapi.json');
+fullLinesEn.push('');
+fullLinesEn.push(openApiSummaryEn.markdown);
+fullLinesEn.push('');
+fullLinesEn.push('## Operational API Reference for LLM');
+fullLinesEn.push('');
+fullLinesEn.push(read(path.join(root, 'en', 'llms-api-reference.txt')).trim());
+fullLinesEn.push('');
+fullLinesEn.push('## Raw OpenAPI');
+fullLinesEn.push('');
+fullLinesEn.push('```yaml');
+fullLinesEn.push(openApiContentEn.trim());
+fullLinesEn.push('```');
+
+write(path.join(root, 'en', 'llms-full.txt'), fullLinesEn.join('\n'));
+
 console.log(`Generated llms.txt with ${mdxPages.length} pages.`);
 console.log('Generated llms-small.txt.');
 console.log(`Generated llms-full.txt with ${servicesCatalog.length} service examples.`);
@@ -5495,3 +6139,11 @@ console.log('Generated api-reference/services-por-caso-de-uso.mdx.');
 console.log('Generated api-reference/services-pessoa-fisica.mdx.');
 console.log('Generated api-reference/services-pessoa-juridica.mdx.');
 console.log(`Generated ${exampleFiles.length} curl examples.`);
+console.log(`Generated en/llms.txt with ${mdxPagesEn.length} pages.`);
+console.log('Generated en/llms-small.txt.');
+console.log(`Generated en/llms-full.txt with ${servicesCatalogEn.length} service examples.`);
+console.log('Generated en/llms-api-reference.txt.');
+console.log('Generated en/services-catalog.json.');
+console.log('Generated en/services-catalog.min.json.');
+console.log('Generated en/mcp-manifest.json.');
+console.log(`Generated en/guides-search-index.json with ${guidesSearchIndexEn.length} guides.`);
