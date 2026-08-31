@@ -1,0 +1,3659 @@
+openapi: 3.0.0
+
+info:
+  title: idCerberus API
+  version: 1.0.0
+  description: |
+    Technical reference for the idCerberus API, for integrating digital
+    onboarding, KYC, biometrics, fraud prevention, risk analysis, compliance,
+    registration enrichment, and individual and business query products.
+
+    Use this reference when you already know which endpoint or service you
+    want to implement. To understand flows, environments, best practices, and
+    how to choose between services, see the guides first.
+
+    Most data queries run through `POST /api/service-api`. On this endpoint,
+    the route stays the same and the product run is defined by the `service`
+    field sent in the body.
+
+    In practice, the central endpoint works as a product runner: the method,
+    URL, and headers are the same; what changes is the `service` value and
+    the chosen product's required fields.
+
+    The value sent in `service` needs to exist in the product enabled for the
+    client. In some products, the calling alias configured for the product is
+    shorter than another alias shown in the catalog. In those cases, send the
+    calling alias in the body.
+
+    1. Individual services usually use `cpf`.
+    2. Business services usually use `cnpj`.
+    3. Biometric and document services use base64 images or URLs.
+    4. Some services require complementary fields, like `birthDate`, `uf`,
+       `rg`, `phone`, `email`, `image1`, or `image2`.
+
+    If you're unsure which `service` to use, see the guides "Choose the right
+    service", "Service matrix", and "Service index".
+
+    Useful search terms: CPF Federal Revenue, RFB PF, CNPJ Federal Revenue,
+    RFB PJ, KYC PF, KYC PJ, OCR, FaceMatch, Liveness, fraud score, financial
+    risk, electoral data, active debts, and protests.
+
+servers:
+  - url: https://backoffice-hml.idcerberus.com
+    description: Staging environment
+  - url: https://backoffice.idcerberus.com
+    description: Production environment
+
+tags:
+  - name: Authorization
+    description: |
+      Generate the JWT token used in protected calls. Before consuming
+      onboarding, external services, or customers, generate a token with
+      `client` and `secret` and send it in the `Authorization` header.
+  - name: SDK Integration
+    description: |
+      Endpoints used in the onboarding-via-SDK flow. Use this section to
+      generate the `tokenOnboarding`, query the processed result, and
+      download the final PDF report.
+  - name: Services - Individuals
+    description: |
+      Individual services run through `POST /api/service-api`. Includes CPF
+      enrichment, Federal Revenue, OCR, biometrics, FaceMatch, Liveness,
+      risk, compliance, certificates, contacts, electoral data, and other
+      products defined by the `service` field.
+  - name: Services - Businesses
+    description: |
+      Business services run through `POST /api/service-api`. Includes CNPJ
+      enrichment, Federal Revenue, SINTEGRA, business owners, relationships,
+      debts, protests, business owners' KYC, and compliance.
+  - name: Customers
+    description: |
+      Operations to query registered customers and change the active or
+      inactive status of one or more records.
+
+paths:
+  /api/token-generate:
+    post:
+      tags:
+        - Authorization
+      summary: Generate API token
+      description: |
+        Generates the JWT token used in protected calls to the idCerberus API.
+
+        Send the `client` and `secret` provided by idCerberus. The response
+        contains `access_token` and `expires_in`. Use the returned token in
+        the header:
+
+        `Authorization: Bearer {jwt_token}`
+
+        When the token expires, generate a new one using the same credentials.
+
+        Available environments:
+
+        | Environment | URL |
+        | --- | --- |
+        | Staging | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+        | Production | `https://backoffice.idcerberus.com/api/token-generate` |
+      requestBody:
+        description: |
+          Send the application's credentials to generate a JWT token.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+            example:
+              client: "{client}"
+              secret: "{secret}"
+      responses:
+        '201':
+          description: Token generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                access_token: "{jwt_token}"
+                expires_in: "300"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/token-history-onboarding:
+    post:
+      tags:
+        - SDK Integration
+      summary: Generate TokenOnboarding for SDK
+      description: |
+        Creates a new `tokenOnboarding` to start a registration flow via SDK.
+
+        The generated token should be handed to the SDK and will later be
+        used to query the result processed by the backoffice and download
+        the PDF report.
+
+        Use `documentFiles` when you want to send documents or file URLs
+        already at the start of the process.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: |
+          Provide the user's initial data and, when applicable, files or
+          document URLs that should be linked to the onboarding.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenOnboardingRequest'
+            example:
+              document: cpf
+              cpf: cpf
+              cnpj: cnpj
+              name: name
+              documentFiles:
+                - documentFileType: OTHER
+                  document: data:image/jpeg;base64
+                  documentUrl: url
+      responses:
+        '200':
+          description: TokenOnboarding generated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenOnboardingResponse'
+              example:
+                tokenOnboarding: 56950dae-2d19-4092-a918-a612b3ca8f68
+                dateHourProcess: 2023-02-17T16:49:41.577364Z
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/onboarding/report/{tokenOnboarding}:
+    get:
+      tags:
+        - SDK Integration
+      summary: Query onboarding result
+      description: |
+        Returns the status, result, captured fields, and services run in an
+        onboarding.
+
+        Provide the `tokenOnboarding` generated earlier and handed to the SDK.
+        The response can include data captured during registration, document
+        URLs, processing messages, evaluated rules, and the status of the
+        services run.
+
+        Use this endpoint when you need to query the onboarding's structured
+        result in JSON.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tokenOnboarding
+          in: path
+          required: true
+          description: UUID of the onboarding returned to the SDK.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Onboarding result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingReportResponse'
+              example:
+                tokenOnboarding: bb6adc72-0132-4b27-a723-98fe9f20cb81
+                createdDate: 2022-06-15T19:02:04.877688Z
+                numberSteps: 4
+                status: APPROVED
+                result: AUT_APPROVED
+                fields:
+                  - field: selfie_liveness_3d
+                    name: Selfie Liveness 3D
+                    step: "1"
+                    value: https://bucket-onboarding.s3.amazonaws.com/arquivo
+                  - field: button_cnh
+                    name: CNH - Carteira Nacional de Habilitação
+                    step: "2"
+                services:
+                  - serviceName: service_liveness_ft
+                    createdDate: 2022-06-15T19:02:06.233020Z
+                    status: APPROVED
+                    statusMessage: USER PASSED THE LIVENESS CHALLENGE
+                    fields: []
+                    rules: []
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/history-onboarding-report/{tokenOnboarding}:
+    get:
+      tags:
+        - SDK Integration
+      summary: Download onboarding PDF report
+      description: |
+        Downloads the onboarding's final report in PDF.
+
+        This endpoint doesn't return a JSON body. Use it when you need to
+        store, audit, or present the registration process's final report.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tokenOnboarding
+          in: path
+          required: true
+          description: UUID of the onboarding returned to the SDK.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: PDF file of the report.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/service-api:
+    post:
+      tags:
+        - Services - Individuals
+        - Services - Businesses
+      summary: Run data, risk, or compliance service
+      description: |
+        Central endpoint for running data, risk, biometrics, document, and
+        compliance products for individuals and businesses.
+
+        The route is always `POST /api/service-api`. The product run is
+        defined by the `service` field sent in the body. The other fields
+        vary depending on the service chosen.
+
+        The `service` value is validated against the services enabled for the
+        client's product. If the product is configured with a short alias,
+        use that alias in the body, even if the catalog shows another
+        documented alias.
+
+        Common calling-alias examples:
+
+        | Service |
+        | --- |
+        | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `SERVICE_DOCUMENTOSCOPY` |
+        | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | `SERVICE_DIGITAL_DOCUMENTOSCOPY` |
+        | `SERVICE_ECONOMIC_RELATIONSHIP` | `economic_relationships` |
+        | `SERVICE_EMAIL_VALIDATION` | `SERVICE_EMAIL_VALIDATION1` |
+        | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`, `SERVICE_PROTEST_PF` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` |
+        | `SERVICE_PROTEST_PJ` | `SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ` |
+
+        This endpoint serves both individual and business services. In the
+        examples, use the items prefixed `PF -` for CPF queries and the items
+        prefixed `PJ -` for CNPJ queries.
+
+        Most common fields:
+
+        | Field | Use |
+        | --- | --- |
+        | `service` | Code of the product that will run |
+        | `cpf` | Main document in individual services |
+        | `cnpj` | Main document in business services |
+        | `image1`, `image2` | Base64 images for OCR, biometrics, or documents |
+        | `image1Url`, `image2Url` | Image URLs, when the service accepts a URL |
+        | `selfie1` | Selfie used in documentoscopy and FaceMatch |
+        | `key` | Query key used in asynchronous flows |
+
+        Examples:
+
+        1. CPF queries usually use `cpf`;
+        2. CNPJ queries usually use `cnpj`;
+        3. OCR, FaceMatch, and documentoscopy use base64 images or a URL;
+        4. asynchronous services use `key` to query the result afterward.
+        5. short payloads help validate access to the product, but document,
+           OCR, and biometric services need real data to return complete
+           results.
+
+        Most responses return:
+
+        1. `result`: the query's business data;
+        2. `status.code`: technical processing code;
+        3. `status.message`: technical processing message;
+        4. `externalId`: external identifier, when available.
+
+        Use this operation's example list to quickly pick the desired
+        product's payload.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: |
+          Provide the service code in the `service` field and the parameters
+          required by that query. The `service` field is required in all
+          cases. The other fields depend on the product selected.
+
+          Use the examples to copy the desired service's initial payload.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceApiRequest'
+            examples:
+              enriquecimentoPessoaFisica:
+                summary: PF - Data enrichment
+                value:
+                  service: SERVICE_PERSON_DATA_ENRICHMENT
+                  cpf: cpf
+              statusCpfReceitaFederal:
+                summary: PF - CPF status at the Federal Revenue
+                value:
+                  service: SERVICE_RFB_PF
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+              statusCpfReceitaFederalOnDemand:
+                summary: PF - CPF at the Federal Revenue on-demand
+                value:
+                  service: SERVICE_RFB_PF_ON_DEMAND
+                  cpf: cpf
+              cartaoSus:
+                summary: PF - SUS card
+                value:
+                  service: SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF
+                  cpf: cpf
+              modelagemDadosPessoa:
+                summary: PF - Data modeling
+                value:
+                  service: SERVICE_PERSON_DATA_MODELING
+                  cpf: cpf
+              promptIaPessoa:
+                summary: PF - AI prompt for a person
+                value:
+                  service: SERVICE_PERSON_AI_PROMPT
+                  cpf: cpf
+              ocrDocumentos:
+                summary: PF - React OCR
+                value:
+                  service: SERVICE_OCR
+                  documentType: IDENTIFICATION_DOCUMENT
+                  image1: base64
+                  image2: base64 (optional)
+              faceMatch:
+                summary: PF - FaceMatch
+                value:
+                  service: SERVICE_FACE_MATCH
+                  image1: base64
+                  image2: base64
+              emailsPessoasRelacionadas:
+                summary: PF - Related people's emails
+                value:
+                  service: SERVICE_RELATED_PEOPLE_EMAILS
+                  cpf: cpf
+              telefonesPessoasRelacionadas:
+                summary: PF - Related people's phones
+                value:
+                  service: SERVICE_RELATED_PEOPLE_PHONES
+                  cpf: cpf
+              enderecosPessoasRelacionadas:
+                summary: PF - Related people's addresses
+                value:
+                  service: SERVICE_RELATED_PEOPLE_ADDRESSES
+                  cnpj: cnpj
+              scoreCreditoPf:
+                summary: PF - Credit score
+                value:
+                  service: SERVICE_QUOD_CREDIT_SCORE_PERSON
+                  cpf: cpf
+              scoreCreditoMultidadosPf:
+                summary: PF - Multi-data credit score
+                value:
+                  service: SERVICE_BOAVISTA_ONE_SCORE_PERSON
+                  cpf: cpf
+              dadosRestritivosPf:
+                summary: PF - Restrictive data
+                value:
+                  service: SERVICE_BOAVISTA_CREDIT_SCORE_PERSON
+                  cpf: cpf
+              flagsNegativosPf:
+                summary: PF - Negative flags
+                value:
+                  service: SERVICE_QUOD_CREDIT_RISK_PERSON
+                  cpf: cpf
+              tseLocalVotacao:
+                summary: PF - TSE - Polling place
+                value:
+                  service: SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+                  motherName: mother's name (optional)
+              pessoaPoliticamenteExposta:
+                summary: PF - Politically exposed person
+                value:
+                  service: SERVICE_PEP
+                  cpf: cpf
+              dividaAtivaPessoaFisica:
+                summary: PF - Active debt
+                value:
+                  service: SERVICE_ACTIVE_DEBT_PF
+                  cpf: cpf
+              scoreRiscoFraude:
+                summary: PF - Fraud risk score
+                value:
+                  service: SERVICE_FRAUD_RISK_SCORE
+                  cpf: cpf
+                  factor: minRisk or minattrition
+              riscoFinanceiro:
+                summary: PF - Financial risk
+                value:
+                  service: SERVICE_FINANCIAL_RISK_SCORE
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+              scoreInadimplencia:
+                summary: PF - Default risk score
+                value:
+                  service: SERVICE_DEFAULT_RISK_SCORE
+                  cpf: cpf
+              scoreBiometrico:
+                summary: PF - Biometric score
+                value:
+                  service: SERVICE_DATAVALID_CNH
+                  cpf: cpf
+                  image1: "{base64Image}"
+              validacaoCnhDatavalid:
+                summary: PF - CNH validation with DataValid
+                value:
+                  service: SERVICE_DATAVALID_CNH
+                  cpf: cpf
+                  image1: base64
+              nadaConstaAcoesJudiciais:
+                summary: PF - Nothing on record certificate
+                value:
+                  service: SERVICE_NOTHING_RECORD_LAWSUITS
+                  cpf: cpf
+                  court: TRF1
+                  uf: uf
+                  sphere: CIVIL
+              antecedentesCriminaisFederal:
+                summary: PF - Federal criminal records
+                value:
+                  service: SERVICE_CRIMINAL_RECORD_FEDERAL
+                  cpf: cpf
+              antecedentesCriminaisCivil:
+                summary: PF - Civil criminal records
+                value:
+                  service: SERVICE_CRIMINAL_RECORD_CIVIL
+                  cpf: cpf
+                  rg: rg
+                  uf: uf
+              certidaoNegativaProtesto:
+                summary: PF - Negative protest certificate
+                value:
+                  service: SERVICE_PROTEST_CLEARANCE_CERTIFICATE
+                  cpf: cpf
+              validacaoEmail:
+                summary: PF - Email validation
+                value:
+                  service: SERVICE_EMAIL_VALIDATION
+                  email: email@email.com
+              validacaoCpfTelefone:
+                summary: PF - CPF validation with phone
+                value:
+                  service: SERVICE_CPF_PHONE_VALIDATION
+                  cpf: cpf
+                  phone: "11900000000"
+              validacaoCpfEndereco:
+                summary: PF - CPF validation with address
+                value:
+                  service: SERVICE_CPF_ADDRESS_VALIDATION
+                  cpf: cpf
+                  zipcode: 00000-000
+                  numberAddress: 13
+              documentoscopiaDigital:
+                summary: PF - Digital document analysis
+                value:
+                  service: SERVICE_DIGITAL_DOCUMENTOSCOPY
+                  key: 84bfcd2e-2336-4e30-bcab-15348b7890b5
+                  image1: base64
+                  image2: base64
+                  selfie1: base64
+              resultadoDocumentoscopiaDigital:
+                summary: PF - Digital document analysis result
+                value:
+                  service: SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT
+                  key: de0cd562-5962-40bd-8f94-5a7184ecde0e
+              consultaMei:
+                summary: PF - MEI query
+                value:
+                  service: SERVICE_MEI
+                  cpf: cpf
+              processosJuridicosAdministrativos:
+                summary: PF - Legal and administrative cases
+                value:
+                  service: SERVICE_JURIDICAL_PROCESSES
+                  cpf: cpf
+              servidoresPublicos:
+                summary: PF - Public servants
+                value:
+                  service: SERVICE_PUBLIC_SERVANTS
+                  cpf: cpf
+              consultaEnderecos:
+                summary: PF - Addresses
+                value:
+                  service: SERVICE_ADDRESS
+                  cpf: cpf
+              historicoTelefones:
+                summary: PF - Phone history
+                value:
+                  service: SERVICE_PHONE_HISTORY
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+                  limit: 10
+              pessoasRelacionadas:
+                summary: PF - Related people
+                value:
+                  service: SERVICE_RELATED_PEOPLE
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+              historicoEmails:
+                summary: PF - Email history
+                value:
+                  service: SERVICE_EMAILS_EXTENDED
+                  cpf: cpf
+                  limit: 10
+              relacionamentosEconomicos:
+                summary: PF - Economic relationships
+                value:
+                  service: SERVICE_ECONOMIC_RELATIONSHIP
+                  cpf: cpf
+              historicoProfissional:
+                summary: PF - Professional history
+                value:
+                  service: SERVICE_PROFESSIONAL_HISTORY
+                  cpf: cpf
+              historicoProfissionalTitular:
+                summary: PF - Account holder's professional history
+                value:
+                  service: SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+              dadosFinanceirosEnderecosPf:
+                summary: PF - Financial data and addresses
+                value:
+                  service: SERVICE_PF_FINANCIAL_AND_ADDRESS
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+              propensaoApostasOnline:
+                summary: PF - Propensity for online betting
+                value:
+                  service: SEVICE_ONLINE_BETTING_PROPENSITY
+                  cpf: cpf
+              dadosPeloTelefone:
+                summary: PF - Data by phone number
+                value:
+                  service: SERVICE_CONFIRM_PHONE
+                  phone: "+5561123456789"
+              mandadoPrisao:
+                summary: PF - Arrest warrant
+                value:
+                  service: SERVICE_ARREST_WARRANT
+                  name: name
+                  motherName: mother's name
+                  fatherName: father's name
+                  birthDate: dd/MM/yyyy
+                  cpf: cpf
+              debitosAtivosPf:
+                summary: PF - Active debts
+                value:
+                  service: SERVICE_ACTIVE_DEBT_PF
+                  cpf: cpf
+              dadosEleitoraisCandidato:
+                summary: PF - Candidate electoral data
+                value:
+                  service: SERVICE_ELECTION_CANDIDATE_DATA_CPF
+                  cpf: cpf
+              doacoesEleitorais:
+                summary: PF - Electoral donations
+                value:
+                  service: SERVICE_ELECTORAL_DONORS_CPF
+                  cpf: cpf
+              envolvimentoPolitico:
+                summary: PF - Political involvement
+                value:
+                  service: SERVICE_POLITICAL_INVOLVEMENT
+                  cpf: cpf
+              kycCompliancePessoaFisica:
+                summary: PF - KYC and compliance
+                value:
+                  service: SERVICE_PERSON_KYC
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+              exposicaoPerfilMidiaPf:
+                summary: PF - Media exposure and profile
+                value:
+                  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PF
+                  cpf: cpf
+              historicoFamiliarPolitico:
+                summary: PF - Political family history
+                value:
+                  service: SERVICE_FAMILY_POLITICAL_HISTORY_CPF
+                  cpf: cpf
+              prestadoresServicoEleitorais:
+                summary: PF - Electoral service providers
+                value:
+                  service: SERVICE_ELECTORAL_PROVIDERS_CPF
+                  cpf: cpf
+              indicadoresAtividades:
+                summary: PF - Activity indicators
+                value:
+                  service: SERVICE_ACTIVITIES_INDICATORS
+                  cpf: cpf
+              premiosCertificacoes:
+                summary: PF - Awards and certifications
+                value:
+                  service: SERVICE_AWARDS_AND_CERTIFICATIONS_CPF
+                  cpf: cpf
+              scoreCredito:
+                summary: PF - Credit score
+                value:
+                  service: SERVICE_CREDIT_SCORE
+                  cpf: cpf
+              scoreRiscoinadimplência:
+                summary: PF - Default risk score
+                value:
+                  service: SERVICE_DEFAULT_RISK_SCORE
+                  cpf: cpf
+              dadosDemograficos:
+                summary: PF - Demographic data
+                value:
+                  service: SERVICE_DEMOGRAPHIC_DATA_CPF
+                  cpf: cpf
+                  birthDate: yyyy-MM-dd (optional)
+              dominiosPessoaFisica:
+                summary: PF - Domains
+                value:
+                  service: SERVICE_DOMAINS_CPF
+                  cpf: cpf
+              faceIndex:
+                summary: PF - Face search in the base
+                value:
+                  service: SERVICE_FACE_INDEX
+                  image1: base64
+              beneficiosSociaisFamiliares:
+                summary: PF - Family social benefits
+                value:
+                  service: SERVICE_FAMILY_SOCIAL_BENEFITS
+                  cpf: cpf
+              ocrReact:
+                summary: PF - React OCR
+                value:
+                  service: SERVICE_OCR
+                  documentType: CNH
+                  image1: base64
+                  image2: base64 (required for RG)
+              ocrEmancipacao:
+                summary: PF - Emancipation OCR
+                value:
+                  service: SERVICE_OCR_EMANCIPATION
+                  image1: base64
+              ocrComprovanteEndereco:
+                summary: PF - Proof of address OCR
+                value:
+                  service: SERVICE_OCR_PROOF_OF_ADDRESS
+                  image1: base64
+              beneficiosSociaisEstendidos:
+                summary: PF - Extended social benefits
+                value:
+                  service: SERVICE_SOCIAL_ASSISTANCE_EXTENDED
+                  cpf: cpf
+              dasMeiReceita:
+                summary: PJ - DAS MEI at the Federal Revenue
+                value:
+                  service: SERVICE_DAS_MEI
+                  cnpj: cnpj
+              processosJuridicosSocios:
+                summary: PJ - Business owners' legal cases
+                value:
+                  service: SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS
+                  cnpj: cnpj
+              complianceBet:
+                summary: PJ - Betting compliance (short alias)
+                value:
+                  service: SERVICE_COMPLIANCE_BET
+                  cnpj: cnpj
+              riscoCreditoEmpresa:
+                summary: PJ - Credit risk
+                value:
+                  service: SERVICE_CREDIT_RISK_COMPANY
+                  cnpj: cnpj
+              dominiosCnpj:
+                summary: PJ - CNPJ domains
+                value:
+                  service: SERVICE_DOMAINS_CNPJ
+                  cnpj: cnpj
+              processosJuridicosPj:
+                summary: PJ - Legal cases
+                value:
+                  service: SERVICE_JURIDICAL_PROCESSES_PJ
+                  cnpj: cnpj
+              ocrCartaoCnpj:
+                summary: PJ - CNPJ card OCR
+                value:
+                  service: SERVICE_OCR_CNPJ_CARD
+                  image1: base64
+              dadosCadastraisCnpj:
+                summary: PJ - CNPJ registration data
+                value:
+                  service: SERVICE_REGISTRATION_DATA_CNPJ
+                  cnpj: cnpj
+              enriquecimentoPessoaJuridica:
+                summary: PJ - Data enrichment
+                value:
+                  service: SERVICE_CORPORATE_DATA_ENRICHMENT
+                  cnpj: cnpj
+              statusCnpjReceitaFederal:
+                summary: PJ - CNPJ status at the Federal Revenue
+                value:
+                  service: SERVICE_RFB_PJ
+                  cnpj: cnpj
+              statusCnpjReceitaFederalOnDemand:
+                summary: PJ - CNPJ at the Federal Revenue on-demand
+                value:
+                  service: SERVICE_RFB_PJ_ON_DEMAND
+                  cnpj: cnpj
+              relacionamentosEmpresa:
+                summary: PJ - Company relationships
+                value:
+                  service: SERVICE_COMPANY_RELATIONSHIP
+                  cnpj: cnpj
+              sociosReceitaFederal:
+                summary: PJ - Business owners at the Federal Revenue
+                value:
+                  service: SERVICE_COMPANY_RFB_OWNERS
+                  cnpj: cnpj
+              doacoesEleitoraisPj:
+                summary: PJ - Electoral donations
+                value:
+                  service: SERVICE_ELECTORAL_DONORS_CNPJ
+                  cnpj: cnpj
+              doacoesEleitoraisSocios:
+                summary: PJ - Business owners' electoral donations
+                value:
+                  service: SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ
+                  cnpj: cnpj
+              fornecedoresEleitoraisPj:
+                summary: PJ - Electoral service providers
+                value:
+                  service: SERVICE_ELECTORAL_PROVIDERS_CNPJ
+                  cnpj: cnpj
+              sintegra:
+                summary: PJ - SINTEGRA
+                value:
+                  service: SERVICE_SINTEGRA_CONSULTATION
+                  cnpj: cnpj
+                  uf: state (optional)
+              enderecosEstendidosEmpresa:
+                summary: PJ - Extended addresses
+                value:
+                  service: SERVICE_ADDRESSES_EXTENDED_CNPJ
+                  cnpj: cnpj
+              sociosPrimeiroNivel:
+                summary: PJ - First-level partners
+                value:
+                  service: SERVICE_FIRST_LEVEL_PARTNER
+                  cnpj: cnpj
+              kycComplianceSocios:
+                summary: PJ - Business owners' KYC and compliance
+                value:
+                  service: SERVICE_COMPANY_KYC_OWNERS
+                  cnpj: cnpj
+              exposicaoPerfilMidiaPj:
+                summary: PJ - Business owners' media exposure and profile
+                value:
+                  service: SERVICE_MEDIA_PROFILE_EXPOSURE_PJ
+                  cnpj: cnpj
+              debitosAtivosPj:
+                summary: PJ - Active debts
+                value:
+                  service: SERVICE_ACTIVE_DEBT_PJ
+                  cnpj: cnpj
+              certidaoNegativaProtestoPj:
+                summary: PJ - Negative protest certificate
+                value:
+                  service: SERVICE_PROTEST_PJ
+                  cnpj: cnpj
+              complianceCasasApostasPj:
+                summary: PJ - Betting compliance
+                value:
+                  service: SERVICE_COMPLIANCE_BET_PJ
+                  cnpj: cnpj
+              scoreCreditoPj:
+                summary: PJ - Credit score
+                value:
+                  service: SERVICE_QUOD_CREDIT_SCORE_COMPANY
+                  cnpj: cnpj
+              scoreCreditoMultidadosPj:
+                summary: PJ - Multi-data credit score
+                value:
+                  service: SERVICE_BOAVISTA_ONE_SCORE_COMPANY
+                  cnpj: cnpj
+              dadosRestritivosPj:
+                summary: PJ - Restrictive data
+                value:
+                  service: SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY
+                  cnpj: cnpj
+              flagsNegativosPj:
+                summary: PJ - Negative flags
+                value:
+                  service: SERVICE_QUOD_CREDIT_RISK_COMPANY
+                  cnpj: cnpj
+              scoreCreditoQuantumPj:
+                summary: PJ - Quantum credit score
+                value:
+                  service: SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY
+                  cnpj: cnpj
+              beneficiariosFinais:
+                summary: PJ - Ultimate beneficial owners
+                value:
+                  service: SERVICE_ULTIMATE_BENEFICIAL_OWNERS
+                  cnpj: cnpj
+              percentualParticipacaoSocietaria:
+                summary: PJ - Equity stake percentage
+                value:
+                  service: SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY
+                  cnpj: cnpj
+              projetosPublicos:
+                summary: PJ - Public projects
+                value:
+                  service: SERVICE_PUBLIC_PROJECTS
+                  cnpj: cnpj
+              obrasCivis:
+                summary: PJ - Civil construction
+                value:
+                  service: SERVICE_CIVIL_CONSTRUCTION
+                  cnpj: cnpj
+              debitosPgfn:
+                summary: PJ - PGFN debts
+                value:
+                  service: SERVICE_PGFN_COMPANY
+                  cnpj: cnpj
+              cotaPcd:
+                summary: PJ - PCD quota
+                value:
+                  service: SERVICE_PCD_COMPANY
+                  cnpj: cnpj
+              certidaoCgu:
+                summary: PJ - CGU negative certificate
+                value:
+                  service: SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY
+                  cnpj: cnpj
+              certidaoCnj:
+                summary: PJ - CNJ negative certificate
+                value:
+                  service: SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY
+                  cnpj: cnpj
+              certidaoDebitosEstaduais:
+                summary: PJ - State debt negative certificate
+                value:
+                  service: SERVICE_STATE_DEBT_CERTIFICATE_COMPANY
+                  cnpj: cnpj
+              optanteSimples:
+                summary: PJ - Simples Nacional status
+                value:
+                  service: SERVICE_SIMPLES_COMPANY
+                  cnpj: cnpj
+              kycGrupoEconomico:
+                summary: PJ - Economic group KYC and compliance
+                value:
+                  service: SERVICE_ECONOMIC_GROUP_KYC_COMPANY
+                  cnpj: cnpj
+              relacionamentosGrupoEconomico:
+                summary: PJ - Economic group relationships
+                value:
+                  service: SERVICE_ECONOMIC_GROUP_RELATIONSHIPS
+                  cnpj: cnpj
+              avaliacoesReputacao:
+                summary: PJ - Ratings and reputation
+                value:
+                  service: SERVICE_REPUTATIONS_AND_REVIEWS
+                  cnpj: cnpj
+              dadosFundosInvestimento:
+                summary: PJ - Investment fund data
+                value:
+                  service: SERVICE_INVESTMENT_FUND_DATA
+                  cnpj: cnpj
+              influenciaQuadroSocietario:
+                summary: PJ - Business ownership influence
+                value:
+                  service: SERVICE_OWNERS_INFLUENCE
+                  cnpj: cnpj
+              arrecadacaoSimplesMei:
+                summary: PJ - Simples Nacional - MEI collection
+                value:
+                  service: SERVICE_PGMEI
+                  cnpj: cnpj
+              fgtsRegularidade:
+                summary: PJ - FGTS
+                value:
+                  service: SERVICE_FGTS
+                  cnpj: cnpj
+              marketplaces:
+                summary: PJ - Marketplaces
+                value:
+                  service: SERVICE_MARKETPLACE_DATA
+                  cnpj: cnpj
+              anunciosOnline:
+                summary: PJ - Online ads
+                value:
+                  service: SERVICE_ONLINE_ADS
+                  cnpj: cnpj
+              receitaFederalQsa:
+                summary: PJ - Federal Revenue - QSA
+                value:
+                  service: SERVICE_RF_QSA
+                  cnpj: cnpj
+              distribuicaoProcessosSocios:
+                summary: PJ - Business owners' lawsuit distribution
+                value:
+                  service: SERVICE_OWNERS_LAWSUITS_DISTRIBUTION
+                  cnpj: cnpj
+              distribuicaoProcessosJudiciais:
+                summary: PJ - Legal case distribution
+                value:
+                  service: SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY
+                  cnpj: cnpj
+              acoesTrabalhistas:
+                summary: PJ - Labor lawsuits
+                value:
+                  service: SERVICE_LABOR_LAWSUITS
+                  cnpj: cnpj
+              kycComplianceFuncionarios:
+                summary: PJ - Employee KYC and compliance
+                value:
+                  service: SERVICE_EMPLOYEES_KYC
+                  cnpj: cnpj
+              historicoDadosBasicos:
+                summary: PJ - Basic data history
+                value:
+                  service: SERVICE_HISTORY_BASIC_DATA
+                  cnpj: cnpj
+              categoriaComercial:
+                summary: PJ - Merchant category
+                value:
+                  service: SERVICE_MERCHANT_CATEGORY_DATA
+                  cnpj: cnpj
+              acordosSindicais:
+                summary: PJ - Union agreements
+                value:
+                  service: SERVICE_SYNDICATE_AGREEMENTS
+                  cnpj: cnpj
+              telefonesEmpresa:
+                summary: PJ - Phone numbers
+                value:
+                  service: SERVICE_PHONES_EXTENDED_COMPANY
+                  cnpj: cnpj
+              evolucaoEmpresa:
+                summary: PJ - Company evolution
+                value:
+                  service: SERVICE_COMPANY_EVOLUTION
+                  cnpj: cnpj
+              informacoesFinanceiras:
+                summary: PF - Financial information
+                value:
+                  service: SERVICE_FINANCIAL_INFORMATION
+                  cpf: cpf
+              dadosPis:
+                summary: PF - PIS data
+                value:
+                  service: SERVICE_PIS_CONSULTATION
+                  cpf: cpf
+              validacaoEsocial:
+                summary: PF - E-Social validation
+                value:
+                  service: SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION
+                  cpf: cpf
+                  nit: "(optional)"
+      responses:
+        '200':
+          description: |
+            Result of the service run. The `result` structure varies
+            depending on the `service` code, but the `status` object follows
+            the API's technical pattern.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceApiResponse'
+              examples:
+                enriquecimentoPessoaFisica:
+                  summary: PF - Data enrichment
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: REGULAR
+                      statusDate: "2022-05-29T00:00:00"
+                      name: PERSON NAME
+                      motherName: MOTHER'S NAME
+                      birthdate: "1998-07-05"
+                      birthCountry: BRASILEIRA
+                      dead: false
+                      gender: M
+                      age: 24
+                      origin: RECEITA FEDERAL
+                      fiscalRegion: DF-GO-MS-MT-TO
+                      numberOfPeopleWithTheSameName: "3"
+                      nameWordCount: "3"
+                      nameUniqueScore: "0.994"
+                    status:
+                      code: 200
+                      message: Success
+                statusCpfReceitaFederal:
+                  summary: PF - CPF status at the Federal Revenue
+                  value:
+                    result:
+                      cpf: "123414124"
+                      status: REGULAR
+                      name: EXAMPLE NAME
+                      birthDate: yyyy-MM-ddT00:00
+                      dead: false
+                      origin: RECEITA FEDERAL
+                      age: 30
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                    externalId: 1782ea0a-8663-41a8-b156-688527f5363b
+                statusCpfReceitaFederalOnDemand:
+                  summary: PF - CPF at the Federal Revenue on-demand
+                  value:
+                    result:
+                      cpf: "123414124"
+                      status: REGULAR
+                      name: EXAMPLE NAME
+                      birthDate: "1994-05-21T00:00"
+                      dead: false
+                      origin: RECEITA FEDERAL
+                      age: 30
+                    status:
+                      code: 200
+                      message: Success
+                modelagemDadosPessoa:
+                  summary: PF - Data modeling
+                  value:
+                    result:
+                      modelData: Dados de modelagem consolidados para o CPF consultado.
+                    results:
+                      - modelData: Dados de modelagem consolidados para o CPF consultado.
+                    status:
+                      code: 200
+                      message: Success
+                promptIaPessoa:
+                  summary: PF - AI prompt for a person
+                  value:
+                    result:
+                      modelData: Resumo analítico gerado a partir dos dados consolidados da pessoa consultada.
+                    results:
+                      - modelData: Resumo analítico gerado a partir dos dados consolidados da pessoa consultada.
+                    status:
+                      code: 200
+                      message: Success
+                ocrDocumentos:
+                  summary: PF - React OCR
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      name: PERSON NAME
+                      fatherName: FATHER'S NAME
+                      motherName: MOTHER'S NAME
+                      birthdate: "1992-01-05"
+                      cnhCategory: AB
+                      cnhNumber: "07796497926"
+                      emissionPlace: DETRAN DE
+                      expeditionDate: "13/04/2020"
+                      rg: "3451620"
+                      rgUf: DF
+                      doc: CNH
+                      orgEmission: DETRAN
+                      place: BRASILIA-DISTRITO FEDERAL, DF
+                      side: C
+                      validDate: "13/02/2021"
+                      paidActivity: "False"
+                      REANCH: DF767732467
+                    status:
+                      code: 200
+                      message: Success
+                faceMatch:
+                  summary: PF - FaceMatch
+                  value:
+                    result:
+                      status: Face picture match
+                      similarity: 99.95
+                    status:
+                      code: 200
+                      message: Success
+                emailsPessoasRelacionadas:
+                  summary: PF - Related people's emails
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      totalRelatedPeopleEmails: 2
+                      relatedPeopleEmailsList: "nome@email.com - PERSON NAME - 00000000000 - CONJUGE"
+                      relatedPeopleEmails:
+                        - relatedCpf: "00000000000"
+                          relatedName: PERSON NAME
+                          relationship: CONJUGE
+                          type: PESSOAL
+                          isMain: true
+                          isRecent: true
+                          isActive: true
+                          email: nome@email.com
+                          domain: email.com
+                          validationStatus: VALID
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                telefonesPessoasRelacionadas:
+                  summary: PF - Related people's phones
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      totalRelatedPeoplePhones: 1
+                      relatedPeoplePhonesList: "11900000000 - PERSON NAME - 00000000000 - FILHO"
+                      relatedPeoplePhones:
+                        - relatedCpf: "00000000000"
+                          relatedName: PERSON NAME
+                          relationship: FILHO
+                          type: CELULAR
+                          isMain: true
+                          isRecent: true
+                          isActive: true
+                          areaCode: "11"
+                          number: "900000000"
+                          phone: "11900000000"
+                          isInDoNotCallList: false
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                enderecosPessoasRelacionadas:
+                  summary: PF - Related people's addresses
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      totalRelatedPeopleAddresses: 1
+                      relatedPeopleAddressesList: "RUA EXEMPLO, 100 - PERSON NAME - 00000000000 - SOCIO"
+                      relatedPeopleAddresses:
+                        - relatedCpf: "00000000000"
+                          relatedName: PERSON NAME
+                          relationship: SOCIO
+                          type: RESIDENCIAL
+                          isMain: true
+                          isRecent: true
+                          isActive: true
+                          address: RUA EXEMPLO
+                          zipcode: "00000000"
+                          state: SP
+                          city: SAO PAULO
+                          neighborhood: CENTRO
+                          number: "100"
+                          complement: ""
+                          isRatified: true
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                scoreCreditoPf:
+                  summary: PF - Credit score
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      score: 680
+                      riskLevel: MEDIO
+                      riskClassification: B
+                      reasonCodes:
+                        - Tempo de relacionamento com o mercado
+                        - Renda declarada baixa
+                      creditBureauSummary: Score de crédito dentro da média do perfil
+                      creditBureauDetails: {}
+                      origin: Quod
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                scoreCreditoMultidadosPf:
+                  summary: PF - Multi-data credit score
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      score: 710
+                      riskLevel: BAIXO
+                      riskClassification: A
+                      reasonCodes:
+                        - Bom histórico de pagamentos
+                      creditBureauSummary: Score de crédito multidados acima da média do perfil
+                      creditBureauDetails: {}
+                      origin: Boa Vista
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                dadosRestritivosPf:
+                  summary: PF - Restrictive data
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      score: 705
+                      hasRestrictions: false
+                      restrictionCount: 0
+                      creditBureauSummary: Nenhuma restrição de crédito encontrada
+                      creditBureauDetails: {}
+                      origin: Boa Vista
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                flagsNegativosPf:
+                  summary: PF - Negative flags
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      riskLevel: BAIXO
+                      riskClassification: A
+                      hasRestrictions: false
+                      negativeFlagsCount: 0
+                      creditBureauSummary: Nenhum flag negativo encontrado
+                      creditBureauDetails: {}
+                      origin: Quod
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                tseLocalVotacao:
+                  summary: PF - TSE - Polling place
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: REGULAR
+                      pollingPlace: ESCOLA CLASSE 01
+                      pollingPlaceAddress: QUADRA 01, BRASILIA - DF
+                      city: BRASILIA
+                      uf: DF
+                      zipcode: "70000000"
+                      electoralZone: "001"
+                      electoralSection: "0001"
+                      hasBiometrics: true
+                      queryDate: "2026-08-01"
+                      source: TSE-LOCALVOTACAO
+                      onlineQuery: Situação, local, endereço, zona e seção retornados com sucesso
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                pessoaPoliticamenteExposta:
+                  summary: PF - Politically exposed person
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: Pessoa não exposta politicamente
+                    status:
+                      code: 200
+                      message: success
+                dividaAtivaPessoaFisica:
+                  summary: PF - Active debt
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: NEGATIVA
+                      statusDate: "2022-08-16"
+                      origin: Receita-Federal PGFN
+                      validDate: "0001-01-01"
+                    status:
+                      code: 200
+                      message: Success
+                scoreRiscoFraude:
+                  summary: PF - Fraud risk score
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      score: "8.0691"
+                      factor: MEDIUM RISK
+                      message: Success calculating score
+                    status:
+                      code: 200
+                      message: Success
+                riscoFinanceiro:
+                  summary: PF - Financial risk
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      score: "650"
+                      message: "Score: 650 | Análise: RISCO MÉDIO"
+                    status:
+                      code: 200
+                      message: Success
+                scoreInadimplencia:
+                  summary: PF - Default risk score
+                  value:
+                    result:
+                      cpf: "{00000000000}"
+                      status: REGULAR
+                      origin: Datarisk
+                      score: "462"
+                      rank: E
+                      expectedDefault: "58.94%"
+                      processType: SEM PROCESSOS
+                    status:
+                      code: 200
+                      message: Success
+                scoreBiometrico:
+                  summary: PF - Biometric score
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: Altíssima probabilidade
+                      message: Biometrics exist at the base of the Government
+                      similarity: 99.66
+                    status:
+                      code: 200
+                      message: Success
+                nadaConstaAcoesJudiciais:
+                  summary: PF - Nothing on record certificate
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: NADA CONSTA
+                      origin: NadaConsta
+                      state: TRF1
+                      name: Fulano
+                      certificateNumber: "212312312311231"
+                      certificateText: A Polícia Federal CERTIFICA, após pesquisa no Sistema Nacional de Informações Criminais - SINIC, que até a presente data, NÃO CONSTA decisão judicial condenatória com trânsito em julgado* em nome de PERSON NAME, nascido(a) aos 05/07/1998
+                      expirationDate: "2022-10-20"
+                      emissionDate: "2022-10-20"
+                      type: CIVEL E CRIMINAL
+                    status:
+                      code: 200
+                      message: Success
+                antecedentesCriminaisCivil:
+                  summary: PF - Civil criminal records
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: NADA CONSTA
+                      uf: BA
+                      emissionDate: 00:00 de 20/12/2022
+                      certificateNumber: 00000000-0000-0000-0000-000000000000
+                      certificateText: "Antecedentes Criminais CERTIFICADO DE ANTECEDENTES CRIMINAIS Nome: PERSON NAME Número do Rg: 14781688 Nome do Pai: FATHER'S NAME Nome da Mãe: MOTHER'S NAME Data de Nascimento: 19/6/1997 Naturalidade: \"Certifico que o requerente acima qualificado NÃO registra antecedentes criminais até a presente data no Centro de Documentação e Estatística Policial (CEDEP), da Polícia Civil \". IMPORTANTE: Este certificado é válido somente com a apresentação da cédula de Identidade expedida pelo Instituto de Identificação Pedro Melo/DPT/SSP. Este certificado foi emitido terça-feira, 20 de dezembro de 2022 e está disponível para consulta no endereço https://exemplo.com/validar, informando o código 00000000-0000-0000-0000-000000000000 Obs: Este certificado tem validade até a data 20/3/2023 Imprimir Fechar Janela"
+                      origin: PoliciaCivilAntecedentes
+                    status:
+                      code: 200
+                      message: Success
+                validacaoEmail:
+                  summary: PF - Email validation
+                  value:
+                    result:
+                      email: usuario@example.com
+                      status: VALID
+                      normalizedEmail: usuario@example.com
+                      address: usuario@example.com
+                      account: teste
+                      domain: test.com
+                      disposable: false
+                      roleAddress: false
+                      riskyAccount: false
+                      riskyDomain: false
+                      junk: false
+                      limited: false
+                      acceptAll: false
+                      possibleSpamTrap: false
+                      wasSyntaxValid: true
+                      wasSyntaxNormalized: false
+                      wasSiteFound: true
+                      wasOwnershipFound: false
+                      possibleStoogeDomain: false
+                      domainType: BLOG
+                    status:
+                      code: 200
+                      message: Success
+                validacaoEsocial:
+                  summary: PF - E-Social validation
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: VERIFIED
+                      message: Os dados estão corretos.
+                      name: EXAMPLE NAME
+                      birthdate: "1971-11-23"
+                      pis: "12460888617"
+                    status:
+                      code: 200
+                      message: Success
+                antecedentesCriminaisFederal:
+                  summary: PF - Federal criminal records
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      status: NADA CONSTA
+                      certificateNumber: "79222652022"
+                      certificateText: A Polícia Federal CERTIFICA, após pesquisa no Sistema Nacional de Informações Criminais - SINIC, que até a presente data, NÃO CONSTA decisão judicial condenatória com trânsito em julgado* em nome de PERSON NAME, nascido(a) aos 05/07/1998
+                      expirationDate: "2022-10-20"
+                    status:
+                      code: 200
+                      message: Success
+                validacaoCpfTelefone:
+                  summary: PF - CPF validation with phone
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      phone: "5561982358585"
+                      operator: OPERADORA EXEMPLO
+                      validCarrierPhone: true
+                      matchRateCpfPhone: 100
+                    status:
+                      code: 200
+                      message: Success
+                validacaoCpfEndereco:
+                  summary: PF - CPF validation with address
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      message: Customer not found
+                      carrierName: CLARO S.A.
+                      zipcode: "00000000"
+                      zipCodeMatchRate: -1
+                      numberMatchRate: -1
+                      numberAddress: "13"
+                    status:
+                      code: 200
+                      message: Success
+                documentoscopiaDigital:
+                  summary: PF - Digital document analysis
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      name: PERSON NAME
+                      fatherName: FATHER'S NAME
+                      motherName: MOTHER'S NAME
+                      birthdate: "1984-05-21"
+                      cnhCategory: AD
+                      expeditionDate: "19/03/2021"
+                      rg: "3261880"
+                      rgUf: DF
+                      reanch: DF765309297
+                      place: Distrito Federal, Goiás, Mato Grosso, Mato Grosso do Sul ou Tocantins
+                      validDate: "2026-02-24"
+                      biometry: 1
+                    status:
+                      code: 200
+                      message: Success
+                resultadoDocumentoscopiaDigital:
+                  summary: PF - Digital document analysis result
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      name: PERSON NAME
+                      fatherName: FATHER'S NAME
+                      motherName: MOTHER'S NAME
+                      birthdate: "1992-01-05"
+                      cnhCategory: AB
+                      cnhNumber: "07796497926"
+                      expeditionDate: "2020-04-13"
+                      rg: "3451620"
+                      rgUf: DF
+                      doc: CNH
+                      place: BRASILIA-DISTRITO FEDERAL, DF
+                      validDate: "2021-02-13"
+                      REANCH: DF767732467
+                      biometry: 3
+                    status:
+                      code: 200
+                      message: Success
+                consultaMei:
+                  summary: PF - MEI query
+                  value:
+                    result:
+                      meis:
+                        - cpf: "00000000000"
+                          cnpj: "00000000000000"
+                          companyName: EXAMPLE MEI COMPANY
+                          sector: PRIVATE - 9511800 - REPARACAO E MANUTENCAO DE COMPUTADORES
+                          classification: SELF-EMPLOYED
+                          startDate: "2022-02-03"
+                          endDate: "2022-02-10"
+                    status:
+                      code: 200
+                      message: Success
+                dadosPeloTelefone:
+                  summary: PF - Data by phone number
+                  value:
+                    result:
+                      cpf: "11111111111"
+                      name: PERSON NAME
+                      phone: "+5561123456789"
+                    status:
+                      code: 200
+                      message: Success
+                historicoProfissionalTitular:
+                  summary: PF - Account holder's professional history
+                  value:
+                    result:
+                      professionalHistory:
+                        - cnpj: "00000000000000"
+                          companyName: EXAMPLE COMPANY LTDA
+                          classification: ENTREPRENEUR | BUSINESS OWNER
+                          sector: PRIVATE - 8599604 - TREINAMENTO EM DESENVOLVIMENTO PROFISSIONAL E GERENCIAL
+                          startDate: "2004-02-10"
+                          endDate: "2007-12-23"
+                    status:
+                      code: 200
+                      message: Success
+                dadosFinanceirosEnderecosPf:
+                  summary: PF - Financial data and addresses
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      name: EXAMPLE NAME
+                      status: REGULAR
+                      origin: RECEITA FEDERAL
+                      monthlyIncomeEstimate: "4 A 10 SM"
+                      equityEstimate: "100000.00"
+                      addresses:
+                        - zipcode: "70000000"
+                          country: BRASIL
+                          address: QUADRA EXEMPLO
+                          city: BRASILIA
+                          addressType: HOME
+                          neighborhood: ASA NORTE
+                          state: DF
+                      personalIncomeTaxReturns:
+                        - year: "2023"
+                          situation: CREDITADA
+                          bankAgency: BANCO EXEMPLO
+                    status:
+                      code: 200
+                      message: Success
+                propensaoApostasOnline:
+                  summary: PF - Propensity for online betting
+                  value:
+                    result:
+                      propensityScore: 72
+                      totalPassages: 12
+                      firstPassageDate: "2024-01-10T00:00:00"
+                      lastPassageDate: "2024-09-18T00:00:00"
+                      last30DaysPassages: 1
+                      last90DaysPassages: 3
+                      last180DaysPassages: 7
+                      last365DaysPassages: 12
+                    status:
+                      code: 200
+                      message: Success
+                mandadoPrisao:
+                  summary: PF - Arrest warrant
+                  value:
+                    result:
+                      message: Nenhum mandado de prisão encontrado.
+                      arrestWarrantFound: false
+                    status:
+                      code: 200
+                      message: Success
+                debitosAtivosPf:
+                  summary: PF - Active debts
+                  value:
+                    result:
+                      totalDebtValue: 0
+                      totalDebtValuePerOrigin: {}
+                      totalDebts: 0
+                      totalDebtsPerOrigin: {}
+                      debts:
+                        - source: Fonte
+                          debtOrigin: Origem
+                          consolidatedValue: Valor
+                          responsibleUnity: Unidade
+                          responsibleUnityUF: UF
+                          registrationNumber: "1234"
+                          registrationSituationType: divida
+                          registrationSituation: ativo
+                    status:
+                      code: 200
+                      message: Success
+                dadosEleitoraisCandidato:
+                  summary: PF - Candidate electoral data
+                  value:
+                    result:
+                      hasRunForOffice: true
+                      hasBeenElected: true
+                      numberOfTimesRanForOffice: 1
+                      numberOfTimesElected: 1
+                      lastElectedRole: Vereador
+                      firstElectionYearRanForOffice: "2016"
+                      lastElectionYearRanForOffice: "2020"
+                      firstElectionYearElected: "2020"
+                      lastElectionYearElected: "2020"
+                      electionData:
+                        - ballotName: EXAMPLE BALLOT NAME
+                          ballotNumber: 12345
+                          fullName: CANDIDATE FULL NAME
+                          normalizedName: CANDIDATE FULL NAME
+                          docNumber: "00000000000"
+                          voterNumber: "000000000000"
+                          url: https://exemplo.com/candidatura
+                          electionYear: "2020"
+                          electionType: Municipal
+                          applicationRole: Vereador
+                          applicationPlace: EXAMPLE MUNICIPALITY
+                          applicationUf: UF
+                          campaignCNPJ: "00000000000000"
+                          status: Eleito por QP
+                          wasElected: true
+                          candidateSituation: Consta da urna
+                          applicationSituation: Deferido
+                          emails:
+                            - candidato@exemplo.com
+                          gender: MASC.
+                          maritalStatus: Casado(a)
+                          colorRace: BRANCA
+                          instructionLevel: Ensino Médio completo
+                          occupation: Ocupação exemplo
+                          birthDate: "0001-01-01T00:00:00Z"
+                          nationality: Brasileira nata
+                          birthUF: UF
+                          partyNumber: 12
+                          partyAcronym: PARTY
+                          partyName: Partido Exemplo
+                          campaignSpentValue: 0
+                          campaignSpendingFirstRound: 100000
+                          campaignSpendingSecondRound: 0
+                          totalAssetsValue: 90000
+                          assetsList:
+                            - description: economia pessoal
+                              type: Dinheiro em espécie - moeda nacional
+                              value: 8000
+                          accountability:
+                            accountabilityControlNumber: "000000000000"
+                            consolidatedRevenueValues:
+                              totalReceivedResources: 13000
+                              totalFinancialResources: 9000
+                              totalEstimatedResources: 4000
+                            consolidatedExpensesValues:
+                              expensesThreshold: 100000
+                              totalExpensesContracted: 9000
+                              totalExpensesPaid: 9000
+                            suppliersRanking:
+                              - docNumber: "00000000000"
+                                name: EXAMPLE SUPPLIER
+                                numberDonations: "9"
+                                totalValue: 9000
+                    status:
+                      code: 200
+                      message: Success
+                doacoesEleitorais:
+                  summary: PF - Electoral donations
+                  value:
+                    result:
+                      totalDonationsAmount: 15
+                      totalDonatedValue: 50000
+                      quantityOfDonationsLastElection: 0
+                      quantityOfDonationsLastTwoElections: 0
+                      quantityOfDonationsLastThreeElection: 1
+                      donatedValueLastElection: 0
+                      donatedValueLastTwoElections: 0
+                      donatedValueLastThreeElection: 25000
+                      partiesThatReceivedDonation:
+                        - PARTY
+                      maxDonationValue: 10000
+                      averageDonationValue: 5000
+                      minDonationValue: 500
+                      electionDonationData:
+                        - politicianBallotNumber: 0
+                          politicianFullName: CANDIDATE FULL NAME
+                          electionYear: "2020"
+                          partyName: PARTY
+                          donationsAmount: "6"
+                          totalDonationValue: 5000
+                          isCrowdfunding: false
+                          donationRecipient: CANDIDATE
+                          isCrossDonation: false
+                          partyCrossDonationValue: 0
+                    status:
+                      code: 200
+                      message: Success
+                envolvimentoPolitico:
+                  summary: PF - Political involvement
+                  value:
+                    result:
+                      electionsCount: 5
+                      isCurrentlyInOffice: true
+                      wasFormerlyElected: true
+                      isPep: true
+                      amountDonated: 19804076
+                      amountReceived: 20599420
+                      politicalInvolvementScore: 1
+                    status:
+                      code: 200
+                      message: Success
+                kycCompliancePessoaFisica:
+                  summary: PF - KYC and compliance
+                  value:
+                    result:
+                      cpf: "12345678901"
+                      isPep: false
+                      isCurrentlySanctioned: false
+                      sanctionsHistory: []
+                      pepHistories: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                exposicaoPerfilMidiaPf:
+                  summary: PF - Media exposure and profile
+                  value:
+                    result:
+                      cpf: "12345678901"
+                      mediaExposureLevel: MEDIUM
+                      celebrityLevel: LOW
+                      unpopularityLevel: LOW
+                      fullName: EXAMPLE NAME
+                      shortName: EXAMPLE NAME
+                      fullNameUniquenessScore: 0.98
+                      shortNameUniquenessScore: 0.91
+                      newsItems:
+                        - title: Notícia de exemplo
+                          url: https://www.exemplo.com/noticia
+                          publicationDate: "2024-01-15"
+                          sentimentAnalysis: NEUTRAL
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                historicoFamiliarPolitico:
+                  summary: PF - Political family history
+                  value:
+                    result:
+                      totalMembers: 10
+                      policalMembers: 3
+                      currentlyElectedMembers: 2
+                      totalDisputedElections: 22
+                      totalWonElections: 11
+                      highestDisputedPolicalPosition: PRESIDENTE
+                      highestHeldPolicalPosition: PRESIDENTE
+                      electionsTimeline:
+                        - eelationshipType: SELF
+                          electionYear: 2022
+                          electionType: FEDERAL
+                          electionRegion: BRASIL - BR
+                          role: PRESIDENTE
+                          partyAcronym: PL
+                          wasElected: false
+                    status:
+                      code: 200
+                      message: Success
+                prestadoresServicoEleitorais:
+                  summary: PF - Electoral service providers
+                  value:
+                    result:
+                      name: BARBOSA REIS
+                      partiesThatReceivedProvision:
+                        - PSOL
+                        - PCB
+                      electionProvisionData:
+                        - politicianBallotNumber: 5044
+                          politicianFullName: ZULMIRA ROZ
+                          politicianDocNumber: "232000391"
+                          partyName: PSOL
+                          provisionRequester: CANDIDATE
+                          electionYear: 2018
+                          applicationRole: Deputado Federal
+                          numberOfProvisions: 4
+                          totalProvisionValue: 240
+                      minProvisionValue: 78.75
+                      maxProvisionValue: 6274
+                      avgProvisionValue: 1054.8488
+                    status:
+                      code: 200
+                      message: Success
+                dasMeiReceita:
+                  summary: PJ - DAS MEI at the Federal Revenue
+                  value:
+                    result:
+                      periodos:
+                        "201707":
+                          mensagem: Exemplo de texto
+                          mensagem_site: Exemplo de texto
+                          url_das: https://www.exemplo.com/exemplo-de-url
+                          codigo_barras_das: ""
+                          periodo: Julho/2017
+                          apurado: Sim
+                          situacao: ""
+                          principal: ""
+                          multas: ""
+                          juros: ""
+                          total: ""
+                          data_vencimento: ""
+                          data_acolhimento: ""
+                          data_pagamento: ""
+                          icms: ""
+                          iss: ""
+                          inss: ""
+                          numero_apuracao: ""
+                          numero_das: ""
+                          normalizado_principal: 0.0
+                          normalizado_multas: 0.0
+                          normalizado_juros: 0.0
+                          normalizado_total: 0.0
+                          normalizado_icms: 0.0
+                          normalizado_iss: 0.0
+                          normalizado_inss: 0.0
+                        "201708":
+                          mensagem: Exemplo de texto
+                          mensagem_site: Exemplo de texto
+                          url_das: https://www.exemplo.com/exemplo-de-url
+                          codigo_barras_das: ""
+                          periodo: Agosto/2017
+                          apurado: Sim
+                          situacao: ""
+                          principal: ""
+                          multas: ""
+                          juros: ""
+                          total: ""
+                          data_vencimento: ""
+                          data_acolhimento: ""
+                          data_pagamento: ""
+                          icms: ""
+                          iss: ""
+                          inss: ""
+                          numero_apuracao: ""
+                          numero_das: ""
+                          normalizado_principal: 0.0
+                          normalizado_multas: 0.0
+                          normalizado_juros: 0.0
+                          normalizado_total: 0.0
+                          normalizado_icms: 0.0
+                          normalizado_iss: 0.0
+                          normalizado_inss: 0.0
+                    status:
+                      code: 200
+                      message: Success
+                enriquecimentoPessoaJuridica:
+                  summary: PJ - Data enrichment
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      status: ATIVA
+                      statusDate: "2022-07-26T00:00:00Z"
+                      name: EXAMPLE COMPANY LTDA
+                      country: Brazil
+                      fantasyName: EXAMPLE COMPANY
+                      origin: Receita Federal
+                      regime: SIMPLES
+                      age: 4
+                      registrationStatusDate: "2018-04-04T00:00:00Z"
+                      foundedDate: "2018-04-04T00:00:00Z"
+                      activities:
+                        - IsMain: true
+                          Code: "6209100"
+                          Activity: SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO
+                        - IsMain: false
+                          Code: "6201501"
+                          Activity: DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA
+                        - IsMain: false
+                          Code: "6201502"
+                          Activity: WEB DESIGN
+                        - IsMain: false
+                          Code: "6202300"
+                          Activity: DESENVOLVIMENTO E LICENCIAMENTO DE PROGRAMAS DE COMPUTADOR CUSTOMIZAVEIS
+                      legalNatureCode: "2062"
+                      legalNatureActivity: SOCIEDADE EMPRESARIA LIMITADA
+                      capital: DEZ MIL REAIS
+                      capitalRS: "10000.00"
+                      nire: ""
+                    status:
+                      code: 200
+                      message: Success
+                statusCnpjReceitaFederal:
+                  summary: PJ - CNPJ status at the Federal Revenue
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      status: ATIVA
+                      statusDate: "2022-06-26T00:00:00Z"
+                      origin: Receita Federal
+                    status:
+                      code: 200
+                      message: Success
+                statusCnpjReceitaFederalOnDemand:
+                  summary: PJ - CNPJ at the Federal Revenue on-demand
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                    status:
+                      code: 200
+                      message: Success
+                relacionamentosEmpresa:
+                  summary: PJ - Company relationships
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      isFamilyCompany: false
+                      isFamilyEmployees: false
+                      relationshipTotal: 1
+                      totalOwners: 1
+                      totalEmployees: 1
+                      totalOwned: 1
+                      companyRelationships:
+                        - cpf: "77272722314"
+                          name: EXAMPLE NAME
+                          country: Brazil
+                          relationshipName: SOCIO-ADMINISTRADOR
+                          relationshipType: REPRESENTANTELEGAL
+                          origin: RECEITA FEDERAL
+                          relationshipStartDate: "2021-03-01"
+                          relationshipEndDate: "2021-03-01"
+                    status:
+                      code: 200
+                      message: Success
+                validacaoCnhDatavalid:
+                  summary: PF - CNH validation with DataValid
+                  value:
+                    result:
+                      cpf: "00000000000"
+                    status:
+                      code: 200
+                      message: Success
+                sociosReceitaFederal:
+                  summary: PJ - Business owners at the Federal Revenue
+                  value:
+                    results:
+                      - cpf: "77272722314"
+                        name: PARTNER NAME
+                        gender: M
+                        birthDate: "1984-05-21"
+                        age: 40
+                        taxIdStatus: REGULAR
+                        taxIdOrigin: RECEITA FEDERAL
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                doacoesEleitoraisPj:
+                  summary: PJ - Electoral donations
+                  value:
+                    result:
+                      cnpj: "12345678000190"
+                      electoralDonors:
+                        totalDonationsAmount: 3
+                        totalDonatedValue: 15000
+                        partiesThatReceivedDonation:
+                          - MDB
+                          - PSDB
+                        electionDonationData:
+                          - electionYear: "2022"
+                            partyName: MDB
+                            donationsAmount: "2"
+                            totalDonationValue: 10000
+                            isCrowdfunding: false
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                doacoesEleitoraisSocios:
+                  summary: PJ - Business owners' electoral donations
+                  value:
+                    result:
+                      cnpj: "12345678000190"
+                      ownersElectoralDonors:
+                        - ownerDocNumber: "123***78901"
+                          ownerName: EXAMPLE PARTNER
+                          totalDonationsAmount: 2
+                          totalDonatedValue: 5000
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                fornecedoresEleitoraisPj:
+                  summary: PJ - Electoral service providers
+                  value:
+                    result:
+                      cnpj: "12345678000190"
+                      electoralProviders:
+                        name: EXAMPLE COMPANY LTDA
+                        partiesThatReceivedProvision:
+                          - PSOL
+                        electionProvisionData:
+                          - politicianFullName: EXAMPLE CANDIDATE
+                            partyName: PSOL
+                            electionYear: 2022
+                            numberOfProvisions: 4
+                            totalProvisionValue: 2400
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                sintegra:
+                  summary: PJ - SINTEGRA
+                  value:
+                    result:
+                      cnpj: "30108283000000"
+                      status: NOT REGISTERED
+                      uf: DF
+                      cfdf: "0785286100111"
+                      origin: Sintegra
+                    status:
+                      code: 200
+                      message: Success
+                sociosPrimeiroNivel:
+                  summary: PJ - First-level partners
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      circleType: FIRST_LEVEL_OWNERS
+                      totalEntities: 2
+                      totalDistinctAddresses: 11
+                      totalDistinctPhones: 7
+                      totalDistinctEmails: 7
+                      totalEmployedEntities: 2
+                      totalCompaniesOwned: 4
+                      totalRelatedEntities: 4
+                      totalPEPs: 0
+                      totalPublicServants: 0
+                      totalClassMember: 0
+                      totalLivingPeople: 2
+                      totalDeceasedPeople: 0
+                      minAge: 28
+                      maxAge: 38
+                      avgAge: 33
+                      circleTotalIncomeRange: ACIMA DE 20 SM
+                      entitiesAvgIncomeRange: 10 A 20 SM
+                      entitiesMaxIncomeRange: 10 A 20 SM
+                      entitiesMinIncomeRange: 4 A 10 SM
+                      minEducationLevel: SEM INFORMACAO
+                      avgEducationLevel: 6 A 9 FUND
+                      maxEducationLevel: MEDIO COMPL
+                      avgGeographicDistance: 11490.88926949
+                      maxGeographicDistance: 22580.48025219
+                      minGeographicDistance: 401.29828679
+                      maxEShopperLevel: A
+                      totalEShopperLevel: A
+                      minEShopperLevel: A
+                      maxESellerLevel: D
+                      minESellerLevel: H
+                      totalESellerLevel: F
+                      totalLawSuits: 0
+                      totalLawSuitsAsDefendant: 0
+                      totalLawSuitsAsAuthor: 0
+                      totalPassages: 50
+                      totalBadPassages: 4
+                      monthAveragePassages: 50
+                      firstPassageDate: "0001-01-01T00:00:00"
+                      lastPassageDate: "0001-01-01T00:00:00"
+                      last3MonthsPassages: -3
+                      last6MonthsPassages: -3
+                      last12MonthsPassages: -3
+                      last18MonthsPassages: -3
+                      genderDistribution:
+                        U: 0
+                        F: 0
+                        M: 2
+                      ageRangeDistribution:
+                        "30-40": 1
+                        "25-30": 1
+                        "SEM INFORMACAO": 0
+                      incomeRangeDistribution:
+                        "4 A 10 SM": 1
+                        "10 A 20 SM": 1
+                        "SEM INFORMACAO": 0
+                      educationLevelDistribution:
+                        "MEDIO COMPL": 1
+                        "SEM INFORMACAO": 1
+                      stateDistribution:
+                        DF: 1
+                        SP: 0
+                        RJ: 0
+                        BA: 0
+                      eShopperDistribution:
+                        A: 2
+                        B: 0
+                        C: 0
+                      eSellerDistribution:
+                        D: 1
+                        H: 1
+                      taxIdStatusDistribution:
+                        Regular: 2
+                    status:
+                      code: 200
+                      message: Success
+                processosJuridicosSocios:
+                  summary: PJ - Business owners' legal cases
+                  value:
+                    result:
+                      totalLawsuitsOwners: 2
+                      totalLawsuitsReplaceOwners: 0
+                      totalLawsuitsAsAuthorOwners: 1
+                      totalLawsuitsAsOtherOwners: 0
+                      avgLawsuitsOwners: 0
+                      lawSuitsOwners:
+                        "00000000000":
+                          Lawsuits:
+                            - Number: ""
+                              Type: ""
+                              CourtType: L
+                              Value: 53200
+                              Parties:
+                                - Doc: cpf
+                                  IsPartyActive: true
+                                  Name: EXAMPLE NAME
+                                  Polarity: ACTIVE
+                                  Type: AUTHOR
+                          TotalLawsuits: 2
+                          TotalLawsuitsAsAuthor: 1
+                          TotalLawsuitsAsDefendant: 1
+                          TotalLawsuitsAsOther: 0
+                    status:
+                      code: 200
+                      message: Success
+                kycComplianceSocios:
+                  summary: PJ - Business owners' KYC and compliance
+                  value:
+                    result:
+                      cnpj: "12345678000190"
+                      totalCurrentPep: 1
+                      totalHistoricallyPEP: 1
+                      totalCurrentSanctioned: 1
+                      totalHistoricallySanctioned: 1
+                      averageSanctionsPerOwner: 1
+                      pepPercentage: 50.0
+                      activeOwners:
+                        - "11122233344"
+                        - "55566677788"
+                      kycOwners:
+                        - cpf: "11122233344"
+                          isPep: true
+                          isCurrentlySanctioned: true
+                          wasPreviouslySanctioned: true
+                          sanctionsHistory:
+                            - source: interpol
+                              type: RED_NOTICE
+                              matchRate: 96
+                          highConfidenceSanctionsHistory:
+                            - source: interpol
+                              type: RED_NOTICE
+                              matchRate: 96
+                        - cpf: "55566677788"
+                          isPep: false
+                          isCurrentlySanctioned: false
+                          wasPreviouslySanctioned: false
+                          sanctionsHistory: []
+                          highConfidenceSanctionsHistory: []
+                    status:
+                      code: 200
+                      message: Success
+                exposicaoPerfilMidiaPj:
+                  summary: PJ - Business owners' media exposure and profile
+                  value:
+                    results:
+                      - cpf: "12345678901"
+                        mediaExposureLevel: MEDIUM
+                        celebrityLevel: LOW
+                        unpopularityLevel: LOW
+                        fullName: EXAMPLE NAME
+                        shortName: EXAMPLE NAME
+                        fullNameUniquenessScore: 0.98
+                        shortNameUniquenessScore: 0.91
+                        newsItems:
+                          - title: Notícia de exemplo
+                            url: https://www.exemplo.com/noticia
+                            publicationDate: "2024-01-15"
+                            sentimentAnalysis: NEUTRAL
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                enderecosEstendidosEmpresa:
+                  summary: PJ - Extended addresses
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      addresses:
+                        - address: AVENIDA EXEMPLO
+                          number: "1000"
+                          neighborhood: CENTRO
+                          city: SAO PAULO
+                          state: SP
+                          country: BRASIL
+                          zipcode: "01001000"
+                          addressType: COMMERCIAL
+                          isActive: "true"
+                          isMainForEntity: "true"
+                      addressesExtendedTotal: 1
+                      addressesExtendedTotalActive: 1
+                      addressesExtendedOldestPassageDate: "2018-02-10"
+                      addressesExtendedNewestPassageDate: "2026-05-12"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                debitosAtivosPj:
+                  summary: PJ - Active debts
+                  value:
+                    result:
+                      totalDebtValue: 0
+                      totalDebtValuePerOrigin: {}
+                      totalDebts: 0
+                      totalDebtsPerOrigin: {}
+                      debts:
+                        - source: Fonte
+                          debtOrigin: Origem
+                          consolidatedValue: Valor
+                          responsibleUnity: Unidade
+                          responsibleUnityUF: UF
+                          registrationNumber: "1234"
+                          registrationSituationType: divida
+                          registrationSituation: ativo
+                    status:
+                      code: 200
+                      message: Success
+                complianceCasasApostasPj:
+                  summary: PJ - Betting compliance
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      status: ATIVA
+                      statusDate: "2024-06-08"
+                      origin: Receita Federal
+                      age: 6
+                      foundedDate: "2018-04-04T00:00:00Z"
+                      taxIdCountry: Brazil
+                      officialName: ANONYMIZED OFFICIAL NAME
+                      tradeName: ANONYMIZED TRADE NAME
+                      isHeadquarter: true
+                      isConglomerate: false
+                      taxRegime: SIMPLES
+                      taxIdStatusRegistrationDate: "2018-04-04T00:00:00Z"
+                      taxRegimes: SIMPLES
+                      activities:
+                        - IsMain: true
+                          Code: "6209100"
+                          Activity: SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO
+                        - IsMain: false
+                          Code: "6201501"
+                          Activity: DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA
+                        - IsMain: false
+                          Code: "6201502"
+                          Activity: WEB DESIGN
+                      isBet: false
+                      onlineBettingCompliance:
+                        - SportsExposure:
+                            Sports:
+                              - SportName: SO**ER
+                                Region: BRAZIL
+                                TotalRelatedEntities: 1
+                                RelatedEntities:
+                                  - DocNumber: "00000000000000"
+                                    DocType: CPF
+                                    RelationshipLevel: BUSINESS PARTNER
+                                    InstitutionName: ANONYMIZED INSTITUTION
+                                    InstitutionActivity: CLUBES SOCIAIS, ESPORTIVOS E SIMILARES
+                                    Role: MANAGER
+                                    IsActive: true
+                                    StartDate: "0001-01-01T00:00:00"
+                                    EndDate: "9999-12-31T23:59:59.9999999"
+                                    Source: FONTE ANONIMIZADA
+                          ForbiddenBet:
+                            Name: ANONYMIZED NAME
+                            Age: "30"
+                            IsFromMinisterioDaFazenda: false
+                            IsBookmakerOwner: false
+                            BookmakerOwnerMotives:
+                              - Source: SIGAP
+                                CNPJ: "00000000000000"
+                                CompanyName: ANONYMIZED COMPANY
+                                EconomicActivityCodes: 6463800;7319004;9200399
+                                AdditionalDetails:
+                                  SIGAPApplicationNumber: 000**024
+                                  SIGAPRegistrationDate: "2024-05-26 22:35:16"
+                            MinisterioDaFazendaMotives: {}
+                        - SportsExposure:
+                            Sports: []
+                          ForbiddenBet:
+                            Name: ANONYMIZED NAME
+                            Age: "40"
+                            IsFromMinisterioDaFazenda: false
+                            IsBookmakerOwner: false
+                            BookmakerOwnerMotives: []
+                            MinisterioDaFazendaMotives: {}
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                    externalId: 8e1ac243-4510-4ebf-ac7d-4b6d133dd619
+                certidaoNegativaProtesto:
+                  summary: PF - Negative protest certificate
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      protestos:
+                        - cartorio: CARTÓRIO LARANJEIRAS - 32º OFÍCIO DE NOTAS DO RIO DE JANEIRO
+                          cidade: RIO DE JANEIRO
+                          quantidadeTitulos: ""
+                          endereco: R. DAS LARANJEIRAS - LARANJEIRAS, RIO DE JANEIRO - RJ, 22221-060
+                          telefone: 19 3396-2809
+                          protestos:
+                            - cpfCnpj: "00000000000000"
+                              data: "2017-10-10"
+                              dataProtesto: "2017-10-10"
+                              dataVencimento: ""
+                              valor: 9.900,00
+                            - cpfCnpj: "00000000000000"
+                              data: "2018-01-01"
+                              dataProtesto: "2018-01-01"
+                              dataVencimento: ""
+                              valor: 16.000,00
+                    status:
+                      code: 200
+                      message: Success
+                processosJuridicosAdministrativos:
+                  summary: PF - Legal and administrative cases
+                  value:
+                    result:
+                      processes:
+                        - cpf: ""
+                          numberLegalProcess: ""
+                          trialCourt: ""
+                          processDate: ""
+                          mainSubjectProcess: ""
+                          classification: ""
+                          relatedParties: ""
+                    status:
+                      code: 200
+                      message: Success
+                servidoresPublicos:
+                  summary: PF - Public servants
+                  value:
+                    result:
+                      totalPublicPositions: 6
+                      inServiceServices: 0
+                      income: 0
+                      isCurrentlyPublicServant: false
+                      professionalHistory: []
+                    status:
+                      code: 400
+                      message: Failed to fetch information
+                consultaEnderecos:
+                  summary: PF - Addresses
+                  value:
+                    result:
+                      addresses:
+                        - zipcode: ""
+                          country: BRASIL
+                          address: ""
+                          city: SALVADOR
+                          addressType: HOME
+                          neighborhood: GRACA
+                          state: BA
+                    status:
+                      code: 200
+                      message: Success
+                historicoTelefones:
+                  summary: PF - Phone history
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      phones:
+                        - number: "(61) 98235-8585"
+                          type: Celular
+                          isRecent: "true"
+                        - number: "(61) 3234-0000"
+                          type: Fixo
+                          isRecent: "false"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                pessoasRelacionadas:
+                  summary: PF - Related people
+                  value:
+                    result:
+                      cpf: "00000000000"
+                      relatedPeople:
+                        - cpf: "123***78901"
+                          name: RELATED PERSON NAME
+                          relationship: Mae
+                        - cpf: "987***32100"
+                          name: ANOTHER RELATED PERSON
+                          relationship: Irmao
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                historicoEmails:
+                  summary: PF - Email history
+                  value:
+                    results:
+                      - emailAddress: usuario@example.com
+                        domain: example.com
+                        userName: usuario
+                        type: PERSONAL
+                        isMainForEntity: true
+                        isRecentForEntity: true
+                        validationStatus: VALID
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                relacionamentosEconomicos:
+                  summary: PF - Economic relationships
+                  value:
+                    result: {}
+                    status:
+                      code: 200
+                      message: Success
+                historicoProfissional:
+                  summary: PF - Professional history
+                  value:
+                    result:
+                      professionalHistory:
+                        - endDate: "2007-12-23"
+                          companyName: CRN CURSOS PROFISSIONALIZANTES LTDA
+                          cnpj: "00000000000000"
+                          classification: EMPLOYEE
+                          sector: PRIVATE - 8599604 - TREINAMENTO EM DESENVOLVIMENTO PROFISSIONAL E GERENCIAL
+                          startDate: "2004-02-10"
+                    status:
+                      code: 200
+                      message: Success
+                certidaoNegativaProtestoPj:
+                  summary: PJ - Negative protest certificate
+                  value:
+                    result:
+                      cnpj: "00000000000"
+                      protestos:
+                        - cartorio: CARTÓRIO LARANJEIRAS - 32º OFÍCIO DE NOTAS DO RIO DE JANEIRO
+                          cidade: RIO DE JANEIRO
+                          quantidadeTitulos: ""
+                          endereco: R. DAS LARANJEIRAS - LARANJEIRAS, RIO DE JANEIRO - RJ, 22221-060
+                          telefone: 19 3396-2809
+                          protestos:
+                            - cpfCnpj: "00000000000000"
+                              data: "2017-10-10"
+                              dataProtesto: "2017-10-10"
+                              dataVencimento: ""
+                              valor: 9.900,00
+                            - cpfCnpj: "00000000000000"
+                              data: "2018-01-01"
+                              dataProtesto: "2018-01-01"
+                              dataVencimento: ""
+                              valor: 16.000,00
+                    status:
+                      code: 200
+                      message: Success
+                scoreCreditoPj:
+                  summary: PJ - Credit score
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      score: 650
+                      riskLevel: "MEDIO"
+                      riskClassification: "B"
+                      reasonCodes:
+                        - "Tempo de mercado"
+                        - "Capital social baixo"
+                      creditBureauSummary: "Score de crédito dentro da média do setor"
+                      creditBureauDetails: {}
+                      origin: "Quod"
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                scoreCreditoMultidadosPj:
+                  summary: PJ - Multi-data credit score
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      score: 700
+                      riskLevel: "BAIXO"
+                      riskClassification: "A"
+                      reasonCodes:
+                        - "Bom histórico de pagamentos"
+                      creditBureauSummary: "Score de crédito multidados acima da média do setor"
+                      creditBureauDetails: {}
+                      origin: "Boa Vista"
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                dadosRestritivosPj:
+                  summary: PJ - Restrictive data
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      score: 720
+                      hasRestrictions: false
+                      restrictionCount: 0
+                      creditBureauSummary: "Nenhuma restrição de crédito encontrada"
+                      creditBureauDetails: {}
+                      origin: "Boa Vista"
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                flagsNegativosPj:
+                  summary: PJ - Negative flags
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      riskLevel: "BAIXO"
+                      riskClassification: "A"
+                      hasRestrictions: false
+                      negativeFlagsCount: 0
+                      creditBureauSummary: "Nenhum flag negativo encontrado"
+                      creditBureauDetails: {}
+                      origin: "Quod"
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                scoreCreditoQuantumPj:
+                  summary: PJ - Quantum credit score
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      score: 690
+                      creditBureauSummary: "Score de crédito dentro da média do setor"
+                      creditBureauDetails: {}
+                      origin: "Quantum"
+                      queryDate: "2026-08-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                beneficiariosFinais:
+                  summary: PJ - Ultimate beneficial owners
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      uboSummary: Consulta realizada
+                      uboTotalCompaniesInGroup: 3
+                      uboTotalPeopleInGroup: 5
+                      uboNumberOfOwners: 2
+                      uboBeneficialOwners:
+                        - name: BENEFICIARY NAME
+                          document: "00000000000"
+                          accumulatedPercentage: 45.5
+                      uboParticipations:
+                        - ownerDocument: "00000000000"
+                          ownerName: BENEFICIARY NAME
+                          ownedDocument: "00000000000000"
+                          percentage: 45.5
+                          level: 1
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                percentualParticipacaoSocietaria:
+                  summary: PJ - Equity stake percentage
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      numberOfOwners: 2
+                      numberOfPeopleAsOwners: 1
+                      numberOfCompaniesAsOwners: 1
+                      hasMajorityStakeHolder: true
+                      averageParticipationPercentage: 50.0
+                      maxParticipationPercentage: 70.0
+                      minParticipationPercentage: 30.0
+                      firstOwnerEntryDate: "2015-03-01"
+                      lastOwnerEntryDate: "2022-06-15"
+                      ownerParticipationSummary: Consulta realizada
+                      ownerParticipations:
+                        - ownerDocument: "00000000000"
+                          ownerName: PARTNER NAME
+                          percentage: 70.0
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                projetosPublicos:
+                  summary: PJ - Public projects
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      totalPublicProjects: 1
+                      publicProjectsSummary: Consulta realizada
+                      publicProjects:
+                        - source: BNDES
+                          modality: FINANCIAMENTO
+                          contractedValue: 500000
+                          disbursedValue: 250000
+                          contractDate: "2025-01-10"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                obrasCivis:
+                  summary: PJ - Civil construction
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      totalCivilConstructionRecords: 2
+                      totalActiveCivilConstructionRecords: 1
+                      civilConstructionSummary: Consulta realizada
+                      civilConstructionRecords:
+                        - cno: "00000000000"
+                          status: ATIVA
+                          address: RUA EXEMPLO, 100
+                          startDate: "2025-01-01"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                debitosPgfn:
+                  summary: PJ - PGFN debts
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      pgfnSummary: Consulta realizada
+                      pgfnBaseStatus: NEGATIVA
+                      pgfnClearance: Sim
+                      pgfnEmissionDate: "2026-08-01"
+                      pgfnCertificateUrl: "https://example.com/certidao-pgfn.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                cotaPcd:
+                  summary: PJ - PCD quota
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      pcdSummary: Consulta realizada
+                      pcdBaseStatus: EM CONFORMIDADE
+                      pcdExpeditionDate: "2026-08-01"
+                      pcdCertificateUrl: "https://example.com/certidao-pcd.pdf"
+                      pcdContent: Texto integral da certidão de cota de PCD
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                certidaoCgu:
+                  summary: PJ - CGU negative certificate
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      cguSummary: Consulta realizada
+                      cguBaseStatus: NEGATIVA
+                      cguClearance: Sim
+                      cguValidUntil: "2027-08-01"
+                      cguIssueDate: "2026-08-01"
+                      cguCertificateUrl: "https://example.com/certidao-cgu.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                certidaoCnj:
+                  summary: PJ - CNJ negative certificate
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      cnjSummary: Consulta realizada
+                      cnjBaseStatus: NEGATIVA
+                      cnjClearance: Sim
+                      cnjIssueDate: "2026-08-01"
+                      cnjCertificateUrl: "https://example.com/certidao-cnj.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                certidaoDebitosEstaduais:
+                  summary: PJ - State debt negative certificate
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      stateDebtSummary: Consulta realizada
+                      stateDebtBaseStatus: NEGATIVA
+                      stateDebtClearance: Sim
+                      stateDebtState: SP
+                      stateDebtRegistration: "000.000.000.000"
+                      stateDebtValidUntil: "2027-08-01"
+                      stateDebtCertificateUrl: "https://example.com/certidao-debitos-estaduais.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                optanteSimples:
+                  summary: PJ - Simples Nacional status
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      simplesSummary: Consulta realizada
+                      simplesOfficialName: COMPANY OFFICIAL NAME
+                      simplesNationalStatus: OPTANTE
+                      simplesMeiStatus: NAO OPTANTE
+                      simplesCertificateUrl: "https://example.com/comprovante-simples.pdf"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                kycGrupoEconomico:
+                  summary: PJ - Economic group KYC and compliance
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      economicGroupKycSummary: Consulta realizada
+                      economicGroupTotalCurrentPep: "0"
+                      economicGroupTotalHistoricalPep: "1"
+                      economicGroupTotalCurrentSanctioned: "0"
+                      economicGroupTotalHistoricalSanctioned: "0"
+                      economicGroupAverageSanctions: "0"
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                relacionamentosGrupoEconomico:
+                  summary: PJ - Economic group relationships
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      totalEconomicGroupRelationships: 3
+                      economicGroupRelationshipsSummary: "Empresa possui 3 relacionamentos de grupo econômico"
+                      economicGroupRelationships: []
+                      economicGroupCurrentRelationships: []
+                      economicGroupHistoricalRelationships: []
+                      economicGroupRelationshipsStats: {}
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                avaliacoesReputacao:
+                  summary: PJ - Ratings and reputation
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      totalReputationSources: 2
+                      reputationSummary: "Empresa possui avaliações em 2 plataformas"
+                      reputationAndReviews: []
+                      reputationSummaryDetails: {}
+                      reputationSummaryByDataSources: {}
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                dadosFundosInvestimento:
+                  summary: PJ - Investment fund data
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      totalMovimentations: 0
+                      investmentFundDataSummary: "Nenhuma movimentação de fundo de investimento encontrada"
+                      investmentFundData: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                influenciaQuadroSocietario:
+                  summary: PJ - Business ownership influence
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      influenceScore: 0
+                      ownersInfluenceSummary: "Baixa influência do quadro societário"
+                      ownersInfluence: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                arrecadacaoSimplesMei:
+                  summary: PJ - Simples Nacional - MEI collection
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      pgmeiStatus: "Optante"
+                      pgmeiReferenceYear: "2026"
+                      pgmeiPendingGuides: 0
+                      pgmeiSummary: "MEI optante e regular no ano de referência"
+                      pgmeiGuides: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                fgtsRegularidade:
+                  summary: PJ - FGTS
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      fgtsStatus: "REGULAR"
+                      fgtsCertificateNumber: "2026000000000000"
+                      fgtsCertificateValidity: "01/08/2026 a 29/08/2026"
+                      fgtsCertificateText: "Certificado que a empresa encontra-se em situação regular perante o FGTS"
+                      fgtsSummary: "Empresa regular perante o FGTS"
+                      fgtsDetails: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                marketplaces:
+                  summary: PJ - Marketplaces
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      totalMarketplacesUsed: 1
+                      totalStoresOperated: 1
+                      marketplaceWithMostProducts: "Mercado Livre"
+                      marketplaceWithBestRating: "Mercado Livre"
+                      totalProductsListed: 0
+                      marketplaceSummary: "Empresa presente em 1 marketplace"
+                      marketplaceDetails: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                anunciosOnline:
+                  summary: PJ - Online ads
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      onlineAdsTotalPhones: 0
+                      onlineAdsSummary: "Nenhum anúncio online encontrado"
+                      onlineAds: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                receitaFederalQsa:
+                  summary: PJ - Federal Revenue - QSA
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      qsaCompanyType: "MATRIZ"
+                      qsaCompanySize: "DEMAIS"
+                      qsaCapital: "DEZ MIL REAIS"
+                      qsaCapitalValue: "10000.00"
+                      qsaCnae: "62.09-1-00"
+                      qsaMainEconomicActivity: "SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO"
+                      qsaSecondaryActivity: "DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA"
+                      qsaLegalNatureCode: "2062"
+                      qsaLegalNature: "SOCIEDADE EMPRESARIA LIMITADA"
+                      qsaIrsStatus: "ATIVA"
+                      qsaIsActive: "true"
+                      qsaStatusDate: "2018-04-04"
+                      qsaPartnersCount: 1
+                      qsaSummary: "Empresa ativa com 1 sócio encontrado no QSA"
+                      qsaPartners: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                distribuicaoProcessosSocios:
+                  summary: PJ - Business owners' lawsuit distribution
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      companyOwnersLawsuitsTotalOwners: 2
+                      companyOwnersLawsuitsMaxPerOwner: 3
+                      companyOwnersLawsuitsAvgPerOwner: 1.5
+                      companyOwnersLawsuitsMinPerOwner: 0
+                      companyOwnersLawsuitsAsAuthor: 1
+                      companyOwnersLawsuitsAsDefendant: 2
+                      companyOwnersLawsuitsAsOther: 0
+                      companyOwnersLawsuitsTotal: 3
+                      companyOwnersLawsuitsRelatedToLawyers: false
+                      companyOwnersLawsuitsRelatedToJudges: false
+                      companyOwnersLawsuitsFirstDate: "2015-01-01"
+                      companyOwnersLawsuitsLastDate: "2026-01-01"
+                      companyOwnersLawsuitsLast30Days: 0
+                      companyOwnersLawsuitsLast90Days: 0
+                      companyOwnersLawsuitsLast180Days: 0
+                      companyOwnersLawsuitsLast365Days: 1
+                      companyOwnersLawsuitsSummary: "Sócios com 3 processos judiciais encontrados"
+                      companyOwnersLawsuitsDistribution: {}
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                distribuicaoProcessosJudiciais:
+                  summary: PJ - Legal case distribution
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      companyLawsuitsTotal: 5
+                      companyLawsuitsFirstDate: "2016-03-10"
+                      companyLawsuitsLastDate: "2026-02-20"
+                      companyLawsuitsLast30Days: 0
+                      companyLawsuitsLast90Days: 1
+                      companyLawsuitsLast180Days: 1
+                      companyLawsuitsLast365Days: 2
+                      companyLawsuitsSummary: "Empresa com 5 processos judiciais encontrados"
+                      companyLawsuitsDistribution: {}
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                acoesTrabalhistas:
+                  summary: PJ - Labor lawsuits
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      laborLawsuitsStatus: "NADA CONSTA"
+                      laborLawsuitsProtocol: "2026000000000"
+                      laborLawsuitsCertificateNumber: "00000000/2026"
+                      laborLawsuitsIssuedDate: "2026-08-01"
+                      laborLawsuitsContent: "Certifica-se que nada consta em nome da empresa quanto a ações trabalhistas"
+                      laborLawsuitsProcessesCount: 0
+                      laborLawsuitsSummary: "Nada consta de ações trabalhistas"
+                      laborLawsuitsProcesses: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                kycComplianceFuncionarios:
+                  summary: PJ - Employee KYC and compliance
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      employeesKycTotalEmployees: 5
+                      employeesKycCurrentlyPepCount: 0
+                      employeesKycCurrentlySanctionedCount: 0
+                      employeesKycPreviouslySanctionedCount: 0
+                      employeesKycFlaggedCount: 0
+                      employeesKycSummary: "Nenhum funcionário sinalizado como PEP ou sancionado"
+                      employeesKycFlagged: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                historicoDadosBasicos:
+                  summary: PJ - Basic data history
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      historyBasicDataCurrentName: "EXAMPLE COMPANY LTDA"
+                      historyBasicDataAge: 6
+                      historyBasicDataTotalChanges: 2
+                      historyBasicDataSummary: "Empresa com 2 alterações cadastrais encontradas"
+                      historyBasicDataStats: []
+                      historyBasicDataNameHistory: []
+                      historyBasicDataTaxRegimeHistory: []
+                      historyBasicDataTaxIdStatusHistory: []
+                      historyBasicDataCnaeHistory: []
+                      historyBasicDataCapitalHistory: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                categoriaComercial:
+                  summary: PJ - Merchant category
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      merchantCategoryHasDirectAssociation: "false"
+                      merchantCategoryHasMultipleCodes: "false"
+                      merchantCategorySummary: "Categoria comercial inferida pelo CNAE"
+                      merchantCategoryCategories: []
+                      merchantCategoryCnaeCategories: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                acordosSindicais:
+                  summary: PJ - Union agreements
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      syndicateAgreementsTotal: 1
+                      syndicateAgreementsTotalActive: 1
+                      syndicateAgreementsSummary: "Empresa com 1 acordo sindical ativo"
+                      syndicateAgreementsStats: []
+                      syndicateAgreements: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                telefonesEmpresa:
+                  summary: PJ - Phone numbers
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      phonesExtendedCompanyTotal: 2
+                      phonesExtendedCompanyTotalActive: 1
+                      phonesExtendedCompanySummary: "Empresa com 2 telefones encontrados, 1 ativo"
+                      phonesExtendedCompanyStats: []
+                      phonesExtendedCompany: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                evolucaoEmpresa:
+                  summary: PJ - Company evolution
+                  value:
+                    result:
+                      cnpj: "00000000000000"
+                      companyEvolutionSummary: "Empresa com tendência de crescimento estável"
+                      companyEvolutionStats: []
+                    status:
+                      code: 200
+                      message: Consulta de API Realizada com Sucesso
+                informacoesFinanceiras:
+                  summary: PF - Financial information
+                  value:
+                    status:
+                      code: 200
+                      message: Success
+                dadosPis:
+                  summary: PF - PIS data
+                  value:
+                    status:
+                      code: 200
+                      message: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/InvalidService'
+        '500':
+          $ref: '#/components/responses/ExternalSourceError'
+
+  /api/customer:
+    get:
+      tags:
+        - Customers
+      summary: Query customer
+      description: |
+        Queries registered customers by CPF or CNPJ provided in
+        `documentKey`.
+
+        Use this endpoint to check whether a customer already exists,
+        retrieve its `tokenCustomer`, and query its current activation
+        status.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: documentKey
+          in: query
+          required: true
+          description: Customer's CPF or CNPJ.
+          schema:
+            type: string
+          example: cpf or cnpj
+      responses:
+        '200':
+          description: Customer found.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+              example:
+                - tokenCustomer: 00000000-0000-0000-0000-000000000000
+                  type: PF
+                  documentKey: 00000000-0000-0000-0000-000000000000
+                  name: CUSTOMER NAME
+                  addInformation: Cliente cadastrado via integração
+                  active: false
+                  imageUrl: https://exemplo.com/imagem-cliente.jpg
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/changeStatusOfCustomer:
+    post:
+      tags:
+        - Customers
+      summary: Change customer status
+      description: |
+        Changes the active or inactive status of one or more customers.
+
+        Send a list of objects with `documentKey` and `active`. Use `active:
+        true` to activate and `active: false` to deactivate the customer.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: List of customers whose status should be changed.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ChangeCustomerStatusRequest'
+            example:
+              - documentKey: 00000000-0000-0000-0000-000000000000
+                active: false
+      responses:
+        '200':
+          description: Status changed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericStatusResponse'
+              example:
+                status:
+                  code: 200
+                  message: Success
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Invalid payload, missing parameter, or technical processing failure.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status:
+              code: 400
+              message: Failed to fetch information
+    Unauthorized:
+      description: Missing, invalid, or expired token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status:
+              code: 401
+              message: Unauthorized
+    Forbidden:
+      description: Valid credentials, but without permission to run the operation or service.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status:
+              code: 403
+              message: Forbidden
+    InvalidService:
+      description: Service doesn't exist, isn't enabled, or was sent with an incorrect name.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            serviceAusente:
+              summary: Missing service field
+              value:
+                result: {}
+                status:
+                  code: 400
+                  message: Campo service é obrigatório.
+            serviceInvalido:
+              summary: Unrecognized service
+              value:
+                result: {}
+                status:
+                  code: 400
+                  message: Serviço não disponível para este cliente.
+    ExternalSourceError:
+      description: Temporary or technical failure in the external source queried.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            result: {}
+            status:
+              code: 500
+              message: Failed to fetch information
+
+  schemas:
+    TokenRequest:
+      type: object
+      description: Application credentials used to generate a JWT token.
+      required:
+        - client
+        - secret
+      properties:
+        client:
+          type: string
+          description: Application identifier provided previously.
+        secret:
+          type: string
+          description: Application secret provided previously.
+
+    TokenResponse:
+      type: object
+      description: Token generation response.
+      properties:
+        access_token:
+          type: string
+          description: JWT token used in the `Authorization` header.
+        expires_in:
+          type: string
+          description: Token expiration time, in seconds.
+
+    TokenOnboardingRequest:
+      type: object
+      properties:
+        document:
+          type: string
+          description: CPF or CNPJ used in the onboarding.
+        cpf:
+          type: string
+        cnpj:
+          type: string
+        name:
+          type: string
+        documentFiles:
+          type: array
+          items:
+            type: object
+            properties:
+              documentFileType:
+                type: string
+                enum:
+                  - RG_FRONT
+                  - RG_BACK
+                  - CNH
+                  - SELFIE
+                  - SELFIE_3D
+                  - OAB_FRONT
+                  - OAB_BACK
+                  - OTHER
+                  - OTHER_SINGLE_FILE
+              document:
+                type: string
+                description: File in base64.
+              documentUrl:
+                type: string
+                description: File URL.
+
+    TokenOnboardingResponse:
+      type: object
+      properties:
+        tokenOnboarding:
+          type: string
+          description: Onboarding UUID.
+        dateHourProcess:
+          type: string
+          description: Date and time the TokenOnboarding was created.
+
+    OnboardingReportResponse:
+      type: object
+      properties:
+        tokenOnboarding:
+          type: string
+        createdDate:
+          type: string
+        numberSteps:
+          type: integer
+        status:
+          type: string
+          enum:
+            - APPROVED
+            - IN_PROCESS
+            - REFUSED
+        result:
+          type: string
+          enum:
+            - AUT_APPROVED
+            - IN_PROCESS
+            - REFUSED
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnboardingField'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnboardingService'
+
+    OnboardingField:
+      type: object
+      properties:
+        field:
+          type: string
+        name:
+          type: string
+        step:
+          type: string
+        value:
+          type: string
+
+    OnboardingService:
+      type: object
+      properties:
+        serviceName:
+          type: string
+        createdDate:
+          type: string
+        status:
+          type: string
+        statusMessage:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnboardingField'
+        rules:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              value:
+                type: string
+
+    ServiceApiRequest:
+      type: object
+      description: |
+        Base payload for the `/api/service-api` endpoint. The `service` field
+        defines which product will run; the other fields are dynamic and
+        depend on the service chosen.
+
+        Main families:
+
+        - PF registration and identity
+        - Documents and biometrics
+        - PF risk, validations, and compliance
+        - Political and electoral
+        - PJ registration and compliance status
+        - PJ business owners, relationships, and compliance
+      required:
+        - service
+      additionalProperties: true
+      properties:
+        service:
+          type: string
+          description: Code of the service that will run.
+          example: SERVICE_PERSON_DATA_ENRICHMENT
+        cpf:
+          type: string
+          description: CPF used in individual (PF) queries.
+          example: cpf
+        cnpj:
+          type: string
+          description: CNPJ used in business (PJ) queries.
+          example: cnpj
+        email:
+          type: string
+          description: Email used in email address validation.
+          example: email@email.com
+        phone:
+          type: string
+          description: Phone used in contact queries and validations.
+          example: "11900000000"
+        zipcode:
+          type: string
+          description: ZIP code used in address validations.
+          example: 00000-000
+        numberAddress:
+          type: string
+          description: Address number used in residence validations.
+          example: "13"
+        uf:
+          type: string
+          description: State (UF) when the service requires a state-level scope.
+          example: SP
+        image1:
+          type: string
+          description: Base64 image or main content for OCR, biometrics, and FaceMatch services.
+          example: base64
+        image2:
+          type: string
+          description: Second base64 image, when the service requires a comparison or the back of a document.
+          example: base64
+        image1Url:
+          type: string
+          description: URL of the first image, when the integration uses a hosted file.
+          example: url_image
+        image2Url:
+          type: string
+          description: URL of the second image, when the integration uses a hosted file.
+          example: urlImageMatch
+        selfie1:
+          type: string
+          description: Base64 selfie used in documentoscopy or face comparison.
+          example: base64
+        key:
+          type: string
+          description: Query key used in asynchronous services, such as digital documentoscopy.
+          example: de0cd562-5962-40bd-8f94-5a7184ecde0e
+        nit:
+          type: string
+          description: Worker identification number, when applicable.
+
+    ServiceApiResponse:
+      type: object
+      description: |
+        Standard response for external services. The `result` object changes
+        depending on the service run, and `status` reports the query's
+        technical result.
+
+        Supporting schemas for the main returns are documented in this
+        reference's components, such as `PersonDataEnrichmentResult`,
+        `RfbPfResult`, `OcrDocumentResult`, `FaceMatchResult`, `PepResult`,
+        `CorporateDataEnrichmentResult`, `RfbPjResult`, and `ActiveDebtResult`.
+      additionalProperties: true
+      properties:
+        result:
+          type: object
+          description: Business data returned by the query.
+          additionalProperties: true
+        status:
+          $ref: '#/components/schemas/StatusResponse'
+        externalId:
+          type: string
+          description: External identifier of the query, when returned.
+
+    StatusResponse:
+      type: object
+      description: Common technical status used in API responses.
+      properties:
+        code:
+          type: integer
+          description: Technical processing code.
+          example: 200
+        message:
+          type: string
+          description: Technical processing message.
+          example: Success
+
+    GenericStatusResponse:
+      type: object
+      description: Generic response with technical status.
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusResponse'
+
+    ErrorResponse:
+      type: object
+      description: Technical error or processing failure response.
+      properties:
+        result:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Partial data returned, when it exists.
+        status:
+          $ref: '#/components/schemas/StatusResponse'
+        externalId:
+          type: string
+          description: External identifier of the query, when returned.
+
+    Customer:
+      type: object
+      description: Customer registered in the idCerberus database.
+      properties:
+        tokenCustomer:
+          type: string
+          description: Customer identifier token.
+        type:
+          type: string
+          nullable: true
+          description: Customer type, when available.
+        documentKey:
+          type: string
+          description: CPF or CNPJ used as the customer key.
+        name:
+          type: string
+          nullable: true
+          description: Customer name, when available.
+        addInformation:
+          type: string
+          nullable: true
+          description: Additional information linked to the customer.
+        active:
+          type: boolean
+          description: Indicates whether the customer is active.
+        imageUrl:
+          type: string
+          nullable: true
+          description: Image URL linked to the customer, when available.
+
+    PersonDataEnrichmentResult:
+      type: object
+      description: Result of individual (PF) data enrichment.
+      properties:
+        cpf:
+          type: string
+        status:
+          type: string
+        statusDate:
+          type: string
+        name:
+          type: string
+        gender:
+          type: string
+        fatherName:
+          type: string
+        motherName:
+          type: string
+        birthdate:
+          type: string
+        birthCountry:
+          type: string
+        dead:
+          type: boolean
+        country:
+          type: string
+        fiscalRegion:
+          type: string
+        age:
+          type: integer
+
+    RfbPfResult:
+      type: object
+      description: Result of the CPF query at the Federal Revenue.
+      properties:
+        cpf:
+          type: string
+        status:
+          type: string
+        name:
+          type: string
+        birthDate:
+          type: string
+        dead:
+          type: boolean
+        origin:
+          type: string
+        age:
+          type: integer
+
+    OcrDocumentResult:
+      type: object
+      description: Document OCR result.
+      properties:
+        cpf:
+          type: string
+        name:
+          type: string
+        fatherName:
+          type: string
+        motherName:
+          type: string
+        birthdate:
+          type: string
+        cnhCategory:
+          type: string
+        cnhNumber:
+          type: string
+        expeditionDate:
+          type: string
+        rg:
+          type: string
+        rgUf:
+          type: string
+        doc:
+          type: string
+        side:
+          type: string
+        validDate:
+          type: string
+
+    FaceMatchResult:
+      type: object
+      description: Result of the facial comparison between two images.
+      properties:
+        status:
+          type: string
+        similarity:
+          type: number
+          format: float
+
+    PepResult:
+      type: object
+      description: Result of the Politically Exposed Person query.
+      properties:
+        cpf:
+          type: string
+        status:
+          type: string
+
+    CorporateDataEnrichmentResult:
+      type: object
+      description: Result of business (PJ) data enrichment.
+      properties:
+        cnpj:
+          type: string
+        status:
+          type: string
+        statusDate:
+          type: string
+        name:
+          type: string
+        country:
+          type: string
+        fantasyName:
+          type: string
+        origin:
+          type: string
+        regime:
+          type: string
+        age:
+          type: integer
+        foundedDate:
+          type: string
+        legalNatureCode:
+          type: string
+        legalNatureActivity:
+          type: string
+        capitalRS:
+          type: string
+
+    RfbPjResult:
+      type: object
+      description: Result of the CNPJ query at the Federal Revenue.
+      properties:
+        cnpj:
+          type: string
+        status:
+          type: string
+        statusDate:
+          type: string
+        origin:
+          type: string
+
+    ActiveDebtResult:
+      type: object
+      description: Result of the active debts query.
+      properties:
+        totalDebtValue:
+          type: number
+        totalDebts:
+          type: integer
+        debts:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              debtOrigin:
+                type: string
+              consolidatedValue:
+                type: string
+              responsibleUnity:
+                type: string
+              responsibleUnityUF:
+                type: string
+              registrationNumber:
+                type: string
+              registrationSituationType:
+                type: string
+              registrationSituation:
+                type: string
+
+    ChangeCustomerStatusRequest:
+      type: object
+      required:
+        - documentKey
+        - active
+      properties:
+        documentKey:
+          type: string
+          description: Customer identifier.
+        active:
+          type: boolean
+          description: Defines whether the customer should be active or inactive.
