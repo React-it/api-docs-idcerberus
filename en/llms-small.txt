@@ -1,0 +1,274 @@
+# idCerberus API Docs - operational summary for LLM
+
+Use this file when you need quick context to integrate with the idCerberus API.
+
+## Rules for AI assistants
+
+1. Use the documentation as the primary source and do not invent endpoints, parameters or services.
+2. For external queries, use `POST /api/service-api` and select the product through the `service` field.
+3. Use `Authorization: Bearer {jwt_token}` in protected calls.
+4. Use staging for tests and production only when the user explicitly asks for it.
+5. Never expose tokens, secrets, real CPFs, real CNPJs or real images in examples.
+6. For OCR, send the complete base64 in `image1`/`image2` (with or without the `data:image/...;base64,` prefix, both formats work).
+7. Do not use `fieldsOutput`, null fields or internal metadata as the public contract; use `result`.
+8. If a service does not appear in the catalog, say it needs to be confirmed before documenting or integrating it.
+
+## How to choose the right file
+
+| Need | Use |
+| --- | --- |
+| Understand the documentation structure | https://api-docs.idcerberus.com/en/llms.txt |
+| Generate an integration, curl or choose a service | https://api-docs.idcerberus.com/en/llms-small.txt |
+| Look up payloads and responses per service | https://api-docs.idcerberus.com/en/llms-api-reference.txt |
+| Search for a service in a lightweight index | https://api-docs.idcerberus.com/en/services-catalog.min.json |
+| Run structured search from automation | https://api-docs.idcerberus.com/en/services-catalog.json |
+| Configure an MCP or agent with structured resources | https://api-docs.idcerberus.com/en/mcp-manifest.json |
+| Answer with the full documentation context | https://api-docs.idcerberus.com/en/llms-full.txt |
+
+## Use as a base for MCP and agents
+
+These files can be used as context sources for a documentation MCP. The MCP should query the documentation, not execute calls against the idCerberus API.
+
+### Recommended reading order
+
+1. Read `llms.txt` as the initial manifest of the documentation.
+2. Use `services-catalog.min.json` for a quick search by service, name, category, field and tag.
+3. Use `services-catalog.json` when you need the full contract of a service.
+4. Use `mcp-manifest.json` to list resources, suggested tools, safety rules and reading order.
+5. Use `llms-api-reference.txt` for payloads, summarized responses and examples per service.
+6. Use `examples/*.curl` when the answer needs a ready-to-use curl.
+7. Use `llms-full.txt` only when the question requires the full context of the guides, API Reference and OpenAPI.
+
+### Resources an MCP can expose
+
+| Resource | Use in the MCP |
+| --- | --- |
+| https://api-docs.idcerberus.com/en/llms.txt | Manifest, rules, main URLs and shortcuts. |
+| https://api-docs.idcerberus.com/en/llms-small.txt | Short context to generate an integration, curl and explanation. |
+| https://api-docs.idcerberus.com/en/llms-api-reference.txt | Payloads, responses and examples per service. |
+| https://api-docs.idcerberus.com/en/llms-full.txt | Full context for broad questions. |
+| https://api-docs.idcerberus.com/en/services-catalog.min.json | Lightweight index for a quick search by service, category, tag and fields. |
+| https://api-docs.idcerberus.com/en/services-catalog.json | Structured search and filters by service/category/field. |
+| https://api-docs.idcerberus.com/en/mcp-manifest.json | Manifest with resources, suggested tools, rules and reading order. |
+| https://api-docs.idcerberus.com/examples/*.curl | Ready-to-use examples to copy and test. |
+
+### Rules for the MCP
+
+1. Operate as a read-only source of the documentation.
+2. Do not call staging, production, database or idCerberus endpoints.
+3. Do not request or store `client`, `secret`, a JWT, CPF, CNPJ or a real image.
+4. Use staging as the default environment when generating examples.
+5. If the service does not exist in the catalog, answer that it needs to be confirmed before integrating.
+6. Prefer `result` as the public contract; do not use `fieldsOutput` or internal metadata.
+
+## Base contract of POST /api/service-api
+
+1. Staging endpoint: `POST https://backoffice-hml.idcerberus.com/api/service-api`.
+2. Production endpoint: `POST https://backoffice.idcerberus.com/api/service-api`.
+3. Required header: `Authorization: Bearer {jwt_token}`.
+4. Recommended header: `Content-Type: application/json`.
+5. Required body field: `service`.
+6. The alias sent in `service` must be the alias configured on the client's product.
+7. Read public data in `result`; do not treat `fieldsOutput` or internal metadata as the public contract.
+8. Preserve `status`, `onboardingStatus` and `externalId` when explaining responses.
+
+## Most used service shortcuts
+
+| Case | Service | Main fields | Guide/API |
+| --- | --- | --- | --- |
+| CPF at the Federal Revenue | `SERVICE_RFB_PF` | `cpf`, `birthDate` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
+| CNPJ at the Federal Revenue | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ |
+| React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR |
+| CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
+| Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_PROOF_OF_ADDRESS |
+| Face Index | `SERVICE_FACE_INDEX` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX |
+| Business (PJ) credit risk | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY |
+| Individual (PF) credit score | `SERVICE_CREDIT_SCORE` | `cpf` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE |
+| Business (PJ) legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ |
+| Family social benefits | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FAMILY_SOCIAL_BENEFITS |
+
+## Quick notes for OCR and images
+
+1. OCR uses a document image, not a selfie.
+2. Face, FaceMatch and Face Index use a selfie/face, not a photo of an RG or CNH.
+3. `image1` takes the image's base64, with or without the `data:image/...;base64,` prefix: both formats work.
+4. RG usually needs front and back: `image1` and `image2`.
+5. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.
+6. CNPJ card uses `SERVICE_OCR_CNPJ_CARD` and `image1`.
+7. Proof of address uses `SERVICE_OCR_PROOF_OF_ADDRESS` and `image1`.
+8. Emancipation uses `SERVICE_OCR_EMANCIPATION`; the document varies and success depends on OCR finding usable text.
+9. If the image is missing, illegible or the wrong type, expect `REFUSED` with a clear message, do not invent success.
+
+## Quick error diagnosis
+
+| Symptom | Likely interpretation | Recommended action |
+| --- | --- | --- |
+| `401 Unauthorized` | Missing, expired or invalid token. | Generate a new token at `/api/token-generate`. |
+| `Don't have access to the service` | Product without an active service/enabled API, or wrong alias. | Check the product configuration and calling alias. |
+| Missing image | The payload did not send `image1`, `image2`, a URL or the expected `key`. | Check which OCR was called and rebuild the JSON. |
+| `result: {}` | The query processed, but did not return useful data. | Validate the image, data, product configuration and the service's correct type. |
+| `onboardingStatus: ERROR` | Technical failure in processing, storage or an external source. | Use `externalId`, time and environment to investigate. |
+| Expected field missing | The field may not exist in the document/database or was not extracted. | Do not invent a value; explain that the return only carries available data. |
+
+## Environments
+
+1. Staging: `https://backoffice-hml.idcerberus.com`
+2. Production: `https://backoffice.idcerberus.com`
+
+## Authentication
+
+1. Generate a token at `POST /api/token-generate` with `client` and `secret`.
+2. Send the token in protected calls with `Authorization: Bearer {jwt_token}`.
+3. When it expires, generate a new token.
+
+## Main endpoint
+
+1. Use `POST /api/service-api` for data, risk, compliance, biometrics and enrichment queries.
+2. The `service` field defines which product will run.
+3. The other fields vary depending on the service chosen.
+
+## Main flows
+
+1. [Quickstart](https://api-docs.idcerberus.com/en/guides/quickstart): Make your first call to the idCerberus API with Postman, Windows, macOS, or Linux
+2. [Authentication](https://api-docs.idcerberus.com/en/guides/autenticacao): Generate JWT tokens and authenticate protected calls to the idCerberus API
+3. [First CPF query](https://api-docs.idcerberus.com/en/guides/primeira-consulta-cpf): Run a simple individual query from start to finish
+4. [First CNPJ query](https://api-docs.idcerberus.com/en/guides/primeira-consulta-cnpj): Run a simple business query from start to finish
+5. [Onboarding via SDK](https://api-docs.idcerberus.com/en/guides/onboarding-sdk): Generate a TokenOnboarding, track registration status, and download the final report
+6. [Service matrix](https://api-docs.idcerberus.com/en/guides/matriz-de-servicos): Quick overview of the main services by document type, input, and moment of use
+
+## Services documented in the API Reference
+
+**Pessoa Física - Account holder's professional history**: `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY` | fields: cpf, birthDate | search: PF - Account holder's professional history
+**Pessoa Física - Active debt**: `SERVICE_ACTIVE_DEBT_PF` | fields: cpf | search: PF - Active debt, active debt collections delinquency
+**Pessoa Física - Activity indicators**: `SERVICE_ACTIVITIES_INDICATORS` | fields: cpf | search: PF - Activity indicators
+**Pessoa Física - Addresses**: `SERVICE_ADDRESS` | fields: cpf | search: PF - Addresses
+**Pessoa Física - AI prompt for a person**: `SERVICE_PERSON_AI_PROMPT` | fields: cpf | search: PF - AI prompt for a person
+**Pessoa Física - Arrest warrant**: `SERVICE_ARREST_WARRANT` | fields: name, motherName, fatherName, birthDate, cpf | search: PF - Arrest warrant
+**Pessoa Física - Awards and certifications**: `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF` | fields: cpf | search: CPF Federal Revenue, PF - Awards and certifications
+**Pessoa Física - Biometric score**: `SERVICE_DATAVALID_CNH` | fields: cpf, image1 | search: PF - Biometric score, score risk credit rating delinquency
+**Pessoa Física - Candidate electoral data**: `SERVICE_ELECTION_CANDIDATE_DATA_CPF` | fields: cpf | search: CPF Federal Revenue, PF - Candidate electoral data, electoral data campaign donations candidate
+**Pessoa Física - Civil criminal records**: `SERVICE_CRIMINAL_RECORD_CIVIL` | fields: cpf, rg, uf | search: PF - Civil criminal records
+**Pessoa Física - CPF at the Federal Revenue on-demand**: `SERVICE_RFB_PF_ON_DEMAND` | fields: cpf | search: CPF Federal Revenue, PF - CPF at the Federal Revenue on-demand
+**Pessoa Física - CPF status at the Federal Revenue**: `SERVICE_RFB_PF` | fields: cpf, birthDate | search: CPF Federal Revenue, PF - CPF status at the Federal Revenue
+**Pessoa Física - CPF validation with address**: `SERVICE_CPF_ADDRESS_VALIDATION` | fields: cpf, zipcode, numberAddress | search: CPF Federal Revenue, PF - CPF validation with address
+**Pessoa Física - CPF validation with phone**: `SERVICE_CPF_PHONE_VALIDATION` | fields: cpf, phone | search: CPF Federal Revenue, PF - CPF validation with phone, phone mobile validation contact
+**Pessoa Física - Credit score**: `SERVICE_QUOD_CREDIT_SCORE_PERSON` | fields: cpf | search: PF - Credit score, score risk credit rating delinquency
+**Pessoa Física - Credit score**: `SERVICE_CREDIT_SCORE` | fields: cpf | search: PF - Credit score, score risk credit rating delinquency
+**Pessoa Física - Data by phone number**: `SERVICE_CONFIRM_PHONE` | fields: phone | search: PF - Data by phone number, phone mobile validation contact
+**Pessoa Física - Data enrichment**: `SERVICE_PERSON_DATA_ENRICHMENT` | fields: cpf | search: PF - Data enrichment
+**Pessoa Física - Data modeling**: `SERVICE_PERSON_DATA_MODELING` | fields: cpf | search: PF - Data modeling
+**Pessoa Física - Default risk score**: `SERVICE_DEFAULT_RISK_SCORE` | fields: cpf | search: PF - Default risk score, score risk credit rating delinquency
+**Pessoa Física - Demographic data**: `SERVICE_DEMOGRAPHIC_DATA_CPF` | fields: cpf, birthDate | search: CPF Federal Revenue, PF - Demographic data
+**Pessoa Física - Digital document analysis**: `SERVICE_DIGITAL_DOCUMENTOSCOPY` | fields: key, image1, image2, selfie1 | search: PF - Digital document analysis
+**Pessoa Física - Digital document analysis result**: `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | fields: key | search: PF - Digital document analysis result
+**Pessoa Física - Domains**: `SERVICE_DOMAINS_CPF` | fields: cpf | search: CPF Federal Revenue, PF - Domains, domains sites digital presence
+**Pessoa Física - E-Social validation**: `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION` | fields: cpf, nit | search: PF - E-Social validation
+**Pessoa Física - Economic relationships**: `SERVICE_ECONOMIC_RELATIONSHIP` | fields: cpf | search: PF - Economic relationships
+**Pessoa Física - Electoral donations**: `SERVICE_ELECTORAL_DONORS_CPF` | fields: cpf | search: CPF Federal Revenue, PF - Electoral donations, electoral data campaign donations candidate
+**Pessoa Física - Electoral service providers**: `SERVICE_ELECTORAL_PROVIDERS_CPF` | fields: cpf | search: CPF Federal Revenue, PF - Electoral service providers, electoral data campaign donations candidate
+**Pessoa Física - Email history**: `SERVICE_EMAILS_EXTENDED` | fields: cpf, limit | search: PF - Email history, email validation contact
+**Pessoa Física - Email validation**: `SERVICE_EMAIL_VALIDATION` | fields: email | search: PF - Email validation, email validation contact
+**Pessoa Física - Emancipation OCR**: `SERVICE_OCR_EMANCIPATION` | fields: image1 | search: OCR document image base64 reading extraction, PF - Emancipation OCR, emancipation document notary certificate declaration
+**Pessoa Física - Extended social benefits**: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED` | fields: cpf | search: PF - Extended social benefits
+**Pessoa Física - Face search in the base**: `SERVICE_FACE_INDEX` | fields: image1 | search: PF - Face search in the base, face index facial search selfie CPF face database, facial comparison biometrics selfie face
+**Pessoa Física - FaceMatch**: `SERVICE_FACE_MATCH` | fields: image1, image2 | search: PF - FaceMatch, facial comparison biometrics selfie face
+**Pessoa Física - Family social benefits**: `SERVICE_FAMILY_SOCIAL_BENEFITS` | fields: cpf | search: PF - Family social benefits
+**Pessoa Física - Federal criminal records**: `SERVICE_CRIMINAL_RECORD_FEDERAL` | fields: cpf | search: PF - Federal criminal records
+**Pessoa Física - Financial data and addresses**: `SERVICE_PF_FINANCIAL_AND_ADDRESS` | fields: cpf, birthDate | search: PF - Financial data and addresses
+**Pessoa Física - Financial information**: `SERVICE_FINANCIAL_INFORMATION` | fields: cpf | search: PF - Financial information
+**Pessoa Física - Financial risk**: `SERVICE_FINANCIAL_RISK_SCORE` | fields: cpf, birthDate | search: PF - Financial risk, score risk credit rating delinquency
+**Pessoa Física - Fraud risk score**: `SERVICE_FRAUD_RISK_SCORE` | fields: cpf, factor | search: PF - Fraud risk score, score risk credit rating delinquency
+**Pessoa Física - KYC and compliance**: `SERVICE_PERSON_KYC` | fields: cpf, birthDate | search: PF - KYC and compliance, compliance KYC sanctions PEP media
+**Pessoa Física - Legal and administrative cases**: `SERVICE_JURIDICAL_PROCESSES` | fields: cpf | search: PF - Legal and administrative cases, lawsuits legal proceedings court certificate
+**Pessoa Física - Media exposure and profile**: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF` | fields: cpf | search: PF - Media exposure and profile
+**Pessoa Física - MEI query**: `SERVICE_MEI` | fields: cpf | search: PF - MEI query
+**Pessoa Física - Multi-data credit score**: `SERVICE_BOAVISTA_ONE_SCORE_PERSON` | fields: cpf | search: PF - Multi-data credit score, score risk credit rating delinquency
+**Pessoa Física - Negative flags**: `SERVICE_QUOD_CREDIT_RISK_PERSON` | fields: cpf | search: PF - Negative flags
+**Pessoa Física - Negative protest certificate**: `SERVICE_PROTEST_CLEARANCE_CERTIFICATE` | fields: cpf | search: PF - Negative protest certificate
+**Pessoa Física - Nothing on record certificate**: `SERVICE_NOTHING_RECORD_LAWSUITS` | fields: cpf, court, uf, sphere | search: PF - Nothing on record certificate, lawsuits legal proceedings court certificate
+**Pessoa Física - Phone history**: `SERVICE_PHONE_HISTORY` | fields: cpf, birthDate, limit | search: PF - Phone history, phone mobile validation contact
+**Pessoa Física - PIS data**: `SERVICE_PIS_CONSULTATION` | fields: cpf | search: PF - PIS data
+**Pessoa Física - Political family history**: `SERVICE_FAMILY_POLITICAL_HISTORY_CPF` | fields: cpf | search: CPF Federal Revenue, PF - Political family history
+**Pessoa Física - Political involvement**: `SERVICE_POLITICAL_INVOLVEMENT` | fields: cpf | search: PF - Political involvement
+**Pessoa Física - Political involvement (individual)**: `SERVICE_POLITICAL_INVOLVEMENT_CPF` | fields: cpf | search: CPF Federal Revenue, PF - Political involvement (individual)
+**Pessoa Física - Politically exposed person**: `SERVICE_PEP` | fields: cpf | search: PF - Politically exposed person
+**Pessoa Física - Professional history**: `SERVICE_PROFESSIONAL_HISTORY` | fields: cpf | search: PF - Professional history
+**Pessoa Física - Proof of address OCR**: `SERVICE_OCR_PROOF_OF_ADDRESS` | fields: image1 | search: OCR document image base64 reading extraction, PF - Proof of address OCR, proof of address utility bill address
+**Pessoa Física - Propensity for online betting**: `SEVICE_ONLINE_BETTING_PROPENSITY` | fields: cpf | search: PF - Propensity for online betting, betting bets compliance bet
+**Pessoa Física - Protest clearance certificate (individual)**: `SERVICE_PROTEST_PF` | fields: cpf | search: PF - Protest clearance certificate (individual)
+**Pessoa Física - Public servants**: `SERVICE_PUBLIC_SERVANTS` | fields: cpf | search: PF - Public servants
+**Pessoa Física - React OCR**: `SERVICE_OCR` | fields: documentType, image1, image2 | search: OCR document image base64 reading extraction, PF - React OCR
+**Pessoa Física - Related people**: `SERVICE_RELATED_PEOPLE` | fields: cpf, birthDate | search: PF - Related people
+**Pessoa Física - Related people's addresses**: `SERVICE_RELATED_PEOPLE_ADDRESSES` | fields: cnpj | search: PF - Related people's addresses
+**Pessoa Física - Related people's emails**: `SERVICE_RELATED_PEOPLE_EMAILS` | fields: cpf | search: PF - Related people's emails, email validation contact
+**Pessoa Física - Related people's phones**: `SERVICE_RELATED_PEOPLE_PHONES` | fields: cpf | search: PF - Related people's phones, phone mobile validation contact
+**Pessoa Física - Restrictive data**: `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON` | fields: cpf | search: PF - Restrictive data, score risk credit rating delinquency
+**Pessoa Física - SUS card**: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF` | fields: cpf | search: CPF Federal Revenue, PF - SUS card
+**Pessoa Física - TSE - Polling place**: `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF` | fields: cpf, birthDate, motherName | search: CPF Federal Revenue, PF - TSE - Polling place
+**Pessoa Jurídica - Active debts**: `SERVICE_ACTIVE_DEBT_PJ` | fields: cnpj | search: PJ - Active debts, active debt collections delinquency
+**Pessoa Jurídica - Basic data history**: `SERVICE_HISTORY_BASIC_DATA` | fields: cnpj | search: PJ - Basic data history
+**Pessoa Jurídica - Betting compliance**: `SERVICE_COMPLIANCE_BET_PJ` | fields: cnpj | search: PJ - Betting compliance, betting bets compliance bet
+**Pessoa Jurídica - Betting compliance (short alias)**: `SERVICE_COMPLIANCE_BET` | fields: cnpj | search: PJ - Betting compliance (short alias), betting bets compliance bet
+**Pessoa Jurídica - Business owners at the Federal Revenue**: `SERVICE_COMPANY_RFB_OWNERS` | fields: cnpj | search: CPF Federal Revenue, PJ - Business owners at the Federal Revenue
+**Pessoa Jurídica - Business owners' electoral donations**: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ` | fields: cnpj | search: CNPJ Federal Revenue, PJ - Business owners' electoral donations, electoral data campaign donations candidate
+**Pessoa Jurídica - Business owners' KYC and compliance**: `SERVICE_COMPANY_KYC_OWNERS` | fields: cnpj | search: PJ - Business owners' KYC and compliance, compliance KYC sanctions PEP sanctioned interpol ofac
+**Pessoa Jurídica - Business owners' lawsuit distribution**: `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION` | fields: cnpj | search: PJ - Business owners' lawsuit distribution, lawsuits legal proceedings court certificate
+**Pessoa Jurídica - Business owners' legal cases**: `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` | fields: cnpj | search: PJ - Business owners' legal cases, lawsuits legal proceedings court certificate
+**Pessoa Jurídica - Business owners' media exposure and profile**: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ` | fields: cnpj | search: PJ - Business owners' media exposure and profile
+**Pessoa Jurídica - Business ownership influence**: `SERVICE_OWNERS_INFLUENCE` | fields: cnpj | search: PJ - Business ownership influence
+**Pessoa Jurídica - CGU negative certificate**: `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY` | fields: cnpj | search: PJ - CGU negative certificate
+**Pessoa Jurídica - Civil construction**: `SERVICE_CIVIL_CONSTRUCTION` | fields: cnpj | search: PJ - Civil construction
+**Pessoa Jurídica - CNJ negative certificate**: `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY` | fields: cnpj | search: PJ - CNJ negative certificate
+**Pessoa Jurídica - CNPJ at the Federal Revenue on-demand**: `SERVICE_RFB_PJ_ON_DEMAND` | fields: cnpj | search: CNPJ Federal Revenue, CPF Federal Revenue, PJ - CNPJ at the Federal Revenue on-demand
+**Pessoa Jurídica - CNPJ card OCR**: `SERVICE_OCR_CNPJ_CARD` | fields: image1 | search: CNPJ Federal Revenue, OCR CNPJ card company registration proof, OCR document image base64 reading extraction, PJ - CNPJ card OCR
+**Pessoa Jurídica - CNPJ domains**: `SERVICE_DOMAINS_CNPJ` | fields: cnpj | search: CNPJ Federal Revenue, PJ - CNPJ domains, domains sites digital presence
+**Pessoa Jurídica - CNPJ registration data**: `SERVICE_REGISTRATION_DATA_CNPJ` | fields: cnpj | search: CNPJ Federal Revenue, PJ - CNPJ registration data
+**Pessoa Jurídica - CNPJ status at the Federal Revenue**: `SERVICE_RFB_PJ` | fields: cnpj | search: CNPJ Federal Revenue, CPF Federal Revenue, PJ - CNPJ status at the Federal Revenue
+**Pessoa Jurídica - Company evolution**: `SERVICE_COMPANY_EVOLUTION` | fields: cnpj | search: PJ - Company evolution
+**Pessoa Jurídica - Company relationships**: `SERVICE_COMPANY_RELATIONSHIP` | fields: cnpj | search: PJ - Company relationships
+**Pessoa Jurídica - Credit risk**: `SERVICE_CREDIT_RISK_COMPANY` | fields: cnpj | search: PJ - Credit risk
+**Pessoa Jurídica - Credit score**: `SERVICE_QUOD_CREDIT_SCORE_COMPANY` | fields: cnpj | search: PJ - Credit score, score risk credit rating delinquency
+**Pessoa Jurídica - DAS MEI at the Federal Revenue**: `SERVICE_DAS_MEI` | fields: cnpj | search: PJ - DAS MEI at the Federal Revenue
+**Pessoa Jurídica - Data enrichment**: `SERVICE_CORPORATE_DATA_ENRICHMENT` | fields: cnpj | search: CNPJ Federal Revenue, PJ - Data enrichment
+**Pessoa Jurídica - Economic group KYC and compliance**: `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` | fields: cnpj | search: PJ - Economic group KYC and compliance, compliance KYC sanctions PEP media
+**Pessoa Jurídica - Economic group relationships**: `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` | fields: cnpj | search: PJ - Economic group relationships
+**Pessoa Jurídica - Electoral donations**: `SERVICE_ELECTORAL_DONORS_CNPJ` | fields: cnpj | search: CNPJ Federal Revenue, PJ - Electoral donations, electoral data campaign donations candidate
+**Pessoa Jurídica - Electoral service providers**: `SERVICE_ELECTORAL_PROVIDERS_CNPJ` | fields: cnpj | search: CNPJ Federal Revenue, PJ - Electoral service providers, electoral data campaign donations candidate
+**Pessoa Jurídica - Employee KYC and compliance**: `SERVICE_EMPLOYEES_KYC` | fields: cnpj | search: PJ - Employee KYC and compliance, compliance KYC sanctions PEP media
+**Pessoa Jurídica - Equity stake percentage**: `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY` | fields: cnpj | search: PJ - Equity stake percentage
+**Pessoa Jurídica - Extended addresses**: `SERVICE_ADDRESSES_EXTENDED_CNPJ` | fields: cnpj | search: CNPJ Federal Revenue, PJ - Extended addresses
+**Pessoa Jurídica - Federal Revenue - QSA**: `SERVICE_RF_QSA` | fields: cnpj | search: PJ - Federal Revenue - QSA
+**Pessoa Jurídica - FGTS**: `SERVICE_FGTS` | fields: cnpj | search: PJ - FGTS
+**Pessoa Jurídica - First-level partners**: `SERVICE_FIRST_LEVEL_PARTNER` | fields: cnpj | search: PJ - First-level partners
+**Pessoa Jurídica - Investment fund data**: `SERVICE_INVESTMENT_FUND_DATA` | fields: cnpj | search: PJ - Investment fund data
+**Pessoa Jurídica - Labor lawsuits**: `SERVICE_LABOR_LAWSUITS` | fields: cnpj | search: PJ - Labor lawsuits, lawsuits legal proceedings court certificate
+**Pessoa Jurídica - Legal case distribution**: `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` | fields: cnpj | search: PJ - Legal case distribution, lawsuits legal proceedings court certificate
+**Pessoa Jurídica - Legal cases**: `SERVICE_JURIDICAL_PROCESSES_PJ` | fields: cnpj | search: PJ - Legal cases, lawsuits legal proceedings court certificate
+**Pessoa Jurídica - Marketplaces**: `SERVICE_MARKETPLACE_DATA` | fields: cnpj | search: PJ - Marketplaces
+**Pessoa Jurídica - Merchant category**: `SERVICE_MERCHANT_CATEGORY_DATA` | fields: cnpj | search: PJ - Merchant category
+**Pessoa Jurídica - Multi-data credit score**: `SERVICE_BOAVISTA_ONE_SCORE_COMPANY` | fields: cnpj | search: PJ - Multi-data credit score, score risk credit rating delinquency
+**Pessoa Jurídica - Negative flags**: `SERVICE_QUOD_CREDIT_RISK_COMPANY` | fields: cnpj | search: PJ - Negative flags
+**Pessoa Jurídica - Negative protest certificate**: `SERVICE_PROTEST_PJ` | fields: cnpj | search: PJ - Negative protest certificate
+**Pessoa Jurídica - Online ads**: `SERVICE_ONLINE_ADS` | fields: cnpj | search: PJ - Online ads
+**Pessoa Jurídica - PCD quota**: `SERVICE_PCD_COMPANY` | fields: cnpj | search: PJ - PCD quota
+**Pessoa Jurídica - PGFN debts**: `SERVICE_PGFN_COMPANY` | fields: cnpj | search: PJ - PGFN debts, active debt collections delinquency
+**Pessoa Jurídica - Phone numbers**: `SERVICE_PHONES_EXTENDED_COMPANY` | fields: cnpj | search: PJ - Phone numbers, phone mobile validation contact
+**Pessoa Jurídica - Public projects**: `SERVICE_PUBLIC_PROJECTS` | fields: cnpj | search: PJ - Public projects
+**Pessoa Jurídica - Quantum credit score**: `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY` | fields: cnpj | search: PJ - Quantum credit score, score risk credit rating delinquency
+**Pessoa Jurídica - Ratings and reputation**: `SERVICE_REPUTATIONS_AND_REVIEWS` | fields: cnpj | search: PJ - Ratings and reputation
+**Pessoa Jurídica - Restrictive data**: `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY` | fields: cnpj | search: PJ - Restrictive data, score risk credit rating delinquency
+**Pessoa Jurídica - Simples Nacional - MEI collection**: `SERVICE_PGMEI` | fields: cnpj | search: PJ - Simples Nacional - MEI collection
+**Pessoa Jurídica - Simples Nacional status**: `SERVICE_SIMPLES_COMPANY` | fields: cnpj | search: PJ - Simples Nacional status
+**Pessoa Jurídica - SINTEGRA**: `SERVICE_SINTEGRA_CONSULTATION` | fields: cnpj, uf | search: PJ - SINTEGRA
+**Pessoa Jurídica - State debt negative certificate**: `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY` | fields: cnpj | search: PJ - State debt negative certificate, active debt collections delinquency
+**Pessoa Jurídica - Ultimate beneficial owners**: `SERVICE_ULTIMATE_BENEFICIAL_OWNERS` | fields: cnpj | search: PJ - Ultimate beneficial owners
+**Pessoa Jurídica - Union agreements**: `SERVICE_SYNDICATE_AGREEMENTS` | fields: cnpj | search: PJ - Union agreements
+
+## Supporting files
+
+1. JSON catalog: https://api-docs.idcerberus.com/en/services-catalog.json
+2. Lightweight catalog: https://api-docs.idcerberus.com/en/services-catalog.min.json
+3. API Reference for LLM: https://api-docs.idcerberus.com/en/llms-api-reference.txt
+4. MCP manifest: https://api-docs.idcerberus.com/en/mcp-manifest.json
+5. Curl examples: https://api-docs.idcerberus.com/examples/auth.hml.curl
+6. List of curl examples: https://api-docs.idcerberus.com/en/llms.txt#curl-examples

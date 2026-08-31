@@ -1,0 +1,5380 @@
+# idCerberus API Reference - operational summary for LLM
+
+Use this file to generate request examples, explain API calls and choose the correct `service` without relying on the full OpenAPI.
+
+## Mandatory rules
+
+1. Do not invent endpoints, parameters or services.
+2. For external queries, use `POST /api/service-api` and select the product through the `service` field.
+3. Before answering with a payload, confirm the alias is the calling alias configured on the product.
+4. Use staging for tests: `https://backoffice-hml.idcerberus.com`.
+5. Use production only when the user explicitly asks for it: `https://backoffice.idcerberus.com`.
+6. Never expose `client`, `secret`, a real JWT, a real CPF, a real CNPJ or real images in examples.
+7. When a service is missing from the catalog, say it needs to be confirmed before documenting or integrating it.
+
+## Authentication
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+ "client": "{client}",
+ "secret": "{secret}"
+}'
+```
+
+## Pessoa Física
+
+### Account holder's professional history
+
+1. Service: `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`
+4. Search terms: PF - Account holder's professional history
+5. Main return: Returns professional history where the person appears as a holder, partner or owner, with companies, roles and tie dates.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "ownerHistory": [
+      {
+        "companyName": "Empresa Exemplo",
+        "cnpj": "cnpj",
+        "qualification": "SOCIO"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+### Active debt
+
+1. Service: `SERVICE_ACTIVE_DEBT_PF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Active debt, active debt collections delinquency
+5. Main return: Returns active debts linked to the CPF, with debt origin, amounts, status, creditor agency and query status.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalDebts": 2,
+    "totalValue": "1234.56",
+    "debts": [
+      {
+        "source": "PGFN",
+        "value": "1234.56",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ACTIVE_DEBT_PF",
+  "cpf": "cpf"
+}'
+```
+
+### Activity indicators
+
+1. Service: `SERVICE_ACTIVITIES_INDICATORS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Activity indicators
+5. Main return: Returns activity indicators linked to the CPF, such as professional signals, segments, occupations and available records.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "activityIndicators": [
+      {
+        "type": "PROFESSIONAL",
+        "description": "Indicador encontrado"
+      }
+    ],
+    "hasActivityIndicators": true
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ACTIVITIES_INDICATORS",
+  "cpf": "cpf"
+}'
+```
+
+### Addresses
+
+1. Service: `SERVICE_ADDRESS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Addresses
+5. Main return: Returns addresses associated with the CPF, including street, number, neighborhood, city, state, zip code, country, type and freshness indicators when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalAddresses": 2,
+    "addresses": [
+      {
+        "address": "Rua Exemplo",
+        "number": "100",
+        "neighborhood": "Centro",
+        "city": "Sao Paulo",
+        "state": "SP",
+        "zipcode": "01001000"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ADDRESS",
+  "cpf": "cpf"
+}'
+```
+
+### AI prompt for a person
+
+1. Service: `SERVICE_PERSON_AI_PROMPT`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - AI prompt for a person
+5. Main return: Returns an AI-consolidated text answer from the person's data, with a summary, points of attention and an operational read.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "answer": "Resumo analitico gerado pela IA",
+    "highlights": [
+      "ponto relevante"
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PERSON_AI_PROMPT",
+  "cpf": "cpf"
+}'
+```
+
+### Arrest warrant
+
+1. Service: `SERVICE_ARREST_WARRANT`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `name`, `motherName`, `fatherName`, `birthDate`, `cpf`
+4. Search terms: PF - Arrest warrant
+5. Main return: Returns arrest warrant indicators for the informed data, with status, agency, case and details found when there is an occurrence.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasArrestWarrant": false,
+    "warrants": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ARREST_WARRANT",
+  "name": "name",
+  "motherName": "mother's name",
+  "fatherName": "father's name",
+  "birthDate": "dd/MM/yyyy",
+  "cpf": "cpf"
+}'
+```
+
+### Awards and certifications
+
+1. Service: `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - Awards and certifications
+5. Main return: Returns the count and records of awards and certifications found for the CPF, when the queried database has data.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalAwards": 0,
+    "totalCertifications": 0,
+    "awards": [],
+    "certifications": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### Biometric score
+
+1. Service: `SERVICE_DATAVALID_CNH`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `image1`
+4. Search terms: PF - Biometric score, score risk credit rating delinquency
+5. Main return: Returns CNH document validation, including biometric score, facial similarity, validation status and checked fields.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": 0.98,
+    "validated": true,
+    "validationStatus": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DATAVALID_CNH",
+  "cpf": "cpf",
+  "image1": "{base64Image}"
+}'
+```
+
+### Candidate electoral data
+
+1. Service: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - Candidate electoral data, electoral data campaign donations candidate
+5. Main return: Returns the CPF's electoral candidacy history, including role, party, year, electoral unit, declared assets and status when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "candidacies": [
+      {
+        "year": 2024,
+        "role": "VEREADOR",
+        "party": "PARTIDO",
+        "status": "DEFERIDO"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### Civil criminal records
+
+1. Service: `SERVICE_CRIMINAL_RECORD_CIVIL`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `rg`, `uf`
+4. Search terms: PF - Civil criminal records
+5. Main return: Returns the civil criminal record result, with certificate status, occurrences found, state, RG and query messages.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "rg": "rg",
+    "state": "SP",
+    "hasRecords": false,
+    "records": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
+  "cpf": "cpf",
+  "rg": "rg",
+  "uf": "uf"
+}'
+```
+
+### CPF at the Federal Revenue on-demand
+
+1. Service: `SERVICE_RFB_PF_ON_DEMAND`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - CPF at the Federal Revenue on-demand
+5. Main return: Returns the CPF's updated status queried on demand at the Federal Revenue, with name, birth date, registration status and protocol.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "name": "Nome completo",
+    "birthDate": "yyyy-MM-dd",
+    "status": "REGULAR",
+    "protocol": "protocolo"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PF_ON_DEMAND",
+  "cpf": "cpf"
+}'
+```
+
+### CPF status at the Federal Revenue
+
+1. Service: `SERVICE_RFB_PF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`
+4. Search terms: CPF Federal Revenue, PF - CPF status at the Federal Revenue
+5. Main return: Returns the CPF's status at the Federal Revenue, including name, birth date, registration status, receipt/protocol and available tax data.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "name": "Nome completo",
+    "birthDate": "yyyy-MM-dd",
+    "status": "REGULAR",
+    "protocol": "protocolo"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+### CPF validation with address
+
+1. Service: `SERVICE_CPF_ADDRESS_VALIDATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `zipcode`, `numberAddress`
+4. Search terms: CPF Federal Revenue, PF - CPF validation with address
+5. Main return: Returns whether the informed address is associated with the CPF, including match level, normalized address and signals used in the validation.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "zipcode": "01001000",
+    "match": true,
+    "confidence": "HIGH",
+    "normalizedAddress": "Rua Exemplo, 100"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CPF_ADDRESS_VALIDATION",
+  "cpf": "cpf",
+  "zipcode": "00000-000",
+  "numberAddress": "13"
+}'
+```
+
+### CPF validation with phone
+
+1. Service: `SERVICE_CPF_PHONE_VALIDATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `phone`
+4. Search terms: CPF Federal Revenue, PF - CPF validation with phone, phone mobile validation contact
+5. Main return: Returns the validation of the association between CPF and phone number, with match status, query message and data returned by the query.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "phone": "11900000000",
+    "match": true,
+    "statusMessage": "Telefone associado ao documento"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CPF_PHONE_VALIDATION",
+  "cpf": "cpf",
+  "phone": "11900000000"
+}'
+```
+
+### Credit score
+
+1. Service: `SERVICE_QUOD_CREDIT_SCORE_PERSON`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Credit score, score risk credit rating delinquency
+5. Main return: Returns the individual's credit score by the informed CPF, with risk level, risk classification, score reasons and a text summary of the query.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 680,
+    "riskLevel": "MEDIO",
+    "riskClassification": "B",
+    "reasonCodes": [
+      "Tempo de relacionamento com o mercado",
+      "Renda declarada baixa"
+    ],
+    "creditBureauSummary": "Score de crédito dentro da média do perfil",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+### Credit score
+
+1. Service: `SERVICE_CREDIT_SCORE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Credit score, score risk credit rating delinquency
+5. Main return: Returns the credit score associated with the CPF, with the score, risk band and query message when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 750,
+    "riskLevel": "LOW",
+    "message": "Score calculado com sucesso"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_SCORE",
+  "cpf": "cpf"
+}'
+```
+
+### Data by phone number
+
+1. Service: `SERVICE_CONFIRM_PHONE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `phone`
+4. Search terms: PF - Data by phone number, phone mobile validation contact
+5. Main return: Returns data associated with the informed phone number, such as a possible holder, related document, confirmation status and available attributes.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "phone": "+5561123456789",
+    "matched": true,
+    "person": {
+      "name": "Nome encontrado",
+      "document": "cpf"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CONFIRM_PHONE",
+  "phone": "+5561123456789"
+}'
+```
+
+### Data enrichment
+
+1. Service: `SERVICE_PERSON_DATA_ENRICHMENT`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Data enrichment
+5. Main return: Returns the CPF's registration data, including name, birth date, registration status, parentage, death record, age, gender and available attributes.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "name": "Nome completo",
+    "birthDate": "yyyy-MM-dd",
+    "status": "REGULAR",
+    "motherName": "Nome da mãe"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}'
+```
+
+### Data modeling
+
+1. Service: `SERVICE_PERSON_DATA_MODELING`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Data modeling
+5. Main return: Returns consolidated person modeling, gathering registration data, contacts, addresses, ties, indicators and derived summaries.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "profileSummary": "Resumo consolidado",
+    "contacts": [],
+    "addresses": [],
+    "relationships": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PERSON_DATA_MODELING",
+  "cpf": "cpf"
+}'
+```
+
+### Default risk score
+
+1. Service: `SERVICE_DEFAULT_RISK_SCORE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Default risk score, score risk credit rating delinquency
+5. Main return: Returns the default risk score for the CPF, with the score, risk band and estimated probability when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 690,
+    "riskLevel": "MEDIUM",
+    "defaultProbability": "8%"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DEFAULT_RISK_SCORE",
+  "cpf": "cpf"
+}'
+```
+
+### Demographic data
+
+1. Service: `SERVICE_DEMOGRAPHIC_DATA_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`
+4. Search terms: CPF Federal Revenue, PF - Demographic data
+5. Main return: Returns demographic data associated with the CPF, with regional data, estimates and indicators returned by the queried database.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "demographicData": [
+      {
+        "indicator": "Faixa de renda",
+        "value": "Media"
+      }
+    ],
+    "totalIndicators": 1
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+### Digital document analysis
+
+1. Service: `SERVICE_DIGITAL_DOCUMENTOSCOPY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `key`, `image1`, `image2`, `selfie1`
+4. Search terms: PF - Digital document analysis
+5. Main return: Returns the documentoscopy status, query key, data extracted from the document, document/selfie validations and the approval result.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "documentData": {
+      "name": "Nome extraído",
+      "cpf": "cpf"
+    },
+    "validations": [
+      {
+        "name": "faceMatch",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}'
+```
+
+### Digital document analysis result
+
+1. Service: `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `key`
+4. Search terms: PF - Digital document analysis result
+5. Main return: Returns the already processed documentoscopy result by the informed key, with status, extracted fields, evaluated rules and evidence.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "fields": [
+      {
+        "name": "cpf",
+        "value": "cpf"
+      }
+    ],
+    "rules": [
+      {
+        "name": "document",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}'
+```
+
+### Domains
+
+1. Service: `SERVICE_DOMAINS_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - Domains, domains sites digital presence
+5. Main return: Returns domains, sites and digital signals associated with the CPF, including the count and records found when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalDomains": 1,
+    "domains": [
+      {
+        "domain": "exemplo.com.br",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### E-Social validation
+
+1. Service: `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `nit`
+4. Search terms: PF - E-Social validation
+5. Main return: Returns eSocial registration qualification, with the consistency status between CPF, NIT/PIS and informed registration data.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "nit": "nit",
+    "qualified": true,
+    "inconsistencies": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+  "cpf": "cpf",
+  "nit": "(optional)"
+}'
+```
+
+### Economic relationships
+
+1. Service: `SERVICE_ECONOMIC_RELATIONSHIP`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Economic relationships
+5. Main return: Returns economic relationships associated with the CPF, such as related companies, holdings, professional relations and relationship indicators.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "relationships": [
+      {
+        "type": "OWNER",
+        "relatedDocument": "cnpj",
+        "relatedName": "Empresa relacionada"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ECONOMIC_RELATIONSHIP",
+  "cpf": "cpf"
+}'
+```
+
+### Electoral donations
+
+1. Service: `SERVICE_ELECTORAL_DONORS_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - Electoral donations, electoral data campaign donations candidate
+5. Main return: Returns electoral donations made by the CPF, with year, candidate/party, amount, role, state and accountability details.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "donations": [
+      {
+        "year": 2024,
+        "recipient": "Candidato",
+        "amount": "500.00"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_DONORS_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### Electoral service providers
+
+1. Service: `SERVICE_ELECTORAL_PROVIDERS_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - Electoral service providers, electoral data campaign donations candidate
+5. Main return: Returns electoral service provisions linked to the CPF, with campaign, candidate/party, amount, year and service nature.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "campos": [
+      {
+        "year": 2024,
+        "campaign": "Campanha",
+        "amount": "800.00",
+        "serviceType": "Servico"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### Email history
+
+1. Service: `SERVICE_EMAILS_EXTENDED`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `limit`
+4. Search terms: PF - Email history, email validation contact
+5. Main return: Returns emails associated with the CPF, including priority, validation status, source, update date and usage signals when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "emails": [
+      {
+        "email": "email@exemplo.com",
+        "priority": 1,
+        "isValid": true,
+        "lastUpdate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_EMAILS_EXTENDED",
+  "cpf": "cpf",
+  "limit": "10"
+}'
+```
+
+### Email validation
+
+1. Service: `SERVICE_EMAIL_VALIDATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `email`
+4. Search terms: PF - Email validation, email validation contact
+5. Main return: Returns the validation of the informed email, including format, likely existence, domain, deliverability and risk indicators.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "email": "email@email.com",
+    "validFormat": true,
+    "deliverable": true,
+    "domain": "email.com",
+    "riskLevel": "LOW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_EMAIL_VALIDATION",
+  "email": "email@email.com"
+}'
+```
+
+### Emancipation OCR
+
+1. Service: `SERVICE_OCR_EMANCIPATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `image1`
+4. Search terms: OCR document image base64 reading extraction, PF - Emancipation OCR, emancipation document notary certificate declaration
+5. Main return: Returns the OCR text of the emancipation document and objective data extracted when it exists, without failing due to the absence of variable fields.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraído",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+### Extended social benefits
+
+1. Service: `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Extended social benefits
+5. Main return: Returns extended social benefits linked to the CPF, with programs, indicators, status and details found when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalBenefits": 1,
+    "benefits": [
+      {
+        "program": "Programa social",
+        "status": "ACTIVE"
+      }
+    ],
+    "indicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+  "cpf": "cpf"
+}'
+```
+
+### Face search in the base
+
+1. Service: `SERVICE_FACE_INDEX`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `image1`
+4. Search terms: PF - Face search in the base, face index facial search selfie CPF face database, facial comparison biometrics selfie face
+5. Main return: Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "faceFound": true,
+    "similarity": 98.42
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_INDEX",
+  "image1": "base64"
+}'
+```
+
+### FaceMatch
+
+1. Service: `SERVICE_FACE_MATCH`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `image1`, `image2`
+4. Search terms: PF - FaceMatch, facial comparison biometrics selfie face
+5. Main return: Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "match": true,
+    "similarity": 98.2,
+    "status": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_MATCH",
+  "image1": "base64",
+  "image2": "base64"
+}'
+```
+
+### Family social benefits
+
+1. Service: `SERVICE_FAMILY_SOCIAL_BENEFITS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Family social benefits
+5. Main return: Returns family social benefits linked to the CPF, with programs, status, count and records found when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalBenefits": 1,
+    "benefits": [
+      {
+        "program": "Programa social",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+  "cpf": "cpf"
+}'
+```
+
+### Federal criminal records
+
+1. Service: `SERVICE_CRIMINAL_RECORD_FEDERAL`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Federal criminal records
+5. Main return: Returns the federal criminal record result, with certificate status, occurrences found and query messages.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasFederalCriminalRecord": false,
+    "records": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
+  "cpf": "cpf"
+}'
+```
+
+### Financial data and addresses
+
+1. Service: `SERVICE_PF_FINANCIAL_AND_ADDRESS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`
+4. Search terms: PF - Financial data and addresses
+5. Main return: Returns financial data and addresses for the CPF in a combined query, including estimated income, financial indicators and addresses found.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "estimatedIncome": "5000-10000",
+    "addresses": [
+      {
+        "city": "Sao Paulo",
+        "state": "SP"
+      }
+    ],
+    "financialIndicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+### Financial information
+
+1. Service: `SERVICE_FINANCIAL_INFORMATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Financial information
+5. Main return: Returns estimated financial information for the CPF, such as presumed income, purchasing power, economic class and available financial indicators.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "estimatedIncome": "5000-10000",
+    "purchasingPower": "MEDIUM",
+    "financialIndicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FINANCIAL_INFORMATION",
+  "cpf": "cpf"
+}'
+```
+
+### Financial risk
+
+1. Service: `SERVICE_FINANCIAL_RISK_SCORE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`
+4. Search terms: PF - Financial risk, score risk credit rating delinquency
+5. Main return: Returns the CPF's financial risk score, risk band, a short recommendation and the factors that influence the assessment.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 681,
+    "riskLevel": "MEDIUM",
+    "recommendation": "REVIEW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FINANCIAL_RISK_SCORE",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+### Fraud risk score
+
+1. Service: `SERVICE_FRAUD_RISK_SCORE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `factor`
+4. Search terms: PF - Fraud risk score, score risk credit rating delinquency
+5. Main return: Returns the CPF's fraud risk score, the analyzed factor, risk level, numeric score and signals supporting the decision.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "factor": "minRisk",
+    "score": 720,
+    "riskLevel": "LOW",
+    "indicators": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FRAUD_RISK_SCORE",
+  "cpf": "cpf",
+  "factor": "minRisk or minattrition"
+}'
+```
+
+### KYC and compliance
+
+1. Service: `SERVICE_PERSON_KYC`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`
+4. Search terms: PF - KYC and compliance, compliance KYC sanctions PEP media
+5. Main return: Returns the person's KYC check, including PEP, sanctions, media, lawsuits, compliance alerts and risk signals.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "isPep": false,
+    "sanctions": [],
+    "mediaExposure": [],
+    "riskAlerts": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PERSON_KYC",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+### Legal and administrative cases
+
+1. Service: `SERVICE_JURIDICAL_PROCESSES`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Legal and administrative cases, lawsuits legal proceedings court certificate
+5. Main return: Returns legal and administrative proceedings linked to the CPF, with court, class, subject, parties, status and dates when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalProcesses": 1,
+    "processes": [
+      {
+        "court": "TJSP",
+        "processNumber": "0000000-00.0000.0.00.0000",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_JURIDICAL_PROCESSES",
+  "cpf": "cpf"
+}'
+```
+
+### Media exposure and profile
+
+1. Service: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Media exposure and profile
+5. Main return: Returns the person's media exposure and profile, with news, sources, categories, sentiment, relevance and alerts found.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "mediaMentions": [
+      {
+        "title": "Noticia encontrada",
+        "source": "Fonte",
+        "sentiment": "NEUTRAL"
+      }
+    ],
+    "exposureLevel": "LOW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
+  "cpf": "cpf"
+}'
+```
+
+### MEI query
+
+1. Service: `SERVICE_MEI`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - MEI query
+5. Main return: Returns MEI companies associated with the CPF, including CNPJ, legal name, status, activities, address and registration dates when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "meiCompanies": [
+      {
+        "cnpj": "cnpj",
+        "officialName": "MEI EXEMPLO",
+        "status": "ATIVA"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MEI",
+  "cpf": "cpf"
+}'
+```
+
+### Multi-data credit score
+
+1. Service: `SERVICE_BOAVISTA_ONE_SCORE_PERSON`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Multi-data credit score, score risk credit rating delinquency
+5. Main return: Returns the individual's multi-data credit score by the informed CPF, with risk level, risk classification, score reasons and a text summary of the query.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 710,
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "reasonCodes": [
+      "Bom histórico de pagamentos"
+    ],
+    "creditBureauSummary": "Score de crédito multidados acima da média do perfil",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+### Negative flags
+
+1. Service: `SERVICE_QUOD_CREDIT_RISK_PERSON`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Negative flags
+5. Main return: Returns individual negative credit flags by the informed CPF, with risk level and classification, a restrictions indicator and the count of negative flags.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "hasRestrictions": false,
+    "negativeFlagsCount": 0,
+    "creditBureauSummary": "Nenhum flag negativo encontrado",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_RISK_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+### Negative protest certificate
+
+1. Service: `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Negative protest certificate
+5. Main return: Returns a protest certificate/query for the CPF, with clean-record status or a list of protests, notary office, amount and dates.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasProtests": false,
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+  "cpf": "cpf"
+}'
+```
+
+### Nothing on record certificate
+
+1. Service: `SERVICE_NOTHING_RECORD_LAWSUITS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `court`, `uf`, `sphere`
+4. Search terms: PF - Nothing on record certificate, lawsuits legal proceedings court certificate
+5. Main return: Returns a clean-record certificate for the informed sphere/court, with status, message, occurrences and data used in the query.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "court": "TRF1",
+    "sphere": "CIVIL",
+    "nothingFound": true,
+    "records": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
+  "cpf": "cpf",
+  "court": "TRF1",
+  "uf": "uf",
+  "sphere": "CIVIL"
+}'
+```
+
+### Phone history
+
+1. Service: `SERVICE_PHONE_HISTORY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`, `limit`
+4. Search terms: PF - Phone history, phone mobile validation contact
+5. Main return: Returns the phone history associated with the CPF, including number, line type, carrier, priority, status and recency when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "phones": [
+      {
+        "phone": "11900000000",
+        "lineType": "MOBILE",
+        "priority": 1,
+        "lastUpdate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PHONE_HISTORY",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)",
+  "limit": "10"
+}'
+```
+
+### PIS data
+
+1. Service: `SERVICE_PIS_CONSULTATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - PIS data
+5. Main return: Returns PIS/NIS data associated with the CPF, including the number found, status, related registration data and query messages.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "pis": "00000000000",
+    "status": "FOUND"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PIS_CONSULTATION",
+  "cpf": "cpf"
+}'
+```
+
+### Political family history
+
+1. Service: `SERVICE_FAMILY_POLITICAL_HISTORY_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - Political family history
+5. Main return: Returns the CPF's family political history, including relatives with candidacies, donations, positions, parties and electoral ties when found.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "familyPoliticalHistory": [
+      {
+        "relativeName": "Nome relacionado",
+        "relationship": "PARENTE",
+        "role": "Candidato"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### Political involvement
+
+1. Service: `SERVICE_POLITICAL_INVOLVEMENT`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Political involvement
+5. Main return: Returns the CPF's political involvement, including candidacies, positions, donations, service provisions, parties and political ties.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "politicalInvolvement": [
+      {
+        "type": "CANDIDACY",
+        "year": 2024,
+        "details": "Candidatura encontrada"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_POLITICAL_INVOLVEMENT",
+  "cpf": "cpf"
+}'
+```
+
+### Political involvement (individual)
+
+1. Service: `SERVICE_POLITICAL_INVOLVEMENT_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - Political involvement (individual)
+5. Main return: Returns the CPF's political involvement, including candidacies, positions, donations, service provisions, parties and political ties.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "politicalInvolvement": [
+      {
+        "type": "DONATION",
+        "year": 2024,
+        "details": "Doacao encontrada"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### Politically exposed person
+
+1. Service: `SERVICE_PEP`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Politically exposed person
+5. Main return: Returns whether the CPF is a PEP or related to a PEP, with position, agency, exposure level, period and ties found when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "isPep": false,
+    "positions": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PEP",
+  "cpf": "cpf"
+}'
+```
+
+### Professional history
+
+1. Service: `SERVICE_PROFESSIONAL_HISTORY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Professional history
+5. Main return: Returns the CPF's professional history, including companies, roles, dates, employment or corporate ties and professional indicators.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "professionalHistory": [
+      {
+        "companyName": "Empresa Exemplo",
+        "role": "Analista",
+        "startDate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PROFESSIONAL_HISTORY",
+  "cpf": "cpf"
+}'
+```
+
+### Proof of address OCR
+
+1. Service: `SERVICE_OCR_PROOF_OF_ADDRESS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `image1`
+4. Search terms: OCR document image base64 reading extraction, PF - Proof of address OCR, proof of address utility bill address
+5. Main return: Returns data extracted from the proof of address by OCR, such as OCR text, name, address, document type, dates and amounts when found.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "genericOcr": "texto extraído",
+    "fullName": "Nome extraído",
+    "fullAddress": "Endereço extraído",
+    "docType": "Conta de consumo",
+    "dueDate": "yyyy-MM-dd",
+    "invoiceAmount": "R$ 100,00"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+  "image1": "base64"
+}'
+```
+
+### Propensity for online betting
+
+1. Service: `SEVICE_ONLINE_BETTING_PROPENSITY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Propensity for online betting, betting bets compliance bet
+5. Main return: Returns the CPF's propensity toward online betting, with score, propensity band, behavioral indicators and associated signals when available. Note: the alias is `SEVICE_ONLINE_BETTING_PROPENSITY` (missing the letter R in SERVICE); that is the spelling implemented in the backend, copy it exactly as shown.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "propensityScore": 78,
+    "propensityLevel": "HIGH",
+    "indicators": [
+      "sinal encontrado"
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
+  "cpf": "cpf"
+}'
+```
+
+### Protest clearance certificate (individual)
+
+1. Service: `SERVICE_PROTEST_PF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Protest clearance certificate (individual)
+5. Main return: Returns a protest certificate/query for the CPF, with status, notary offices queried, protests and messages.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "hasProtests": false,
+    "notaryOffices": [],
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PROTEST_PF",
+  "cpf": "cpf"
+}'
+```
+
+### Public servants
+
+1. Service: `SERVICE_PUBLIC_SERVANTS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Public servants
+5. Main return: Returns public-servant records associated with the CPF, including agency, role, employment tie, pay/band and period when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "publicServantRecords": [
+      {
+        "agency": "Orgao publico",
+        "role": "Cargo",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PUBLIC_SERVANTS",
+  "cpf": "cpf"
+}'
+```
+
+### React OCR
+
+1. Service: `SERVICE_OCR`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `documentType`, `image1`, `image2`
+4. Search terms: OCR document image base64 reading extraction, PF - React OCR
+5. Main return: Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraído",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "image1": "base64",
+  "image2": "base64 (optional)"
+}'
+```
+
+### Related people
+
+1. Service: `SERVICE_RELATED_PEOPLE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`
+4. Search terms: PF - Related people
+5. Main return: Returns people related to the CPF, with name, masked document, relationship type, closeness level and tie source.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "relatedPeople": [
+      {
+        "name": "Pessoa relacionada",
+        "relationshipType": "FAMILIAR",
+        "confidence": "HIGH"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)"
+}'
+```
+
+### Related people's addresses
+
+1. Service: `SERVICE_RELATED_PEOPLE_ADDRESSES`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PF - Related people's addresses
+5. Main return: Returns addresses associated with people related to the informed CNPJ, with the identified relationship and usage signals for each address.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalRelatedPeopleAddresses": 1,
+    "relatedPeopleAddressesList": "RUA EXEMPLO, 100 - NOME DA PESSOA - 00000000000 - SOCIO",
+    "relatedPeopleAddresses": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "SOCIO",
+        "type": "RESIDENCIAL",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "address": "RUA EXEMPLO",
+        "zipcode": "00000000",
+        "state": "SP",
+        "city": "SAO PAULO",
+        "neighborhood": "CENTRO",
+        "number": "100",
+        "complement": "",
+        "isRatified": true
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_ADDRESSES",
+  "cnpj": "cnpj"
+}'
+```
+
+### Related people's emails
+
+1. Service: `SERVICE_RELATED_PEOPLE_EMAILS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Related people's emails, email validation contact
+5. Main return: Returns emails associated with people related to the informed CPF, with the identified relationship and usage signals for each email.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalRelatedPeopleEmails": 2,
+    "relatedPeopleEmailsList": "nome@email.com - NOME DA PESSOA - 00000000000 - CONJUGE",
+    "relatedPeopleEmails": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "CONJUGE",
+        "type": "PESSOAL",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "email": "nome@email.com",
+        "domain": "email.com",
+        "validationStatus": "VALID"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_EMAILS",
+  "cpf": "cpf"
+}'
+```
+
+### Related people's phones
+
+1. Service: `SERVICE_RELATED_PEOPLE_PHONES`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Related people's phones, phone mobile validation contact
+5. Main return: Returns phone numbers associated with people related to the informed CPF, with the identified relationship and usage signals for each phone number.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "totalRelatedPeoplePhones": 1,
+    "relatedPeoplePhonesList": "11900000000 - NOME DA PESSOA - 00000000000 - FILHO",
+    "relatedPeoplePhones": [
+      {
+        "relatedCpf": "00000000000",
+        "relatedName": "NOME DA PESSOA",
+        "relationship": "FILHO",
+        "type": "CELULAR",
+        "isMain": true,
+        "isRecent": true,
+        "isActive": true,
+        "areaCode": "11",
+        "number": "900000000",
+        "phone": "11900000000",
+        "isInDoNotCallList": false
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RELATED_PEOPLE_PHONES",
+  "cpf": "cpf"
+}'
+```
+
+### Restrictive data
+
+1. Service: `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: PF - Restrictive data, score risk credit rating delinquency
+5. Main return: Returns individual restrictive credit data by the informed CPF, including score, indicator and count of restrictions found.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "score": 705,
+    "hasRestrictions": false,
+    "restrictionCount": 0,
+    "creditBureauSummary": "Nenhuma restrição de crédito encontrada",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+  "cpf": "cpf"
+}'
+```
+
+### SUS card
+
+1. Service: `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`
+4. Search terms: CPF Federal Revenue, PF - SUS card
+5. Main return: Returns the National Health Card (SUS Card) data located for the informed CPF, with the card number, source and capture date, birth data, an available-evidence indicator and a query summary.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "sus_card_success": "Sim",
+    "sus_card_number": "126000000000009",
+    "sus_card_source": "BA",
+    "sus_card_capture_date": "08/25/2025 20:07:36",
+    "sus_card_birth_date": "03/13/1980 00:00:00",
+    "sus_card_birth_city": "CHORROCHO",
+    "sus_card_birth_state": "BA",
+    "sus_card_has_evidence": "Não",
+    "sus_card_raw_result_file": "https://example.com/documents/sus-card.pdf",
+    "sus_card_raw_result_file_type": "pdf",
+    "sus_card_summary": "Cartão SUS localizado"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+  "cpf": "cpf"
+}'
+```
+
+### TSE - Polling place
+
+1. Service: `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `birthDate`, `motherName`
+4. Search terms: CPF Federal Revenue, PF - TSE - Polling place
+5. Main return: Returns the polling place, electoral status and current biometrics of the person at the TSE, from the informed CPF.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "status": "REGULAR",
+    "pollingPlace": "ESCOLA CLASSE 01",
+    "pollingPlaceAddress": "QUADRA 01, BRASILIA - DF",
+    "city": "BRASILIA",
+    "uf": "DF",
+    "zipcode": "70000000",
+    "electoralZone": "001",
+    "electoralSection": "0001",
+    "hasBiometrics": true,
+    "queryDate": "2026-08-01",
+    "source": "TSE-LOCALVOTACAO",
+    "onlineQuery": "Situação, local, endereço, zona e seção retornados com sucesso"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
+  "cpf": "cpf",
+  "birthDate": "yyyy-MM-dd (optional)",
+  "motherName": "mother's name (optional)"
+}'
+```
+
+## Pessoa Jurídica
+
+### Active debts
+
+1. Service: `SERVICE_ACTIVE_DEBT_PJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Active debts, active debt collections delinquency
+5. Main return: Returns active debts linked to the CNPJ, with debt origin, amounts, status, creditor agency and query status.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalDebts": 1,
+    "totalValue": "9800.00",
+    "debts": [
+      {
+        "source": "PGFN",
+        "value": "9800.00",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ACTIVE_DEBT_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Basic data history
+
+1. Service: `SERVICE_HISTORY_BASIC_DATA`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Basic data history
+5. Main return: Returns the history of basic registration changes for the CNPJ: name, tax regime, registration status, CNAE and share capital.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "historyBasicDataCurrentName": "EMPRESA EXEMPLO LTDA",
+    "historyBasicDataAge": 6,
+    "historyBasicDataTotalChanges": 2,
+    "historyBasicDataSummary": "Empresa com 2 alterações cadastrais encontradas",
+    "historyBasicDataStats": [],
+    "historyBasicDataNameHistory": [],
+    "historyBasicDataTaxRegimeHistory": [],
+    "historyBasicDataTaxIdStatusHistory": [],
+    "historyBasicDataCnaeHistory": [],
+    "historyBasicDataCapitalHistory": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_HISTORY_BASIC_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
+### Betting compliance
+
+1. Service: `SERVICE_COMPLIANCE_BET_PJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Betting compliance, betting bets compliance bet
+5. Main return: Returns indicators of the company's exposure to betting and regulatory compliance, including signals of operation, domain, activity and alerts.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Betting compliance (short alias)
+
+1. Service: `SERVICE_COMPLIANCE_BET`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Betting compliance (short alias), betting bets compliance bet
+5. Main return: Returns indicators of the company's exposure to betting and regulatory compliance, including signals of operation, domain, activity and alerts.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasBettingExposure": true,
+    "indicators": [
+      "atividade relacionada"
+    ],
+    "riskLevel": "MEDIUM"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPLIANCE_BET",
+  "cnpj": "cnpj"
+}'
+```
+
+### Business owners at the Federal Revenue
+
+1. Service: `SERVICE_COMPANY_RFB_OWNERS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CPF Federal Revenue, PJ - Business owners at the Federal Revenue
+5. Main return: Returns the corporate structure at the Federal Revenue, with partner names, masked documents, qualification, share and entry date when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "owners": [
+      {
+        "name": "Nome do sócio",
+        "qualification": "SOCIO-ADMINISTRADOR",
+        "entryDate": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPANY_RFB_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Business owners' electoral donations
+
+1. Service: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, PJ - Business owners' electoral donations, electoral data campaign donations candidate
+5. Main return: Returns electoral donations made by the company's partners, with the related partner, year, candidate/party, amount and electoral details.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "ownersDonations": [
+      {
+        "ownerName": "Nome do sócio",
+        "year": 2024,
+        "recipient": "Candidato",
+        "amount": "300.00"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Business owners' KYC and compliance
+
+1. Service: `SERVICE_COMPANY_KYC_OWNERS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Business owners' KYC and compliance, compliance KYC sanctions PEP sanctioned interpol ofac
+5. Main return: Returns an aggregated KYC/compliance summary for the company (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) and the individual breakdown for each partner in result.kycOwners/companyOwners/peopleOwners, including sanctionsHistory (full history), highConfidenceSanctionsHistory (only sanctions with matchRate above 90) and pepHistories.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalCurrentPep": 1,
+    "totalHistoricallyPEP": 1,
+    "totalCurrentSanctioned": 1,
+    "totalHistoricallySanctioned": 1,
+    "averageSanctionsPerOwner": 1,
+    "averageSanctionsPerOwnerExact": 0.5,
+    "pepPercentage": 50,
+    "ownerMaxSanctions": 1,
+    "ownerMinSanctions": 0,
+    "activeOwners": [
+      "11122233344",
+      "55566677788"
+    ],
+    "inactiveOwners": [],
+    "kycOwners": [
+      {
+        "cpf": "11122233344",
+        "isPep": true,
+        "isCurrentlySanctioned": true,
+        "wasPreviouslySanctioned": true,
+        "firstSanctionDate": "2021-03-15",
+        "lastSanctionDate": "2024-08-02",
+        "firstPepOccurrenceDate": "2019-01-10",
+        "lastPepOccurrenceDate": "2024-08-02",
+        "sanctionsHistory": [
+          {
+            "source": "interpol",
+            "type": "RED_NOTICE",
+            "standardizedSanctionType": "INTERNATIONAL_ALERT",
+            "matchRate": 96,
+            "details": {
+              "Charge": "Fraud",
+              "IssuingCountry": "Brazil"
+            },
+            "normalizedDetails": {
+              "acusacao": "Fraude",
+              "paisEmissor": "Brasil"
+            },
+            "startDate": "2021-03-15",
+            "endDate": null,
+            "isCurrentlyPresentOnSource": true
+          }
+        ],
+        "highConfidenceSanctionsHistory": [
+          {
+            "source": "interpol",
+            "type": "RED_NOTICE",
+            "standardizedSanctionType": "INTERNATIONAL_ALERT",
+            "matchRate": 96,
+            "details": {
+              "Charge": "Fraud",
+              "IssuingCountry": "Brazil"
+            },
+            "normalizedDetails": {
+              "acusacao": "Fraude",
+              "paisEmissor": "Brasil"
+            },
+            "startDate": "2021-03-15",
+            "endDate": null,
+            "isCurrentlyPresentOnSource": true
+          }
+        ],
+        "pepHistories": [
+          {
+            "level": "FEDERAL",
+            "jobTitle": "Secretario",
+            "department": "Ministerio Exemplo",
+            "startDate": "2019-01-10",
+            "endDate": null
+          }
+        ],
+        "isCurrentlyElectoralDonor": false,
+        "isHistoricalElectoralDonor": true,
+        "totalElectoralDonations": 2,
+        "totalElectoralDonationAmount": 15000
+      },
+      {
+        "cpf": "55566677788",
+        "isPep": false,
+        "isCurrentlySanctioned": false,
+        "wasPreviouslySanctioned": false,
+        "sanctionsHistory": [],
+        "highConfidenceSanctionsHistory": [],
+        "pepHistories": []
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPANY_KYC_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Business owners' lawsuit distribution
+
+1. Service: `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Business owners' lawsuit distribution, lawsuits legal proceedings court certificate
+5. Main return: Returns aggregated data on the distribution of lawsuits in which the queried company's partners are involved, with statistics by period and role in the case.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "companyOwnersLawsuitsTotalOwners": 2,
+    "companyOwnersLawsuitsMaxPerOwner": 3,
+    "companyOwnersLawsuitsAvgPerOwner": 1.5,
+    "companyOwnersLawsuitsMinPerOwner": 0,
+    "companyOwnersLawsuitsAsAuthor": 1,
+    "companyOwnersLawsuitsAsDefendant": 2,
+    "companyOwnersLawsuitsAsOther": 0,
+    "companyOwnersLawsuitsTotal": 3,
+    "companyOwnersLawsuitsRelatedToLawyers": false,
+    "companyOwnersLawsuitsRelatedToJudges": false,
+    "companyOwnersLawsuitsFirstDate": "2015-01-01",
+    "companyOwnersLawsuitsLastDate": "2026-01-01",
+    "companyOwnersLawsuitsLast30Days": 0,
+    "companyOwnersLawsuitsLast90Days": 0,
+    "companyOwnersLawsuitsLast180Days": 0,
+    "companyOwnersLawsuitsLast365Days": 1,
+    "companyOwnersLawsuitsSummary": "Sócios com 3 processos judiciais encontrados",
+    "companyOwnersLawsuitsDistribution": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+  "cnpj": "cnpj"
+}'
+```
+
+### Business owners' legal cases
+
+1. Service: `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Business owners' legal cases, lawsuits legal proceedings court certificate
+5. Main return: Returns legal proceedings associated with the company's partners, with the related partner, court, class, subject, status and dates.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "ownersProcesses": [
+      {
+        "ownerName": "Nome do sócio",
+        "totalProcesses": 1,
+        "processes": []
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Business owners' media exposure and profile
+
+1. Service: `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Business owners' media exposure and profile
+5. Main return: Returns the media exposure and profile of the company and its partners, with news, sources, categories, sentiment, relevance and alerts found.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "mediaMentions": [
+      {
+        "title": "Noticia encontrada",
+        "source": "Fonte",
+        "sentiment": "NEUTRAL"
+      }
+    ],
+    "exposureLevel": "LOW"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Business ownership influence
+
+1. Service: `SERVICE_OWNERS_INFLUENCE`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Business ownership influence
+5. Main return: Returns the inferred influence level of the company's corporate structure, considering media exposure, political involvement and lawsuit history of the partners.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "influenceScore": 0,
+    "ownersInfluenceSummary": "Baixa influência do quadro societário",
+    "ownersInfluence": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OWNERS_INFLUENCE",
+  "cnpj": "cnpj"
+}'
+```
+
+### CGU negative certificate
+
+1. Service: `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - CGU negative certificate
+5. Main return: Returns the CGU's negative disciplinary certificate by the informed CNPJ, covering active penalties in CEIS, CNEP and CEPIM.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "cguSummary": "Consulta realizada",
+    "cguBaseStatus": "NEGATIVA",
+    "cguClearance": "Sim",
+    "cguValidUntil": "2027-08-01",
+    "cguIssueDate": "2026-08-01",
+    "cguCertificateUrl": "https://example.com/certidão-cgu.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Civil construction
+
+1. Service: `SERVICE_CIVIL_CONSTRUCTION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Civil construction
+5. Main return: Returns civil construction works linked to the informed CNPJ, per the National Works Registry (CNO).
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalCivilConstructionRecords": 2,
+    "totalActiveCivilConstructionRecords": 1,
+    "civilConstructionSummary": "Consulta realizada",
+    "civilConstructionRecords": [
+      {
+        "cno": "00000000000",
+        "status": "ATIVA",
+        "address": "RUA EXEMPLO, 100",
+        "startDate": "2025-01-01"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CIVIL_CONSTRUCTION",
+  "cnpj": "cnpj"
+}'
+```
+
+### CNJ negative certificate
+
+1. Service: `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - CNJ negative certificate
+5. Main return: Returns the CNJ's negative certificate by the informed CNPJ, covering civil convictions for administrative misconduct and ineligibility.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "cnjSummary": "Consulta realizada",
+    "cnjBaseStatus": "NEGATIVA",
+    "cnjClearance": "Sim",
+    "cnjIssueDate": "2026-08-01",
+    "cnjCertificateUrl": "https://example.com/certidão-cnj.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### CNPJ at the Federal Revenue on-demand
+
+1. Service: `SERVICE_RFB_PJ_ON_DEMAND`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, CPF Federal Revenue, PJ - CNPJ at the Federal Revenue on-demand
+5. Main return: Returns the CNPJ's updated status queried on demand at the Federal Revenue, with legal name, registration status, CNAE codes and address.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "status": "ATIVA",
+    "openingDate": "yyyy-MM-dd",
+    "mainActivity": "CNAE principal"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PJ_ON_DEMAND",
+  "cnpj": "cnpj"
+}'
+```
+
+### CNPJ card OCR
+
+1. Service: `SERVICE_OCR_CNPJ_CARD`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `image1`
+4. Search terms: CNPJ Federal Revenue, OCR CNPJ card company registration proof, OCR document image base64 reading extraction, PJ - CNPJ card OCR
+5. Main return: Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraído do cartão CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+### CNPJ domains
+
+1. Service: `SERVICE_DOMAINS_CNPJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, PJ - CNPJ domains, domains sites digital presence
+5. Main return: Returns domains, sites and digital signals associated with the CNPJ, including the count and records found when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalDomains": 1,
+    "domains": [
+      {
+        "domain": "empresa.com.br",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DOMAINS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### CNPJ registration data
+
+1. Service: `SERVICE_REGISTRATION_DATA_CNPJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, PJ - CNPJ registration data
+5. Main return: Returns the CNPJ's registration data, including legal name, trade name, status, opening date, CNAE codes, legal nature and address when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "tradeName": "EMPRESA EXEMPLO",
+    "status": "ATIVA",
+    "openingDate": "yyyy-MM-dd"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### CNPJ status at the Federal Revenue
+
+1. Service: `SERVICE_RFB_PJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, CPF Federal Revenue, PJ - CNPJ status at the Federal Revenue
+5. Main return: Returns the CNPJ's status at the Federal Revenue, including legal name, trade name, registration status, opening date, CNAE codes and address.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "status": "ATIVA",
+    "openingDate": "yyyy-MM-dd",
+    "mainActivity": "CNAE principal"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Company evolution
+
+1. Service: `SERVICE_COMPANY_EVOLUTION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Company evolution
+5. Main return: Returns the time evolution of the company's capital, headcount, branches and partners, with growth trend.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "companyEvolutionSummary": "Empresa com tendência de crescimento estável",
+    "companyEvolutionStats": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPANY_EVOLUTION",
+  "cnpj": "cnpj"
+}'
+```
+
+### Company relationships
+
+1. Service: `SERVICE_COMPANY_RELATIONSHIP`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Company relationships
+5. Main return: Returns company relationships, such as partners, owners, related companies, holdings and identified corporate ties.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "owners": [
+      {
+        "name": "Nome do sócio",
+        "document": "cpf",
+        "share": "50%"
+      }
+    ],
+    "relatedCompanies": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_COMPANY_RELATIONSHIP",
+  "cnpj": "cnpj"
+}'
+```
+
+### Credit risk
+
+1. Service: `SERVICE_CREDIT_RISK_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Credit risk
+5. Main return: Returns business (PJ) credit risk data, with score, rating, expected risk and legal signals when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "creditRisk": {
+      "status": "APPROVED",
+      "score": "720",
+      "rating": "B",
+      "expectedDefault": "MEDIUM",
+      "legalProcess": false
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Credit score
+
+1. Service: `SERVICE_QUOD_CREDIT_SCORE_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Credit score, score risk credit rating delinquency
+5. Main return: Returns the business (PJ) credit score by the informed CNPJ, with risk level, risk classification, score reasons and a text summary of the query.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 650,
+    "riskLevel": "MEDIO",
+    "riskClassification": "B",
+    "reasonCodes": [
+      "Tempo de mercado",
+      "Capital social baixo"
+    ],
+    "creditBureauSummary": "Score de crédito dentro da média do setor",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### DAS MEI at the Federal Revenue
+
+1. Service: `SERVICE_DAS_MEI`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - DAS MEI at the Federal Revenue
+5. Main return: Returns MEI DAS information and related tax status linked to the CNPJ, including periods, payments, pending items and status when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "meiStatus": "ACTIVE",
+    "periods": [
+      {
+        "period": "2026-01",
+        "paid": true
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DAS_MEI",
+  "cnpj": "cnpj"
+}'
+```
+
+### Data enrichment
+
+1. Service: `SERVICE_CORPORATE_DATA_ENRICHMENT`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, PJ - Data enrichment
+5. Main return: Returns the complete company registration, including legal name, trade name, registration status, CNAE codes, legal nature, size, capital and address.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "officialName": "EMPRESA EXEMPLO LTDA",
+    "tradeName": "EMPRESA EXEMPLO",
+    "status": "ATIVA",
+    "mainActivity": "CNAE principal"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+  "cnpj": "cnpj"
+}'
+```
+
+### Economic group KYC and compliance
+
+1. Service: `SERVICE_ECONOMIC_GROUP_KYC_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Economic group KYC and compliance, compliance KYC sanctions PEP media
+5. Main return: Returns aggregated KYC and regulatory compliance indicators for the full economic group of the informed CNPJ, including political exposure (PEP) and sanctions.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "economicGroupKycSummary": "Consulta realizada",
+    "economicGroupTotalCurrentPep": "0",
+    "economicGroupTotalHistoricalPep": "1",
+    "economicGroupTotalCurrentSanctioned": "0",
+    "economicGroupTotalHistoricalSanctioned": "0",
+    "economicGroupAverageSanctions": "0"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Economic group relationships
+
+1. Service: `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Economic group relationships
+5. Main return: Returns the entities (people and companies) that are part of the same economic group as the queried CNPJ, with current, historical relationships and aggregated statistics.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalEconomicGroupRelationships": 3,
+    "economicGroupRelationshipsSummary": "Empresa possui 3 relacionamentos de grupo econômico",
+    "economicGroupRelationships": [],
+    "economicGroupCurrentRelationships": [],
+    "economicGroupHistoricalRelationships": [],
+    "economicGroupRelationshipsStats": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Electoral donations
+
+1. Service: `SERVICE_ELECTORAL_DONORS_CNPJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, PJ - Electoral donations, electoral data campaign donations candidate
+5. Main return: Returns electoral donations made by the company, with year, candidate/party, amount, role, state and accountability details.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "donations": [
+      {
+        "year": 2024,
+        "recipient": "Candidato",
+        "amount": "1000.00"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Electoral service providers
+
+1. Service: `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, PJ - Electoral service providers, electoral data campaign donations candidate
+5. Main return: Returns electoral service provisions linked to the CNPJ, with campaign, candidate/party, amount, year and service nature.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "campos": [
+      {
+        "year": 2024,
+        "campaign": "Campanha",
+        "amount": "2500.00",
+        "serviceType": "Servico"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Employee KYC and compliance
+
+1. Service: `SERVICE_EMPLOYEES_KYC`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Employee KYC and compliance, compliance KYC sanctions PEP media
+5. Main return: Returns KYC and regulatory compliance indicators for the employees linked to the company, including PEP classifications and national and international sanctions.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "employeesKycTotalEmployees": 5,
+    "employeesKycCurrentlyPepCount": 0,
+    "employeesKycCurrentlySanctionedCount": 0,
+    "employeesKycPreviouslySanctionedCount": 0,
+    "employeesKycFlaggedCount": 0,
+    "employeesKycSummary": "Nenhum funcionário sinalizado como PEP ou sancionado",
+    "employeesKycFlagged": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_EMPLOYEES_KYC",
+  "cnpj": "cnpj"
+}'
+```
+
+### Equity stake percentage
+
+1. Service: `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Equity stake percentage
+5. Main return: Returns the ownership share percentage of each of the company's partners by the informed CNPJ.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "numberOfOwners": 2,
+    "numberOfPeopleAsOwners": 1,
+    "numberOfCompaniesAsOwners": 1,
+    "hasMajorityStakeHolder": true,
+    "averageParticipationPercentage": 50,
+    "maxParticipationPercentage": 70,
+    "minParticipationPercentage": 30,
+    "firstOwnerEntryDate": "2015-03-01",
+    "lastOwnerEntryDate": "2022-06-15",
+    "ownerParticipationSummary": "Consulta realizada",
+    "ownerParticipations": [
+      {
+        "ownerDocument": "00000000000",
+        "ownerName": "NOME DO SOCIO",
+        "percentage": 70
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Extended addresses
+
+1. Service: `SERVICE_ADDRESSES_EXTENDED_CNPJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: CNPJ Federal Revenue, PJ - Extended addresses
+5. Main return: Returns the full list of CNPJ addresses in result.addresses (street, number, complement, neighborhood, city, state, country, zip code, type, whether it is active and whether it is the primary one), plus an aggregated summary in result.addressesExtendedTotal* with totals and dates of the first/last confirmed passage.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "addresses": [
+      {
+        "address": "Av Exemplo",
+        "number": "1000",
+        "complement": "Sala 10",
+        "neighborhood": "Centro",
+        "city": "Sao Paulo",
+        "state": "SP",
+        "country": "Brasil",
+        "zipcode": "01001000",
+        "addressType": "COMMERCIAL",
+        "isActive": "true",
+        "isMainForEntity": "true",
+        "priority": "1",
+        "lastValidationDate": "2026-05-12"
+      }
+    ],
+    "addressesExtendedTotal": 1,
+    "addressesExtendedTotalActive": 1,
+    "addressesExtendedTotalWork": 1,
+    "addressesExtendedTotalPersonal": 0,
+    "addressesExtendedTotalUnique": 1,
+    "addressesExtendedTotalPassages": 7,
+    "addressesExtendedTotalBadPassages": 0,
+    "addressesExtendedOldestPassageDate": "2018-02-10",
+    "addressesExtendedNewestPassageDate": "2026-05-12"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Federal Revenue - QSA
+
+1. Service: `SERVICE_RF_QSA`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Federal Revenue - QSA
+5. Main return: Returns the corporate/administrative structure (QSA) of the informed CNPJ, with registration data of the headquarters (size, capital, CNAE, legal nature, registration status) and the list of partners and officers.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "qsaCompanyType": "MATRIZ",
+    "qsaCompanySize": "DEMAIS",
+    "qsaCapital": "DEZ MIL REAIS",
+    "qsaCapitalValue": "10000.00",
+    "qsaCnae": "62.09-1-00",
+    "qsaMainEconomicActivity": "SUPORTE TECNICO, MANUTENCAO E OUTROS SERVICOS EM TECNOLOGIA DA INFORMACAO",
+    "qsaSecondaryActivity": "DESENVOLVIMENTO DE PROGRAMAS DE COMPUTADOR SOB ENCOMENDA",
+    "qsaLegalNatureCode": "2062",
+    "qsaLegalNature": "SOCIEDADE EMPRESARIA LIMITADA",
+    "qsaIrsStatus": "ATIVA",
+    "qsaIsActive": "true",
+    "qsaStatusDate": "2018-04-04",
+    "qsaPartnersCount": 1,
+    "qsaSummary": "Empresa ativa com 1 sócio encontrado no QSA",
+    "qsaPartners": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RF_QSA",
+  "cnpj": "cnpj"
+}'
+```
+
+### FGTS
+
+1. Service: `SERVICE_FGTS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - FGTS
+5. Main return: Returns the employer's FGTS compliance certificate, with status, certificate number and validity, and the issued text content.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "fgtsStatus": "REGULAR",
+    "fgtsCertificateNumber": "2026000000000000",
+    "fgtsCertificateValidity": "01/08/2026 a 29/08/2026",
+    "fgtsCertificateText": "Certificado que a empresa encontra-se em situação regular perante o FGTS",
+    "fgtsSummary": "Empresa regular perante o FGTS",
+    "fgtsDetails": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FGTS",
+  "cnpj": "cnpj"
+}'
+```
+
+### First-level partners
+
+1. Service: `SERVICE_FIRST_LEVEL_PARTNER`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - First-level partners
+5. Main return: Returns the company's first-level partners, with name, document, share, qualification and direct ties to the CNPJ.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "partners": [
+      {
+        "name": "Nome do sócio",
+        "document": "cpf",
+        "level": 1,
+        "qualification": "SOCIO"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FIRST_LEVEL_PARTNER",
+  "cnpj": "cnpj"
+}'
+```
+
+### Investment fund data
+
+1. Service: `SERVICE_INVESTMENT_FUND_DATA`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Investment fund data
+5. Main return: Returns registration and operational information for investment funds associated with the CNPJ, per CVM records.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalMovimentations": 0,
+    "investmentFundDataSummary": "Nenhuma movimentação de fundo de investimento encontrada",
+    "investmentFundData": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_INVESTMENT_FUND_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
+### Labor lawsuits
+
+1. Service: `SERVICE_LABOR_LAWSUITS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Labor lawsuits, lawsuits legal proceedings court certificate
+5. Main return: Returns an on-demand certificate stating whether there are pending labor lawsuits related to the queried company, physical or electronic.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "laborLawsuitsStatus": "NADA CONSTA",
+    "laborLawsuitsProtocol": "2026000000000",
+    "laborLawsuitsCertificateNumber": "00000000/2026",
+    "laborLawsuitsIssuedDate": "2026-08-01",
+    "laborLawsuitsContent": "Certifica-se que nada consta em nome da empresa quanto a ações trabalhistas",
+    "laborLawsuitsProcessesCount": 0,
+    "laborLawsuitsSummary": "Nada consta de ações trabalhistas",
+    "laborLawsuitsProcesses": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_LABOR_LAWSUITS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Legal case distribution
+
+1. Service: `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Legal case distribution, lawsuits legal proceedings court certificate
+5. Main return: Returns aggregated data on the distribution of lawsuits in which the queried company is involved, with statistics by period.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "companyLawsuitsTotal": 5,
+    "companyLawsuitsFirstDate": "2016-03-10",
+    "companyLawsuitsLastDate": "2026-02-20",
+    "companyLawsuitsLast30Days": 0,
+    "companyLawsuitsLast90Days": 1,
+    "companyLawsuitsLast180Days": 1,
+    "companyLawsuitsLast365Days": 2,
+    "companyLawsuitsSummary": "Empresa com 5 processos judiciais encontrados",
+    "companyLawsuitsDistribution": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Legal cases
+
+1. Service: `SERVICE_JURIDICAL_PROCESSES_PJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Legal cases, lawsuits legal proceedings court certificate
+5. Main return: Returns legal proceedings linked to the CNPJ, with court, class, subject, parties, status, case number and dates when available.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalProcesses": 1,
+    "processes": [
+      {
+        "court": "TJSP",
+        "processNumber": "0000000-00.0000.0.00.0000",
+        "status": "ACTIVE"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Marketplaces
+
+1. Service: `SERVICE_MARKETPLACE_DATA`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Marketplaces
+5. Main return: Returns the company's presence in marketplaces, including operated stores, listed products, the marketplace with the most products and the best rating.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalMarketplacesUsed": 1,
+    "totalStoresOperated": 1,
+    "marketplaceWithMostProducts": "Mercado Livre",
+    "marketplaceWithBestRating": "Mercado Livre",
+    "totalProductsListed": 0,
+    "marketplaceSummary": "Empresa presente em 1 marketplace",
+    "marketplaceDetails": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MARKETPLACE_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
+### Merchant category
+
+1. Service: `SERVICE_MERCHANT_CATEGORY_DATA`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Merchant category
+5. Main return: Returns the company's categorization according to the MCC (Merchant Category Code), by direct association with Abecs or inferred from the CNAE.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "merchantCategoryHasDirectAssociation": "false",
+    "merchantCategoryHasMultipleCodes": "false",
+    "merchantCategorySummary": "Categoria comercial inferida pelo CNAE",
+    "merchantCategoryCategories": [],
+    "merchantCategoryCnaeCategories": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_MERCHANT_CATEGORY_DATA",
+  "cnpj": "cnpj"
+}'
+```
+
+### Multi-data credit score
+
+1. Service: `SERVICE_BOAVISTA_ONE_SCORE_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Multi-data credit score, score risk credit rating delinquency
+5. Main return: Returns the business (PJ) multi-data credit score by the informed CNPJ, with risk level, risk classification, score reasons and a text summary of the query.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 700,
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "reasonCodes": [
+      "Bom histórico de pagamentos"
+    ],
+    "creditBureauSummary": "Score de crédito multidados acima da média do setor",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Negative flags
+
+1. Service: `SERVICE_QUOD_CREDIT_RISK_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Negative flags
+5. Main return: Returns business (PJ) negative credit flags by the informed CNPJ, with risk level and classification, a restrictions indicator and the count of negative flags.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "riskLevel": "BAIXO",
+    "riskClassification": "A",
+    "hasRestrictions": false,
+    "negativeFlagsCount": 0,
+    "creditBureauSummary": "Nenhum flag negativo encontrado",
+    "creditBureauDetails": {},
+    "origin": "Quod",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Negative protest certificate
+
+1. Service: `SERVICE_PROTEST_PJ`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Negative protest certificate
+5. Main return: Returns a protest certificate/query for the CNPJ, with status, notary offices queried, protests, amounts and dates.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "hasProtests": false,
+    "notaryOffices": [],
+    "protests": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PROTEST_PJ",
+  "cnpj": "cnpj"
+}'
+```
+
+### Online ads
+
+1. Service: `SERVICE_ONLINE_ADS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Online ads
+5. Main return: Returns online ads linked to the company, identifying seller profiles on classifieds and peer-to-peer marketplace sites by phone number.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "onlineAdsTotalPhones": 0,
+    "onlineAdsSummary": "Nenhum anúncio online encontrado",
+    "onlineAds": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ONLINE_ADS",
+  "cnpj": "cnpj"
+}'
+```
+
+### PCD quota
+
+1. Service: `SERVICE_PCD_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - PCD quota
+5. Main return: Returns the certificate of compliance with the legal quota for hiring people with disabilities and rehabilitated beneficiaries, by the informed CNPJ.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pcdSummary": "Consulta realizada",
+    "pcdBaseStatus": "EM CONFORMIDADE",
+    "pcdExpeditionDate": "2026-08-01",
+    "pcdCertificateUrl": "https://example.com/certidão-pcd.pdf",
+    "pcdContent": "Texto integral da certidão de cota de PCD"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PCD_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### PGFN debts
+
+1. Service: `SERVICE_PGFN_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - PGFN debts, active debt collections delinquency
+5. Main return: Returns the certificate of debts related to federal tax credits and the union's active debt with the PGFN, by the informed CNPJ.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pgfnSummary": "Consulta realizada",
+    "pgfnBaseStatus": "NEGATIVA",
+    "pgfnClearance": "Sim",
+    "pgfnEmissionDate": "2026-08-01",
+    "pgfnCertificateUrl": "https://example.com/certidão-pgfn.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PGFN_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Phone numbers
+
+1. Service: `SERVICE_PHONES_EXTENDED_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Phone numbers, phone mobile validation contact
+5. Main return: Returns the phone numbers associated with the company, with validity, priority and source indicators.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "phonesExtendedCompanyTotal": 2,
+    "phonesExtendedCompanyTotalActive": 1,
+    "phonesExtendedCompanySummary": "Empresa com 2 telefones encontrados, 1 ativo",
+    "phonesExtendedCompanyStats": [],
+    "phonesExtendedCompany": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PHONES_EXTENDED_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Public projects
+
+1. Service: `SERVICE_PUBLIC_PROJECTS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Public projects
+5. Main return: Returns projects funded by public agencies associated with the company by the informed CNPJ, with source, modality and contracted/disbursed amounts.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalPublicProjects": 1,
+    "publicProjectsSummary": "Consulta realizada",
+    "publicProjects": [
+      {
+        "source": "BNDES",
+        "modality": "FINANCIAMENTO",
+        "contractedValue": 500000,
+        "disbursedValue": 250000,
+        "contractDate": "2025-01-10"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PUBLIC_PROJECTS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Quantum credit score
+
+1. Service: `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Quantum credit score, score risk credit rating delinquency
+5. Main return: Returns the business (PJ) Quantum credit score by the informed CNPJ, with a text summary and structured credit bureau data.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 690,
+    "creditBureauSummary": "Score de crédito dentro da média do setor",
+    "creditBureauDetails": {},
+    "origin": "Quantum",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Ratings and reputation
+
+1. Service: `SERVICE_REPUTATIONS_AND_REVIEWS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Ratings and reputation
+5. Main return: Returns the company's reputation on different service review platforms, with a consolidated view, a breakdown by source and evolution history.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "totalReputationSources": 2,
+    "reputationSummary": "Empresa possui avaliações em 2 plataformas",
+    "reputationAndReviews": [],
+    "reputationSummaryDetails": {},
+    "reputationSummaryByDataSources": {}
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_REPUTATIONS_AND_REVIEWS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Restrictive data
+
+1. Service: `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Restrictive data, score risk credit rating delinquency
+5. Main return: Returns business (PJ) restrictive credit data by the informed CNPJ, including score, indicator and count of restrictions found.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "score": 720,
+    "hasRestrictions": false,
+    "restrictionCount": 0,
+    "creditBureauSummary": "Nenhuma restrição de crédito encontrada",
+    "creditBureauDetails": {},
+    "origin": "Boa Vista",
+    "queryDate": "2026-08-01"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Simples Nacional - MEI collection
+
+1. Service: `SERVICE_PGMEI`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Simples Nacional - MEI collection
+5. Main return: Returns the Simples Nacional Collection Document (DAS) for Individual Microentrepreneurs (MEI), with status, reference year, pending slips and monthly collection history.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "pgmeiStatus": "Optante",
+    "pgmeiReferenceYear": "2026",
+    "pgmeiPendingGuides": 0,
+    "pgmeiSummary": "MEI optante e regular no ano de referência",
+    "pgmeiGuides": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_PGMEI",
+  "cnpj": "cnpj"
+}'
+```
+
+### Simples Nacional status
+
+1. Service: `SERVICE_SIMPLES_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Simples Nacional status
+5. Main return: Returns the company's status as a participant in Simples Nacional and SIMEI, by the informed CNPJ.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "simplesSummary": "Consulta realizada",
+    "simplesOfficialName": "NOME OFICIAL DA EMPRESA",
+    "simplesNationalStatus": "OPTANTE",
+    "simplesMeiStatus": "NAO OPTANTE",
+    "simplesCertificateUrl": "https://example.com/comprovante-simples.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SIMPLES_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### SINTEGRA
+
+1. Service: `SERVICE_SINTEGRA_CONSULTATION`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`, `uf`
+4. Search terms: PJ - SINTEGRA
+5. Main return: Returns SINTEGRA data, including state registration, state, status, regime, activities, address and query messages.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "stateRegistration": "000000000",
+    "state": "SP",
+    "status": "HABILITADO",
+    "regime": "NORMAL"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SINTEGRA_CONSULTATION",
+  "cnpj": "cnpj",
+  "uf": "state (optional)"
+}'
+```
+
+### State debt negative certificate
+
+1. Service: `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - State debt negative certificate, active debt collections delinquency
+5. Main return: Returns the negative state debt certificate by the informed CNPJ, available for every state.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "stateDebtSummary": "Consulta realizada",
+    "stateDebtBaseStatus": "NEGATIVA",
+    "stateDebtClearance": "Sim",
+    "stateDebtState": "SP",
+    "stateDebtRegistration": "000.000.000.000",
+    "stateDebtValidUntil": "2027-08-01",
+    "stateDebtCertificateUrl": "https://example.com/certidão-débitos-estaduais.pdf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+  "cnpj": "cnpj"
+}'
+```
+
+### Ultimate beneficial owners
+
+1. Service: `SERVICE_ULTIMATE_BENEFICIAL_OWNERS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Ultimate beneficial owners
+5. Main return: Returns the company's ultimate beneficial owners by the informed CNPJ, with accumulated ownership percentage, including through indirect chains, per the 25% legal threshold.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "uboSummary": "Consulta realizada",
+    "uboTotalCompaniesInGroup": 3,
+    "uboTotalPeopleInGroup": 5,
+    "uboNumberOfOwners": 2,
+    "uboBeneficialOwners": [
+      {
+        "name": "NOME DO BENEFICIARIO",
+        "document": "00000000000",
+        "accumulatedPercentage": 45.5
+      }
+    ],
+    "uboParticipations": [
+      {
+        "ownerDocument": "00000000000",
+        "ownerName": "NOME DO BENEFICIARIO",
+        "ownedDocument": "cnpj",
+        "percentage": 45.5,
+        "level": 1
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+  "cnpj": "cnpj"
+}'
+```
+
+### Union agreements
+
+1. Service: `SERVICE_SYNDICATE_AGREEMENTS`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cnpj`
+4. Search terms: PJ - Union agreements
+5. Main return: Returns the union agreements signed between the company and the unions that represent its employees, with totals and a breakdown.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "syndicateAgreementsTotal": 1,
+    "syndicateAgreementsTotalActive": 1,
+    "syndicateAgreementsSummary": "Empresa com 1 acordo sindical ativo",
+    "syndicateAgreementsStats": [],
+    "syndicateAgreements": []
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_SYNDICATE_AGREEMENTS",
+  "cnpj": "cnpj"
+}'
+```

@@ -1,0 +1,2714 @@
+{
+  "name": "idcerberus-docs",
+  "title": "idCerberus API Docs",
+  "description": "Read-only manifest for MCPs and agents to query idCerberus API's public documentation.",
+  "version": "1.0.0",
+  "generatedBy": "scripts/generate-llms.mjs",
+  "artifactVersion": "2026-06",
+  "baseUrl": "https://api-docs.idcerberus.com/en",
+  "generatedFrom": [
+    "docs.json",
+    "en/api-reference/openapi.json",
+    "en/guides/*.mdx",
+    "en/api-reference/*.mdx",
+    "en/services-catalog.json",
+    "en/services-catalog.min.json"
+  ],
+  "recommendedReadOrder": [
+    "https://api-docs.idcerberus.com/en/llms.txt",
+    "https://api-docs.idcerberus.com/en/services-catalog.min.json",
+    "https://api-docs.idcerberus.com/en/services-catalog.json",
+    "https://api-docs.idcerberus.com/en/mcp-manifest.json",
+    "https://api-docs.idcerberus.com/en/llms-api-reference.txt",
+    "https://api-docs.idcerberus.com/examples/*.curl",
+    "https://api-docs.idcerberus.com/en/llms-full.txt"
+  ],
+  "resources": [
+    {
+      "name": "llms.txt",
+      "url": "https://api-docs.idcerberus.com/en/llms.txt",
+      "contentType": "text/plain",
+      "use": "Initial manifest, main rules, shortcuts and important URLs."
+    },
+    {
+      "name": "llms-small.txt",
+      "url": "https://api-docs.idcerberus.com/en/llms-small.txt",
+      "contentType": "text/plain",
+      "use": "Short context to generate a payload, curl and integration explanation."
+    },
+    {
+      "name": "llms-api-reference.txt",
+      "url": "https://api-docs.idcerberus.com/en/llms-api-reference.txt",
+      "contentType": "text/plain",
+      "use": "Operational summary of services, expected payloads and responses."
+    },
+    {
+      "name": "llms-full.txt",
+      "url": "https://api-docs.idcerberus.com/en/llms-full.txt",
+      "contentType": "text/plain",
+      "use": "Full context for broad questions or comparisons between guides."
+    },
+    {
+      "name": "services-catalog.json",
+      "url": "https://api-docs.idcerberus.com/en/services-catalog.json",
+      "contentType": "application/json",
+      "use": "Structured catalog to search services by alias, field, category, tag or common error."
+    },
+    {
+      "name": "services-catalog.min.json",
+      "url": "https://api-docs.idcerberus.com/en/services-catalog.min.json",
+      "contentType": "application/json",
+      "use": "Lightweight catalog for a quick search before opening a service's full contract."
+    },
+    {
+      "name": "mcp-manifest.json",
+      "url": "https://api-docs.idcerberus.com/en/mcp-manifest.json",
+      "contentType": "application/json",
+      "use": "Map of resources, reading order, suggested tools and rules for MCPs/agents."
+    },
+    {
+      "name": "examples",
+      "url": "https://api-docs.idcerberus.com/examples/",
+      "contentType": "text/plain",
+      "use": "Ready-to-use curl files for staging tests."
+    }
+  ],
+  "suggestedTools": [
+    {
+      "name": "search_services",
+      "source": "services-catalog.json",
+      "purpose": "Find services by text, tag, category, input field or alias.",
+      "inputs": [
+        "query",
+        "category",
+        "tag",
+        "field"
+      ],
+      "returns": [
+        "service",
+        "callingAlias",
+        "name",
+        "requestFields",
+        "documentationUrl"
+      ]
+    },
+    {
+      "name": "get_service",
+      "source": "services-catalog.json",
+      "purpose": "Look up a specific service's contract.",
+      "inputs": [
+        "service"
+      ],
+      "returns": [
+        "payloadExample",
+        "successResponseExample",
+        "commonErrors",
+        "curlExampleUrls"
+      ]
+    },
+    {
+      "name": "get_curl_example",
+      "source": "examples/*.curl",
+      "purpose": "Return a ready-to-use curl example for staging.",
+      "inputs": [
+        "service",
+        "useCase"
+      ],
+      "returns": [
+        "curl"
+      ]
+    },
+    {
+      "name": "read_full_context",
+      "source": "llms-full.txt",
+      "purpose": "Query the full context when the catalog is not enough.",
+      "inputs": [
+        "topic"
+      ],
+      "returns": [
+        "relevant_sections"
+      ]
+    }
+  ],
+  "safetyRules": [
+    "Operate as a read-only source of the documentation.",
+    "Do not call staging, production, database or real idCerberus endpoints.",
+    "Do not request, store or repeat client, secret, JWT, CPF, CNPJ or real images.",
+    "Use placeholders in examples and prefer staging as the default environment.",
+    "Do not invent a service, field, endpoint or return missing from the documentation.",
+    "Use `result` as the API's public contract and ignore `fieldsOutput`/internal metadata."
+  ],
+  "doNotAnswerAs": [
+    "Do not claim Face Index provides definitive identity validation; it searches for a match in the face database.",
+    "Do not treat `fieldsOutput` as the API's public contract.",
+    "Do not say OCR guarantees extraction of every field; the return depends on the image and the document.",
+    "Do not invent a field's return when the field does not appear in the documentation.",
+    "Do not ask for a real CPF, CNPJ, token, client, secret or image to build an example.",
+    "Do not suggest a real call to staging/production; this MCP is a documentation source."
+  ],
+  "troubleshootingByStatus": {
+    "400": {
+      "meaning": "Invalid payload, service without access, missing image or missing required field.",
+      "action": "Check `service`, required fields, the configured product and the payload example in the catalog."
+    },
+    "401": {
+      "meaning": "Missing, expired or invalid token.",
+      "action": "Generate a new token at `/api/token-generate` and resend with `Authorization: Bearer {jwt_token}`."
+    },
+    "REFUSED": {
+      "meaning": "The call was processed, but the service's rule refused the result.",
+      "action": "Read `status.message`, check the image/data and do not automatically treat it as a technical failure."
+    },
+    "ERROR": {
+      "meaning": "Technical failure in processing, storage or an external source.",
+      "action": "Investigate using `externalId`, time, environment and the service called."
+    },
+    "result:{}": {
+      "meaning": "The call responded, but did not return useful public data.",
+      "action": "Check whether the service has an expected return for the data used and whether the image/document is correct."
+    },
+    "Don't have access to the service": {
+      "meaning": "Product without an active service/enabled API, or an incorrect calling alias.",
+      "action": "Check the product configuration, calling alias and API flag."
+    }
+  },
+  "catalogSummary": {
+    "totalServices": 125,
+    "categories": {
+      "Pessoa Física": 67,
+      "Pessoa Jurídica": 58
+    },
+    "tags": [
+      "beneficios-sociais",
+      "cadastral",
+      "cnh",
+      "cnpj",
+      "compliance",
+      "contato",
+      "cpf",
+      "face",
+      "imagem",
+      "juridico",
+      "ocr",
+      "quantum",
+      "react",
+      "rg",
+      "risco-credito"
+    ],
+    "serviceFamilies": {
+      "ocr": [
+        {
+          "service": "SERVICE_DATAVALID_CNH",
+          "callingAlias": "SERVICE_DATAVALID_CNH",
+          "name": "Biometric score",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DATAVALID_CNH"
+        },
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_CIVIL",
+          "name": "Civil criminal records",
+          "tags": [
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CRIMINAL_RECORD_CIVIL"
+        },
+        {
+          "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+          "callingAlias": "SERVICE_DOCUMENTOSCOPY",
+          "name": "Digital document analysis",
+          "tags": [
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DIGITAL_DOCUMENTOSCOPY"
+        },
+        {
+          "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+          "callingAlias": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+          "name": "Digital document analysis result",
+          "tags": [
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT"
+        },
+        {
+          "service": "SERVICE_OCR_EMANCIPATION",
+          "callingAlias": "SERVICE_OCR_EMANCIPATION",
+          "name": "Emancipation OCR",
+          "tags": [
+            "imagem",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_EMANCIPATION"
+        },
+        {
+          "service": "SERVICE_FACE_INDEX",
+          "callingAlias": "SERVICE_FACE_INDEX",
+          "name": "Face search in the base",
+          "tags": [
+            "cpf",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH",
+          "callingAlias": "SERVICE_FACE_MATCH",
+          "name": "FaceMatch",
+          "tags": [
+            "compliance",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH"
+        },
+        {
+          "service": "SERVICE_OCR_PROOF_OF_ADDRESS",
+          "callingAlias": "SERVICE_OCR_PROOF_OF_ADDRESS",
+          "name": "Proof of address OCR",
+          "tags": [
+            "imagem",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_PROOF_OF_ADDRESS"
+        },
+        {
+          "service": "SERVICE_OCR",
+          "callingAlias": "SERVICE_OCR",
+          "name": "React OCR",
+          "tags": [
+            "cnh",
+            "imagem",
+            "ocr",
+            "react",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR"
+        },
+        {
+          "service": "SERVICE_OCR_CNPJ_CARD",
+          "callingAlias": "SERVICE_OCR_CNPJ_CARD",
+          "name": "CNPJ card OCR",
+          "tags": [
+            "cnpj",
+            "imagem",
+            "juridico",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD"
+        }
+      ],
+      "faceBiometrics": [
+        {
+          "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+          "callingAlias": "SERVICE_DOCUMENTOSCOPY",
+          "name": "Digital document analysis",
+          "tags": [
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DIGITAL_DOCUMENTOSCOPY"
+        },
+        {
+          "service": "SERVICE_FACE_INDEX",
+          "callingAlias": "SERVICE_FACE_INDEX",
+          "name": "Face search in the base",
+          "tags": [
+            "cpf",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH",
+          "callingAlias": "SERVICE_FACE_MATCH",
+          "name": "FaceMatch",
+          "tags": [
+            "compliance",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH"
+        }
+      ],
+      "cpf": [
+        {
+          "service": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
+          "callingAlias": "SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY",
+          "name": "Account holder's professional history",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PF",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PF",
+          "name": "Active debt",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ACTIVE_DEBT_PF"
+        },
+        {
+          "service": "SERVICE_ACTIVITIES_INDICATORS",
+          "callingAlias": "SERVICE_ACTIVITIES_INDICATORS",
+          "name": "Activity indicators",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ACTIVITIES_INDICATORS"
+        },
+        {
+          "service": "SERVICE_ADDRESS",
+          "callingAlias": "SERVICE_ADDRESS",
+          "name": "Addresses",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ADDRESS"
+        },
+        {
+          "service": "SERVICE_PERSON_AI_PROMPT",
+          "callingAlias": "SERVICE_PERSON_AI_PROMPT",
+          "name": "AI prompt for a person",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_AI_PROMPT"
+        },
+        {
+          "service": "SERVICE_ARREST_WARRANT",
+          "callingAlias": "SERVICE_ARREST_WARRANT",
+          "name": "Arrest warrant",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ARREST_WARRANT"
+        },
+        {
+          "service": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+          "callingAlias": "SERVICE_AWARDS_AND_CERTIFICATIONS_CPF",
+          "name": "Awards and certifications",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_AWARDS_AND_CERTIFICATIONS_CPF"
+        },
+        {
+          "service": "SERVICE_DATAVALID_CNH",
+          "callingAlias": "SERVICE_DATAVALID_CNH",
+          "name": "Biometric score",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DATAVALID_CNH"
+        },
+        {
+          "service": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
+          "callingAlias": "SERVICE_ELECTION_CANDIDATE_DATA_CPF",
+          "name": "Candidate electoral data",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ELECTION_CANDIDATE_DATA_CPF"
+        },
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_CIVIL",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_CIVIL",
+          "name": "Civil criminal records",
+          "tags": [
+            "cpf",
+            "rg"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CRIMINAL_RECORD_CIVIL"
+        },
+        {
+          "service": "SERVICE_RFB_PF_ON_DEMAND",
+          "callingAlias": "SERVICE_RFB_PF_ON_DEMAND",
+          "name": "CPF at the Federal Revenue on-demand",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF_ON_DEMAND"
+        },
+        {
+          "service": "SERVICE_RFB_PF",
+          "callingAlias": "SERVICE_RFB_PF",
+          "name": "CPF status at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF"
+        },
+        {
+          "service": "SERVICE_CPF_ADDRESS_VALIDATION",
+          "callingAlias": "SERVICE_CPF_ADDRESS_VALIDATION",
+          "name": "CPF validation with address",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CPF_ADDRESS_VALIDATION"
+        },
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION",
+          "name": "CPF validation with phone",
+          "tags": [
+            "compliance",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CPF_PHONE_VALIDATION"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+          "callingAlias": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+          "name": "Credit score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_QUOD_CREDIT_SCORE_PERSON"
+        },
+        {
+          "service": "SERVICE_CREDIT_SCORE",
+          "callingAlias": "SERVICE_CREDIT_SCORE",
+          "name": "Credit score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+          "callingAlias": "SERVICE_PERSON_DATA_ENRICHMENT",
+          "name": "Data enrichment",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_DATA_ENRICHMENT"
+        },
+        {
+          "service": "SERVICE_PERSON_DATA_MODELING",
+          "callingAlias": "SERVICE_PERSON_DATA_MODELING",
+          "name": "Data modeling",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_DATA_MODELING"
+        },
+        {
+          "service": "SERVICE_DEFAULT_RISK_SCORE",
+          "callingAlias": "SERVICE_DEFAULT_RISK_SCORE",
+          "name": "Default risk score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DEFAULT_RISK_SCORE"
+        },
+        {
+          "service": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+          "callingAlias": "SERVICE_DEMOGRAPHIC_DATA_CPF",
+          "name": "Demographic data",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DEMOGRAPHIC_DATA_CPF"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CPF",
+          "callingAlias": "SERVICE_DOMAINS_CPF",
+          "name": "Domains",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DOMAINS_CPF"
+        },
+        {
+          "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+          "callingAlias": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+          "name": "E-Social validation",
+          "tags": [
+            "beneficios-sociais",
+            "compliance",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION"
+        },
+        {
+          "service": "SERVICE_ECONOMIC_RELATIONSHIP",
+          "callingAlias": "economic_relationships",
+          "name": "Economic relationships",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ECONOMIC_RELATIONSHIP"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CPF",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CPF",
+          "name": "Electoral donations",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ELECTORAL_DONORS_CPF"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CPF",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CPF",
+          "name": "Electoral service providers",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ELECTORAL_PROVIDERS_CPF"
+        },
+        {
+          "service": "SERVICE_EMAILS_EXTENDED",
+          "callingAlias": "SERVICE_EMAILS_EXTENDED",
+          "name": "Email history",
+          "tags": [
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_EMAILS_EXTENDED"
+        },
+        {
+          "service": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "callingAlias": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "name": "Extended social benefits",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_SOCIAL_ASSISTANCE_EXTENDED"
+        },
+        {
+          "service": "SERVICE_FACE_INDEX",
+          "callingAlias": "SERVICE_FACE_INDEX",
+          "name": "Face search in the base",
+          "tags": [
+            "cpf",
+            "face",
+            "imagem"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX"
+        },
+        {
+          "service": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "callingAlias": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "name": "Family social benefits",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FAMILY_SOCIAL_BENEFITS"
+        },
+        {
+          "service": "SERVICE_CRIMINAL_RECORD_FEDERAL",
+          "callingAlias": "SERVICE_CRIMINAL_RECORD_FEDERAL",
+          "name": "Federal criminal records",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CRIMINAL_RECORD_FEDERAL"
+        },
+        {
+          "service": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
+          "callingAlias": "SERVICE_PF_FINANCIAL_AND_ADDRESS",
+          "name": "Financial data and addresses",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PF_FINANCIAL_AND_ADDRESS"
+        },
+        {
+          "service": "SERVICE_FINANCIAL_INFORMATION",
+          "callingAlias": "SERVICE_FINANCIAL_INFORMATION",
+          "name": "Financial information",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FINANCIAL_INFORMATION"
+        },
+        {
+          "service": "SERVICE_FINANCIAL_RISK_SCORE",
+          "callingAlias": "SERVICE_FINANCIAL_RISK_SCORE",
+          "name": "Financial risk",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FINANCIAL_RISK_SCORE"
+        },
+        {
+          "service": "SERVICE_FRAUD_RISK_SCORE",
+          "callingAlias": "SERVICE_FRAUD_RISK_SCORE",
+          "name": "Fraud risk score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FRAUD_RISK_SCORE"
+        },
+        {
+          "service": "SERVICE_PERSON_KYC",
+          "callingAlias": "SERVICE_PERSON_KYC",
+          "name": "KYC and compliance",
+          "tags": [
+            "compliance",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_KYC"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES",
+          "name": "Legal and administrative cases",
+          "tags": [
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_JURIDICAL_PROCESSES"
+        },
+        {
+          "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
+          "callingAlias": "SERVICE_MEDIA_PROFILE_EXPOSURE_PF",
+          "name": "Media exposure and profile",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_MEDIA_PROFILE_EXPOSURE_PF"
+        },
+        {
+          "service": "SERVICE_MEI",
+          "callingAlias": "SERVICE_MEI",
+          "name": "MEI query",
+          "tags": [
+            "cnpj",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_MEI"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+          "callingAlias": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+          "name": "Multi-data credit score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_BOAVISTA_ONE_SCORE_PERSON"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_RISK_PERSON",
+          "callingAlias": "SERVICE_QUOD_CREDIT_RISK_PERSON",
+          "name": "Negative flags",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_QUOD_CREDIT_RISK_PERSON"
+        },
+        {
+          "service": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Negative protest certificate",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROTEST_CLEARANCE_CERTIFICATE"
+        },
+        {
+          "service": "SERVICE_NOTHING_RECORD_LAWSUITS",
+          "callingAlias": "SERVICE_NOTHING_RECORD_LAWSUITS",
+          "name": "Nothing on record certificate",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_NOTHING_RECORD_LAWSUITS"
+        },
+        {
+          "service": "SERVICE_PHONE_HISTORY",
+          "callingAlias": "SERVICE_PHONE_HISTORY",
+          "name": "Phone history",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PHONE_HISTORY"
+        },
+        {
+          "service": "SERVICE_PIS_CONSULTATION",
+          "callingAlias": "SERVICE_PIS_CONSULTATION",
+          "name": "PIS data",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PIS_CONSULTATION"
+        },
+        {
+          "service": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
+          "callingAlias": "SERVICE_FAMILY_POLITICAL_HISTORY_CPF",
+          "name": "Political family history",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FAMILY_POLITICAL_HISTORY_CPF"
+        },
+        {
+          "service": "SERVICE_POLITICAL_INVOLVEMENT",
+          "callingAlias": "SERVICE_POLITICAL_INVOLVEMENT",
+          "name": "Political involvement",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_POLITICAL_INVOLVEMENT"
+        },
+        {
+          "service": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
+          "callingAlias": "SERVICE_POLITICAL_INVOLVEMENT_CPF",
+          "name": "Political involvement (individual)",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_POLITICAL_INVOLVEMENT_CPF"
+        },
+        {
+          "service": "SERVICE_PEP",
+          "callingAlias": "SERVICE_PEP",
+          "name": "Politically exposed person",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PEP"
+        },
+        {
+          "service": "SERVICE_PROFESSIONAL_HISTORY",
+          "callingAlias": "SERVICE_PROFESSIONAL_HISTORY",
+          "name": "Professional history",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROFESSIONAL_HISTORY"
+        },
+        {
+          "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
+          "callingAlias": "SEVICE_ONLINE_BETTING_PROPENSITY",
+          "name": "Propensity for online betting",
+          "tags": [
+            "compliance",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SEVICE_ONLINE_BETTING_PROPENSITY"
+        },
+        {
+          "service": "SERVICE_PROTEST_PF",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE",
+          "name": "Protest clearance certificate (individual)",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROTEST_PF"
+        },
+        {
+          "service": "SERVICE_PUBLIC_SERVANTS",
+          "callingAlias": "SERVICE_PUBLIC_SERVANTS",
+          "name": "Public servants",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PUBLIC_SERVANTS"
+        },
+        {
+          "service": "SERVICE_RELATED_PEOPLE",
+          "callingAlias": "SERVICE_RELATED_PEOPLE",
+          "name": "Related people",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE"
+        },
+        {
+          "service": "SERVICE_RELATED_PEOPLE_EMAILS",
+          "callingAlias": "SERVICE_RELATED_PEOPLE_EMAILS",
+          "name": "Related people's emails",
+          "tags": [
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE_EMAILS"
+        },
+        {
+          "service": "SERVICE_RELATED_PEOPLE_PHONES",
+          "callingAlias": "SERVICE_RELATED_PEOPLE_PHONES",
+          "name": "Related people's phones",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE_PHONES"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+          "callingAlias": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+          "name": "Restrictive data",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_BOAVISTA_CREDIT_SCORE_PERSON"
+        },
+        {
+          "service": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+          "callingAlias": "SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF",
+          "name": "SUS card",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF"
+        },
+        {
+          "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
+          "callingAlias": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
+          "name": "TSE - Polling place",
+          "tags": [
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS",
+          "name": "Business owners at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RFB_OWNERS"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND",
+          "name": "CNPJ at the Federal Revenue on-demand",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ_ON_DEMAND"
+        },
+        {
+          "service": "SERVICE_RFB_PJ",
+          "callingAlias": "SERVICE_RFB_PJ",
+          "name": "CNPJ status at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ"
+        }
+      ],
+      "cnpj": [
+        {
+          "service": "SERVICE_MEI",
+          "callingAlias": "SERVICE_MEI",
+          "name": "MEI query",
+          "tags": [
+            "cnpj",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_MEI"
+        },
+        {
+          "service": "SERVICE_RELATED_PEOPLE_ADDRESSES",
+          "callingAlias": "SERVICE_RELATED_PEOPLE_ADDRESSES",
+          "name": "Related people's addresses",
+          "tags": [
+            "cnpj"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE_ADDRESSES"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PJ",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PJ",
+          "name": "Active debts",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ACTIVE_DEBT_PJ"
+        },
+        {
+          "service": "SERVICE_HISTORY_BASIC_DATA",
+          "callingAlias": "SERVICE_HISTORY_BASIC_DATA",
+          "name": "Basic data history",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_HISTORY_BASIC_DATA"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET_PJ",
+          "callingAlias": "SERVICE_COMPLIANCE_BET_PJ",
+          "name": "Betting compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET_PJ"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET",
+          "callingAlias": "SERVICE_COMPLIANCE_BET",
+          "name": "Betting compliance (short alias)",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS",
+          "name": "Business owners at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RFB_OWNERS"
+        },
+        {
+          "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+          "callingAlias": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+          "name": "Business owners' electoral donations",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ"
+        },
+        {
+          "service": "SERVICE_COMPANY_KYC_OWNERS",
+          "callingAlias": "SERVICE_COMPANY_KYC_OWNERS",
+          "name": "Business owners' KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_KYC_OWNERS"
+        },
+        {
+          "service": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+          "callingAlias": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+          "name": "Business owners' lawsuit distribution",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_LAWSUITS_DISTRIBUTION"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
+          "name": "Business owners' legal cases",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS"
+        },
+        {
+          "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+          "callingAlias": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+          "name": "Business owners' media exposure and profile",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MEDIA_PROFILE_EXPOSURE_PJ"
+        },
+        {
+          "service": "SERVICE_OWNERS_INFLUENCE",
+          "callingAlias": "SERVICE_OWNERS_INFLUENCE",
+          "name": "Business ownership influence",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_INFLUENCE"
+        },
+        {
+          "service": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+          "callingAlias": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+          "name": "CGU negative certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY"
+        },
+        {
+          "service": "SERVICE_CIVIL_CONSTRUCTION",
+          "callingAlias": "SERVICE_CIVIL_CONSTRUCTION",
+          "name": "Civil construction",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CIVIL_CONSTRUCTION"
+        },
+        {
+          "service": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+          "callingAlias": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+          "name": "CNJ negative certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND",
+          "name": "CNPJ at the Federal Revenue on-demand",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ_ON_DEMAND"
+        },
+        {
+          "service": "SERVICE_OCR_CNPJ_CARD",
+          "callingAlias": "SERVICE_OCR_CNPJ_CARD",
+          "name": "CNPJ card OCR",
+          "tags": [
+            "cnpj",
+            "imagem",
+            "juridico",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CNPJ",
+          "callingAlias": "SERVICE_DOMAINS_CNPJ",
+          "name": "CNPJ domains",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_DOMAINS_CNPJ"
+        },
+        {
+          "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "callingAlias": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "name": "CNPJ registration data",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_REGISTRATION_DATA_CNPJ"
+        },
+        {
+          "service": "SERVICE_RFB_PJ",
+          "callingAlias": "SERVICE_RFB_PJ",
+          "name": "CNPJ status at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ"
+        },
+        {
+          "service": "SERVICE_COMPANY_EVOLUTION",
+          "callingAlias": "SERVICE_COMPANY_EVOLUTION",
+          "name": "Company evolution",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_EVOLUTION"
+        },
+        {
+          "service": "SERVICE_COMPANY_RELATIONSHIP",
+          "callingAlias": "SERVICE_COMPANY_RELATIONSHIP",
+          "name": "Company relationships",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RELATIONSHIP"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY",
+          "name": "Credit risk",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+          "callingAlias": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+          "name": "Credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_DAS_MEI",
+          "callingAlias": "SERVICE_DAS_MEI",
+          "name": "DAS MEI at the Federal Revenue",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_DAS_MEI"
+        },
+        {
+          "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+          "callingAlias": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+          "name": "Data enrichment",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CORPORATE_DATA_ENRICHMENT"
+        },
+        {
+          "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+          "callingAlias": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+          "name": "Economic group KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_KYC_COMPANY"
+        },
+        {
+          "service": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+          "callingAlias": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+          "name": "Economic group relationships",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_RELATIONSHIPS"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CNPJ",
+          "name": "Electoral donations",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ELECTORAL_DONORS_CNPJ"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+          "name": "Electoral service providers",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ELECTORAL_PROVIDERS_CNPJ"
+        },
+        {
+          "service": "SERVICE_EMPLOYEES_KYC",
+          "callingAlias": "SERVICE_EMPLOYEES_KYC",
+          "name": "Employee KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_EMPLOYEES_KYC"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+          "name": "Equity stake percentage",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY"
+        },
+        {
+          "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+          "callingAlias": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+          "name": "Extended addresses",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ADDRESSES_EXTENDED_CNPJ"
+        },
+        {
+          "service": "SERVICE_RF_QSA",
+          "callingAlias": "SERVICE_RF_QSA",
+          "name": "Federal Revenue - QSA",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RF_QSA"
+        },
+        {
+          "service": "SERVICE_FGTS",
+          "callingAlias": "SERVICE_FGTS",
+          "name": "FGTS",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_FGTS"
+        },
+        {
+          "service": "SERVICE_FIRST_LEVEL_PARTNER",
+          "callingAlias": "SERVICE_FIRST_LEVEL_PARTNER",
+          "name": "First-level partners",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_FIRST_LEVEL_PARTNER"
+        },
+        {
+          "service": "SERVICE_INVESTMENT_FUND_DATA",
+          "callingAlias": "SERVICE_INVESTMENT_FUND_DATA",
+          "name": "Investment fund data",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_INVESTMENT_FUND_DATA"
+        },
+        {
+          "service": "SERVICE_LABOR_LAWSUITS",
+          "callingAlias": "SERVICE_LABOR_LAWSUITS",
+          "name": "Labor lawsuits",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_LABOR_LAWSUITS"
+        },
+        {
+          "service": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+          "callingAlias": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+          "name": "Legal case distribution",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "name": "Legal cases",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ"
+        },
+        {
+          "service": "SERVICE_MARKETPLACE_DATA",
+          "callingAlias": "SERVICE_MARKETPLACE_DATA",
+          "name": "Marketplaces",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MARKETPLACE_DATA"
+        },
+        {
+          "service": "SERVICE_MERCHANT_CATEGORY_DATA",
+          "callingAlias": "SERVICE_MERCHANT_CATEGORY_DATA",
+          "name": "Merchant category",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MERCHANT_CATEGORY_DATA"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+          "name": "Multi-data credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_ONE_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+          "name": "Negative flags",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_RISK_COMPANY"
+        },
+        {
+          "service": "SERVICE_PROTEST_PJ",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ",
+          "name": "Negative protest certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PROTEST_PJ"
+        },
+        {
+          "service": "SERVICE_ONLINE_ADS",
+          "callingAlias": "SERVICE_ONLINE_ADS",
+          "name": "Online ads",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ONLINE_ADS"
+        },
+        {
+          "service": "SERVICE_PCD_COMPANY",
+          "callingAlias": "SERVICE_PCD_COMPANY",
+          "name": "PCD quota",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PCD_COMPANY"
+        },
+        {
+          "service": "SERVICE_PGFN_COMPANY",
+          "callingAlias": "SERVICE_PGFN_COMPANY",
+          "name": "PGFN debts",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PGFN_COMPANY"
+        },
+        {
+          "service": "SERVICE_PHONES_EXTENDED_COMPANY",
+          "callingAlias": "SERVICE_PHONES_EXTENDED_COMPANY",
+          "name": "Phone numbers",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PHONES_EXTENDED_COMPANY"
+        },
+        {
+          "service": "SERVICE_PUBLIC_PROJECTS",
+          "callingAlias": "SERVICE_PUBLIC_PROJECTS",
+          "name": "Public projects",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PUBLIC_PROJECTS"
+        },
+        {
+          "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+          "callingAlias": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+          "name": "Quantum credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "quantum",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_REPUTATIONS_AND_REVIEWS",
+          "callingAlias": "SERVICE_REPUTATIONS_AND_REVIEWS",
+          "name": "Ratings and reputation",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_REPUTATIONS_AND_REVIEWS"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+          "name": "Restrictive data",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_PGMEI",
+          "callingAlias": "SERVICE_PGMEI",
+          "name": "Simples Nacional - MEI collection",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PGMEI"
+        },
+        {
+          "service": "SERVICE_SIMPLES_COMPANY",
+          "callingAlias": "SERVICE_SIMPLES_COMPANY",
+          "name": "Simples Nacional status",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SIMPLES_COMPANY"
+        },
+        {
+          "service": "SERVICE_SINTEGRA_CONSULTATION",
+          "callingAlias": "SERVICE_SINTEGRA_CONSULTATION",
+          "name": "SINTEGRA",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SINTEGRA_CONSULTATION"
+        },
+        {
+          "service": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+          "callingAlias": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+          "name": "State debt negative certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_STATE_DEBT_CERTIFICATE_COMPANY"
+        },
+        {
+          "service": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+          "callingAlias": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+          "name": "Ultimate beneficial owners",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ULTIMATE_BENEFICIAL_OWNERS"
+        },
+        {
+          "service": "SERVICE_SYNDICATE_AGREEMENTS",
+          "callingAlias": "SERVICE_SYNDICATE_AGREEMENTS",
+          "name": "Union agreements",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SYNDICATE_AGREEMENTS"
+        }
+      ],
+      "creditRisk": [
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PF",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PF",
+          "name": "Active debt",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ACTIVE_DEBT_PF"
+        },
+        {
+          "service": "SERVICE_DATAVALID_CNH",
+          "callingAlias": "SERVICE_DATAVALID_CNH",
+          "name": "Biometric score",
+          "tags": [
+            "cnh",
+            "cpf",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DATAVALID_CNH"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+          "callingAlias": "SERVICE_QUOD_CREDIT_SCORE_PERSON",
+          "name": "Credit score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_QUOD_CREDIT_SCORE_PERSON"
+        },
+        {
+          "service": "SERVICE_CREDIT_SCORE",
+          "callingAlias": "SERVICE_CREDIT_SCORE",
+          "name": "Credit score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE"
+        },
+        {
+          "service": "SERVICE_DEFAULT_RISK_SCORE",
+          "callingAlias": "SERVICE_DEFAULT_RISK_SCORE",
+          "name": "Default risk score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DEFAULT_RISK_SCORE"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH",
+          "callingAlias": "SERVICE_FACE_MATCH",
+          "name": "FaceMatch",
+          "tags": [
+            "compliance",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH"
+        },
+        {
+          "service": "SERVICE_FINANCIAL_RISK_SCORE",
+          "callingAlias": "SERVICE_FINANCIAL_RISK_SCORE",
+          "name": "Financial risk",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FINANCIAL_RISK_SCORE"
+        },
+        {
+          "service": "SERVICE_FRAUD_RISK_SCORE",
+          "callingAlias": "SERVICE_FRAUD_RISK_SCORE",
+          "name": "Fraud risk score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FRAUD_RISK_SCORE"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+          "callingAlias": "SERVICE_BOAVISTA_ONE_SCORE_PERSON",
+          "name": "Multi-data credit score",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_BOAVISTA_ONE_SCORE_PERSON"
+        },
+        {
+          "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
+          "callingAlias": "SEVICE_ONLINE_BETTING_PROPENSITY",
+          "name": "Propensity for online betting",
+          "tags": [
+            "compliance",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SEVICE_ONLINE_BETTING_PROPENSITY"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+          "callingAlias": "SERVICE_BOAVISTA_CREDIT_SCORE_PERSON",
+          "name": "Restrictive data",
+          "tags": [
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_BOAVISTA_CREDIT_SCORE_PERSON"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PJ",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PJ",
+          "name": "Active debts",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ACTIVE_DEBT_PJ"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY",
+          "name": "Credit risk",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+          "callingAlias": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+          "name": "Credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+          "name": "Multi-data credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_ONE_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+          "callingAlias": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+          "name": "Quantum credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "quantum",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+          "name": "Restrictive data",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY"
+        }
+      ],
+      "legal": [
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES",
+          "name": "Legal and administrative cases",
+          "tags": [
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_JURIDICAL_PROCESSES"
+        },
+        {
+          "service": "SERVICE_ACTIVE_DEBT_PJ",
+          "callingAlias": "SERVICE_ACTIVE_DEBT_PJ",
+          "name": "Active debts",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ACTIVE_DEBT_PJ"
+        },
+        {
+          "service": "SERVICE_HISTORY_BASIC_DATA",
+          "callingAlias": "SERVICE_HISTORY_BASIC_DATA",
+          "name": "Basic data history",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_HISTORY_BASIC_DATA"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET_PJ",
+          "callingAlias": "SERVICE_COMPLIANCE_BET_PJ",
+          "name": "Betting compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET_PJ"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET",
+          "callingAlias": "SERVICE_COMPLIANCE_BET",
+          "name": "Betting compliance (short alias)",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS",
+          "name": "Business owners at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RFB_OWNERS"
+        },
+        {
+          "service": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+          "callingAlias": "SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ",
+          "name": "Business owners' electoral donations",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ"
+        },
+        {
+          "service": "SERVICE_COMPANY_KYC_OWNERS",
+          "callingAlias": "SERVICE_COMPANY_KYC_OWNERS",
+          "name": "Business owners' KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_KYC_OWNERS"
+        },
+        {
+          "service": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+          "callingAlias": "SERVICE_OWNERS_LAWSUITS_DISTRIBUTION",
+          "name": "Business owners' lawsuit distribution",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_LAWSUITS_DISTRIBUTION"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS",
+          "name": "Business owners' legal cases",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS"
+        },
+        {
+          "service": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+          "callingAlias": "SERVICE_MEDIA_PROFILE_EXPOSURE_PJ",
+          "name": "Business owners' media exposure and profile",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MEDIA_PROFILE_EXPOSURE_PJ"
+        },
+        {
+          "service": "SERVICE_OWNERS_INFLUENCE",
+          "callingAlias": "SERVICE_OWNERS_INFLUENCE",
+          "name": "Business ownership influence",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_INFLUENCE"
+        },
+        {
+          "service": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+          "callingAlias": "SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY",
+          "name": "CGU negative certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY"
+        },
+        {
+          "service": "SERVICE_CIVIL_CONSTRUCTION",
+          "callingAlias": "SERVICE_CIVIL_CONSTRUCTION",
+          "name": "Civil construction",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CIVIL_CONSTRUCTION"
+        },
+        {
+          "service": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+          "callingAlias": "SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY",
+          "name": "CNJ negative certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND",
+          "name": "CNPJ at the Federal Revenue on-demand",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ_ON_DEMAND"
+        },
+        {
+          "service": "SERVICE_OCR_CNPJ_CARD",
+          "callingAlias": "SERVICE_OCR_CNPJ_CARD",
+          "name": "CNPJ card OCR",
+          "tags": [
+            "cnpj",
+            "imagem",
+            "juridico",
+            "ocr"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD"
+        },
+        {
+          "service": "SERVICE_DOMAINS_CNPJ",
+          "callingAlias": "SERVICE_DOMAINS_CNPJ",
+          "name": "CNPJ domains",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_DOMAINS_CNPJ"
+        },
+        {
+          "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "callingAlias": "SERVICE_REGISTRATION_DATA_CNPJ",
+          "name": "CNPJ registration data",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_REGISTRATION_DATA_CNPJ"
+        },
+        {
+          "service": "SERVICE_RFB_PJ",
+          "callingAlias": "SERVICE_RFB_PJ",
+          "name": "CNPJ status at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ"
+        },
+        {
+          "service": "SERVICE_COMPANY_EVOLUTION",
+          "callingAlias": "SERVICE_COMPANY_EVOLUTION",
+          "name": "Company evolution",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_EVOLUTION"
+        },
+        {
+          "service": "SERVICE_COMPANY_RELATIONSHIP",
+          "callingAlias": "SERVICE_COMPANY_RELATIONSHIP",
+          "name": "Company relationships",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RELATIONSHIP"
+        },
+        {
+          "service": "SERVICE_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_CREDIT_RISK_COMPANY",
+          "name": "Credit risk",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+          "callingAlias": "SERVICE_QUOD_CREDIT_SCORE_COMPANY",
+          "name": "Credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_DAS_MEI",
+          "callingAlias": "SERVICE_DAS_MEI",
+          "name": "DAS MEI at the Federal Revenue",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_DAS_MEI"
+        },
+        {
+          "service": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+          "callingAlias": "SERVICE_CORPORATE_DATA_ENRICHMENT",
+          "name": "Data enrichment",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CORPORATE_DATA_ENRICHMENT"
+        },
+        {
+          "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+          "callingAlias": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+          "name": "Economic group KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_KYC_COMPANY"
+        },
+        {
+          "service": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+          "callingAlias": "SERVICE_ECONOMIC_GROUP_RELATIONSHIPS",
+          "name": "Economic group relationships",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_RELATIONSHIPS"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_DONORS_CNPJ",
+          "callingAlias": "SERVICE_ELECTORAL_DONORS_CNPJ",
+          "name": "Electoral donations",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ELECTORAL_DONORS_CNPJ"
+        },
+        {
+          "service": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+          "callingAlias": "SERVICE_ELECTORAL_PROVIDERS_CNPJ",
+          "name": "Electoral service providers",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ELECTORAL_PROVIDERS_CNPJ"
+        },
+        {
+          "service": "SERVICE_EMPLOYEES_KYC",
+          "callingAlias": "SERVICE_EMPLOYEES_KYC",
+          "name": "Employee KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_EMPLOYEES_KYC"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY",
+          "name": "Equity stake percentage",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY"
+        },
+        {
+          "service": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+          "callingAlias": "SERVICE_ADDRESSES_EXTENDED_CNPJ",
+          "name": "Extended addresses",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ADDRESSES_EXTENDED_CNPJ"
+        },
+        {
+          "service": "SERVICE_RF_QSA",
+          "callingAlias": "SERVICE_RF_QSA",
+          "name": "Federal Revenue - QSA",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RF_QSA"
+        },
+        {
+          "service": "SERVICE_FGTS",
+          "callingAlias": "SERVICE_FGTS",
+          "name": "FGTS",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_FGTS"
+        },
+        {
+          "service": "SERVICE_FIRST_LEVEL_PARTNER",
+          "callingAlias": "SERVICE_FIRST_LEVEL_PARTNER",
+          "name": "First-level partners",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_FIRST_LEVEL_PARTNER"
+        },
+        {
+          "service": "SERVICE_INVESTMENT_FUND_DATA",
+          "callingAlias": "SERVICE_INVESTMENT_FUND_DATA",
+          "name": "Investment fund data",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_INVESTMENT_FUND_DATA"
+        },
+        {
+          "service": "SERVICE_LABOR_LAWSUITS",
+          "callingAlias": "SERVICE_LABOR_LAWSUITS",
+          "name": "Labor lawsuits",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_LABOR_LAWSUITS"
+        },
+        {
+          "service": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+          "callingAlias": "SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY",
+          "name": "Legal case distribution",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY"
+        },
+        {
+          "service": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "callingAlias": "SERVICE_JURIDICAL_PROCESSES_PJ",
+          "name": "Legal cases",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ"
+        },
+        {
+          "service": "SERVICE_MARKETPLACE_DATA",
+          "callingAlias": "SERVICE_MARKETPLACE_DATA",
+          "name": "Marketplaces",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MARKETPLACE_DATA"
+        },
+        {
+          "service": "SERVICE_MERCHANT_CATEGORY_DATA",
+          "callingAlias": "SERVICE_MERCHANT_CATEGORY_DATA",
+          "name": "Merchant category",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MERCHANT_CATEGORY_DATA"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_ONE_SCORE_COMPANY",
+          "name": "Multi-data credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_ONE_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+          "callingAlias": "SERVICE_QUOD_CREDIT_RISK_COMPANY",
+          "name": "Negative flags",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_RISK_COMPANY"
+        },
+        {
+          "service": "SERVICE_PROTEST_PJ",
+          "callingAlias": "SERVICE_PROTEST_CLEARANCE_CERTIFICATE_PJ",
+          "name": "Negative protest certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PROTEST_PJ"
+        },
+        {
+          "service": "SERVICE_ONLINE_ADS",
+          "callingAlias": "SERVICE_ONLINE_ADS",
+          "name": "Online ads",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ONLINE_ADS"
+        },
+        {
+          "service": "SERVICE_PCD_COMPANY",
+          "callingAlias": "SERVICE_PCD_COMPANY",
+          "name": "PCD quota",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PCD_COMPANY"
+        },
+        {
+          "service": "SERVICE_PGFN_COMPANY",
+          "callingAlias": "SERVICE_PGFN_COMPANY",
+          "name": "PGFN debts",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PGFN_COMPANY"
+        },
+        {
+          "service": "SERVICE_PHONES_EXTENDED_COMPANY",
+          "callingAlias": "SERVICE_PHONES_EXTENDED_COMPANY",
+          "name": "Phone numbers",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PHONES_EXTENDED_COMPANY"
+        },
+        {
+          "service": "SERVICE_PUBLIC_PROJECTS",
+          "callingAlias": "SERVICE_PUBLIC_PROJECTS",
+          "name": "Public projects",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PUBLIC_PROJECTS"
+        },
+        {
+          "service": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+          "callingAlias": "SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY",
+          "name": "Quantum credit score",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "quantum",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_REPUTATIONS_AND_REVIEWS",
+          "callingAlias": "SERVICE_REPUTATIONS_AND_REVIEWS",
+          "name": "Ratings and reputation",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_REPUTATIONS_AND_REVIEWS"
+        },
+        {
+          "service": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+          "callingAlias": "SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY",
+          "name": "Restrictive data",
+          "tags": [
+            "cnpj",
+            "juridico",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY"
+        },
+        {
+          "service": "SERVICE_PGMEI",
+          "callingAlias": "SERVICE_PGMEI",
+          "name": "Simples Nacional - MEI collection",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PGMEI"
+        },
+        {
+          "service": "SERVICE_SIMPLES_COMPANY",
+          "callingAlias": "SERVICE_SIMPLES_COMPANY",
+          "name": "Simples Nacional status",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SIMPLES_COMPANY"
+        },
+        {
+          "service": "SERVICE_SINTEGRA_CONSULTATION",
+          "callingAlias": "SERVICE_SINTEGRA_CONSULTATION",
+          "name": "SINTEGRA",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SINTEGRA_CONSULTATION"
+        },
+        {
+          "service": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+          "callingAlias": "SERVICE_STATE_DEBT_CERTIFICATE_COMPANY",
+          "name": "State debt negative certificate",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_STATE_DEBT_CERTIFICATE_COMPANY"
+        },
+        {
+          "service": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+          "callingAlias": "SERVICE_ULTIMATE_BENEFICIAL_OWNERS",
+          "name": "Ultimate beneficial owners",
+          "tags": [
+            "cnpj",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ULTIMATE_BENEFICIAL_OWNERS"
+        },
+        {
+          "service": "SERVICE_SYNDICATE_AGREEMENTS",
+          "callingAlias": "SERVICE_SYNDICATE_AGREEMENTS",
+          "name": "Union agreements",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SYNDICATE_AGREEMENTS"
+        }
+      ],
+      "compliance": [
+        {
+          "service": "SERVICE_CPF_PHONE_VALIDATION",
+          "callingAlias": "SERVICE_CPF_PHONE_VALIDATION",
+          "name": "CPF validation with phone",
+          "tags": [
+            "compliance",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CPF_PHONE_VALIDATION"
+        },
+        {
+          "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+          "callingAlias": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+          "name": "E-Social validation",
+          "tags": [
+            "beneficios-sociais",
+            "compliance",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION"
+        },
+        {
+          "service": "SERVICE_FACE_MATCH",
+          "callingAlias": "SERVICE_FACE_MATCH",
+          "name": "FaceMatch",
+          "tags": [
+            "compliance",
+            "face",
+            "imagem",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH"
+        },
+        {
+          "service": "SERVICE_PERSON_KYC",
+          "callingAlias": "SERVICE_PERSON_KYC",
+          "name": "KYC and compliance",
+          "tags": [
+            "compliance",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_KYC"
+        },
+        {
+          "service": "SEVICE_ONLINE_BETTING_PROPENSITY",
+          "callingAlias": "SEVICE_ONLINE_BETTING_PROPENSITY",
+          "name": "Propensity for online betting",
+          "tags": [
+            "compliance",
+            "cpf",
+            "risco-credito"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SEVICE_ONLINE_BETTING_PROPENSITY"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET_PJ",
+          "callingAlias": "SERVICE_COMPLIANCE_BET_PJ",
+          "name": "Betting compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET_PJ"
+        },
+        {
+          "service": "SERVICE_COMPLIANCE_BET",
+          "callingAlias": "SERVICE_COMPLIANCE_BET",
+          "name": "Betting compliance (short alias)",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET"
+        },
+        {
+          "service": "SERVICE_COMPANY_KYC_OWNERS",
+          "callingAlias": "SERVICE_COMPANY_KYC_OWNERS",
+          "name": "Business owners' KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_KYC_OWNERS"
+        },
+        {
+          "service": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+          "callingAlias": "SERVICE_ECONOMIC_GROUP_KYC_COMPANY",
+          "name": "Economic group KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_KYC_COMPANY"
+        },
+        {
+          "service": "SERVICE_EMPLOYEES_KYC",
+          "callingAlias": "SERVICE_EMPLOYEES_KYC",
+          "name": "Employee KYC and compliance",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_EMPLOYEES_KYC"
+        },
+        {
+          "service": "SERVICE_FGTS",
+          "callingAlias": "SERVICE_FGTS",
+          "name": "FGTS",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_FGTS"
+        },
+        {
+          "service": "SERVICE_PCD_COMPANY",
+          "callingAlias": "SERVICE_PCD_COMPANY",
+          "name": "PCD quota",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PCD_COMPANY"
+        },
+        {
+          "service": "SERVICE_SYNDICATE_AGREEMENTS",
+          "callingAlias": "SERVICE_SYNDICATE_AGREEMENTS",
+          "name": "Union agreements",
+          "tags": [
+            "cnpj",
+            "compliance",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SYNDICATE_AGREEMENTS"
+        }
+      ],
+      "contact": [
+        {
+          "service": "SERVICE_EMAILS_EXTENDED",
+          "callingAlias": "SERVICE_EMAILS_EXTENDED",
+          "name": "Email history",
+          "tags": [
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_EMAILS_EXTENDED"
+        },
+        {
+          "service": "SERVICE_EMAIL_VALIDATION",
+          "callingAlias": "SERVICE_EMAIL_VALIDATION1",
+          "name": "Email validation",
+          "tags": [
+            "contato"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_EMAIL_VALIDATION"
+        },
+        {
+          "service": "SERVICE_RELATED_PEOPLE_EMAILS",
+          "callingAlias": "SERVICE_RELATED_PEOPLE_EMAILS",
+          "name": "Related people's emails",
+          "tags": [
+            "contato",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE_EMAILS"
+        }
+      ],
+      "socialBenefits": [
+        {
+          "service": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+          "callingAlias": "SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION",
+          "name": "E-Social validation",
+          "tags": [
+            "beneficios-sociais",
+            "compliance",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION"
+        },
+        {
+          "service": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "callingAlias": "SERVICE_SOCIAL_ASSISTANCE_EXTENDED",
+          "name": "Extended social benefits",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_SOCIAL_ASSISTANCE_EXTENDED"
+        },
+        {
+          "service": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "callingAlias": "SERVICE_FAMILY_SOCIAL_BENEFITS",
+          "name": "Family social benefits",
+          "tags": [
+            "beneficios-sociais",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FAMILY_SOCIAL_BENEFITS"
+        }
+      ],
+      "registration": [
+        {
+          "service": "SERVICE_RFB_PF_ON_DEMAND",
+          "callingAlias": "SERVICE_RFB_PF_ON_DEMAND",
+          "name": "CPF at the Federal Revenue on-demand",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF_ON_DEMAND"
+        },
+        {
+          "service": "SERVICE_RFB_PF",
+          "callingAlias": "SERVICE_RFB_PF",
+          "name": "CPF status at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cpf"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF"
+        },
+        {
+          "service": "SERVICE_COMPANY_RFB_OWNERS",
+          "callingAlias": "SERVICE_COMPANY_RFB_OWNERS",
+          "name": "Business owners at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RFB_OWNERS"
+        },
+        {
+          "service": "SERVICE_RFB_PJ_ON_DEMAND",
+          "callingAlias": "SERVICE_RFB_PJ_ON_DEMAND",
+          "name": "CNPJ at the Federal Revenue on-demand",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ_ON_DEMAND"
+        },
+        {
+          "service": "SERVICE_RFB_PJ",
+          "callingAlias": "SERVICE_RFB_PJ",
+          "name": "CNPJ status at the Federal Revenue",
+          "tags": [
+            "cadastral",
+            "cnpj",
+            "cpf",
+            "juridico"
+          ],
+          "documentationUrl": "https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ"
+        }
+      ]
+    },
+    "examples": [
+      {
+        "title": "Gerar token em homologação",
+        "url": "https://api-docs.idcerberus.com/examples/auth.hml.curl"
+      },
+      {
+        "title": "Gerar token em produção",
+        "url": "https://api-docs.idcerberus.com/examples/auth.prod.curl"
+      },
+      {
+        "title": "Consulta simples de CPF em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl"
+      },
+      {
+        "title": "Consulta simples de CPF em produção",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cpf.prod.curl"
+      },
+      {
+        "title": "Consulta simples de CNPJ em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl"
+      },
+      {
+        "title": "Consulta simples de CNPJ em produção",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-cnpj.prod.curl"
+      },
+      {
+        "title": "OCR de CNH em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-cnh.hml.curl"
+      },
+      {
+        "title": "OCR de RG em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-rg.hml.curl"
+      },
+      {
+        "title": "OCR de cartão CNPJ em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-cnpj-card.hml.curl"
+      },
+      {
+        "title": "OCR de comprovante de endereço em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-ocr-proof-of-address.hml.curl"
+      },
+      {
+        "title": "Face Index em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-face-index.hml.curl"
+      },
+      {
+        "title": "Risco de crédito PJ em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-credit-risk-company.hml.curl"
+      },
+      {
+        "title": "Score de crédito PF em HML",
+        "url": "https://api-docs.idcerberus.com/examples/service-api-credit-score.hml.curl"
+      },
+      {
+        "title": "FaceMatch em HML",
+        "url": "https://api-docs.idcerberus.com/examples/facematch.hml.curl"
+      },
+      {
+        "title": "Documentoscopia em HML",
+        "url": "https://api-docs.idcerberus.com/examples/documentoscopia.hml.curl"
+      }
+    ]
+  },
+  "exampleQuestionsByUseCase": {
+    "ocr": [
+      "Which service should I use for CNH OCR?",
+      "How do I build the payload for front-and-back RG OCR?",
+      "What is the expected public return for CNPJ card OCR?",
+      "What should I check when OCR returns an empty result?"
+    ],
+    "cpfCnpj": [
+      "Which service should I use to query a CPF at the Federal Revenue?",
+      "What is the minimum payload to query a CNPJ at the Federal Revenue?",
+      "How do I tell apart a calling alias and a documented alias?"
+    ],
+    "faceBiometrics": [
+      "How do I test SERVICE_FACE_INDEX in staging?",
+      "Does Face Index confirm identity or only search for a face in the database?",
+      "Which image should I use for Face Index?"
+    ],
+    "errors": [
+      "What does \"Don't have access to the service\" mean?",
+      "What should I do when the response comes back with onboardingStatus ERROR?",
+      "How do I investigate a call using externalId?"
+    ],
+    "payloadAndCurl": [
+      "Generate a staging curl for SERVICE_CREDIT_RISK_COMPANY.",
+      "Generate a staging curl for SERVICE_OCR_PROOF_OF_ADDRESS.",
+      "Which headers are required on POST /api/service-api?"
+    ]
+  }
+}

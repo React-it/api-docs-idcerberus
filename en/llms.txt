@@ -1,0 +1,220 @@
+# idCerberus API Docs
+
+> idCerberus API documentation for digital onboarding, KYC, biometrics, FaceMatch, Liveness, risk analysis, compliance, data enrichment, and individual (PF) and business (PJ) queries.
+
+Base URLs:
+
+1. Staging: `https://backoffice-hml.idcerberus.com`
+2. Production: `https://backoffice.idcerberus.com`
+3. Published documentation: `https://api-docs.idcerberus.com/en`
+
+## Rules for AI assistants
+
+1. Use the documentation as the primary source and do not invent endpoints, parameters or services.
+2. For external queries, use `POST /api/service-api` and select the product through the `service` field.
+3. Use `Authorization: Bearer {jwt_token}` in protected calls.
+4. Use staging for tests and production only when the user explicitly asks for it.
+5. Never expose tokens, secrets, real CPFs, real CNPJs or real images in examples.
+6. For OCR, send the complete base64 in `image1`/`image2` (with or without the `data:image/...;base64,` prefix, both formats work).
+7. Do not use `fieldsOutput`, null fields or internal metadata as the public contract; use `result`.
+8. If a service does not appear in the catalog, say it needs to be confirmed before documenting or integrating it.
+
+## How to choose the right file
+
+| Need | Use |
+| --- | --- |
+| Understand the documentation structure | https://api-docs.idcerberus.com/en/llms.txt |
+| Generate an integration, curl or choose a service | https://api-docs.idcerberus.com/en/llms-small.txt |
+| Look up payloads and responses per service | https://api-docs.idcerberus.com/en/llms-api-reference.txt |
+| Search for a service in a lightweight index | https://api-docs.idcerberus.com/en/services-catalog.min.json |
+| Run structured search from automation | https://api-docs.idcerberus.com/en/services-catalog.json |
+| Configure an MCP or agent with structured resources | https://api-docs.idcerberus.com/en/mcp-manifest.json |
+| Answer with the full documentation context | https://api-docs.idcerberus.com/en/llms-full.txt |
+
+## Use as a base for MCP and agents
+
+These files can be used as context sources for a documentation MCP. The MCP should query the documentation, not execute calls against the idCerberus API.
+
+### Recommended reading order
+
+1. Read `llms.txt` as the initial manifest of the documentation.
+2. Use `services-catalog.min.json` for a quick search by service, name, category, field and tag.
+3. Use `services-catalog.json` when you need the full contract of a service.
+4. Use `mcp-manifest.json` to list resources, suggested tools, safety rules and reading order.
+5. Use `llms-api-reference.txt` for payloads, summarized responses and examples per service.
+6. Use `examples/*.curl` when the answer needs a ready-to-use curl.
+7. Use `llms-full.txt` only when the question requires the full context of the guides, API Reference and OpenAPI.
+
+### Resources an MCP can expose
+
+| Resource | Use in the MCP |
+| --- | --- |
+| https://api-docs.idcerberus.com/en/llms.txt | Manifest, rules, main URLs and shortcuts. |
+| https://api-docs.idcerberus.com/en/llms-small.txt | Short context to generate an integration, curl and explanation. |
+| https://api-docs.idcerberus.com/en/llms-api-reference.txt | Payloads, responses and examples per service. |
+| https://api-docs.idcerberus.com/en/llms-full.txt | Full context for broad questions. |
+| https://api-docs.idcerberus.com/en/services-catalog.min.json | Lightweight index for a quick search by service, category, tag and fields. |
+| https://api-docs.idcerberus.com/en/services-catalog.json | Structured search and filters by service/category/field. |
+| https://api-docs.idcerberus.com/en/mcp-manifest.json | Manifest with resources, suggested tools, rules and reading order. |
+| https://api-docs.idcerberus.com/examples/*.curl | Ready-to-use examples to copy and test. |
+
+### Rules for the MCP
+
+1. Operate as a read-only source of the documentation.
+2. Do not call staging, production, database or idCerberus endpoints.
+3. Do not request or store `client`, `secret`, a JWT, CPF, CNPJ or a real image.
+4. Use staging as the default environment when generating examples.
+5. If the service does not exist in the catalog, answer that it needs to be confirmed before integrating.
+6. Prefer `result` as the public contract; do not use `fieldsOutput` or internal metadata.
+
+## Base contract of POST /api/service-api
+
+1. Staging endpoint: `POST https://backoffice-hml.idcerberus.com/api/service-api`.
+2. Production endpoint: `POST https://backoffice.idcerberus.com/api/service-api`.
+3. Required header: `Authorization: Bearer {jwt_token}`.
+4. Recommended header: `Content-Type: application/json`.
+5. Required body field: `service`.
+6. The alias sent in `service` must be the alias configured on the client's product.
+7. Read public data in `result`; do not treat `fieldsOutput` or internal metadata as the public contract.
+8. Preserve `status`, `onboardingStatus` and `externalId` when explaining responses.
+
+## Most used service shortcuts
+
+| Case | Service | Main fields | Guide/API |
+| --- | --- | --- | --- |
+| CPF at the Federal Revenue | `SERVICE_RFB_PF` | `cpf`, `birthDate` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
+| CNPJ at the Federal Revenue | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ |
+| React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR |
+| CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
+| Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_PROOF_OF_ADDRESS |
+| Face Index | `SERVICE_FACE_INDEX` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX |
+| Business (PJ) credit risk | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY |
+| Individual (PF) credit score | `SERVICE_CREDIT_SCORE` | `cpf` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE |
+| Business (PJ) legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ |
+| Family social benefits | `SERVICE_FAMILY_SOCIAL_BENEFITS` | `cpf` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FAMILY_SOCIAL_BENEFITS |
+
+## Quick notes for OCR and images
+
+1. OCR uses a document image, not a selfie.
+2. Face, FaceMatch and Face Index use a selfie/face, not a photo of an RG or CNH.
+3. `image1` takes the image's base64, with or without the `data:image/...;base64,` prefix: both formats work.
+4. RG usually needs front and back: `image1` and `image2`.
+5. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.
+6. CNPJ card uses `SERVICE_OCR_CNPJ_CARD` and `image1`.
+7. Proof of address uses `SERVICE_OCR_PROOF_OF_ADDRESS` and `image1`.
+8. Emancipation uses `SERVICE_OCR_EMANCIPATION`; the document varies and success depends on OCR finding usable text.
+9. If the image is missing, illegible or the wrong type, expect `REFUSED` with a clear message, do not invent success.
+
+## Main content
+
+### Guides / Getting started
+
+1. [Documentation map](https://api-docs.idcerberus.com/en/guides/mapa-da-documentacao): Quickly find the best path through the idCerberus documentation
+2. [Quick search](https://api-docs.idcerberus.com/en/guides/busca-rapida): Find services, payloads, guides, and examples using common terms, aliases, and use cases
+3. [Welcome](https://api-docs.idcerberus.com/en): Integrate onboarding, KYC, biometrics, OCR, risk, and compliance with the idCerberus API
+4. [Quickstart](https://api-docs.idcerberus.com/en/guides/quickstart): Make your first call to the idCerberus API with Postman, Windows, macOS, or Linux
+5. [Integration roadmap](https://api-docs.idcerberus.com/en/guides/roteiro-de-integracao): A practical step by step to go from the first test to a production-ready integration
+6. [Overview](https://api-docs.idcerberus.com/en/guides/visao-geral): Understand the integration architecture, environments, endpoints, and response pattern of the idCerberus API
+7. [Environments](https://api-docs.idcerberus.com/en/guides/ambientes): Understand the difference between staging and production in the idCerberus API
+8. [Files for LLMs](https://api-docs.idcerberus.com/en/guides/llms): Use context files to support integrations, automations, and AI assistants
+9. [How to use this documentation](https://api-docs.idcerberus.com/en/guides/como-usar-a-documentacao): Understand when to use guides, the technical catalog, and the API Reference
+10. [Postman from scratch](https://api-docs.idcerberus.com/en/guides/postman-do-zero): Set up Postman to test tokens, service-api, and OCR without writing code
+
+### Guides / Main flows
+
+1. [Authentication](https://api-docs.idcerberus.com/en/guides/autenticacao): Generate JWT tokens and authenticate protected calls to the idCerberus API
+2. [First CPF query](https://api-docs.idcerberus.com/en/guides/primeira-consulta-cpf): Run a simple individual query from start to finish
+3. [First CNPJ query](https://api-docs.idcerberus.com/en/guides/primeira-consulta-cnpj): Run a simple business query from start to finish
+4. [Onboarding via SDK](https://api-docs.idcerberus.com/en/guides/onboarding-sdk): Generate a TokenOnboarding, track registration status, and download the final report
+5. [Webhooks](https://api-docs.idcerberus.com/en/guides/webhooks): Get automatic notifications when an onboarding changes status, without polling
+6. [Backoffice](https://api-docs.idcerberus.com/en/guides/backoffice): idCerberus's visual interface, dashboard, onboarding history, and manual queries without writing code
+7. [Choose the right service](https://api-docs.idcerberus.com/en/guides/escolha-o-servico-certo): Find the idCerberus services best suited for each use case
+8. [Ready-made recipes](https://api-docs.idcerberus.com/en/guides/receitas-prontas): Practical flows to test CPF, CNPJ, OCR, Face Index, risk, and score via the Service API
+9. [Examples by environment](https://api-docs.idcerberus.com/en/guides/exemplos-por-ambiente): Copy equivalent calls for staging and production without swapping parameters by mistake
+10. [Examples by language](https://api-docs.idcerberus.com/en/guides/exemplos-por-linguagem): Integration examples with curl, Node.js, Python, and C#
+
+### Guides / Support and reference
+
+1. [FAQ](https://api-docs.idcerberus.com/en/guides/duvidas-e-solucoes): Direct answers to the most common integration questions, organized by topic, before opening a ticket
+2. [Status and errors](https://api-docs.idcerberus.com/en/guides/status-e-erros): Understand how to interpret responses, failures, and cases with no JSON body
+3. [Common integration errors](https://api-docs.idcerberus.com/en/guides/erros-comuns-integracao): Practical diagnosis for token, access, payload, base64, OCR, empty return, and external failures
+4. [Troubleshooting](https://api-docs.idcerberus.com/en/guides/troubleshooting): Fix common problems when integrating with the idCerberus API
+5. [Integration best practices](https://api-docs.idcerberus.com/en/guides/boas-praticas-integracao): Recommendations for integrating the idCerberus API securely and reliably
+6. [Glossary](https://api-docs.idcerberus.com/en/guides/glossario): Common terms used in the idCerberus API documentation
+
+### Guides / POST /api/service-api
+
+1. [Service matrix](https://api-docs.idcerberus.com/en/guides/matriz-de-servicos): Quick overview of the main services by document type, input, and moment of use
+2. [Service index](https://api-docs.idcerberus.com/en/guides/indice-de-services): Operational list of the services already documented in the API Reference
+
+### Guides / OCR via service API
+
+1. [About the OCR Service API](https://api-docs.idcerberus.com/en/guides/service-api/sobre-ocr-service-api): Practical guide to choosing, configuring, testing, and interpreting OCR services in POST /api/service-api.
+2. [Identification documents](https://api-docs.idcerberus.com/en/guides/service-api/identificacao-de-documentos): Service for extracting data from identification documents via API.
+3. [CNPJ card](https://api-docs.idcerberus.com/en/guides/service-api/cartao-cnpj): Service for extracting data from the CNPJ card via API.
+4. [Proof of address](https://api-docs.idcerberus.com/en/guides/service-api/comprovante-de-endereco): Service for extracting data from proof-of-address documents via API.
+5. [Emancipation document](https://api-docs.idcerberus.com/en/guides/service-api/documento-de-emancipacao): Service for extracting data from emancipation documents via API.
+6. [Questions and Support](https://api-docs.idcerberus.com/en/guides/service-api/duvidas-e-suporte): Guidance for possible questions when testing OCR via API, and cases for contacting technical support.
+
+### Guides / POST /api/service-api
+
+1. [Service families](https://api-docs.idcerberus.com/en/guides/service-api/familias-de-servicos): Browse the main product groups run via POST /api/service-api
+
+### Guides / Individuals
+
+1. [Registration enrichment](https://api-docs.idcerberus.com/en/guides/pessoas/enriquecimento-cadastral): Query, validate, and complement individuals' registration data
+2. [Biometrics and documents](https://api-docs.idcerberus.com/en/guides/pessoas/biometria-e-documentos): Validate documents, selfies, facial biometrics, and identity evidence
+3. [Risk and compliance](https://api-docs.idcerberus.com/en/guides/pessoas/risco-e-compliance): Assess exposure, restrictions, certificates, debts, and risk signals for individuals
+4. [Electoral data](https://api-docs.idcerberus.com/en/guides/pessoas/dados-eleitorais): Query candidacies, donations, political relationships, and electoral exposure of individuals
+
+### Guides / Businesses
+
+1. [Business registration data](https://api-docs.idcerberus.com/en/guides/empresas/dados-cadastrais): Query registration status, official data, economic activities, and obligations of businesses
+2. [Business owners and relationships](https://api-docs.idcerberus.com/en/guides/empresas/socios-e-relacionamentos): Analyze ownership structure, business relationships, relationship circles, and risks associated with business owners
+3. [Business compliance](https://api-docs.idcerberus.com/en/guides/empresas/compliance): Query debts, protests, restrictions, and regulatory exposure of businesses
+
+### Guides / Technical catalog
+
+1. [Individual Services](https://api-docs.idcerberus.com/en/guides/servicos-pessoa-fisica): External services available for CPF queries
+2. [Business Services](https://api-docs.idcerberus.com/en/guides/servicos-pessoa-juridica): External services available for CNPJ queries
+
+### API Reference / Service catalog
+
+1. [Welcome](https://api-docs.idcerberus.com/en/api-reference/boas-vindas): Start implementing the idCerberus API endpoints
+2. [How to run a service](https://api-docs.idcerberus.com/en/api-reference/como-executar-service): Step by step to authenticate, choose the environment, build the body and call a service in the idCerberus API.
+3. [Services by use case](https://api-docs.idcerberus.com/en/api-reference/services-por-caso-de-uso): Quick map to find the right service based on the goal of the integration.
+4. [Individual (PF) services](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica): Explicit catalog of individual (PF) services available via API, with expected fields and request examples.
+5. [Business (PJ) services](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica): Explicit catalog of business (PJ) services available via API, with expected fields and request examples.
+
+## API Reference
+
+1. [OpenAPI reference](https://api-docs.idcerberus.com/en/api-reference/boas-vindas): endpoints, request/response examples and schemas.
+2. Main query endpoint: `POST /api/service-api`.
+3. Authentication: `POST /api/token-generate` returns `access_token`; use `Authorization: Bearer {jwt_token}` in protected calls.
+
+## Full file for LLM
+
+1. [llms-small.txt](https://api-docs.idcerberus.com/en/llms-small.txt): operational summary with flows, authentication, service-api and documented services.
+2. [llms-full.txt](https://api-docs.idcerberus.com/en/llms-full.txt): consolidated version of the guides and the API Reference.
+3. [llms-api-reference.txt](https://api-docs.idcerberus.com/en/llms-api-reference.txt): operational reference for services with curl examples.
+4. [services-catalog.min.json](https://api-docs.idcerberus.com/en/services-catalog.min.json): lightweight index for a quick search by service, category, tag and fields.
+5. [services-catalog.json](https://api-docs.idcerberus.com/en/services-catalog.json): structured catalog for tools and automations.
+6. [mcp-manifest.json](https://api-docs.idcerberus.com/en/mcp-manifest.json): manifest for MCPs and agents with resources, rules and suggested tools.
+
+## Curl examples
+
+1. [auth.hml.curl](https://api-docs.idcerberus.com/examples/auth.hml.curl): Gerar token em homologação. Use antes de chamar endpoints protegidos em HML.
+2. [auth.prod.curl](https://api-docs.idcerberus.com/examples/auth.prod.curl): Gerar token em produção. Use somente quando o cliente já estiver liberado em produção.
+3. [service-api-cpf.hml.curl](https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl): Consulta simples de CPF em HML. Exemplo base para validar token, produto e resposta de pessoa física.
+4. [service-api-cpf.prod.curl](https://api-docs.idcerberus.com/examples/service-api-cpf.prod.curl): Consulta simples de CPF em produção. Mesmo payload da consulta de CPF, apontando para produção.
+5. [service-api-cnpj.hml.curl](https://api-docs.idcerberus.com/examples/service-api-cnpj.hml.curl): Consulta simples de CNPJ em HML. Exemplo base para validar token, produto e resposta de pessoa jurídica.
+6. [service-api-cnpj.prod.curl](https://api-docs.idcerberus.com/examples/service-api-cnpj.prod.curl): Consulta simples de CNPJ em produção. Mesmo payload da consulta de CNPJ, apontando para produção.
+7. [service-api-ocr-cnh.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-cnh.hml.curl): OCR de CNH em HML. Use base64 puro da imagem da CNH em image1.
+8. [service-api-ocr-rg.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-rg.hml.curl): OCR de RG em HML. Use frente em image1 e verso em image2.
+9. [service-api-ocr-cnpj-card.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-cnpj-card.hml.curl): OCR de cartão CNPJ em HML. Use imagem legível do cartão CNPJ em image1.
+10. [service-api-ocr-proof-of-address.hml.curl](https://api-docs.idcerberus.com/examples/service-api-ocr-proof-of-address.hml.curl): OCR de comprovante de endereço em HML. Use conta, fatura ou comprovante aceito em image1.
+11. [service-api-face-index.hml.curl](https://api-docs.idcerberus.com/examples/service-api-face-index.hml.curl): Face Index em HML. Use selfie real em image1. Não use foto de documento.
+12. [service-api-credit-risk-company.hml.curl](https://api-docs.idcerberus.com/examples/service-api-credit-risk-company.hml.curl): Risco de crédito PJ em HML. Exemplo para consultar risco de crédito de empresa.
+13. [service-api-credit-score.hml.curl](https://api-docs.idcerberus.com/examples/service-api-credit-score.hml.curl): Score de crédito PF em HML. Exemplo para consultar score de crédito de pessoa física.
+14. [facematch.hml.curl](https://api-docs.idcerberus.com/examples/facematch.hml.curl): FaceMatch em HML. Compara duas imagens faciais. Use selfie/rosto, não OCR de documento.
+15. [documentoscopia.hml.curl](https://api-docs.idcerberus.com/examples/documentoscopia.hml.curl): Documentoscopia em HML. Fluxo com documento e selfie para análise documental.
