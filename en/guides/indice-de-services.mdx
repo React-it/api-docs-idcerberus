@@ -1,0 +1,2099 @@
+---
+title: Service index
+description: Operational list of the services already documented in the API Reference
+boost: 4
+---
+
+# Service index
+
+Use this index when you already know which product you need to run and want to confirm the exact `service` name before building the call.
+
+<Info>
+All the queries below use `POST /api/service-api`. The product executed is defined by the `service` field in the body.
+</Info>
+
+## How to search better
+
+Search works best when the term appears as a title, alias or page text. If you do not know the exact alias, search by the type of document, data or problem you want to solve.
+
+<CardGroup cols={2}>
+ <Card icon="id-card" title="I have a CPF" href="#individuals">
+ Search for `cpf`, `revenue`, `score`, `risk`, `phone`, `email`, `ocr`, `face` or `lawsuits`.
+ </Card>
+ <Card icon="building" title="I have a CNPJ" href="#businesses">
+ Search for `cnpj`, `revenue`, `credit risk`, `partners`, `domains`, `CNPJ card` or `compliance`.
+ </Card>
+ <Card icon="image" title="I have an image" href="/en/guides/service-api/sobre-ocr-service-api">
+ Search for `OCR`, `CNH`, `RG`, `CNPJ card`, `proof of address`, `base64` or `image1`.
+ </Card>
+ <Card icon="code" title="I want to copy a payload" href="/en/api-reference/services-pessoa-fisica">
+ Go to the API Reference when you need body, curl, a summarized response and a common error.
+ </Card>
+</CardGroup>
+
+### Search shortcuts
+
+<CardGroup cols={2}>
+ <Card icon="layer-group" title="SERVICE_OCR or OCR React">
+ Identification documents: CNH, RG, OAB, RNE/CRNM and passport.
+ </Card>
+ <Card icon="layer-group" title="CNPJ card">
+ OCR of the CNPJ card with `SERVICE_OCR_CNPJ_CARD`.
+ </Card>
+ <Card icon="layer-group" title="proof of address">
+ OCR of a utility bill, invoice or proof of address with image/base64.
+ </Card>
+ <Card icon="layer-group" title="face index">
+ Facial search by selfie in the face database.
+ </Card>
+ <Card icon="layer-group" title="credit risk">
+ Score, rating, risk and credit services for PF/PJ.
+ </Card>
+ <Card icon="layer-group" title="phone or email">
+ Validations and contact history.
+ </Card>
+</CardGroup>
+
+<Warning>
+Before running the call, confirm which service is enabled on the client's product. The `service` field must receive exactly the public value shown in the catalog.
+</Warning>
+
+In practice: copy the `Service` value from the card or accordion of the product and send that value in the request body. The documentation does not expose internal integration aliases.
+
+## Services by person type
+
+<CardGroup cols={2}>
+ <Card icon="id-card" title="Individuals" href="#individuals">
+ 67 services for CPF, biometrics, OCR, contacts, risk, credit, compliance and electoral data.
+ </Card>
+ <Card icon="building" title="Businesses" href="#businesses">
+ 58 services for CNPJ, Federal Revenue, partners, contacts, risk, compliance, OCR and corporate data.
+ </Card>
+</CardGroup>
+
+## Individuals
+
+Open the service to see the public alias, input fields, search terms and expected return.
+
+<AccordionGroup>
+<Accordion title="Account holder's professional history">
+
+**Service:** `SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY`
+
+**Main fields:** `cpf`, `birthDate`
+
+**Search terms:** PF - Account holder's professional history
+
+**When to use:** Use this service when you need to run the "Account holder's professional history" query via the API.
+
+**Main return:** Returns professional history where the person appears as a holder, partner or owner, with companies, roles and tie dates.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROFESSIONAL_HISTORY_OWNER_ONLY)
+
+</Accordion>
+
+<Accordion title="Active debt">
+
+**Service:** `SERVICE_ACTIVE_DEBT_PF`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Active debt, active debt collections delinquency
+
+**When to use:** Use to look up debts associated with the individual.
+
+**Main return:** Returns active debts linked to the CPF, with debt origin, amounts, status, creditor agency and query status.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ACTIVE_DEBT_PF)
+
+</Accordion>
+
+<Accordion title="Activity indicators">
+
+**Service:** `SERVICE_ACTIVITIES_INDICATORS`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Activity indicators
+
+**When to use:** Use this service when you need to run the "Activity indicators" query via the API.
+
+**Main return:** Returns activity indicators linked to the CPF, such as professional signals, segments, occupations and available records.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ACTIVITIES_INDICATORS)
+
+</Accordion>
+
+<Accordion title="Addresses">
+
+**Service:** `SERVICE_ADDRESS`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Addresses
+
+**When to use:** Use to look up or validate addresses associated with the document.
+
+**Main return:** Returns addresses associated with the CPF, including street, number, neighborhood, city, state, zip code, country, type and freshness indicators when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ADDRESS)
+
+</Accordion>
+
+<Accordion title="AI prompt for a person">
+
+**Service:** `SERVICE_PERSON_AI_PROMPT`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - AI prompt for a person
+
+**When to use:** Use this service when you need to run the "AI prompt for a person" query via the API.
+
+**Main return:** Returns an AI-consolidated text answer from the person's data, with a summary, points of attention and an operational read.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_AI_PROMPT)
+
+</Accordion>
+
+<Accordion title="Arrest warrant">
+
+**Service:** `SERVICE_ARREST_WARRANT`
+
+**Main fields:** `name`, `motherName`, `fatherName`, `birthDate`, `cpf`
+
+**Search terms:** PF - Arrest warrant
+
+**When to use:** Use this service when you need to run the "Arrest warrant" query via the API.
+
+**Main return:** Returns arrest warrant indicators for the informed data, with status, agency, case and details found when there is an occurrence.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ARREST_WARRANT)
+
+</Accordion>
+
+<Accordion title="Awards and certifications">
+
+**Service:** `SERVICE_AWARDS_AND_CERTIFICATIONS_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - Awards and certifications
+
+**When to use:** Use this service when you need to run the "Awards and certifications" query via the API.
+
+**Main return:** Returns the count and records of awards and certifications found for the CPF, when the queried database has data.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_AWARDS_AND_CERTIFICATIONS_CPF)
+
+</Accordion>
+
+<Accordion title="Biometric score">
+
+**Service:** `SERVICE_DATAVALID_CNH`
+
+**Main fields:** `cpf`, `image1`
+
+**Search terms:** PF - Biometric score, score risk credit rating delinquency
+
+**When to use:** Use to compare the submitted image against available biometric databases and return the similarity.
+
+**Main return:** Returns CNH document validation, including biometric score, facial similarity, validation status and checked fields.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DATAVALID_CNH)
+
+</Accordion>
+
+<Accordion title="Candidate electoral data">
+
+**Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - Candidate electoral data, electoral data campaign donations candidate
+
+**When to use:** Use to look up electoral information related to the individual.
+
+**Main return:** Returns the CPF's electoral candidacy history, including role, party, year, electoral unit, declared assets and status when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ELECTION_CANDIDATE_DATA_CPF)
+
+</Accordion>
+
+<Accordion title="Civil criminal records">
+
+**Service:** `SERVICE_CRIMINAL_RECORD_CIVIL`
+
+**Main fields:** `cpf`, `rg`, `uf`
+
+**Search terms:** PF - Civil criminal records
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the individual.
+
+**Main return:** Returns the civil criminal record result, with certificate status, occurrences found, state, RG and query messages.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CRIMINAL_RECORD_CIVIL)
+
+</Accordion>
+
+<Accordion title="CPF at the Federal Revenue on-demand">
+
+**Service:** `SERVICE_RFB_PF_ON_DEMAND`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - CPF at the Federal Revenue on-demand
+
+**When to use:** Use to look up or validate registration data for the individual in Federal Revenue databases.
+
+**Main return:** Returns the CPF's updated status queried on demand at the Federal Revenue, with name, birth date, registration status and protocol.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF_ON_DEMAND)
+
+</Accordion>
+
+<Accordion title="CPF status at the Federal Revenue">
+
+**Service:** `SERVICE_RFB_PF`
+
+**Main fields:** `cpf`, `birthDate`
+
+**Search terms:** CPF Federal Revenue, PF - CPF status at the Federal Revenue
+
+**When to use:** Use to look up or validate registration data for the individual in Federal Revenue databases.
+
+**Main return:** Returns the CPF's status at the Federal Revenue, including name, birth date, registration status, receipt/protocol and available tax data.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF)
+
+</Accordion>
+
+<Accordion title="CPF validation with address">
+
+**Service:** `SERVICE_CPF_ADDRESS_VALIDATION`
+
+**Main fields:** `cpf`, `zipcode`, `numberAddress`
+
+**Search terms:** CPF Federal Revenue, PF - CPF validation with address
+
+**When to use:** Use to look up or validate addresses associated with the document.
+
+**Main return:** Returns whether the informed address is associated with the CPF, including match level, normalized address and signals used in the validation.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CPF_ADDRESS_VALIDATION)
+
+</Accordion>
+
+<Accordion title="CPF validation with phone">
+
+**Service:** `SERVICE_CPF_PHONE_VALIDATION`
+
+**Main fields:** `cpf`, `phone`
+
+**Search terms:** CPF Federal Revenue, PF - CPF validation with phone, phone mobile validation contact
+
+**When to use:** Use to look up, validate or enrich phone data.
+
+**Main return:** Returns the validation of the association between CPF and phone number, with match status, query message and data returned by the query.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CPF_PHONE_VALIDATION)
+
+</Accordion>
+
+<Accordion title="Credit score">
+
+**Service:** `SERVICE_QUOD_CREDIT_SCORE_PERSON`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Credit score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the individual.
+
+**Main return:** Returns the individual's credit score by the informed CPF, with risk level, risk classification, score reasons and a text summary of the query.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_QUOD_CREDIT_SCORE_PERSON)
+
+</Accordion>
+
+<Accordion title="Credit score">
+
+**Service:** `SERVICE_CREDIT_SCORE`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Credit score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the individual.
+
+**Main return:** Returns the credit score associated with the CPF, with the score, risk band and query message when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE)
+
+</Accordion>
+
+<Accordion title="Data by phone number">
+
+**Service:** `SERVICE_CONFIRM_PHONE`
+
+**Main fields:** `phone`
+
+**Search terms:** PF - Data by phone number, phone mobile validation contact
+
+**When to use:** Use to look up, validate or enrich phone data.
+
+**Main return:** Returns data associated with the informed phone number, such as a possible holder, related document, confirmation status and available attributes.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CONFIRM_PHONE)
+
+</Accordion>
+
+<Accordion title="Data enrichment">
+
+**Service:** `SERVICE_PERSON_DATA_ENRICHMENT`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Data enrichment
+
+**When to use:** Use this service when you need to run the "Data enrichment" query via the API.
+
+**Main return:** Returns the CPF's registration data, including name, birth date, registration status, parentage, death record, age, gender and available attributes.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_DATA_ENRICHMENT)
+
+</Accordion>
+
+<Accordion title="Data modeling">
+
+**Service:** `SERVICE_PERSON_DATA_MODELING`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Data modeling
+
+**When to use:** Use this service when you need to run the "Data modeling" query via the API.
+
+**Main return:** Returns consolidated person modeling, gathering registration data, contacts, addresses, ties, indicators and derived summaries.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_DATA_MODELING)
+
+</Accordion>
+
+<Accordion title="Default risk score">
+
+**Service:** `SERVICE_DEFAULT_RISK_SCORE`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Default risk score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the individual.
+
+**Main return:** Returns the default risk score for the CPF, with the score, risk band and estimated probability when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DEFAULT_RISK_SCORE)
+
+</Accordion>
+
+<Accordion title="Demographic data">
+
+**Service:** `SERVICE_DEMOGRAPHIC_DATA_CPF`
+
+**Main fields:** `cpf`, `birthDate`
+
+**Search terms:** CPF Federal Revenue, PF - Demographic data
+
+**When to use:** Use to look up demographic data associated with the individual.
+
+**Main return:** Returns demographic data associated with the CPF, with regional data, estimates and indicators returned by the queried database.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DEMOGRAPHIC_DATA_CPF)
+
+</Accordion>
+
+<Accordion title="Digital document analysis">
+
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
+
+**Main fields:** `key`, `image1`, `image2`, `selfie1`
+
+**Search terms:** PF - Digital document analysis
+
+**When to use:** Use this service when you need to run the "Digital document analysis" query via the API.
+
+**Main return:** Returns the documentoscopy status, query key, data extracted from the document, document/selfie validations and the approval result.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DIGITAL_DOCUMENTOSCOPY)
+
+</Accordion>
+
+<Accordion title="Digital document analysis result">
+
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
+
+**Main fields:** `key`
+
+**Search terms:** PF - Digital document analysis result
+
+**When to use:** Use this service when you need to run the "Digital document analysis result" query via the API.
+
+**Main return:** Returns the already processed documentoscopy result by the informed key, with status, extracted fields, evaluated rules and evidence.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT)
+
+</Accordion>
+
+<Accordion title="Domains">
+
+**Service:** `SERVICE_DOMAINS_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - Domains, domains sites digital presence
+
+**When to use:** Use to look up site data linked to the individual.
+
+**Main return:** Returns domains, sites and digital signals associated with the CPF, including the count and records found when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_DOMAINS_CPF)
+
+</Accordion>
+
+<Accordion title="E-Social validation">
+
+**Service:** `SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION`
+
+**Main fields:** `cpf`, `nit`
+
+**Search terms:** PF - E-Social validation
+
+**When to use:** Use this service when you need to run the "E-Social validation" query via the API.
+
+**Main return:** Returns eSocial registration qualification, with the consistency status between CPF, NIT/PIS and informed registration data.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION)
+
+</Accordion>
+
+<Accordion title="Economic relationships">
+
+**Service:** `SERVICE_ECONOMIC_RELATIONSHIP`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Economic relationships
+
+**When to use:** Use to look up ties, partners or relationships associated with the individual.
+
+**Main return:** Returns economic relationships associated with the CPF, such as related companies, holdings, professional relations and relationship indicators.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ECONOMIC_RELATIONSHIP)
+
+</Accordion>
+
+<Accordion title="Electoral donations">
+
+**Service:** `SERVICE_ELECTORAL_DONORS_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - Electoral donations, electoral data campaign donations candidate
+
+**When to use:** Use to look up electoral information related to the individual.
+
+**Main return:** Returns electoral donations made by the CPF, with year, candidate/party, amount, role, state and accountability details.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ELECTORAL_DONORS_CPF)
+
+</Accordion>
+
+<Accordion title="Electoral service providers">
+
+**Service:** `SERVICE_ELECTORAL_PROVIDERS_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - Electoral service providers, electoral data campaign donations candidate
+
+**When to use:** Use to look up electoral information related to the individual.
+
+**Main return:** Returns electoral service provisions linked to the CPF, with campaign, candidate/party, amount, year and service nature.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ELECTORAL_PROVIDERS_CPF)
+
+</Accordion>
+
+<Accordion title="Email history">
+
+**Service:** `SERVICE_EMAILS_EXTENDED`
+
+**Main fields:** `cpf`, `limit`
+
+**Search terms:** PF - Email history, email validation contact
+
+**When to use:** Use to validate or look up email history related to the document.
+
+**Main return:** Returns emails associated with the CPF, including priority, validation status, source, update date and usage signals when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_EMAILS_EXTENDED)
+
+</Accordion>
+
+<Accordion title="Email validation">
+
+**Service:** `SERVICE_EMAIL_VALIDATION`
+
+**Main fields:** `email`
+
+**Search terms:** PF - Email validation, email validation contact
+
+**When to use:** Use to validate or look up email history related to the document.
+
+**Main return:** Returns the validation of the informed email, including format, likely existence, domain, deliverability and risk indicators.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_EMAIL_VALIDATION)
+
+</Accordion>
+
+<Accordion title="Emancipation OCR">
+
+**Service:** `SERVICE_OCR_EMANCIPATION`
+
+**Main fields:** `image1`
+
+**Search terms:** OCR document image base64 reading extraction, PF - Emancipation OCR, emancipation document notary certificate declaration
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**Main return:** Returns the OCR text of the emancipation document and objective data extracted when it exists, without failing due to the absence of variable fields.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_EMANCIPATION)
+
+</Accordion>
+
+<Accordion title="Extended social benefits">
+
+**Service:** `SERVICE_SOCIAL_ASSISTANCE_EXTENDED`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Extended social benefits
+
+**When to use:** Use this service when you need to run the "Extended social benefits" query via the API.
+
+**Main return:** Returns extended social benefits linked to the CPF, with programs, indicators, status and details found when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_SOCIAL_ASSISTANCE_EXTENDED)
+
+</Accordion>
+
+<Accordion title="Face search in the base">
+
+**Service:** `SERVICE_FACE_INDEX`
+
+**Main fields:** `image1`
+
+**Search terms:** PF - Face search in the base, face index facial search selfie CPF face database, facial comparison biometrics selfie face
+
+**When to use:** Use to compare two facial images and return the similarity between them.
+
+**Main return:** Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX)
+
+</Accordion>
+
+<Accordion title="FaceMatch">
+
+**Service:** `SERVICE_FACE_MATCH`
+
+**Main fields:** `image1`, `image2`
+
+**Search terms:** PF - FaceMatch, facial comparison biometrics selfie face
+
+**When to use:** Use to compare two facial images and return the similarity between them.
+
+**Main return:** Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH)
+
+</Accordion>
+
+<Accordion title="Family social benefits">
+
+**Service:** `SERVICE_FAMILY_SOCIAL_BENEFITS`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Family social benefits
+
+**When to use:** Use this service when you need to run the "Family social benefits" query via the API.
+
+**Main return:** Returns family social benefits linked to the CPF, with programs, status, count and records found when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FAMILY_SOCIAL_BENEFITS)
+
+</Accordion>
+
+<Accordion title="Federal criminal records">
+
+**Service:** `SERVICE_CRIMINAL_RECORD_FEDERAL`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Federal criminal records
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the individual.
+
+**Main return:** Returns the federal criminal record result, with certificate status, occurrences found and query messages.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CRIMINAL_RECORD_FEDERAL)
+
+</Accordion>
+
+<Accordion title="Financial data and addresses">
+
+**Service:** `SERVICE_PF_FINANCIAL_AND_ADDRESS`
+
+**Main fields:** `cpf`, `birthDate`
+
+**Search terms:** PF - Financial data and addresses
+
+**When to use:** Use to look up financial information associated with the individual.
+
+**Main return:** Returns financial data and addresses for the CPF in a combined query, including estimated income, financial indicators and addresses found.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PF_FINANCIAL_AND_ADDRESS)
+
+</Accordion>
+
+<Accordion title="Financial information">
+
+**Service:** `SERVICE_FINANCIAL_INFORMATION`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Financial information
+
+**When to use:** Use to look up financial information associated with the individual.
+
+**Main return:** Returns estimated financial information for the CPF, such as presumed income, purchasing power, economic class and available financial indicators.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FINANCIAL_INFORMATION)
+
+</Accordion>
+
+<Accordion title="Financial risk">
+
+**Service:** `SERVICE_FINANCIAL_RISK_SCORE`
+
+**Main fields:** `cpf`, `birthDate`
+
+**Search terms:** PF - Financial risk, score risk credit rating delinquency
+
+**When to use:** Use to look up financial information associated with the individual.
+
+**Main return:** Returns the CPF's financial risk score, risk band, a short recommendation and the factors that influence the assessment.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FINANCIAL_RISK_SCORE)
+
+</Accordion>
+
+<Accordion title="Fraud risk score">
+
+**Service:** `SERVICE_FRAUD_RISK_SCORE`
+
+**Main fields:** `cpf`, `factor`
+
+**Search terms:** PF - Fraud risk score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the individual.
+
+**Main return:** Returns the CPF's fraud risk score, the analyzed factor, risk level, numeric score and signals supporting the decision.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FRAUD_RISK_SCORE)
+
+</Accordion>
+
+<Accordion title="KYC and compliance">
+
+**Service:** `SERVICE_PERSON_KYC`
+
+**Main fields:** `cpf`, `birthDate`
+
+**Search terms:** PF - KYC and compliance, compliance KYC sanctions PEP media
+
+**When to use:** Use to run KYC and compliance checks on the individual.
+
+**Main return:** Returns the person's KYC check, including PEP, sanctions, media, lawsuits, compliance alerts and risk signals.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PERSON_KYC)
+
+</Accordion>
+
+<Accordion title="Legal and administrative cases">
+
+**Service:** `SERVICE_JURIDICAL_PROCESSES`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Legal and administrative cases, lawsuits legal proceedings court certificate
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the individual.
+
+**Main return:** Returns legal and administrative proceedings linked to the CPF, with court, class, subject, parties, status and dates when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_JURIDICAL_PROCESSES)
+
+</Accordion>
+
+<Accordion title="Media exposure and profile">
+
+**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Media exposure and profile
+
+**When to use:** Use this service when you need to run the "Media exposure and profile" query via the API.
+
+**Main return:** Returns the person's media exposure and profile, with news, sources, categories, sentiment, relevance and alerts found.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_MEDIA_PROFILE_EXPOSURE_PF)
+
+</Accordion>
+
+<Accordion title="MEI query">
+
+**Service:** `SERVICE_MEI`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - MEI query
+
+**When to use:** Use this service when you need to run the "MEI query" query via the API.
+
+**Main return:** Returns MEI companies associated with the CPF, including CNPJ, legal name, status, activities, address and registration dates when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_MEI)
+
+</Accordion>
+
+<Accordion title="Multi-data credit score">
+
+**Service:** `SERVICE_BOAVISTA_ONE_SCORE_PERSON`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Multi-data credit score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the individual.
+
+**Main return:** Returns the individual's multi-data credit score by the informed CPF, with risk level, risk classification, score reasons and a text summary of the query.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_BOAVISTA_ONE_SCORE_PERSON)
+
+</Accordion>
+
+<Accordion title="Negative flags">
+
+**Service:** `SERVICE_QUOD_CREDIT_RISK_PERSON`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Negative flags
+
+**When to use:** Use this service when you need to run the "Negative flags" query via the API.
+
+**Main return:** Returns individual negative credit flags by the informed CPF, with risk level and classification, a restrictions indicator and the count of negative flags.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_QUOD_CREDIT_RISK_PERSON)
+
+</Accordion>
+
+<Accordion title="Negative protest certificate">
+
+**Service:** `SERVICE_PROTEST_CLEARANCE_CERTIFICATE`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Negative protest certificate
+
+**When to use:** Use to look up protests associated with the individual's document.
+
+**Main return:** Returns a protest certificate/query for the CPF, with clean-record status or a list of protests, notary office, amount and dates.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROTEST_CLEARANCE_CERTIFICATE)
+
+</Accordion>
+
+<Accordion title="Nothing on record certificate">
+
+**Service:** `SERVICE_NOTHING_RECORD_LAWSUITS`
+
+**Main fields:** `cpf`, `court`, `uf`, `sphere`
+
+**Search terms:** PF - Nothing on record certificate, lawsuits legal proceedings court certificate
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the individual.
+
+**Main return:** Returns a clean-record certificate for the informed sphere/court, with status, message, occurrences and data used in the query.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_NOTHING_RECORD_LAWSUITS)
+
+</Accordion>
+
+<Accordion title="Phone history">
+
+**Service:** `SERVICE_PHONE_HISTORY`
+
+**Main fields:** `cpf`, `birthDate`, `limit`
+
+**Search terms:** PF - Phone history, phone mobile validation contact
+
+**When to use:** Use to look up, validate or enrich phone data.
+
+**Main return:** Returns the phone history associated with the CPF, including number, line type, carrier, priority, status and recency when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PHONE_HISTORY)
+
+</Accordion>
+
+<Accordion title="PIS data">
+
+**Service:** `SERVICE_PIS_CONSULTATION`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - PIS data
+
+**When to use:** Use this service when you need to run the "PIS data" query via the API.
+
+**Main return:** Returns PIS/NIS data associated with the CPF, including the number found, status, related registration data and query messages.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PIS_CONSULTATION)
+
+</Accordion>
+
+<Accordion title="Political family history">
+
+**Service:** `SERVICE_FAMILY_POLITICAL_HISTORY_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - Political family history
+
+**When to use:** Use this service when you need to run the "Political family history" query via the API.
+
+**Main return:** Returns the CPF's family political history, including relatives with candidacies, donations, positions, parties and electoral ties when found.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FAMILY_POLITICAL_HISTORY_CPF)
+
+</Accordion>
+
+<Accordion title="Political involvement">
+
+**Service:** `SERVICE_POLITICAL_INVOLVEMENT`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Political involvement
+
+**When to use:** Use this service when you need to run the "Political involvement" query via the API.
+
+**Main return:** Returns the CPF's political involvement, including candidacies, positions, donations, service provisions, parties and political ties.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_POLITICAL_INVOLVEMENT)
+
+</Accordion>
+
+<Accordion title="Political involvement (individual)">
+
+**Service:** `SERVICE_POLITICAL_INVOLVEMENT_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - Political involvement (individual)
+
+**When to use:** Use this service when you need to run the "Political involvement (individual)" query via the API.
+
+**Main return:** Returns the CPF's political involvement, including candidacies, positions, donations, service provisions, parties and political ties.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_POLITICAL_INVOLVEMENT_CPF)
+
+</Accordion>
+
+<Accordion title="Politically exposed person">
+
+**Service:** `SERVICE_PEP`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Politically exposed person
+
+**When to use:** Use to check political exposure or a link to a Politically Exposed Person.
+
+**Main return:** Returns whether the CPF is a PEP or related to a PEP, with position, agency, exposure level, period and ties found when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PEP)
+
+</Accordion>
+
+<Accordion title="Professional history">
+
+**Service:** `SERVICE_PROFESSIONAL_HISTORY`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Professional history
+
+**When to use:** Use this service when you need to run the "Professional history" query via the API.
+
+**Main return:** Returns the CPF's professional history, including companies, roles, dates, employment or corporate ties and professional indicators.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROFESSIONAL_HISTORY)
+
+</Accordion>
+
+<Accordion title="Proof of address OCR">
+
+**Service:** `SERVICE_OCR_PROOF_OF_ADDRESS`
+
+**Main fields:** `image1`
+
+**Search terms:** OCR document image base64 reading extraction, PF - Proof of address OCR, proof of address utility bill address
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**Main return:** Returns data extracted from the proof of address by OCR, such as OCR text, name, address, document type, dates and amounts when found.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_PROOF_OF_ADDRESS)
+
+</Accordion>
+
+<Accordion title="Propensity for online betting">
+
+**Service:** `SEVICE_ONLINE_BETTING_PROPENSITY`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Propensity for online betting, betting bets compliance bet
+
+**When to use:** Use this service when you need to run the "Propensity for online betting" query via the API.
+
+**Main return:** Returns the CPF's propensity toward online betting, with score, propensity band, behavioral indicators and associated signals when available. Note: the alias is `SEVICE_ONLINE_BETTING_PROPENSITY` (missing the letter R in SERVICE); that is the spelling implemented in the backend, copy it exactly as shown.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SEVICE_ONLINE_BETTING_PROPENSITY)
+
+</Accordion>
+
+<Accordion title="Protest clearance certificate (individual)">
+
+**Service:** `SERVICE_PROTEST_PF`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Protest clearance certificate (individual)
+
+**When to use:** Use to look up protests associated with the individual's document.
+
+**Main return:** Returns a protest certificate/query for the CPF, with status, notary offices queried, protests and messages.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PROTEST_PF)
+
+</Accordion>
+
+<Accordion title="Public servants">
+
+**Service:** `SERVICE_PUBLIC_SERVANTS`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Public servants
+
+**When to use:** Use this service when you need to run the "Public servants" query via the API.
+
+**Main return:** Returns public-servant records associated with the CPF, including agency, role, employment tie, pay/band and period when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_PUBLIC_SERVANTS)
+
+</Accordion>
+
+<Accordion title="React OCR">
+
+**Service:** `SERVICE_OCR`
+
+**Main fields:** `documentType`, `image1`, `image2`
+
+**Search terms:** OCR document image base64 reading extraction, PF - React OCR
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**Main return:** Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR)
+
+</Accordion>
+
+<Accordion title="Related people">
+
+**Service:** `SERVICE_RELATED_PEOPLE`
+
+**Main fields:** `cpf`, `birthDate`
+
+**Search terms:** PF - Related people
+
+**When to use:** Use this service when you need to run the "Related people" query via the API.
+
+**Main return:** Returns people related to the CPF, with name, masked document, relationship type, closeness level and tie source.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE)
+
+</Accordion>
+
+<Accordion title="Related people's addresses">
+
+**Service:** `SERVICE_RELATED_PEOPLE_ADDRESSES`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PF - Related people's addresses
+
+**When to use:** Use to look up or validate addresses associated with the document.
+
+**Main return:** Returns addresses associated with people related to the informed CNPJ, with the identified relationship and usage signals for each address.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE_ADDRESSES)
+
+</Accordion>
+
+<Accordion title="Related people's emails">
+
+**Service:** `SERVICE_RELATED_PEOPLE_EMAILS`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Related people's emails, email validation contact
+
+**When to use:** Use to validate or look up email history related to the document.
+
+**Main return:** Returns emails associated with people related to the informed CPF, with the identified relationship and usage signals for each email.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE_EMAILS)
+
+</Accordion>
+
+<Accordion title="Related people's phones">
+
+**Service:** `SERVICE_RELATED_PEOPLE_PHONES`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Related people's phones, phone mobile validation contact
+
+**When to use:** Use to look up, validate or enrich phone data.
+
+**Main return:** Returns phone numbers associated with people related to the informed CPF, with the identified relationship and usage signals for each phone number.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RELATED_PEOPLE_PHONES)
+
+</Accordion>
+
+<Accordion title="Restrictive data">
+
+**Service:** `SERVICE_BOAVISTA_CREDIT_SCORE_PERSON`
+
+**Main fields:** `cpf`
+
+**Search terms:** PF - Restrictive data, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the individual.
+
+**Main return:** Returns individual restrictive credit data by the informed CPF, including score, indicator and count of restrictions found.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_BOAVISTA_CREDIT_SCORE_PERSON)
+
+</Accordion>
+
+<Accordion title="SUS card">
+
+**Service:** `SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF`
+
+**Main fields:** `cpf`
+
+**Search terms:** CPF Federal Revenue, PF - SUS card
+
+**When to use:** Use this service when you need to run the "SUS card" query via the API.
+
+**Main return:** Returns the National Health Card (SUS Card) data located for the informed CPF, with the card number, source and capture date, birth data, an available-evidence indicator and a query summary.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ONDEMAND_SUS_CARD_PERSON_CPF)
+
+</Accordion>
+
+<Accordion title="TSE - Polling place">
+
+**Service:** `SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF`
+
+**Main fields:** `cpf`, `birthDate`, `motherName`
+
+**Search terms:** CPF Federal Revenue, PF - TSE - Polling place
+
+**When to use:** Use this service when you need to run the "TSE - Polling place" query via the API.
+
+**Main return:** Returns the polling place, electoral status and current biometrics of the person at the TSE, from the informed CPF.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF)
+
+</Accordion>
+
+</AccordionGroup>
+
+## Businesses
+
+Open the service to see the public alias, input fields, search terms and expected return.
+
+<AccordionGroup>
+<Accordion title="Active debts">
+
+**Service:** `SERVICE_ACTIVE_DEBT_PJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Active debts, active debt collections delinquency
+
+**When to use:** Use to look up debts associated with the company.
+
+**Main return:** Returns active debts linked to the CNPJ, with debt origin, amounts, status, creditor agency and query status.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ACTIVE_DEBT_PJ)
+
+</Accordion>
+
+<Accordion title="Basic data history">
+
+**Service:** `SERVICE_HISTORY_BASIC_DATA`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Basic data history
+
+**When to use:** Use this service when you need to run the "Basic data history" query via the API.
+
+**Main return:** Returns the history of basic registration changes for the CNPJ: name, tax regime, registration status, CNAE and share capital.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_HISTORY_BASIC_DATA)
+
+</Accordion>
+
+<Accordion title="Betting compliance">
+
+**Service:** `SERVICE_COMPLIANCE_BET_PJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Betting compliance, betting bets compliance bet
+
+**When to use:** Use to run KYC and compliance checks on the company.
+
+**Main return:** Returns indicators of the company's exposure to betting and regulatory compliance, including signals of operation, domain, activity and alerts.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET_PJ)
+
+</Accordion>
+
+<Accordion title="Betting compliance (short alias)">
+
+**Service:** `SERVICE_COMPLIANCE_BET`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Betting compliance (short alias), betting bets compliance bet
+
+**When to use:** Use to run KYC and compliance checks on the company.
+
+**Main return:** Returns indicators of the company's exposure to betting and regulatory compliance, including signals of operation, domain, activity and alerts.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPLIANCE_BET)
+
+</Accordion>
+
+<Accordion title="Business owners at the Federal Revenue">
+
+**Service:** `SERVICE_COMPANY_RFB_OWNERS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CPF Federal Revenue, PJ - Business owners at the Federal Revenue
+
+**When to use:** Use to look up or validate registration data for the company in Federal Revenue databases.
+
+**Main return:** Returns the corporate structure at the Federal Revenue, with partner names, masked documents, qualification, share and entry date when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RFB_OWNERS)
+
+</Accordion>
+
+<Accordion title="Business owners' electoral donations">
+
+**Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, PJ - Business owners' electoral donations, electoral data campaign donations candidate
+
+**When to use:** Use to look up electoral information related to the company.
+
+**Main return:** Returns electoral donations made by the company's partners, with the related partner, year, candidate/party, amount and electoral details.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ)
+
+</Accordion>
+
+<Accordion title="Business owners' KYC and compliance">
+
+**Service:** `SERVICE_COMPANY_KYC_OWNERS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Business owners' KYC and compliance, compliance KYC sanctions PEP sanctioned interpol ofac
+
+**When to use:** Use to run KYC and compliance checks on the company.
+
+**Main return:** Returns an aggregated KYC/compliance summary for the company (totalCurrentPep, totalCurrentSanctioned, averageSanctionsPerOwner, pepPercentage) and the individual breakdown for each partner in result.kycOwners/companyOwners/peopleOwners, including sanctionsHistory (full history), highConfidenceSanctionsHistory (only sanctions with matchRate above 90) and pepHistories.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_KYC_OWNERS)
+
+</Accordion>
+
+<Accordion title="Business owners' lawsuit distribution">
+
+**Service:** `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Business owners' lawsuit distribution, lawsuits legal proceedings court certificate
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the company.
+
+**Main return:** Returns aggregated data on the distribution of lawsuits in which the queried company's partners are involved, with statistics by period and role in the case.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_LAWSUITS_DISTRIBUTION)
+
+</Accordion>
+
+<Accordion title="Business owners' legal cases">
+
+**Service:** `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Business owners' legal cases, lawsuits legal proceedings court certificate
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the company.
+
+**Main return:** Returns legal proceedings associated with the company's partners, with the related partner, court, class, subject, status and dates.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS)
+
+</Accordion>
+
+<Accordion title="Business owners' media exposure and profile">
+
+**Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Business owners' media exposure and profile
+
+**When to use:** Use this service when you need to run the "Business owners' media exposure and profile" query via the API.
+
+**Main return:** Returns the media exposure and profile of the company and its partners, with news, sources, categories, sentiment, relevance and alerts found.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MEDIA_PROFILE_EXPOSURE_PJ)
+
+</Accordion>
+
+<Accordion title="Business ownership influence">
+
+**Service:** `SERVICE_OWNERS_INFLUENCE`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Business ownership influence
+
+**When to use:** Use this service when you need to run the "Business ownership influence" query via the API.
+
+**Main return:** Returns the inferred influence level of the company's corporate structure, considering media exposure, political involvement and lawsuit history of the partners.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OWNERS_INFLUENCE)
+
+</Accordion>
+
+<Accordion title="CGU negative certificate">
+
+**Service:** `SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - CGU negative certificate
+
+**When to use:** Use this service when you need to run the "CGU negative certificate" query via the API.
+
+**Main return:** Returns the CGU's negative disciplinary certificate by the informed CNPJ, covering active penalties in CEIS, CNEP and CEPIM.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CGU_NEGATIVE_CERTIFICATE_COMPANY)
+
+</Accordion>
+
+<Accordion title="Civil construction">
+
+**Service:** `SERVICE_CIVIL_CONSTRUCTION`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Civil construction
+
+**When to use:** Use this service when you need to run the "Civil construction" query via the API.
+
+**Main return:** Returns civil construction works linked to the informed CNPJ, per the National Works Registry (CNO).
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CIVIL_CONSTRUCTION)
+
+</Accordion>
+
+<Accordion title="CNJ negative certificate">
+
+**Service:** `SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - CNJ negative certificate
+
+**When to use:** Use this service when you need to run the "CNJ negative certificate" query via the API.
+
+**Main return:** Returns the CNJ's negative certificate by the informed CNPJ, covering civil convictions for administrative misconduct and ineligibility.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CNJ_NEGATIVE_CERTIFICATE_COMPANY)
+
+</Accordion>
+
+<Accordion title="CNPJ at the Federal Revenue on-demand">
+
+**Service:** `SERVICE_RFB_PJ_ON_DEMAND`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, CPF Federal Revenue, PJ - CNPJ at the Federal Revenue on-demand
+
+**When to use:** Use to look up or validate registration data for the company in Federal Revenue databases.
+
+**Main return:** Returns the CNPJ's updated status queried on demand at the Federal Revenue, with legal name, registration status, CNAE codes and address.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ_ON_DEMAND)
+
+</Accordion>
+
+<Accordion title="CNPJ card OCR">
+
+**Service:** `SERVICE_OCR_CNPJ_CARD`
+
+**Main fields:** `image1`
+
+**Search terms:** CNPJ Federal Revenue, OCR CNPJ card company registration proof, OCR document image base64 reading extraction, PJ - CNPJ card OCR
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**Main return:** Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD)
+
+</Accordion>
+
+<Accordion title="CNPJ domains">
+
+**Service:** `SERVICE_DOMAINS_CNPJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, PJ - CNPJ domains, domains sites digital presence
+
+**When to use:** Use to look up site data linked to the company.
+
+**Main return:** Returns domains, sites and digital signals associated with the CNPJ, including the count and records found when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_DOMAINS_CNPJ)
+
+</Accordion>
+
+<Accordion title="CNPJ registration data">
+
+**Service:** `SERVICE_REGISTRATION_DATA_CNPJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, PJ - CNPJ registration data
+
+**When to use:** Use this service when you need to run the "CNPJ registration data" query via the API.
+
+**Main return:** Returns the CNPJ's registration data, including legal name, trade name, status, opening date, CNAE codes, legal nature and address when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_REGISTRATION_DATA_CNPJ)
+
+</Accordion>
+
+<Accordion title="CNPJ status at the Federal Revenue">
+
+**Service:** `SERVICE_RFB_PJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, CPF Federal Revenue, PJ - CNPJ status at the Federal Revenue
+
+**When to use:** Use to look up or validate registration data for the company in Federal Revenue databases.
+
+**Main return:** Returns the CNPJ's status at the Federal Revenue, including legal name, trade name, registration status, opening date, CNAE codes and address.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ)
+
+</Accordion>
+
+<Accordion title="Company evolution">
+
+**Service:** `SERVICE_COMPANY_EVOLUTION`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Company evolution
+
+**When to use:** Use this service when you need to run the "Company evolution" query via the API.
+
+**Main return:** Returns the time evolution of the company's capital, headcount, branches and partners, with growth trend.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_EVOLUTION)
+
+</Accordion>
+
+<Accordion title="Company relationships">
+
+**Service:** `SERVICE_COMPANY_RELATIONSHIP`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Company relationships
+
+**When to use:** Use to look up ties, partners or relationships associated with the company.
+
+**Main return:** Returns company relationships, such as partners, owners, related companies, holdings and identified corporate ties.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_COMPANY_RELATIONSHIP)
+
+</Accordion>
+
+<Accordion title="Credit risk">
+
+**Service:** `SERVICE_CREDIT_RISK_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Credit risk
+
+**When to use:** Use this service when you need to run the "Credit risk" query via the API.
+
+**Main return:** Returns business (PJ) credit risk data, with score, rating, expected risk and legal signals when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY)
+
+</Accordion>
+
+<Accordion title="Credit score">
+
+**Service:** `SERVICE_QUOD_CREDIT_SCORE_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Credit score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the company.
+
+**Main return:** Returns the business (PJ) credit score by the informed CNPJ, with risk level, risk classification, score reasons and a text summary of the query.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_SCORE_COMPANY)
+
+</Accordion>
+
+<Accordion title="DAS MEI at the Federal Revenue">
+
+**Service:** `SERVICE_DAS_MEI`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - DAS MEI at the Federal Revenue
+
+**When to use:** Use this service when you need to run the "DAS MEI at the Federal Revenue" query via the API.
+
+**Main return:** Returns MEI DAS information and related tax status linked to the CNPJ, including periods, payments, pending items and status when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_DAS_MEI)
+
+</Accordion>
+
+<Accordion title="Data enrichment">
+
+**Service:** `SERVICE_CORPORATE_DATA_ENRICHMENT`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, PJ - Data enrichment
+
+**When to use:** Use this service when you need to run the "Data enrichment" query via the API.
+
+**Main return:** Returns the complete company registration, including legal name, trade name, registration status, CNAE codes, legal nature, size, capital and address.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CORPORATE_DATA_ENRICHMENT)
+
+</Accordion>
+
+<Accordion title="Economic group KYC and compliance">
+
+**Service:** `SERVICE_ECONOMIC_GROUP_KYC_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Economic group KYC and compliance, compliance KYC sanctions PEP media
+
+**When to use:** Use to run KYC and compliance checks on the company.
+
+**Main return:** Returns aggregated KYC and regulatory compliance indicators for the full economic group of the informed CNPJ, including political exposure (PEP) and sanctions.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_KYC_COMPANY)
+
+</Accordion>
+
+<Accordion title="Economic group relationships">
+
+**Service:** `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Economic group relationships
+
+**When to use:** Use to look up ties, partners or relationships associated with the company.
+
+**Main return:** Returns the entities (people and companies) that are part of the same economic group as the queried CNPJ, with current, historical relationships and aggregated statistics.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ECONOMIC_GROUP_RELATIONSHIPS)
+
+</Accordion>
+
+<Accordion title="Electoral donations">
+
+**Service:** `SERVICE_ELECTORAL_DONORS_CNPJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, PJ - Electoral donations, electoral data campaign donations candidate
+
+**When to use:** Use to look up electoral information related to the company.
+
+**Main return:** Returns electoral donations made by the company, with year, candidate/party, amount, role, state and accountability details.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ELECTORAL_DONORS_CNPJ)
+
+</Accordion>
+
+<Accordion title="Electoral service providers">
+
+**Service:** `SERVICE_ELECTORAL_PROVIDERS_CNPJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, PJ - Electoral service providers, electoral data campaign donations candidate
+
+**When to use:** Use to look up electoral information related to the company.
+
+**Main return:** Returns electoral service provisions linked to the CNPJ, with campaign, candidate/party, amount, year and service nature.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ELECTORAL_PROVIDERS_CNPJ)
+
+</Accordion>
+
+<Accordion title="Employee KYC and compliance">
+
+**Service:** `SERVICE_EMPLOYEES_KYC`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Employee KYC and compliance, compliance KYC sanctions PEP media
+
+**When to use:** Use to run KYC and compliance checks on the company.
+
+**Main return:** Returns KYC and regulatory compliance indicators for the employees linked to the company, including PEP classifications and national and international sanctions.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_EMPLOYEES_KYC)
+
+</Accordion>
+
+<Accordion title="Equity stake percentage">
+
+**Service:** `SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Equity stake percentage
+
+**When to use:** Use this service when you need to run the "Equity stake percentage" query via the API.
+
+**Main return:** Returns the ownership share percentage of each of the company's partners by the informed CNPJ.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_OWNER_PARTICIPATION_DATA_COMPANY)
+
+</Accordion>
+
+<Accordion title="Extended addresses">
+
+**Service:** `SERVICE_ADDRESSES_EXTENDED_CNPJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** CNPJ Federal Revenue, PJ - Extended addresses
+
+**When to use:** Use to look up or validate addresses associated with the document.
+
+**Main return:** Returns the full list of CNPJ addresses in result.addresses (street, number, complement, neighborhood, city, state, country, zip code, type, whether it is active and whether it is the primary one), plus an aggregated summary in result.addressesExtendedTotal* with totals and dates of the first/last confirmed passage.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ADDRESSES_EXTENDED_CNPJ)
+
+</Accordion>
+
+<Accordion title="Federal Revenue - QSA">
+
+**Service:** `SERVICE_RF_QSA`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Federal Revenue - QSA
+
+**When to use:** Use this service when you need to run the "Federal Revenue - QSA" query via the API.
+
+**Main return:** Returns the corporate/administrative structure (QSA) of the informed CNPJ, with registration data of the headquarters (size, capital, CNAE, legal nature, registration status) and the list of partners and officers.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RF_QSA)
+
+</Accordion>
+
+<Accordion title="FGTS">
+
+**Service:** `SERVICE_FGTS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - FGTS
+
+**When to use:** Use this service when you need to run the "FGTS" query via the API.
+
+**Main return:** Returns the employer's FGTS compliance certificate, with status, certificate number and validity, and the issued text content.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_FGTS)
+
+</Accordion>
+
+<Accordion title="First-level partners">
+
+**Service:** `SERVICE_FIRST_LEVEL_PARTNER`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - First-level partners
+
+**When to use:** Use this service when you need to run the "First-level partners" query via the API.
+
+**Main return:** Returns the company's first-level partners, with name, document, share, qualification and direct ties to the CNPJ.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_FIRST_LEVEL_PARTNER)
+
+</Accordion>
+
+<Accordion title="Investment fund data">
+
+**Service:** `SERVICE_INVESTMENT_FUND_DATA`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Investment fund data
+
+**When to use:** Use this service when you need to run the "Investment fund data" query via the API.
+
+**Main return:** Returns registration and operational information for investment funds associated with the CNPJ, per CVM records.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_INVESTMENT_FUND_DATA)
+
+</Accordion>
+
+<Accordion title="Labor lawsuits">
+
+**Service:** `SERVICE_LABOR_LAWSUITS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Labor lawsuits, lawsuits legal proceedings court certificate
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the company.
+
+**Main return:** Returns an on-demand certificate stating whether there are pending labor lawsuits related to the queried company, physical or electronic.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_LABOR_LAWSUITS)
+
+</Accordion>
+
+<Accordion title="Legal case distribution">
+
+**Service:** `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Legal case distribution, lawsuits legal proceedings court certificate
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the company.
+
+**Main return:** Returns aggregated data on the distribution of lawsuits in which the queried company is involved, with statistics by period.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY)
+
+</Accordion>
+
+<Accordion title="Legal cases">
+
+**Service:** `SERVICE_JURIDICAL_PROCESSES_PJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Legal cases, lawsuits legal proceedings court certificate
+
+**When to use:** Use to look up certificates, lawsuits or legal information for the company.
+
+**Main return:** Returns legal proceedings linked to the CNPJ, with court, class, subject, parties, status, case number and dates when available.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ)
+
+</Accordion>
+
+<Accordion title="Marketplaces">
+
+**Service:** `SERVICE_MARKETPLACE_DATA`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Marketplaces
+
+**When to use:** Use this service when you need to run the "Marketplaces" query via the API.
+
+**Main return:** Returns the company's presence in marketplaces, including operated stores, listed products, the marketplace with the most products and the best rating.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MARKETPLACE_DATA)
+
+</Accordion>
+
+<Accordion title="Merchant category">
+
+**Service:** `SERVICE_MERCHANT_CATEGORY_DATA`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Merchant category
+
+**When to use:** Use this service when you need to run the "Merchant category" query via the API.
+
+**Main return:** Returns the company's categorization according to the MCC (Merchant Category Code), by direct association with Abecs or inferred from the CNAE.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_MERCHANT_CATEGORY_DATA)
+
+</Accordion>
+
+<Accordion title="Multi-data credit score">
+
+**Service:** `SERVICE_BOAVISTA_ONE_SCORE_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Multi-data credit score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the company.
+
+**Main return:** Returns the business (PJ) multi-data credit score by the informed CNPJ, with risk level, risk classification, score reasons and a text summary of the query.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_ONE_SCORE_COMPANY)
+
+</Accordion>
+
+<Accordion title="Negative flags">
+
+**Service:** `SERVICE_QUOD_CREDIT_RISK_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Negative flags
+
+**When to use:** Use this service when you need to run the "Negative flags" query via the API.
+
+**Main return:** Returns business (PJ) negative credit flags by the informed CNPJ, with risk level and classification, a restrictions indicator and the count of negative flags.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUOD_CREDIT_RISK_COMPANY)
+
+</Accordion>
+
+<Accordion title="Negative protest certificate">
+
+**Service:** `SERVICE_PROTEST_PJ`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Negative protest certificate
+
+**When to use:** Use to look up protests associated with the company's document.
+
+**Main return:** Returns a protest certificate/query for the CNPJ, with status, notary offices queried, protests, amounts and dates.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PROTEST_PJ)
+
+</Accordion>
+
+<Accordion title="Online ads">
+
+**Service:** `SERVICE_ONLINE_ADS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Online ads
+
+**When to use:** Use this service when you need to run the "Online ads" query via the API.
+
+**Main return:** Returns online ads linked to the company, identifying seller profiles on classifieds and peer-to-peer marketplace sites by phone number.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ONLINE_ADS)
+
+</Accordion>
+
+<Accordion title="PCD quota">
+
+**Service:** `SERVICE_PCD_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - PCD quota
+
+**When to use:** Use this service when you need to run the "PCD quota" query via the API.
+
+**Main return:** Returns the certificate of compliance with the legal quota for hiring people with disabilities and rehabilitated beneficiaries, by the informed CNPJ.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PCD_COMPANY)
+
+</Accordion>
+
+<Accordion title="PGFN debts">
+
+**Service:** `SERVICE_PGFN_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - PGFN debts, active debt collections delinquency
+
+**When to use:** Use to look up debts associated with the company.
+
+**Main return:** Returns the certificate of debts related to federal tax credits and the union's active debt with the PGFN, by the informed CNPJ.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PGFN_COMPANY)
+
+</Accordion>
+
+<Accordion title="Phone numbers">
+
+**Service:** `SERVICE_PHONES_EXTENDED_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Phone numbers, phone mobile validation contact
+
+**When to use:** Use to look up, validate or enrich phone data.
+
+**Main return:** Returns the phone numbers associated with the company, with validity, priority and source indicators.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PHONES_EXTENDED_COMPANY)
+
+</Accordion>
+
+<Accordion title="Public projects">
+
+**Service:** `SERVICE_PUBLIC_PROJECTS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Public projects
+
+**When to use:** Use this service when you need to run the "Public projects" query via the API.
+
+**Main return:** Returns projects funded by public agencies associated with the company by the informed CNPJ, with source, modality and contracted/disbursed amounts.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PUBLIC_PROJECTS)
+
+</Accordion>
+
+<Accordion title="Quantum credit score">
+
+**Service:** `SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Quantum credit score, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the company.
+
+**Main return:** Returns the business (PJ) Quantum credit score by the informed CNPJ, with a text summary and structured credit bureau data.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_QUANTUM_CUSTOM_SCORE_COMPANY)
+
+</Accordion>
+
+<Accordion title="Ratings and reputation">
+
+**Service:** `SERVICE_REPUTATIONS_AND_REVIEWS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Ratings and reputation
+
+**When to use:** Use this service when you need to run the "Ratings and reputation" query via the API.
+
+**Main return:** Returns the company's reputation on different service review platforms, with a consolidated view, a breakdown by source and evolution history.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_REPUTATIONS_AND_REVIEWS)
+
+</Accordion>
+
+<Accordion title="Restrictive data">
+
+**Service:** `SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Restrictive data, score risk credit rating delinquency
+
+**When to use:** Use to assess risk, score or propensity associated with the company.
+
+**Main return:** Returns business (PJ) restrictive credit data by the informed CNPJ, including score, indicator and count of restrictions found.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_BOAVISTA_CREDIT_SCORE_COMPANY)
+
+</Accordion>
+
+<Accordion title="Simples Nacional - MEI collection">
+
+**Service:** `SERVICE_PGMEI`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Simples Nacional - MEI collection
+
+**When to use:** Use this service when you need to run the "Simples Nacional - MEI collection" query via the API.
+
+**Main return:** Returns the Simples Nacional Collection Document (DAS) for Individual Microentrepreneurs (MEI), with status, reference year, pending slips and monthly collection history.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_PGMEI)
+
+</Accordion>
+
+<Accordion title="Simples Nacional status">
+
+**Service:** `SERVICE_SIMPLES_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Simples Nacional status
+
+**When to use:** Use this service when you need to run the "Simples Nacional status" query via the API.
+
+**Main return:** Returns the company's status as a participant in Simples Nacional and SIMEI, by the informed CNPJ.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SIMPLES_COMPANY)
+
+</Accordion>
+
+<Accordion title="SINTEGRA">
+
+**Service:** `SERVICE_SINTEGRA_CONSULTATION`
+
+**Main fields:** `cnpj`, `uf`
+
+**Search terms:** PJ - SINTEGRA
+
+**When to use:** Use this service when you need to run the "SINTEGRA" query via the API.
+
+**Main return:** Returns SINTEGRA data, including state registration, state, status, regime, activities, address and query messages.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SINTEGRA_CONSULTATION)
+
+</Accordion>
+
+<Accordion title="State debt negative certificate">
+
+**Service:** `SERVICE_STATE_DEBT_CERTIFICATE_COMPANY`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - State debt negative certificate, active debt collections delinquency
+
+**When to use:** Use to look up debts associated with the company.
+
+**Main return:** Returns the negative state debt certificate by the informed CNPJ, available for every state.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_STATE_DEBT_CERTIFICATE_COMPANY)
+
+</Accordion>
+
+<Accordion title="Ultimate beneficial owners">
+
+**Service:** `SERVICE_ULTIMATE_BENEFICIAL_OWNERS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Ultimate beneficial owners
+
+**When to use:** Use this service when you need to run the "Ultimate beneficial owners" query via the API.
+
+**Main return:** Returns the company's ultimate beneficial owners by the informed CNPJ, with accumulated ownership percentage, including through indirect chains, per the 25% legal threshold.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_ULTIMATE_BENEFICIAL_OWNERS)
+
+</Accordion>
+
+<Accordion title="Union agreements">
+
+**Service:** `SERVICE_SYNDICATE_AGREEMENTS`
+
+**Main fields:** `cnpj`
+
+**Search terms:** PJ - Union agreements
+
+**When to use:** Use this service when you need to run the "Union agreements" query via the API.
+
+**Main return:** Returns the union agreements signed between the company and the unions that represent its employees, with totals and a breakdown.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_SYNDICATE_AGREEMENTS)
+
+</Accordion>
+
+</AccordionGroup>
+
+## Step by step per service
+
+Use the API Reference to copy the body, curl and summarized response for each product:
+
+<CardGroup cols={2}>
+ <Card icon="id-card" title="Individual (PF) services" href="/en/api-reference/services-pessoa-fisica">
+ Full catalog with payloads and responses for CPF services.
+ </Card>
+ <Card icon="building" title="Business (PJ) services" href="/en/api-reference/services-pessoa-juridica">
+ Full catalog with payloads and responses for CNPJ services.
+ </Card>
+</CardGroup>

@@ -1,0 +1,111 @@
+---
+title: How to run a service
+description: Step by step to authenticate, choose the environment, build the body and call a service in the idCerberus API.
+boost: 4
+---
+
+# How to run a service
+
+This page explains the standard flow to run any product documented in the API Reference.
+
+<Info>
+Most queries use the `POST /api/service-api` endpoint. The `service` field defines which product will be executed.
+</Info>
+
+<Warning>
+Before running the call, confirm which service is enabled on the client's product. The `service` field must receive exactly the public value shown in the catalog.
+</Warning>
+
+In practice: copy the `Service` value from the card or accordion of the product and send that value in the request body. The documentation does not expose internal integration aliases.
+
+## Step by step
+
+<Steps>
+<Step title="Choose the environment">
+
+| Environment | Base URL | When to use |
+| --- | --- | --- |
+| Homologation | `https://backoffice-hml.idcerberus.com` | Tests, validations and development. |
+| Production | `https://backoffice.idcerberus.com` | Real use, after the client has been released. |
+
+</Step>
+<Step title="Generate the token">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+--header 'Content-Type: application/json' \
+--data '{
+  "client": "{client}",
+  "secret": "{secret}"
+}'
+```
+
+Use the value returned in `access_token` in the `Authorization` header of the next calls.
+
+</Step>
+<Step title="Choose the service">
+
+Use the individual (PF) and business (PJ) catalogs to copy the exact value of the `service` field.
+
+1. [Individual (PF) services](/en/api-reference/services-pessoa-fisica)
+2. [Business (PJ) services](/en/api-reference/services-pessoa-juridica)
+3. [Services by use case](/en/api-reference/services-por-caso-de-uso)
+
+</Step>
+<Step title="Build the body">
+
+The body always needs `service`. The other fields depend on the chosen product.
+
+```json
+{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf"
+}
+```
+
+</Step>
+<Step title="Run the query">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf"
+}'
+```
+
+</Step>
+<Step title="Interpret the response">
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+1. `result`: data returned by the product.
+2. `status.code`: processing code.
+3. `status.message`: short processing message.
+4. `externalId`: external identifier for the query, when returned.
+
+</Step>
+</Steps>
+
+## Common errors
+
+| Situation | How to fix |
+| --- | --- |
+| Missing, expired or invalid token | Generate a new token and send `Authorization: Bearer {jwt_token}`. |
+| `service` field written incorrectly | Copy the service from the API Reference catalog. |
+| Product uses a short alias | Confirm with the product which alias is enabled and send that value in the `service` field. |
+| Missing CPF, CNPJ, image or required parameter | Check the fields section for the chosen service. |
+| Document, OCR or biometrics service returned a parameter error | Send a real image/base64, URL or `key`. Short payloads only test authentication and product access. |
+| Product not released to the client | Confirm commercial/technical release before running in production. |
+| Response without data in `result` | Confirm whether the queried document has information available for that product. |
