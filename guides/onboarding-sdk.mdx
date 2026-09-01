@@ -55,6 +55,22 @@ Use esta integração quando precisar:
 5. Consulte o resultado usando o mesmo `tokenOnboarding`.
 6. Se necessário, baixe o PDF do relatório do onboarding.
 
+```mermaid
+sequenceDiagram
+    participant Backend as Seu back-end
+    participant SDK as App com SDK idCerberus
+    participant idCerberus
+
+    Backend->>idCerberus: POST /api/token-history-onboarding
+    idCerberus-->>Backend: tokenOnboarding
+    Backend->>SDK: Entrega o tokenOnboarding ao app
+    SDK->>idCerberus: Captura documento, selfie e dados (direto do SDK)
+    Note over idCerberus: Processamento assíncrono
+    idCerberus-->>Backend: Webhook ou polling em GET /api/onboarding/report/{tokenOnboarding}
+    Backend->>idCerberus: GET .../history-onboarding-report/{tokenOnboarding} (opcional)
+    idCerberus-->>Backend: PDF do relatório
+```
+
 ## Endpoints do fluxo
 
 | Etapa | Endpoint | Objetivo |
@@ -113,6 +129,9 @@ Exemplo de requisição:
   ]
 }
 ```
+
+Valores como `"cpf": "cpf"` são placeholders a substituir pelo dado real; veja a
+convenção em [Quickstart](/guides/quickstart).
 
 Campos principais:
 
