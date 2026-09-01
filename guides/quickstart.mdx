@@ -53,241 +53,239 @@ headers e body iguais e troque apenas a URL.
   homologação. Token gerado em produção deve ser usado com URL de produção.
 </Warning>
 
-## 1. Escolha onde vai testar
+<Steps>
+  <Step title="Escolha onde vai testar">
+    ### Postman
 
-### Postman
+    1. Abra o Postman.
+    2. Clique em **New**.
+    3. Escolha **HTTP Request**.
+    4. Selecione o método `POST`.
+    5. Cole a URL do ambiente desejado.
+    6. Vá na aba **Headers** e adicione `Content-Type` com valor `application/json`.
+    7. Vá na aba **Body**.
+    8. Escolha **raw**.
+    9. Selecione **JSON**.
+    10. Cole o body do exemplo.
+    11. Clique em **Send**.
 
-1. Abra o Postman.
-2. Clique em **New**.
-3. Escolha **HTTP Request**.
-4. Selecione o método `POST`.
-5. Cole a URL do ambiente desejado.
-6. Vá na aba **Headers** e adicione `Content-Type` com valor `application/json`.
-7. Vá na aba **Body**.
-8. Escolha **raw**.
-9. Selecione **JSON**.
-10. Cole o body do exemplo.
-11. Clique em **Send**.
+    ### Windows PowerShell
 
-### Windows PowerShell
+    1. Abra o menu iniciar.
+    2. Pesquise por `PowerShell`.
+    3. Abra o PowerShell.
+    4. Cole o comando `curl.exe` do exemplo.
+    5. Pressione **Enter**.
 
-1. Abra o menu iniciar.
-2. Pesquise por `PowerShell`.
-3. Abra o PowerShell.
-4. Cole o comando `curl.exe` do exemplo.
-5. Pressione **Enter**.
+    No Windows, prefira `curl.exe`. O comando `curl` sozinho pode ser interpretado
+    como outro comando interno do PowerShell.
 
-No Windows, prefira `curl.exe`. O comando `curl` sozinho pode ser interpretado
-como outro comando interno do PowerShell.
+    ### Windows CMD
 
-### Windows CMD
+    1. Abra o menu iniciar.
+    2. Pesquise por `cmd`.
+    3. Abra o Prompt de Comando.
+    4. Cole o comando em uma única linha ou use `^` para quebrar linhas.
+    5. Pressione **Enter**.
 
-1. Abra o menu iniciar.
-2. Pesquise por `cmd`.
-3. Abra o Prompt de Comando.
-4. Cole o comando em uma única linha ou use `^` para quebrar linhas.
-5. Pressione **Enter**.
+    ### macOS ou Linux
 
-### macOS ou Linux
+    1. Abra o Terminal.
+    2. Cole o comando `curl` do exemplo.
+    3. Pressione **Enter**.
 
-1. Abra o Terminal.
-2. Cole o comando `curl` do exemplo.
-3. Pressione **Enter**.
+    Em macOS e Linux, o `curl` normalmente já vem instalado. Se o terminal informar
+    que o comando não existe, instale o pacote `curl` pelo gerenciador do sistema.
+  </Step>
+  <Step title="Gere um token">
+    O primeiro request gera um token JWT. Esse token será usado nas próximas chamadas
+    protegidas.
 
-Em macOS e Linux, o `curl` normalmente já vem instalado. Se o terminal informar
-que o comando não existe, instale o pacote `curl` pelo gerenciador do sistema.
+    No Postman, configure assim:
 
-## 2. Gere um token
+    | Campo | Valor |
+    | --- | --- |
+    | Método | `POST` |
+    | URL HML | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+    | URL produção | `https://backoffice.idcerberus.com/api/token-generate` |
+    | Header | `Content-Type: application/json` |
+    | Body | `raw` + `JSON` |
 
-O primeiro request gera um token JWT. Esse token será usado nas próximas chamadas
-protegidas.
+    Body:
 
-No Postman, configure assim:
+    ```json
+    {
+      "client": "{client}",
+      "secret": "{secret}"
+    }
+    ```
 
-| Campo | Valor |
-| --- | --- |
-| Método | `POST` |
-| URL HML | `https://backoffice-hml.idcerberus.com/api/token-generate` |
-| URL produção | `https://backoffice.idcerberus.com/api/token-generate` |
-| Header | `Content-Type: application/json` |
-| Body | `raw` + `JSON` |
+    ### HML
 
-Body:
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
 
-```json
-{
-  "client": "{client}",
-  "secret": "{secret}"
-}
-```
+    ### Produção
 
-### HML
+    ```bash
+    curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
 
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
+    ### Windows CMD
 
-### Produção
+    ```bat
+    curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
+      --header "Content-Type: application/json" ^
+      --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+    ```
 
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
+    Resposta esperada:
 
-### Windows CMD
+    ```json
+    {
+      "access_token": "{jwt_token}",
+      "expires_in": "300"
+    }
+    ```
 
-```bat
-curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
-  --header "Content-Type: application/json" ^
-  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
-```
+    Copie o valor de `access_token`. Ele será usado no próximo passo.
 
-Resposta esperada:
+    No Postman, copie somente o conteúdo entre aspas. Exemplo:
 
-```json
-{
-  "access_token": "{jwt_token}",
-  "expires_in": "300"
-}
-```
+    ```json
+    {
+      "access_token": "eyJhbGciOi...",
+      "expires_in": "300"
+    }
+    ```
 
-Copie o valor de `access_token`. Ele será usado no próximo passo.
+    Nesse caso, o token a ser usado no próximo passo é `eyJhbGciOi...`.
+  </Step>
+  <Step title="Execute um serviço">
+    Use o token retornado no header `Authorization`.
 
-No Postman, copie somente o conteúdo entre aspas. Exemplo:
+    No Postman, crie uma nova request:
 
-```json
-{
-  "access_token": "eyJhbGciOi...",
-  "expires_in": "300"
-}
-```
+    | Campo | Valor |
+    | --- | --- |
+    | Método | `POST` |
+    | URL HML | `https://backoffice-hml.idcerberus.com/api/service-api` |
+    | URL produção | `https://backoffice.idcerberus.com/api/service-api` |
+    | Header 1 | `Authorization: Bearer {jwt_token}` |
+    | Header 2 | `Content-Type: application/json` |
+    | Body | `raw` + `JSON` |
 
-Nesse caso, o token a ser usado no próximo passo é `eyJhbGciOi...`.
+    ### HML
 
-## 3. Execute um serviço
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+      --header 'Authorization: Bearer {jwt_token}' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+        "cpf": "cpf"
+      }'
+    ```
 
-Use o token retornado no header `Authorization`.
+    ### Produção
 
-No Postman, crie uma nova request:
+    ```bash
+    curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+      --header 'Authorization: Bearer {jwt_token}' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+        "cpf": "cpf"
+      }'
+    ```
 
-| Campo | Valor |
-| --- | --- |
-| Método | `POST` |
-| URL HML | `https://backoffice-hml.idcerberus.com/api/service-api` |
-| URL produção | `https://backoffice.idcerberus.com/api/service-api` |
-| Header 1 | `Authorization: Bearer {jwt_token}` |
-| Header 2 | `Content-Type: application/json` |
-| Body | `raw` + `JSON` |
+    ### Windows CMD
 
-### HML
+    ```bat
+    curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
+      --header "Authorization: Bearer {jwt_token}" ^
+      --header "Content-Type: application/json" ^
+      --data "{\"service\":\"SERVICE_PERSON_DATA_ENRICHMENT\",\"cpf\":\"cpf\"}"
+    ```
 
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-    "cpf": "cpf"
-  }'
-```
+    <Info>
+      Vai testar OCR? Use o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api)
+      para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
+      de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
+    </Info>
 
-### Produção
+    Substitua:
 
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-    "cpf": "cpf"
-  }'
-```
+    | Valor | O que colocar |
+    | --- | --- |
+    | `{jwt_token}` | Token retornado no passo anterior |
+    | `cpf` | CPF usado para teste |
+    | `SERVICE_PERSON_DATA_ENRICHMENT` | Código do serviço que deseja executar |
 
-### Windows CMD
+    <CardGroup cols={2}>
+      <Card icon="id-card" title="Consulta CPF" href="/guides/primeira-consulta-cpf">
+        Use quando quiser validar o fluxo com um service simples de pessoa física.
+      </Card>
+      <Card icon="building" title="Consulta CNPJ" href="/guides/primeira-consulta-cnpj">
+        Use quando quiser validar o fluxo com um service simples de pessoa jurídica.
+      </Card>
+      <Card icon="image" title="OCR com imagem" href="/guides/service-api/sobre-ocr-service-api">
+        Use quando o body precisar de base64, imagem, URL ou `documentType`.
+      </Card>
+      <Card icon="book" title="Catálogo de services" href="/guides/service-api/familias-de-servicos">
+        Use para navegar pelos grupos de produtos do `POST /api/service-api`.
+      </Card>
+    </CardGroup>
+  </Step>
+  <Step title="Leia o resultado">
+    A maior parte dos serviços retorna os dados em `result` e o status técnico em
+    `status`.
 
-```bat
-curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
-  --header "Authorization: Bearer {jwt_token}" ^
-  --header "Content-Type: application/json" ^
-  --data "{\"service\":\"SERVICE_PERSON_DATA_ENRICHMENT\",\"cpf\":\"cpf\"}"
-```
+    ```json
+    {
+      "result": {
+        "cpf": "00000000000",
+        "status": "REGULAR",
+        "name": "NOME DA PESSOA"
+      },
+      "status": {
+        "code": 200,
+        "message": "Success"
+      }
+    }
+    ```
 
-<Info>
-  Vai testar OCR? Use o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api)
-  para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
-  de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
-</Info>
+    | Campo | Como interpretar |
+    | --- | --- |
+    | `result` | Dados retornados pelo serviço |
+    | `status.code` | Código técnico do processamento |
+    | `status.message` | Mensagem técnica da consulta |
+    | `externalId` | Identificador da consulta, quando retornado |
+  </Step>
+  <Step title="Trate sucesso e falha">
+    Use `status.code` para decidir o comportamento da sua aplicação.
 
-Substitua:
+    | Situação | Como tratar |
+    | --- | --- |
+    | `status.code` 200 | Processamento concluído. Leia o objeto `result`. |
+    | `status.code` 400 | Payload, parâmetro, permissão ou fonte externa pode ter falhado. Leia `status.message`. |
+    | Token expirado | Gere um novo token e repita a chamada. |
+    | Sem body JSON | Trate conforme o endpoint. O relatório de onboarding retorna PDF. |
+  </Step>
+</Steps>
 
-| Valor | O que colocar |
-| --- | --- |
-| `{jwt_token}` | Token retornado no passo anterior |
-| `cpf` | CPF usado para teste |
-| `SERVICE_PERSON_DATA_ENRICHMENT` | Código do serviço que deseja executar |
-
-<CardGroup cols={2}>
-  <Card icon="id-card" title="Consulta CPF" href="/guides/primeira-consulta-cpf">
-    Use quando quiser validar o fluxo com um service simples de pessoa física.
-  </Card>
-  <Card icon="building" title="Consulta CNPJ" href="/guides/primeira-consulta-cnpj">
-    Use quando quiser validar o fluxo com um service simples de pessoa jurídica.
-  </Card>
-  <Card icon="image" title="OCR com imagem" href="/guides/service-api/sobre-ocr-service-api">
-    Use quando o body precisar de base64, imagem, URL ou `documentType`.
-  </Card>
-  <Card icon="book" title="Catálogo de services" href="/guides/service-api/familias-de-servicos">
-    Use para navegar pelos grupos de produtos do `POST /api/service-api`.
-  </Card>
-</CardGroup>
-
-## 4. Leia o resultado
-
-A maior parte dos serviços retorna os dados em `result` e o status técnico em
-`status`.
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "status": "REGULAR",
-    "name": "NOME DA PESSOA"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-| Campo | Como interpretar |
-| --- | --- |
-| `result` | Dados retornados pelo serviço |
-| `status.code` | Código técnico do processamento |
-| `status.message` | Mensagem técnica da consulta |
-| `externalId` | Identificador da consulta, quando retornado |
-
-## 5. Trate sucesso e falha
-
-Use `status.code` para decidir o comportamento da sua aplicação.
-
-| Situação | Como tratar |
-| --- | --- |
-| `status.code` 200 | Processamento concluído. Leia o objeto `result`. |
-| `status.code` 400 | Payload, parâmetro, permissão ou fonte externa pode ter falhado. Leia `status.message`. |
-| Token expirado | Gere um novo token e repita a chamada. |
-| Sem body JSON | Trate conforme o endpoint. O relatório de onboarding retorna PDF. |
-
-## 6. Próximo passo
+## Próximo passo
 
 Se você já sabe qual produto consumir, vá para a [API Reference](/api-reference/autorização/gerar-token-de-api).
 
