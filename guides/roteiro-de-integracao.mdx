@@ -9,106 +9,105 @@ Use este roteiro como checklist de execução. A ideia é sair de uma primeira
 chamada manual, validar o comportamento esperado e só depois levar o fluxo para
 o código da aplicação.
 
-## 1. Confirme o ambiente
+<Steps>
+  <Step title="Confirme o ambiente">
+    Escolha onde o teste será feito:
 
-Escolha onde o teste será feito:
+    | Ambiente | Base URL | Quando usar |
+    | --- | --- | --- |
+    | Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validação de payloads e desenvolvimento |
+    | Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação de credenciais e permissões |
 
-| Ambiente | Base URL | Quando usar |
-| --- | --- | --- |
-| Homologação | `https://backoffice-hml.idcerberus.com` | Testes, validação de payloads e desenvolvimento |
-| Produção | `https://backoffice.idcerberus.com` | Uso real, depois da liberação de credenciais e permissões |
+    A estrutura da chamada é a mesma nos dois ambientes. Para trocar de HML
+    para produção, altere apenas a base URL.
+  </Step>
+  <Step title="Gere o token">
+    Antes de executar serviços protegidos, gere um token JWT.
 
-A estrutura da chamada é a mesma nos dois ambientes. Para trocar de HML para
-produção, altere apenas a base URL.
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
 
-## 2. Gere o token
+    Copie o valor de `access_token` retornado. Nas chamadas seguintes, envie:
 
-Antes de executar serviços protegidos, gere um token JWT.
+    ```http
+    Authorization: Bearer {jwt_token}
+    ```
+  </Step>
+  <Step title="Teste manualmente antes de codar">
+    Se a pessoa integrando ainda não tem familiaridade com terminal, comece
+    pelo Postman. Ele deixa URL, headers e body separados, o que reduz erro
+    de digitação.
 
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
+    Fluxo recomendado:
 
-Copie o valor de `access_token` retornado. Nas chamadas seguintes, envie:
+    1. testar no Postman;
+    2. repetir o mesmo request com `curl`;
+    3. confirmar o response esperado;
+    4. levar o request para Node.js, Python, C# ou outra linguagem.
+  </Step>
+  <Step title="Escolha o serviço correto">
+    O endpoint `POST /api/service-api` funciona como executor de produtos. A
+    rota é sempre a mesma, mas o campo `service` define o que será executado.
 
-```http
-Authorization: Bearer {jwt_token}
-```
+    ```json
+    {
+      "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+      "cpf": "cpf"
+    }
+    ```
 
-## 3. Teste manualmente antes de codar
+    Para pessoa física, a entrada principal costuma ser `cpf`. Para pessoa
+    jurídica, costuma ser `cnpj`. Serviços de documento, biometria e
+    documentoscopia podem exigir imagens em base64, URLs de imagem, selfie ou
+    chave de consulta.
+  </Step>
+  <Step title="Valide o response">
+    Na maioria dos serviços, os dados de negócio ficam em `result` e o status
+    técnico fica em `status`.
 
-Se a pessoa integrando ainda não tem familiaridade com terminal, comece pelo
-Postman. Ele deixa URL, headers e body separados, o que reduz erro de digitação.
+    ```json
+    {
+      "result": {
+        "cpf": "00000000000",
+        "status": "REGULAR"
+      },
+      "status": {
+        "code": 200,
+        "message": "Success"
+      }
+    }
+    ```
 
-Fluxo recomendado:
+    Não valide apenas o HTTP status. Leia também `status.code`,
+    `status.message` e, quando existir, `externalId`.
+  </Step>
+  <Step title="Prepare a integração para produção">
+    Antes de subir para produção, confirme:
 
-1. testar no Postman;
-2. repetir o mesmo request com `curl`;
-3. confirmar o response esperado;
-4. levar o request para Node.js, Python, C# ou outra linguagem.
+    1. credenciais de produção foram liberadas;
+    2. a base URL foi trocada para `https://backoffice.idcerberus.com`;
+    3. token expirado é tratado gerando um novo token;
+    4. erros `400`, `401` e `403` têm tratamento claro;
+    5. logs registram `service`, documento consultado de forma segura,
+      `status.code`, `status.message` e `externalId`, quando retornado;
+    6. dados sensíveis, base64 e tokens não são gravados em log aberto.
+  </Step>
+</Steps>
 
-## 4. Escolha o serviço correto
-
-O endpoint `POST /api/service-api` funciona como executor de produtos. A rota é
-sempre a mesma, mas o campo `service` define o que será executado.
-
-```json
-{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-  "cpf": "cpf"
-}
-```
-
-Para pessoa física, a entrada principal costuma ser `cpf`. Para pessoa jurídica,
-costuma ser `cnpj`. Serviços de documento, biometria e documentoscopia podem
-exigir imagens em base64, URLs de imagem, selfie ou chave de consulta.
-
-## 5. Valide o response
-
-Na maioria dos serviços, os dados de negócio ficam em `result` e o status técnico
-fica em `status`.
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "status": "REGULAR"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-Não valide apenas o HTTP status. Leia também `status.code`, `status.message` e,
-quando existir, `externalId`.
-
-## 6. Prepare a integração para produção
-
-Antes de subir para produção, confirme:
-
-1. credenciais de produção foram liberadas;
-2. a base URL foi trocada para `https://backoffice.idcerberus.com`;
-3. token expirado é tratado gerando um novo token;
-4. erros `400`, `401` e `403` têm tratamento claro;
-5. logs registram `service`, documento consultado de forma segura, `status.code`,
-  `status.message` e `externalId`, quando retornado;
-6. dados sensíveis, base64 e tokens não são gravados em log aberto.
-
-## 7. Onboarding? Configure webhook em vez de só consultar
+## Onboarding? Configure webhook em vez de só consultar
 
 Se o seu fluxo é de onboarding (SDK ou Cliente Web), não fique só no polling
-do passo 5. Configure um webhook para ser avisado automaticamente quando o
-status mudar. Veja [Webhooks](/guides/webhooks). Isso vale tanto para HML
-(testar o recebimento) quanto para produção.
+do passo anterior. Configure um webhook para ser avisado automaticamente
+quando o status mudar. Veja [Webhooks](/guides/webhooks). Isso vale tanto
+para HML (testar o recebimento) quanto para produção.
 
-## 8. Onde continuar
+## Onde continuar
 
 1. Para primeira chamada completa: [Quickstart](/guides/quickstart)
 2. Para escolher produtos: [Escolha o serviço certo](/guides/escolha-o-servico-certo)

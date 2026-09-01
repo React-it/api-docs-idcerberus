@@ -9,106 +9,104 @@ Use this roadmap as an execution checklist. The idea is to start with a
 first manual call, validate the expected behavior, and only then bring the
 flow into your application's code.
 
-## 1. Confirm the environment
+<Steps>
+  <Step title="Confirm the environment">
+    Choose where the test will happen:
 
-Choose where the test will happen:
+    | Environment | Base URL | When to use |
+    | --- | --- | --- |
+    | Staging | `https://backoffice-hml.idcerberus.com` | Testing, payload validation, and development |
+    | Production | `https://backoffice.idcerberus.com` | Real use, after credentials and permissions are released |
 
-| Environment | Base URL | When to use |
-| --- | --- | --- |
-| Staging | `https://backoffice-hml.idcerberus.com` | Testing, payload validation, and development |
-| Production | `https://backoffice.idcerberus.com` | Real use, after credentials and permissions are released |
+    The call structure is the same in both environments. To switch from
+    staging to production, just change the base URL.
+  </Step>
+  <Step title="Generate the token">
+    Before running protected services, generate a JWT token.
 
-The call structure is the same in both environments. To switch from staging
-to production, just change the base URL.
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
 
-## 2. Generate the token
+    Copy the returned `access_token` value. In the following calls, send:
 
-Before running protected services, generate a JWT token.
+    ```http
+    Authorization: Bearer {jwt_token}
+    ```
+  </Step>
+  <Step title="Test manually before coding">
+    If the person integrating isn't familiar with the terminal yet, start
+    with Postman. It keeps the URL, headers, and body separate, which
+    reduces typos.
 
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
+    Recommended flow:
 
-Copy the returned `access_token` value. In the following calls, send:
+    1. test in Postman;
+    2. repeat the same request with `curl`;
+    3. confirm the expected response;
+    4. bring the request into Node.js, Python, C#, or another language.
+  </Step>
+  <Step title="Choose the right service">
+    The `POST /api/service-api` endpoint works as a product runner. The
+    route is always the same, but the `service` field defines what runs.
 
-```http
-Authorization: Bearer {jwt_token}
-```
+    ```json
+    {
+      "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+      "cpf": "cpf"
+    }
+    ```
 
-## 3. Test manually before coding
+    For individuals, the main input is usually `cpf`. For businesses, it's
+    usually `cnpj`. Document, biometric, and document-analysis services may
+    require base64 images, image URLs, a selfie, or a query key.
+  </Step>
+  <Step title="Validate the response">
+    For most services, the business data lives in `result` and the
+    technical status lives in `status`.
 
-If the person integrating isn't familiar with the terminal yet, start with
-Postman. It keeps the URL, headers, and body separate, which reduces typos.
+    ```json
+    {
+      "result": {
+        "cpf": "00000000000",
+        "status": "REGULAR"
+      },
+      "status": {
+        "code": 200,
+        "message": "Success"
+      }
+    }
+    ```
 
-Recommended flow:
+    Don't validate only the HTTP status. Also read `status.code`,
+    `status.message`, and, when present, `externalId`.
+  </Step>
+  <Step title="Prepare the integration for production">
+    Before going to production, confirm:
 
-1. test in Postman;
-2. repeat the same request with `curl`;
-3. confirm the expected response;
-4. bring the request into Node.js, Python, C#, or another language.
+    1. production credentials have been released;
+    2. the base URL has been switched to `https://backoffice.idcerberus.com`;
+    3. an expired token is handled by generating a new one;
+    4. `400`, `401`, and `403` errors have clear handling;
+    5. logs record `service`, the queried document securely, `status.code`,
+      `status.message`, and `externalId`, when returned;
+    6. sensitive data, base64, and tokens aren't written to open logs.
+  </Step>
+</Steps>
 
-## 4. Choose the right service
-
-The `POST /api/service-api` endpoint works as a product runner. The route is
-always the same, but the `service` field defines what runs.
-
-```json
-{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-  "cpf": "cpf"
-}
-```
-
-For individuals, the main input is usually `cpf`. For businesses, it's
-usually `cnpj`. Document, biometric, and document-analysis services may
-require base64 images, image URLs, a selfie, or a query key.
-
-## 5. Validate the response
-
-For most services, the business data lives in `result` and the technical
-status lives in `status`.
-
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "status": "REGULAR"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
-
-Don't validate only the HTTP status. Also read `status.code`,
-`status.message`, and, when present, `externalId`.
-
-## 6. Prepare the integration for production
-
-Before going to production, confirm:
-
-1. production credentials have been released;
-2. the base URL has been switched to `https://backoffice.idcerberus.com`;
-3. an expired token is handled by generating a new one;
-4. `400`, `401`, and `403` errors have clear handling;
-5. logs record `service`, the queried document securely, `status.code`,
-  `status.message`, and `externalId`, when returned;
-6. sensitive data, base64, and tokens aren't written to open logs.
-
-## 7. Onboarding? Set up a webhook instead of just polling
+## Onboarding? Set up a webhook instead of just polling
 
 If your flow is onboarding (SDK or Web Client), don't stop at polling from
-step 5. Set up a webhook to be notified automatically when the status
-changes. See [Webhooks](/en/guides/webhooks). This applies to both staging
-(to test receiving it) and production.
+the previous step. Set up a webhook to be notified automatically when the
+status changes. See [Webhooks](/en/guides/webhooks). This applies to both
+staging (to test receiving it) and production.
 
-## 8. Where to go next
+## Where to go next
 
 1. For a complete first call: [Quickstart](/en/guides/quickstart)
 2. To choose products: [Choose the right service](/en/guides/escolha-o-servico-certo)
