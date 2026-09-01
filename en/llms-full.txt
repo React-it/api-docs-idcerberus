@@ -316,9 +316,32 @@ Description: Integrate onboarding, KYC, biometrics, OCR, risk, and compliance wi
 
 # idCerberus API
 
-Integrate CPF, CNPJ, OCR, biometrics, risk, compliance, and digital onboarding checks into a single API flow.
+Integrate CPF (Cadastro de Pessoa Física, Brazil's individual taxpayer ID), CNPJ (Cadastro Nacional da Pessoa Jurídica, Brazil's business tax ID), OCR, biometrics, risk, compliance, and digital onboarding checks into a single API flow.
 
 This documentation is organized for two moments: testing quickly in staging and implementing safely in production.
+
+## Shortest path (single-shot query via API)
+
+
+    Use `POST /api/token-generate` with the product's `client` and `secret`.
+
+
+    Open the [service index](/en/guides/indice-de-services) or the [API Reference](/en/api-reference/services-por-caso-de-uso) and copy the correct alias.
+
+
+    Send `service` and the product's required fields, such as `cpf`, `cnpj`, `image1`, `image2`, `documentType`, or `key`.
+
+
+    Call `POST https://backoffice-hml.idcerberus.com/api/service-api` with `Authorization: Bearer {jwt_token}`.
+
+
+    Use `result` as the business return and `status.message`, `onboardingStatus`, and `externalId` for diagnostics.
+
+
+> Info:
+  Going to capture the user's document and selfie in a guided registration, instead of making single-shot queries? That's the onboarding flow via SDK or Web Client. See [Onboarding via SDK](/en/guides/onboarding-sdk) instead of the steps above.
+
+## Or explore by goal
 
 
     Set up your token, environment, and first call in Postman without writing code. Prefer not to install anything? Use the built-in test panel on any [API Reference](/en/api-reference/autorização/gerar-token-de-api) page.
@@ -351,27 +374,6 @@ This documentation is organized for two moments: testing quickly in staging and 
     Get an automatic notification when an onboarding changes status, without polling.
 
 
-## Shortest path (single-shot query via API)
-
-
-    Use `POST /api/token-generate` with the product's `client` and `secret`.
-
-
-    Open the [service index](/en/guides/indice-de-services) or the [API Reference](/en/api-reference/services-por-caso-de-uso) and copy the correct alias.
-
-
-    Send `service` and the product's required fields, such as `cpf`, `cnpj`, `image1`, `image2`, `documentType`, or `key`.
-
-
-    Call `POST https://backoffice-hml.idcerberus.com/api/service-api` with `Authorization: Bearer {jwt_token}`.
-
-
-    Use `result` as the business return and `status.message`, `onboardingStatus`, and `externalId` for diagnostics.
-
-
-> Info:
-  Going to capture the user's document and selfie in a guided registration, instead of making single-shot queries? That's the onboarding flow via SDK or Web Client. See [Onboarding via SDK](/en/guides/onboarding-sdk) instead of the steps above.
-
 ## Most used
 
 | I need to test | Where to go | Ready-made example |
@@ -394,23 +396,6 @@ This documentation is organized for two moments: testing quickly in staging and 
 | SDK | Guided capture of document, selfie, and data in the app | Generating `tokenOnboarding` and querying the result (or receiving it via webhook) |
 | Web Client | Flows in WebView, browser, or QR Code | Redirecting the user and reading the processing status |
 | Webhook | Complements any model above: notifies your application when the status changes, for onboarding or single-shot queries | Configuring the receiving URL and validating the `id-cerberus-token` header |
-
-## Essential endpoints
-
-| Operation | Endpoint | Use |
-| --- | --- | --- |
-| Generate token | `POST /api/token-generate` | Authenticate protected calls |
-| Run service | `POST /api/service-api` | Run CPF, CNPJ, OCR, biometrics, risk, and compliance checks |
-| Generate TokenOnboarding | `POST /api/token-history-onboarding` | Start a flow via SDK |
-| Query onboarding | `GET /api/onboarding/report/{tokenOnboarding}` | Get status, fields, and processed rules |
-| Download PDF report | `GET /api/history-onboarding-report/{tokenOnboarding}` | Store or audit the final result |
-
-## Environments
-
-| Environment | Base URL |
-| --- | --- |
-| Staging | `https://backoffice-hml.idcerberus.com` |
-| Production | `https://backoffice.idcerberus.com` |
 
 ## Quick example
 
@@ -437,24 +422,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   }'
 ```
 
-## Response pattern
-
-Most services return the useful data in `result` and the technical status in `status`.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-> Nota:
-  The `service` field defines which product runs inside `POST /api/service-api`. The other fields change depending on the query chosen.
+For the full list of endpoints, environments, and the detailed response pattern, see [Overview](/en/guides/visao-geral).
 
 ## Next steps
 
@@ -780,106 +748,102 @@ Use this roadmap as an execution checklist. The idea is to start with a
 first manual call, validate the expected behavior, and only then bring the
 flow into your application's code.
 
-## 1. Confirm the environment
 
-Choose where the test will happen:
+    Choose where the test will happen:
 
-| Environment | Base URL | When to use |
-| --- | --- | --- |
-| Staging | `https://backoffice-hml.idcerberus.com` | Testing, payload validation, and development |
-| Production | `https://backoffice.idcerberus.com` | Real use, after credentials and permissions are released |
+    | Environment | Base URL | When to use |
+    | --- | --- | --- |
+    | Staging | `https://backoffice-hml.idcerberus.com` | Testing, payload validation, and development |
+    | Production | `https://backoffice.idcerberus.com` | Real use, after credentials and permissions are released |
 
-The call structure is the same in both environments. To switch from staging
-to production, just change the base URL.
+    The call structure is the same in both environments. To switch from
+    staging to production, just change the base URL.
 
-## 2. Generate the token
 
-Before running protected services, generate a JWT token.
+    Before running protected services, generate a JWT token.
 
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
 
-Copy the returned `access_token` value. In the following calls, send:
+    Copy the returned `access_token` value. In the following calls, send:
 
-```http
-Authorization: Bearer {jwt_token}
-```
+    ```http
+    Authorization: Bearer {jwt_token}
+    ```
 
-## 3. Test manually before coding
 
-If the person integrating isn't familiar with the terminal yet, start with
-Postman. It keeps the URL, headers, and body separate, which reduces typos.
+    If the person integrating isn't familiar with the terminal yet, start
+    with Postman. It keeps the URL, headers, and body separate, which
+    reduces typos.
 
-Recommended flow:
+    Recommended flow:
 
-1. test in Postman;
-2. repeat the same request with `curl`;
-3. confirm the expected response;
-4. bring the request into Node.js, Python, C#, or another language.
+    1. test in Postman;
+    2. repeat the same request with `curl`;
+    3. confirm the expected response;
+    4. bring the request into Node.js, Python, C#, or another language.
 
-## 4. Choose the right service
 
-The `POST /api/service-api` endpoint works as a product runner. The route is
-always the same, but the `service` field defines what runs.
+    The `POST /api/service-api` endpoint works as a product runner. The
+    route is always the same, but the `service` field defines what runs.
 
-```json
-{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-  "cpf": "cpf"
-}
-```
+    ```json
+    {
+      "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+      "cpf": "cpf"
+    }
+    ```
 
-For individuals, the main input is usually `cpf`. For businesses, it's
-usually `cnpj`. Document, biometric, and document-analysis services may
-require base64 images, image URLs, a selfie, or a query key.
+    For individuals, the main input is usually `cpf`. For businesses, it's
+    usually `cnpj`. Document, biometric, and document-analysis services may
+    require base64 images, image URLs, a selfie, or a query key.
 
-## 5. Validate the response
 
-For most services, the business data lives in `result` and the technical
-status lives in `status`.
+    For most services, the business data lives in `result` and the
+    technical status lives in `status`.
 
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "status": "REGULAR"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
+    ```json
+    {
+      "result": {
+        "cpf": "00000000000",
+        "status": "REGULAR"
+      },
+      "status": {
+        "code": 200,
+        "message": "Success"
+      }
+    }
+    ```
 
-Don't validate only the HTTP status. Also read `status.code`,
-`status.message`, and, when present, `externalId`.
+    Don't validate only the HTTP status. Also read `status.code`,
+    `status.message`, and, when present, `externalId`.
 
-## 6. Prepare the integration for production
 
-Before going to production, confirm:
+    Before going to production, confirm:
 
-1. production credentials have been released;
-2. the base URL has been switched to `https://backoffice.idcerberus.com`;
-3. an expired token is handled by generating a new one;
-4. `400`, `401`, and `403` errors have clear handling;
-5. logs record `service`, the queried document securely, `status.code`,
-  `status.message`, and `externalId`, when returned;
-6. sensitive data, base64, and tokens aren't written to open logs.
+    1. production credentials have been released;
+    2. the base URL has been switched to `https://backoffice.idcerberus.com`;
+    3. an expired token is handled by generating a new one;
+    4. `400`, `401`, and `403` errors have clear handling;
+    5. logs record `service`, the queried document securely, `status.code`,
+      `status.message`, and `externalId`, when returned;
+    6. sensitive data, base64, and tokens aren't written to open logs.
 
-## 7. Onboarding? Set up a webhook instead of just polling
+
+## Onboarding? Set up a webhook instead of just polling
 
 If your flow is onboarding (SDK or Web Client), don't stop at polling from
-step 5. Set up a webhook to be notified automatically when the status
-changes. See [Webhooks](/en/guides/webhooks). This applies to both staging
-(to test receiving it) and production.
+the previous step. Set up a webhook to be notified automatically when the
+status changes. See [Webhooks](/en/guides/webhooks). This applies to both
+staging (to test receiving it) and production.
 
-## 8. Where to go next
+## Where to go next
 
 1. For a complete first call: [Quickstart](/en/guides/quickstart)
 2. To choose products: [Choose the right service](/en/guides/escolha-o-servico-certo)
@@ -2377,6 +2341,22 @@ Use this integration when you need to:
 5. Query the result using the same `tokenOnboarding`.
 6. If needed, download the onboarding report's PDF.
 
+```mermaid
+sequenceDiagram
+    participant Backend as Your backend
+    participant SDK as App with the idCerberus SDK
+    participant idCerberus
+
+    Backend->>idCerberus: POST /api/token-history-onboarding
+    idCerberus-->>Backend: tokenOnboarding
+    Backend->>SDK: Delivers the tokenOnboarding to the app
+    SDK->>idCerberus: Captures document, selfie, and data (directly from the SDK)
+    Note over idCerberus: Asynchronous processing
+    idCerberus-->>Backend: Webhook or polling on GET /api/onboarding/report/{tokenOnboarding}
+    Backend->>idCerberus: GET .../history-onboarding-report/{tokenOnboarding} (optional)
+    idCerberus-->>Backend: Report PDF
+```
+
 ## Flow endpoints
 
 | Step | Endpoint | Goal |
@@ -2436,6 +2416,9 @@ Example request:
   ]
 }
 ```
+
+Values like `"cpf": "cpf"` are placeholders to swap for the real data; see the
+convention in [Quickstart](/en/guides/quickstart).
 
 Main fields:
 
@@ -5331,7 +5314,7 @@ Open the service to see the public alias, input fields, search terms and expecte
 
 **Service:** `SERVICE_ARREST_WARRANT`
 
-**Main fields:** `name`, `motherName`, `fatherName`, `birthDate`, `cpf`
+**Main fields:** `nome`, `motherName`, `fatherName`, `birthDate`, `cpf`
 
 **Search terms:** PF - Arrest warrant
 
@@ -11023,8 +11006,8 @@ Queries an arrest warrant associated with the given data.
 {
   "service": "SERVICE_ARREST_WARRANT",
   "nome": "name",
-  "motherName": "mother's name",
-  "fatherName": "father's name",
+  "motherName": "mother name",
+  "fatherName": "father name",
   "birthDate": "dd/MM/yyyy",
   "cpf": "cpf"
 }
@@ -12698,12 +12681,12 @@ Most queries return:
 | Operation | Endpoint |
 | --- | --- |
 | [Generate token](/en/api-reference/autorização/gerar-token-de-api) | `POST /api/token-generate` |
-| [Generate TokenOnboarding](/api-reference/integração-via-sdk/gerar-tokenonboarding-para-sdk) | `POST /api/token-history-onboarding` |
-| [Query onboarding](/api-reference/integração-via-sdk/consultar-resultado-de-onboarding) | `GET /api/onboarding/report/{tokenOnboarding}` |
-| [Download onboarding PDF](/api-reference/integração-via-sdk/baixar-relatório-pdf-do-onboarding) | `GET /api/history-onboarding-report/{tokenOnboarding}` |
+| [Generate TokenOnboarding](/en/api-reference/integração-via-sdk/gerar-tokenonboarding-para-sdk) | `POST /api/token-history-onboarding` |
+| [Query onboarding](/en/api-reference/integração-via-sdk/consultar-resultado-de-onboarding) | `GET /api/onboarding/report/{tokenOnboarding}` |
+| [Download onboarding PDF](/en/api-reference/integração-via-sdk/baixar-relatório-pdf-do-onboarding) | `GET /api/history-onboarding-report/{tokenOnboarding}` |
 | [Run external service](/en/api-reference/serviços--pessoas/executar-serviço-de-dados-risco-ou-compliance) | `POST /api/service-api` |
-| [Query customer](/api-reference/customers/consultar-cliente) | `GET /api/customer?documentKey={documentKey}` |
-| [Change customer status](/api-reference/customers/alterar-status-de-cliente) | `POST /api/changeStatusOfCustomer` |
+| [Query customer](/en/api-reference/customers/consultar-cliente) | `GET /api/customer?documentKey={documentKey}` |
+| [Change customer status](/en/api-reference/customers/alterar-status-de-cliente) | `POST /api/changeStatusOfCustomer` |
 
 ## Status and errors
 
@@ -17817,7 +17800,7 @@ In this service, the `result` object represents: Returns an AI-consolidated text
 **What it returns:** Returns arrest warrant indicators for the informed data, with status, agency, case and details found when there is an occurrence.
 
 
- Required fields: `service`, `name`, `motherName`, `fatherName`, `birthDate`, `cpf`.
+ Required fields: `service`, `nome`, `motherName`, `fatherName`, `birthDate`, `cpf`.
 
 
  Main fields in `result`: `cpf`, `hasArrestWarrant`, `warrants`.
@@ -17831,7 +17814,7 @@ In this service, the `result` object represents: Returns an AI-consolidated text
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `name`, `motherName`, `fatherName`, `birthDate`, `cpf`
+**Required fields:** `service`, `nome`, `motherName`, `fatherName`, `birthDate`, `cpf`
 
 **Optional fields:** No optional field mapped in this example.
 
@@ -17850,7 +17833,7 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 ```json
 {
   "service": "SERVICE_ARREST_WARRANT",
-  "name": "name",
+  "nome": "name",
   "motherName": "mother's name",
   "fatherName": "father's name",
   "birthDate": "dd/MM/yyyy",
@@ -17864,9 +17847,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ARREST_WARRANT",
-  "name": "name",
-  "motherName": "mother's name",
-  "fatherName": "father's name",
+  "nome": "name",
+  "motherName": "mother'\''s name",
+  "fatherName": "father'\''s name",
   "birthDate": "dd/MM/yyyy",
   "cpf": "cpf"
 }'
@@ -17878,9 +17861,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ARREST_WARRANT",
-  "name": "name",
-  "motherName": "mother's name",
-  "fatherName": "father's name",
+  "nome": "name",
+  "motherName": "mother'\''s name",
+  "fatherName": "father'\''s name",
   "birthDate": "dd/MM/yyyy",
   "cpf": "cpf"
 }'
@@ -17891,7 +17874,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Required | Description |
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `name` | Yes | Parameter used by the service SERVICE_ARREST_WARRANT. |
+| `nome` | Yes | Full name used in the query when there is no sufficient document. |
 | `motherName` | Yes | The mother's name used to increase query accuracy. |
 | `fatherName` | Yes | The father's name used to increase query accuracy. |
 | `birthDate` | Yes | Birth date used to increase query precision when required. |
@@ -19453,7 +19436,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (optional)",
-  "motherName": "mother's name (optional)"
+  "motherName": "mother'\''s name (optional)"
 }'
 ```
 
@@ -19465,7 +19448,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
   "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (optional)",
-  "motherName": "mother's name (optional)"
+  "motherName": "mother'\''s name (optional)"
 }'
 ```
 
@@ -28721,7 +28704,7 @@ Most queries use `POST /api/service-api` and select the product through the `ser
 
  ```yaml
  service: SERVICE_ARREST_WARRANT
- name: name
+ nome: name
  motherName: mother's name
  fatherName: father's name
  birthDate: dd/MM/yyyy
@@ -29824,7 +29807,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 1. Service: `SERVICE_ARREST_WARRANT`
 2. Endpoint: `POST /api/service-api`
-3. Request fields: `name`, `motherName`, `fatherName`, `birthDate`, `cpf`
+3. Request fields: `nome`, `motherName`, `fatherName`, `birthDate`, `cpf`
 4. Search terms: PF - Arrest warrant
 5. Main return: Returns arrest warrant indicators for the informed data, with status, agency, case and details found when there is an occurrence.
 
@@ -29853,9 +29836,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_ARREST_WARRANT",
-  "name": "name",
-  "motherName": "mother's name",
-  "fatherName": "father's name",
+  "nome": "name",
+  "motherName": "mother'\''s name",
+  "fatherName": "father'\''s name",
   "birthDate": "dd/MM/yyyy",
   "cpf": "cpf"
 }'
@@ -32416,7 +32399,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_ONDEMAND_TSE_POLLING_PLACE_PERSON_CPF",
   "cpf": "cpf",
   "birthDate": "yyyy-MM-dd (optional)",
-  "motherName": "mother's name (optional)"
+  "motherName": "mother'\''s name (optional)"
 }'
 ```
 
@@ -35587,7 +35570,7 @@ paths:
                 summary: PF - Arrest warrant
                 value:
                   service: SERVICE_ARREST_WARRANT
-                  name: name
+                  nome: name
                   motherName: mother's name
                   fatherName: father's name
                   birthDate: dd/MM/yyyy
