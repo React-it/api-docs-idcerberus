@@ -616,6 +616,13 @@ for (const file of files) {
     const route = pageRoute(file);
     const html = await readFile(file, 'utf8');
     await writeFile(file, normalizeHtml(html, route));
+
+    const languageIndexMatch = route.match(/^\/([^/]+)\/index$/);
+    if (languageIndexMatch) {
+      const languageRoute = `/${languageIndexMatch[1]}/`;
+      const languageIndexPath = path.join(distDir, languageIndexMatch[1], 'index.html');
+      await writeFile(languageIndexPath, normalizeHtml(html, languageRoute));
+    }
   }
 
   if (file.includes(`${path.sep}_next${path.sep}`) && file.endsWith('.js')) {
