@@ -79,6 +79,10 @@ function failsCheck(check, line) {
   return check.pattern.test(line);
 }
 
+function hasUnescapedApostrophe(text) {
+  return text.replaceAll(String.raw`'\''`, '').includes("'");
+}
+
 function markdownTableCellCount(line) {
   return line.trim().split('|').filter((_, index, cells) => index !== 0 && index !== cells.length - 1).length;
 }
@@ -102,11 +106,11 @@ for (const file of walk(root)) {
 
   if (!relative.startsWith('scripts/')) {
     for (const match of content.matchAll(/\]\((\/(?:guides|api-reference)[^)#\s]+)(?:#[^)]+)?\)/g)) {
-      internalLinks.push({ file: relative, target: match[1] });
+      internalLinks.push({ file: relative, target: match[1], line: content.slice(0, match.index).split(/\r?\n/).length });
     }
 
     for (const match of content.matchAll(/\bhref=["'](\/(?:guides|api-reference)[^"'\s#]+)(?:#[^"']*)?["']/g)) {
-      internalLinks.push({ file: relative, target: match[1] });
+      internalLinks.push({ file: relative, target: match[1], line: content.slice(0, match.index).split(/\r?\n/).length });
     }
   }
 
@@ -144,8 +148,12 @@ for (const file of walk(root)) {
   }
 }
 
-const openApiPath = path.join(root, 'api-reference', 'openapi.json');
-if (fs.existsSync(openApiPath)) {
+const openApiHrefs = new Set();
+
+for (const openApiRelative of ['api-reference/openapi.json', 'en/api-reference/openapi.json']) {
+  const openApiPath = path.join(root, openApiRelative);
+  if (!fs.existsSync(openApiPath)) continue;
+
   const openApi = fs.readFileSync(openApiPath, 'utf8');
   const requestBlock = openApi.split(/\n\s{6}responses:/)[0] || '';
   const responseBlock = openApi.split(/\n\s{6}responses:/)[1] || '';
@@ -153,30 +161,103 @@ if (fs.existsSync(openApiPath)) {
   for (const match of requestBlock.matchAll(/^\s{14}([A-Za-z0-9_]+):\s*$/gm)) openApiRequestExamples.add(match[1]);
   for (const match of responseBlock.matchAll(/^\s{16}([A-Za-z0-9_]+):\s*$/gm)) openApiResponseExamples.add(match[1]);
 
-  for (const requestKey of openApiRequestExamples) {
-    if (!openApiResponseExamples.has(requestKey)) {
-      findings.push({
-        file: 'api-reference/openapi.json',
-        line: 1,
-        check: 'request sem response example',
-        text: requestKey,
-      });
+  for (const match of openApi.matchAll(/href:\s*(\S+)/g)) openApiHrefs.add(decodeURIComponent(match[1]));
+
+  if (openApiRelative === 'api-reference/openapi.json') {
+    for (const requestKey of openApiRequestExamples) {
+      if (!openApiResponseExamples.has(requestKey)) {
+        findings.push({
+          file: 'api-reference/openapi.json',
+          line: 1,
+          check: 'request sem response example',
+          text: requestKey,
+        });
+      }
     }
   }
 }
 
 for (const link of internalLinks) {
   const normalized = link.target.replace(/^\/+/, '');
-  if (normalized.startsWith('api-reference/')) continue;
+  const isEnglishFile = link.file === 'en' || link.file.startsWith('en/');
+  const isEnglishTarget = normalized === 'en' || normalized.startsWith('en/');
 
-  const targetPath = path.join(root, `${decodeURIComponent(normalized)}.mdx`);
-  if (!fs.existsSync(targetPath)) {
+  if (isEnglishFile && !isEnglishTarget) {
     findings.push({
       file: link.file,
-      line: 1,
-      check: 'link interno quebrado',
+      line: link.line,
+      check: 'link sem prefixo /en/',
       text: link.target,
     });
+    continue;
+  }
+
+  const withoutLanguage = isEnglishTarget ? normalized.slice('en/'.length) : normalized;
+  const targetPath = path.join(root, `${decodeURIComponent(normalized)}.mdx`);
+  if (fs.existsSync(targetPath)) continue;
+  if (withoutLanguage.startsWith('api-reference/') && (!isEnglishTarget || openApiHrefs.has(`/${normalized}`))) continue;
+
+  findings.push({
+    file: link.file,
+    line: link.line,
+    check: 'link interno quebrado',
+    text: link.target,
+  });
+}
+
+for (const file of walk(root)) {
+  const relative = path.relative(root, file).replaceAll(path.sep, '/');
+  if (relative === 'scripts/check-text-quality.mjs') continue;
+  if (path.extname(file) !== '.mdx' && path.extname(file) !== '.md') continue;
+
+  const lines = fs.readFileSync(file, 'utf8').split(/\r?\n/);
+  let inBashBlock = false;
+  let inDataLiteral = false;
+
+  for (const [index, line] of lines.entries()) {
+    if (/^```bash/.test(line.trim())) {
+      inBashBlock = true;
+      continue;
+    }
+    if (inBashBlock && line.trim() === '```') {
+      inBashBlock = false;
+      inDataLiteral = false;
+      continue;
+    }
+    if (!inBashBlock) continue;
+
+    const singleLineData = line.match(/--data\s+'(\{[\s\S]*\})'/);
+    if (!inDataLiteral && singleLineData) {
+      if (hasUnescapedApostrophe(singleLineData[1])) {
+        findings.push({
+          file: relative,
+          line: index + 1,
+          check: 'aspas simples quebrando bloco bash',
+          text: line.trim().slice(0, 180),
+        });
+      }
+      continue;
+    }
+
+    if (!inDataLiteral && /--data\s+'\{/.test(line)) {
+      inDataLiteral = true;
+      continue;
+    }
+
+    if (inDataLiteral) {
+      if (/^\s*\}'/.test(line)) {
+        inDataLiteral = false;
+        continue;
+      }
+      if (hasUnescapedApostrophe(line)) {
+        findings.push({
+          file: relative,
+          line: index + 1,
+          check: 'aspas simples quebrando bloco bash',
+          text: line.trim().slice(0, 180),
+        });
+      }
+    }
   }
 }
 
