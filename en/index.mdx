@@ -5,42 +5,9 @@ description: Integrate onboarding, KYC, biometrics, OCR, risk, and compliance wi
 
 # idCerberus API
 
-Integrate CPF, CNPJ, OCR, biometrics, risk, compliance, and digital onboarding checks into a single API flow.
+Integrate CPF (Cadastro de Pessoa Física, Brazil's individual taxpayer ID), CNPJ (Cadastro Nacional da Pessoa Jurídica, Brazil's business tax ID), OCR, biometrics, risk, compliance, and digital onboarding checks into a single API flow.
 
 This documentation is organized for two moments: testing quickly in staging and implementing safely in production.
-
-<CardGroup cols={3}>
-  <Card icon="rocket" title="Test in 5 minutes" href="/en/guides/postman-do-zero">
-    Set up your token, environment, and first call in Postman without writing code. Prefer not to install anything? Use the built-in test panel on any [API Reference](/en/api-reference/autorização/gerar-token-de-api) page.
-  </Card>
-  <Card icon="list-check" title="Ready-made recipes" href="/en/guides/receitas-prontas">
-    Copy ready flows for CPF, CNPJ, OCR, Face Index, PJ risk, and PF score.
-  </Card>
-  <Card icon="server" title="Run a service" href="/api-reference/como-executar-service">
-    Understand the `POST /api/service-api` contract and copy ready-made payloads.
-  </Card>
-  <Card icon="image" title="OCR and images" href="/en/guides/service-api/sobre-ocr-service-api">
-    See how to test CNH, RG, CNPJ card, proof of address, and documents with base64.
-  </Card>
-  <Card icon="book" title="Service catalog" href="/guides/indice-de-services">
-    Search by alias, document, category, field, or business goal.
-  </Card>
-  <Card icon="magnifying-glass" title="Quick search" href="/en/guides/busca-rapida">
-    Find services by CPF, CNPJ, OCR, Face Index, error, required field, or alias.
-  </Card>
-  <Card icon="compass" title="Services by use case" href="/api-reference/services-por-caso-de-uso">
-    Pick the right service based on what you need to validate or query.
-  </Card>
-  <Card icon="triangle-exclamation" title="Common errors" href="/en/guides/erros-comuns-integracao">
-    Quick diagnosis for token, access, payload, image, empty return, and external failures.
-  </Card>
-  <Card icon="circle-question" title="FAQ" href="/en/guides/duvidas-e-solucoes">
-    Direct questions and answers by topic, before opening a support ticket.
-  </Card>
-  <Card icon="bolt" title="Webhooks" href="/en/guides/webhooks">
-    Get an automatic notification when an onboarding changes status, without polling.
-  </Card>
-</CardGroup>
 
 ## Shortest path (single-shot query via API)
 
@@ -66,6 +33,41 @@ This documentation is organized for two moments: testing quickly in staging and 
   Going to capture the user's document and selfie in a guided registration, instead of making single-shot queries? That's the onboarding flow via SDK or Web Client. See [Onboarding via SDK](/en/guides/onboarding-sdk) instead of the steps above.
 </Info>
 
+## Or explore by goal
+
+<CardGroup cols={3}>
+  <Card icon="rocket" title="Test in 5 minutes" href="/en/guides/postman-do-zero">
+    Set up your token, environment, and first call in Postman without writing code. Prefer not to install anything? Use the built-in test panel on any [API Reference](/en/api-reference/autorização/gerar-token-de-api) page.
+  </Card>
+  <Card icon="list-check" title="Ready-made recipes" href="/en/guides/receitas-prontas">
+    Copy ready flows for CPF, CNPJ, OCR, Face Index, PJ risk, and PF score.
+  </Card>
+  <Card icon="server" title="Run a service" href="/en/api-reference/como-executar-service">
+    Understand the `POST /api/service-api` contract and copy ready-made payloads.
+  </Card>
+  <Card icon="image" title="OCR and images" href="/en/guides/service-api/sobre-ocr-service-api">
+    See how to test CNH, RG, CNPJ card, proof of address, and documents with base64.
+  </Card>
+  <Card icon="book" title="Service catalog" href="/en/guides/indice-de-services">
+    Search by alias, document, category, field, or business goal.
+  </Card>
+  <Card icon="magnifying-glass" title="Quick search" href="/en/guides/busca-rapida">
+    Find services by CPF, CNPJ, OCR, Face Index, error, required field, or alias.
+  </Card>
+  <Card icon="compass" title="Services by use case" href="/en/api-reference/services-por-caso-de-uso">
+    Pick the right service based on what you need to validate or query.
+  </Card>
+  <Card icon="triangle-exclamation" title="Common errors" href="/en/guides/erros-comuns-integracao">
+    Quick diagnosis for token, access, payload, image, empty return, and external failures.
+  </Card>
+  <Card icon="circle-question" title="FAQ" href="/en/guides/duvidas-e-solucoes">
+    Direct questions and answers by topic, before opening a support ticket.
+  </Card>
+  <Card icon="bolt" title="Webhooks" href="/en/guides/webhooks">
+    Get an automatic notification when an onboarding changes status, without polling.
+  </Card>
+</CardGroup>
+
 ## Most used
 
 | I need to test | Where to go | Ready-made example |
@@ -88,23 +90,6 @@ This documentation is organized for two moments: testing quickly in staging and 
 | SDK | Guided capture of document, selfie, and data in the app | Generating `tokenOnboarding` and querying the result (or receiving it via webhook) |
 | Web Client | Flows in WebView, browser, or QR Code | Redirecting the user and reading the processing status |
 | Webhook | Complements any model above: notifies your application when the status changes, for onboarding or single-shot queries | Configuring the receiving URL and validating the `id-cerberus-token` header |
-
-## Essential endpoints
-
-| Operation | Endpoint | Use |
-| --- | --- | --- |
-| Generate token | `POST /api/token-generate` | Authenticate protected calls |
-| Run service | `POST /api/service-api` | Run CPF, CNPJ, OCR, biometrics, risk, and compliance checks |
-| Generate TokenOnboarding | `POST /api/token-history-onboarding` | Start a flow via SDK |
-| Query onboarding | `GET /api/onboarding/report/{tokenOnboarding}` | Get status, fields, and processed rules |
-| Download PDF report | `GET /api/history-onboarding-report/{tokenOnboarding}` | Store or audit the final result |
-
-## Environments
-
-| Environment | Base URL |
-| --- | --- |
-| Staging | `https://backoffice-hml.idcerberus.com` |
-| Production | `https://backoffice.idcerberus.com` |
 
 ## Quick example
 
@@ -131,25 +116,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   }'
 ```
 
-## Response pattern
-
-Most services return the useful data in `result` and the technical status in `status`.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-<Note>
-  The `service` field defines which product runs inside `POST /api/service-api`. The other fields change depending on the query chosen.
-</Note>
+For the full list of endpoints, environments, and the detailed response pattern, see [Overview](/en/guides/visao-geral).
 
 ## Next steps
 

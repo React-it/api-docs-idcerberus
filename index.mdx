@@ -5,9 +5,38 @@ description: Integre onboarding, KYC, biometria, OCR, risco e compliance com a A
 
 # API idCerberus
 
-Integre consultas de CPF, CNPJ, OCR, biometria, risco, compliance e onboarding digital em um fluxo único de API.
+Integre consultas de CPF (Cadastro de Pessoa Física, documento de identificação individual no Brasil), CNPJ (Cadastro Nacional da Pessoa Jurídica, documento de identificação de empresas), OCR, biometria, risco, compliance e onboarding digital em um fluxo único de API.
 
 Esta documentação foi organizada para dois momentos: testar rápido em homologação e implementar com segurança em produção.
+
+## Caminho mais curto (consulta avulsa via API)
+
+<Steps>
+  <Step title="Gere um token">
+    Use `POST /api/token-generate` com `client` e `secret` do produto.
+  </Step>
+  <Step title="Escolha o service">
+    Abra o [índice de services](/guides/indice-de-services) ou a [API Reference](/api-reference/services-por-caso-de-uso) e copie o alias correto.
+  </Step>
+  <Step title="Monte o payload">
+    Envie `service` e os campos obrigatórios do produto, como `cpf`, `cnpj`, `image1`, `image2`, `documentType` ou `key`.
+  </Step>
+  <Step title="Execute em HML">
+    Chame `POST https://backoffice-hml.idcerberus.com/api/service-api` com `Authorization: Bearer {jwt_token}`.
+  </Step>
+  <Step title="Leia o resultado">
+    Use `result` como retorno de negócio e `status.message`, `onboardingStatus` e `externalId` para diagnóstico.
+  </Step>
+</Steps>
+
+<Info>
+  Vai capturar documento e selfie do usuário num cadastro guiado, em vez de
+  fazer consultas avulsas? Esse é o fluxo de onboarding via SDK ou Cliente
+  Web. Veja [Onboarding via SDK](/guides/onboarding-sdk) em vez dos passos
+  acima.
+</Info>
+
+## Ou explore por objetivo
 
 <CardGroup cols={3}>
   <Card icon="rocket" title="Testar em 5 minutos" href="/guides/postman-do-zero">
@@ -42,33 +71,6 @@ Esta documentação foi organizada para dois momentos: testar rápido em homolog
   </Card>
 </CardGroup>
 
-## Caminho mais curto (consulta avulsa via API)
-
-<Steps>
-  <Step title="Gere um token">
-    Use `POST /api/token-generate` com `client` e `secret` do produto.
-  </Step>
-  <Step title="Escolha o service">
-    Abra o [índice de services](/guides/indice-de-services) ou a [API Reference](/api-reference/services-por-caso-de-uso) e copie o alias correto.
-  </Step>
-  <Step title="Monte o payload">
-    Envie `service` e os campos obrigatórios do produto, como `cpf`, `cnpj`, `image1`, `image2`, `documentType` ou `key`.
-  </Step>
-  <Step title="Execute em HML">
-    Chame `POST https://backoffice-hml.idcerberus.com/api/service-api` com `Authorization: Bearer {jwt_token}`.
-  </Step>
-  <Step title="Leia o resultado">
-    Use `result` como retorno de negócio e `status.message`, `onboardingStatus` e `externalId` para diagnóstico.
-  </Step>
-</Steps>
-
-<Info>
-  Vai capturar documento e selfie do usuário num cadastro guiado, em vez de
-  fazer consultas avulsas? Esse é o fluxo de onboarding via SDK ou Cliente
-  Web. Veja [Onboarding via SDK](/guides/onboarding-sdk) em vez dos passos
-  acima.
-</Info>
-
 ## Mais usados
 
 | Preciso testar | Onde ir | Exemplo pronto |
@@ -91,23 +93,6 @@ Esta documentação foi organizada para dois momentos: testar rápido em homolog
 | SDK | Captura guiada de documento, selfie e dados no aplicativo | Geração do `tokenOnboarding` e consulta do resultado (ou recebimento via webhook) |
 | Cliente Web | Fluxos em WebView, navegador ou QR Code | Redirecionamento do usuário e leitura do processamento |
 | Webhook | Complementa qualquer modelo acima: avisa sua aplicação quando o status mudar, seja onboarding ou consulta avulsa | Configurar a URL de recebimento e validar o header `id-cerberus-token` |
-
-## Endpoints essenciais
-
-| Operação | Endpoint | Uso |
-| --- | --- | --- |
-| Gerar token | `POST /api/token-generate` | Autenticar chamadas protegidas |
-| Executar service | `POST /api/service-api` | Rodar CPF, CNPJ, OCR, biometria, risco e compliance |
-| Gerar TokenOnboarding | `POST /api/token-history-onboarding` | Iniciar fluxo via SDK |
-| Consultar onboarding | `GET /api/onboarding/report/{tokenOnboarding}` | Obter status, campos e regras processadas |
-| Baixar relatório PDF | `GET /api/history-onboarding-report/{tokenOnboarding}` | Armazenar ou auditar o resultado final |
-
-## Ambientes
-
-| Ambiente | Base URL |
-| --- | --- |
-| Homologação | `https://backoffice-hml.idcerberus.com` |
-| Produção | `https://backoffice.idcerberus.com` |
 
 ## Exemplo rápido
 
@@ -134,25 +119,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   }'
 ```
 
-## Padrão de resposta
-
-A maior parte dos services retorna os dados úteis em `result` e o status técnico em `status`.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "onboardingStatus": "APPROVED",
-  "externalId": "..."
-}
-```
-
-<Note>
-  O campo `service` define qual produto será executado dentro de `POST /api/service-api`. Os demais campos mudam conforme a consulta escolhida.
-</Note>
+Para a lista completa de endpoints, ambientes e o padrão de resposta detalhado, veja [Visão geral](/guides/visao-geral).
 
 ## Próximos passos
 
