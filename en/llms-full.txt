@@ -308,132 +308,6 @@ You can search whole phrases:
 
 ---
 
-# Welcome
-
-URL: https://api-docs.idcerberus.com/en
-Source: en/index.mdx
-Description: Integrate onboarding, KYC, biometrics, OCR, risk, and compliance with the idCerberus API
-
-# idCerberus API
-
-Integrate CPF (Cadastro de Pessoa Física, Brazil's individual taxpayer ID), CNPJ (Cadastro Nacional da Pessoa Jurídica, Brazil's business tax ID), OCR, biometrics, risk, compliance, and digital onboarding checks into a single API flow.
-
-This documentation is organized for two moments: testing quickly in staging and implementing safely in production.
-
-## Shortest path (single-shot query via API)
-
-
-    Use `POST /api/token-generate` with the product's `client` and `secret`.
-
-
-    Open the [service index](/en/guides/indice-de-services) or the [API Reference](/en/api-reference/services-por-caso-de-uso) and copy the correct alias.
-
-
-    Send `service` and the product's required fields, such as `cpf`, `cnpj`, `image1`, `image2`, `documentType`, or `key`.
-
-
-    Call `POST https://backoffice-hml.idcerberus.com/api/service-api` with `Authorization: Bearer {jwt_token}`.
-
-
-    Use `result` as the business return and `status.message`, `onboardingStatus`, and `externalId` for diagnostics.
-
-
-> Info:
-  Going to capture the user's document and selfie in a guided registration, instead of making single-shot queries? That's the onboarding flow via SDK or Web Client. See [Onboarding via SDK](/en/guides/onboarding-sdk) instead of the steps above.
-
-## Or explore by goal
-
-
-    Set up your token, environment, and first call in Postman without writing code. Prefer not to install anything? Use the built-in test panel on any [API Reference](/en/api-reference/autorização/gerar-token-de-api) page.
-
-
-    Copy ready flows for CPF, CNPJ, OCR, Face Index, PJ risk, and PF score.
-
-
-    Understand the `POST /api/service-api` contract and copy ready-made payloads.
-
-
-    See how to test CNH, RG, CNPJ card, proof of address, and documents with base64.
-
-
-    Search by alias, document, category, field, or business goal.
-
-
-    Find services by CPF, CNPJ, OCR, Face Index, error, required field, or alias.
-
-
-    Pick the right service based on what you need to validate or query.
-
-
-    Quick diagnosis for token, access, payload, image, empty return, and external failures.
-
-
-    Direct questions and answers by topic, before opening a support ticket.
-
-
-    Get an automatic notification when an onboarding changes status, without polling.
-
-
-## Most used
-
-| I need to test | Where to go | Ready-made example |
-| --- | --- | --- |
-| Generate a token | [Authentication](/en/guides/autenticacao) | [`auth.hml.curl`](/examples/auth.hml.curl) |
-| Query a CPF | [Individual services](/en/api-reference/services-pessoa-fisica) | [`service-api-cpf.hml.curl`](/examples/service-api-cpf.hml.curl) |
-| Query a CNPJ | [Business services](/en/api-reference/services-pessoa-juridica) | [`service-api-cnpj.hml.curl`](/examples/service-api-cnpj.hml.curl) |
-| OCR driver's license (CNH) | [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api) | [`service-api-ocr-cnh.hml.curl`](/examples/service-api-ocr-cnh.hml.curl) |
-| OCR national ID (RG) | [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api) | [`service-api-ocr-rg.hml.curl`](/examples/service-api-ocr-rg.hml.curl) |
-| OCR CNPJ card | [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api) | [`service-api-ocr-cnpj-card.hml.curl`](/examples/service-api-ocr-cnpj-card.hml.curl) |
-| OCR proof of address | [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api) | [`service-api-ocr-proof-of-address.hml.curl`](/examples/service-api-ocr-proof-of-address.hml.curl) |
-| Face Index | [Individual services](/en/api-reference/services-pessoa-fisica) | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
-| Business credit risk | [Business services](/en/api-reference/services-pessoa-juridica) | [`service-api-credit-risk-company.hml.curl`](/examples/service-api-credit-risk-company.hml.curl) |
-
-## Integration models
-
-| Model | When to use | What you implement |
-| --- | --- | --- |
-| Direct API | Server-to-server queries by CPF, CNPJ, image, or key | Token, payload, HTTP call, and reading `result` |
-| SDK | Guided capture of document, selfie, and data in the app | Generating `tokenOnboarding` and querying the result (or receiving it via webhook) |
-| Web Client | Flows in WebView, browser, or QR Code | Redirecting the user and reading the processing status |
-| Webhook | Complements any model above: notifies your application when the status changes, for onboarding or single-shot queries | Configuring the receiving URL and validating the `id-cerberus-token` header |
-
-## Quick example
-
-Generate a token:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
-
-Use the token to run a query:
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-    "cpf": "00000000000"
-  }'
-```
-
-For the full list of endpoints, environments, and the detailed response pattern, see [Overview](/en/guides/visao-geral).
-
-## Next steps
-
-1. To test in Postman, see [Postman from scratch](/en/guides/postman-do-zero).
-2. To copy full flows, see [Ready-made recipes](/en/guides/receitas-prontas).
-3. For OCR, base64, and images, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
-4. To choose the right service, see [Services by use case](/en/api-reference/services-por-caso-de-uso).
-5. To diagnose failures, see [Common integration errors](/en/guides/erros-comuns-integracao).
-
----
-
 # Quickstart
 
 URL: https://api-docs.idcerberus.com/en/guides/quickstart
@@ -489,240 +363,239 @@ method, headers, and body the same and only swap the URL.
   staging URL. A token generated in production must be used with the
   production URL.
 
-## 1. Choose where to test
 
-### Postman
+    ### Postman
 
-1. Open Postman.
-2. Click **New**.
-3. Choose **HTTP Request**.
-4. Select the `POST` method.
-5. Paste the URL for the environment you want.
-6. Go to the **Headers** tab and add `Content-Type` with value `application/json`.
-7. Go to the **Body** tab.
-8. Choose **raw**.
-9. Select **JSON**.
-10. Paste the example body.
-11. Click **Send**.
+    1. Open Postman.
+    2. Click **New**.
+    3. Choose **HTTP Request**.
+    4. Select the `POST` method.
+    5. Paste the URL for the environment you want.
+    6. Go to the **Headers** tab and add `Content-Type` with value `application/json`.
+    7. Go to the **Body** tab.
+    8. Choose **raw**.
+    9. Select **JSON**.
+    10. Paste the example body.
+    11. Click **Send**.
 
-### Windows PowerShell
+    ### Windows PowerShell
 
-1. Open the start menu.
-2. Search for `PowerShell`.
-3. Open PowerShell.
-4. Paste the example `curl.exe` command.
-5. Press **Enter**.
+    1. Open the start menu.
+    2. Search for `PowerShell`.
+    3. Open PowerShell.
+    4. Paste the example `curl.exe` command.
+    5. Press **Enter**.
 
-On Windows, prefer `curl.exe`. Plain `curl` alone can be interpreted as a
-different built-in PowerShell command.
+    On Windows, prefer `curl.exe`. Plain `curl` alone can be interpreted as a
+    different built-in PowerShell command.
 
-### Windows CMD
+    ### Windows CMD
 
-1. Open the start menu.
-2. Search for `cmd`.
-3. Open Command Prompt.
-4. Paste the command on a single line, or use `^` to break lines.
-5. Press **Enter**.
+    1. Open the start menu.
+    2. Search for `cmd`.
+    3. Open Command Prompt.
+    4. Paste the command on a single line, or use `^` to break lines.
+    5. Press **Enter**.
 
-### macOS or Linux
+    ### macOS or Linux
 
-1. Open the Terminal.
-2. Paste the example `curl` command.
-3. Press **Enter**.
+    1. Open the Terminal.
+    2. Paste the example `curl` command.
+    3. Press **Enter**.
 
-On macOS and Linux, `curl` usually comes preinstalled. If the terminal says
-the command doesn't exist, install the `curl` package through your system's
-package manager.
-
-## 2. Generate a token
-
-The first request generates a JWT token. That token will be used in the next
-protected calls.
-
-In Postman, set it up like this:
-
-| Field | Value |
-| --- | --- |
-| Method | `POST` |
-| Staging URL | `https://backoffice-hml.idcerberus.com/api/token-generate` |
-| Production URL | `https://backoffice.idcerberus.com/api/token-generate` |
-| Header | `Content-Type: application/json` |
-| Body | `raw` + `JSON` |
-
-Body:
-
-```json
-{
-  "client": "{client}",
-  "secret": "{secret}"
-}
-```
-
-### Staging
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
-
-### Production
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
-
-### Windows CMD
-
-```bat
-curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
-  --header "Content-Type: application/json" ^
-  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
-```
-
-Expected response:
-
-```json
-{
-  "access_token": "{jwt_token}",
-  "expires_in": "300"
-}
-```
-
-Copy the `access_token` value. It will be used in the next step.
-
-In Postman, copy only the content between quotes. Example:
-
-```json
-{
-  "access_token": "eyJhbGciOi...",
-  "expires_in": "300"
-}
-```
-
-In this case, the token to use in the next step is `eyJhbGciOi...`.
-
-## 3. Run a service
-
-Use the returned token in the `Authorization` header.
-
-In Postman, create a new request:
-
-| Field | Value |
-| --- | --- |
-| Method | `POST` |
-| Staging URL | `https://backoffice-hml.idcerberus.com/api/service-api` |
-| Production URL | `https://backoffice.idcerberus.com/api/service-api` |
-| Header 1 | `Authorization: Bearer {jwt_token}` |
-| Header 2 | `Content-Type: application/json` |
-| Body | `raw` + `JSON` |
-
-### Staging
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-    "cpf": "cpf"
-  }'
-```
-
-### Production
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-    "cpf": "cpf"
-  }'
-```
-
-### Windows CMD
-
-```bat
-curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
-  --header "Authorization: Bearer {jwt_token}" ^
-  --header "Content-Type: application/json" ^
-  --data "{\"service\":\"SERVICE_PERSON_DATA_ENRICHMENT\",\"cpf\":\"cpf\"}"
-```
-
-> Info:
-  Going to test OCR? Use the [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api)
-  guide to build the payload with `image1`, `image2`, `documentType`, base64,
-  and response examples. OCR needs a real image; a short payload only
-  validates authentication and access.
-
-Replace:
-
-| Value | What to put |
-| --- | --- |
-| `{jwt_token}` | Token returned in the previous step |
-| `cpf` | CPF used for testing |
-| `SERVICE_PERSON_DATA_ENRICHMENT` | Code of the service you want to run |
+    On macOS and Linux, `curl` usually comes preinstalled. If the terminal says
+    the command doesn't exist, install the `curl` package through your system's
+    package manager.
 
 
-    Use this to validate the flow with a simple individual (PF) service.
+    The first request generates a JWT token. That token will be used in the next
+    protected calls.
+
+    In Postman, set it up like this:
+
+    | Field | Value |
+    | --- | --- |
+    | Method | `POST` |
+    | Staging URL | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+    | Production URL | `https://backoffice.idcerberus.com/api/token-generate` |
+    | Header | `Content-Type: application/json` |
+    | Body | `raw` + `JSON` |
+
+    Body:
+
+    ```json
+    {
+      "client": "{client}",
+      "secret": "{secret}"
+    }
+    ```
+
+    ### Staging
+
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
+
+    ### Production
+
+    ```bash
+    curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
+
+    ### Windows CMD
+
+    ```bat
+    curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
+      --header "Content-Type: application/json" ^
+      --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+    ```
+
+    Expected response:
+
+    ```json
+    {
+      "access_token": "{jwt_token}",
+      "expires_in": "300"
+    }
+    ```
+
+    Copy the `access_token` value. It will be used in the next step.
+
+    In Postman, copy only the content between quotes. Example:
+
+    ```json
+    {
+      "access_token": "eyJhbGciOi...",
+      "expires_in": "300"
+    }
+    ```
+
+    In this case, the token to use in the next step is `eyJhbGciOi...`.
 
 
-    Use this to validate the flow with a simple business (PJ) service.
+    Use the returned token in the `Authorization` header.
+
+    In Postman, create a new request:
+
+    | Field | Value |
+    | --- | --- |
+    | Method | `POST` |
+    | Staging URL | `https://backoffice-hml.idcerberus.com/api/service-api` |
+    | Production URL | `https://backoffice.idcerberus.com/api/service-api` |
+    | Header 1 | `Authorization: Bearer {jwt_token}` |
+    | Header 2 | `Content-Type: application/json` |
+    | Body | `raw` + `JSON` |
+
+    ### Staging
+
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+      --header 'Authorization: Bearer {jwt_token}' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+        "cpf": "cpf"
+      }'
+    ```
+
+    ### Production
+
+    ```bash
+    curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+      --header 'Authorization: Bearer {jwt_token}' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+        "cpf": "cpf"
+      }'
+    ```
+
+    ### Windows CMD
+
+    ```bat
+    curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
+      --header "Authorization: Bearer {jwt_token}" ^
+      --header "Content-Type: application/json" ^
+      --data "{\"service\":\"SERVICE_PERSON_DATA_ENRICHMENT\",\"cpf\":\"cpf\"}"
+    ```
+
+    > Info:
+      Going to test OCR? Use the [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api)
+      guide to build the payload with `image1`, `image2`, `documentType`, base64,
+      and response examples. OCR needs a real image; a short payload only
+      validates authentication and access.
 
 
-    Use this when the body needs base64, an image, a URL, or `documentType`.
+    Replace:
+
+    | Value | What to put |
+    | --- | --- |
+    | `{jwt_token}` | Token returned in the previous step |
+    | `cpf` | CPF used for testing |
+    | `SERVICE_PERSON_DATA_ENRICHMENT` | Code of the service you want to run |
 
 
-    Use this to browse the product groups of `POST /api/service-api`.
+
+        Use this to validate the flow with a simple individual (PF) service.
 
 
-## 4. Read the result
+        Use this to validate the flow with a simple business (PJ) service.
 
-Most services return the data in `result` and the technical status in
-`status`.
 
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "status": "REGULAR",
-    "name": "PERSON NAME"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
+        Use this when the body needs base64, an image, a URL, or `documentType`.
 
-| Field | How to interpret |
-| --- | --- |
-| `result` | Data returned by the service |
-| `status.code` | Technical processing code |
-| `status.message` | Technical message for the query |
-| `externalId` | Query identifier, when returned |
 
-## 5. Handle success and failure
+        Use this to browse the product groups of `POST /api/service-api`.
 
-Use `status.code` to decide your application's behavior.
 
-| Situation | How to handle it |
-| --- | --- |
-| `status.code` 200 | Processing complete. Read the `result` object. |
-| `status.code` 400 | The payload, parameter, permission, or external source may have failed. Read `status.message`. |
-| Expired token | Generate a new token and repeat the call. |
-| No JSON body | Handle it according to the endpoint. The onboarding report returns a PDF. |
 
-## 6. Next step
+
+    Most services return the data in `result` and the technical status in
+    `status`.
+
+    ```json
+    {
+      "result": {
+        "cpf": "00000000000",
+        "status": "REGULAR",
+        "name": "PERSON NAME"
+      },
+      "status": {
+        "code": 200,
+        "message": "Success"
+      }
+    }
+    ```
+
+    | Field | How to interpret |
+    | --- | --- |
+    | `result` | Data returned by the service |
+    | `status.code` | Technical processing code |
+    | `status.message` | Technical message for the query |
+    | `externalId` | Query identifier, when returned |
+
+
+    Use `status.code` to decide your application's behavior.
+
+    | Situation | How to handle it |
+    | --- | --- |
+    | `status.code` 200 | Processing complete. Read the `result` object. |
+    | `status.code` 400 | The payload, parameter, permission, or external source may have failed. Read `status.message`. |
+    | Expired token | Generate a new token and repeat the call. |
+    | No JSON body | Handle it according to the endpoint. The onboarding report returns a PDF. |
+
+
+## Next step
 
 If you already know which product to consume, go to the [API Reference](/en/api-reference/autorização/gerar-token-de-api).
 
@@ -1201,6 +1074,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Always start with staging. Once the flow is validated, switch the base URL
 and credentials to production.
+
+## Next step
+
+
+    Make your first API call in staging.
+
+
+    Understand how to generate and renew the JWT token in each environment.
+
+
+    Fix technical symptoms like a token from another environment or 401/403.
 
 ---
 
@@ -3041,6 +2925,28 @@ If the person integrating doesn't know the API, start with the CPF, CNPJ,
 FaceMatch, or document analysis examples in
 [Examples by environment](/en/guides/exemplos-por-ambiente).
 
+
+    CPF, document OCR, face matching, and government biometrics.
+
+
+    Full journey via SDK, from the token to the final report.
+
+
+    PEP, KYC, fraud score, debts, lawsuits, and certificates.
+
+
+    Email, phone, address, and related people.
+
+
+    Candidacies, electoral donations, and political involvement.
+
+
+    CNPJ registration data, owners, debts, and PJ credit score.
+
+
+    Sets of services that typically go together per flow.
+
+
 ## Shortcuts by need
 
 | If you want to... | Use this service |
@@ -4715,6 +4621,19 @@ Use this page when a call isn't working as expected.
   message template to request support, see
   [Common integration errors](/en/guides/erros-comuns-integracao).
 
+
+    401/403, token from another environment, or a token that works in staging but not production.
+
+
+    HTTP 200 that's actually an error: `status.code` 400 or 401 inside the body.
+
+
+    Works in cURL but not your code, or PowerShell breaks the command.
+
+
+    Success with no data, or a return that isn't JSON (like the report's PDF).
+
+
 ## I got a 401 or 403 (HTTP)
 
 In `POST /api/service-api`, a real HTTP 401/403 only happens due to an
@@ -5024,6 +4943,16 @@ full payload in the API Reference.
   Every item below runs through `POST /api/service-api`, except the
   authentication, onboarding, and customer endpoints. On the central
   endpoint, the `service` field picks the product.
+
+
+    Registration data, OCR, biometrics, risk, and CPF history.
+
+
+    Registration data, owners, debts, protests, and CNPJ risk.
+
+
+    Authentication, onboarding, customers, and other dedicated endpoints.
+
 
 ## Individuals
 
@@ -7401,6 +7330,17 @@ The Service API's public standard is to return only useful data.
 > Nota:
 For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
 
+## Next step
+
+
+    Back to the OCR overview: payload, base64, and other documents.
+
+
+    Frequently asked questions about OCR return, fields, and limits.
+
+
+    Quick diagnosis for an unreadable image, truncated base64, or missing field.
+
 ---
 
 # CNPJ card
@@ -7455,6 +7395,17 @@ The Service API's public standard is to return only useful data.
 
 > Nota:
 For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
+
+## Next step
+
+
+    Back to the OCR overview: payload, base64, and other documents.
+
+
+    Frequently asked questions about OCR return, fields, and limits.
+
+
+    Quick diagnosis for an unreadable image, truncated base64, or missing field.
 
 ---
 
@@ -7514,6 +7465,17 @@ The Service API's public standard is to return only useful data.
 
 > Nota:
 For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
+
+## Next step
+
+
+    Back to the OCR overview: payload, base64, and other documents.
+
+
+    Frequently asked questions about OCR return, fields, and limits.
+
+
+    Quick diagnosis for an unreadable image, truncated base64, or missing field.
 
 ---
 
@@ -7582,6 +7544,17 @@ The Service API's public standard is to return only useful data.
 
 > Nota:
 For questions about the API's return, see [Questions and Support](/en/guides/service-api/duvidas-e-suporte).
+
+## Next step
+
+
+    Back to the OCR overview: payload, base64, and other documents.
+
+
+    Frequently asked questions about OCR return, fields, and limits.
+
+
+    Quick diagnosis for an unreadable image, truncated base64, or missing field.
 
 ---
 
@@ -8126,9 +8099,16 @@ a fuller view, use `SERVICE_PERSON_DATA_ENRICHMENT`. When the goal is to
 validate contact or delivery, combine the email, phone, and address
 queries.
 
-For fields, full examples, and responses, see the
-[API Reference](/en/api-reference/autorização/gerar-token-de-api) or the
-[Individual technical catalog](/en/guides/servicos-pessoa-fisica).
+## Next step
+
+
+    Full contract: fields, examples, and responses for each service.
+
+
+    All individual (PF) services in a single catalog.
+
+
+    Still not sure which service to use? Start here.
 
 ---
 
@@ -8253,9 +8233,16 @@ Expected response:
 4. Combine OCR and FaceMatch when the flow requires more robust identity
   validation.
 
-For fields, full examples, and responses, see the
-[API Reference](/en/api-reference/autorização/gerar-token-de-api) or the
-[Individual technical catalog](/en/guides/servicos-pessoa-fisica).
+## Next step
+
+
+    Full contract: fields, examples, and responses for each service.
+
+
+    All individual (PF) services in a single catalog.
+
+
+    See how to build the OCR payload with base64, images, and response examples.
 
 ---
 
@@ -8363,9 +8350,16 @@ risk factors, debt amounts, protests, and indicators found. In critical
 flows, combine more than one query to avoid basing a decision on a single
 signal.
 
-For fields, full examples, and responses, see the
-[API Reference](/en/api-reference/autorização/gerar-token-de-api) or the
-[Individual technical catalog](/en/guides/servicos-pessoa-fisica).
+## Next step
+
+
+    Full contract: fields, examples, and responses for each service.
+
+
+    All individual (PF) services in a single catalog.
+
+
+    Still not sure which service to use? Start here.
 
 ---
 
@@ -8458,9 +8452,16 @@ bring structured evidence about public exposure and electoral
 relationships. Use the returns as inputs for risk classification,
 enhanced due diligence, or monitoring.
 
-For fields, full examples, and responses, see the
-[API Reference](/en/api-reference/autorização/gerar-token-de-api) or the
-[Individual technical catalog](/en/guides/servicos-pessoa-fisica).
+## Next step
+
+
+    Full contract: fields, examples, and responses for each service.
+
+
+    All individual (PF) services in a single catalog.
+
+
+    Still not sure which service to use? Start here.
 
 ---
 
@@ -8571,9 +8572,16 @@ Expected response:
 3. Use the CNPJ status when you only need to validate whether the company is active or in good standing.
 4. For companies with state-level operations, combine Federal Revenue and SINTEGRA.
 
-For fields, full examples, and responses, see the
-[API Reference](/en/api-reference/autorização/gerar-token-de-api) or the
-[Business technical catalog](/en/guides/servicos-pessoa-juridica).
+## Next step
+
+
+    Full contract: fields, examples, and responses for each service.
+
+
+    All business (PJ) services in a single catalog.
+
+
+    Still not sure which service to use? Start here.
 
 ---
 
@@ -8679,9 +8687,16 @@ helps summarize the ownership surroundings. When you need to dig deeper
 into risk, use `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` and
 `SERVICE_COMPANY_KYC_OWNERS`.
 
-For fields, full examples, and responses, see the
-[API Reference](/en/api-reference/autorização/gerar-token-de-api) or the
-[Business technical catalog](/en/guides/servicos-pessoa-juridica).
+## Next step
+
+
+    Full contract: fields, examples, and responses for each service.
+
+
+    All business (PJ) services in a single catalog.
+
+
+    Still not sure which service to use? Start here.
 
 ---
 
@@ -8796,9 +8811,16 @@ relationships, regulatory exposure, and compliance indicators. In critical
 analyses, combine these services with registration data and ownership
 relationships.
 
-For fields, full examples, and responses, see the
-[API Reference](/en/api-reference/autorização/gerar-token-de-api) or the
-[Business technical catalog](/en/guides/servicos-pessoa-juridica).
+## Next step
+
+
+    Full contract: fields, examples, and responses for each service.
+
+
+    All business (PJ) services in a single catalog.
+
+
+    Still not sure which service to use? Start here.
 
 ---
 

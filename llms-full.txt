@@ -359,238 +359,237 @@ headers e body iguais e troque apenas a URL.
   Não misture ambientes. Token gerado em homologação deve ser usado com URL de
   homologação. Token gerado em produção deve ser usado com URL de produção.
 
-## 1. Escolha onde vai testar
 
-### Postman
+    ### Postman
 
-1. Abra o Postman.
-2. Clique em **New**.
-3. Escolha **HTTP Request**.
-4. Selecione o método `POST`.
-5. Cole a URL do ambiente desejado.
-6. Vá na aba **Headers** e adicione `Content-Type` com valor `application/json`.
-7. Vá na aba **Body**.
-8. Escolha **raw**.
-9. Selecione **JSON**.
-10. Cole o body do exemplo.
-11. Clique em **Send**.
+    1. Abra o Postman.
+    2. Clique em **New**.
+    3. Escolha **HTTP Request**.
+    4. Selecione o método `POST`.
+    5. Cole a URL do ambiente desejado.
+    6. Vá na aba **Headers** e adicione `Content-Type` com valor `application/json`.
+    7. Vá na aba **Body**.
+    8. Escolha **raw**.
+    9. Selecione **JSON**.
+    10. Cole o body do exemplo.
+    11. Clique em **Send**.
 
-### Windows PowerShell
+    ### Windows PowerShell
 
-1. Abra o menu iniciar.
-2. Pesquise por `PowerShell`.
-3. Abra o PowerShell.
-4. Cole o comando `curl.exe` do exemplo.
-5. Pressione **Enter**.
+    1. Abra o menu iniciar.
+    2. Pesquise por `PowerShell`.
+    3. Abra o PowerShell.
+    4. Cole o comando `curl.exe` do exemplo.
+    5. Pressione **Enter**.
 
-No Windows, prefira `curl.exe`. O comando `curl` sozinho pode ser interpretado
-como outro comando interno do PowerShell.
+    No Windows, prefira `curl.exe`. O comando `curl` sozinho pode ser interpretado
+    como outro comando interno do PowerShell.
 
-### Windows CMD
+    ### Windows CMD
 
-1. Abra o menu iniciar.
-2. Pesquise por `cmd`.
-3. Abra o Prompt de Comando.
-4. Cole o comando em uma única linha ou use `^` para quebrar linhas.
-5. Pressione **Enter**.
+    1. Abra o menu iniciar.
+    2. Pesquise por `cmd`.
+    3. Abra o Prompt de Comando.
+    4. Cole o comando em uma única linha ou use `^` para quebrar linhas.
+    5. Pressione **Enter**.
 
-### macOS ou Linux
+    ### macOS ou Linux
 
-1. Abra o Terminal.
-2. Cole o comando `curl` do exemplo.
-3. Pressione **Enter**.
+    1. Abra o Terminal.
+    2. Cole o comando `curl` do exemplo.
+    3. Pressione **Enter**.
 
-Em macOS e Linux, o `curl` normalmente já vem instalado. Se o terminal informar
-que o comando não existe, instale o pacote `curl` pelo gerenciador do sistema.
-
-## 2. Gere um token
-
-O primeiro request gera um token JWT. Esse token será usado nas próximas chamadas
-protegidas.
-
-No Postman, configure assim:
-
-| Campo | Valor |
-| --- | --- |
-| Método | `POST` |
-| URL HML | `https://backoffice-hml.idcerberus.com/api/token-generate` |
-| URL produção | `https://backoffice.idcerberus.com/api/token-generate` |
-| Header | `Content-Type: application/json` |
-| Body | `raw` + `JSON` |
-
-Body:
-
-```json
-{
-  "client": "{client}",
-  "secret": "{secret}"
-}
-```
-
-### HML
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "client": "{client}",
-    "secret": "{secret}"
-  }'
-```
-
-### Windows CMD
-
-```bat
-curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
-  --header "Content-Type: application/json" ^
-  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
-```
-
-Resposta esperada:
-
-```json
-{
-  "access_token": "{jwt_token}",
-  "expires_in": "300"
-}
-```
-
-Copie o valor de `access_token`. Ele será usado no próximo passo.
-
-No Postman, copie somente o conteúdo entre aspas. Exemplo:
-
-```json
-{
-  "access_token": "eyJhbGciOi...",
-  "expires_in": "300"
-}
-```
-
-Nesse caso, o token a ser usado no próximo passo é `eyJhbGciOi...`.
-
-## 3. Execute um serviço
-
-Use o token retornado no header `Authorization`.
-
-No Postman, crie uma nova request:
-
-| Campo | Valor |
-| --- | --- |
-| Método | `POST` |
-| URL HML | `https://backoffice-hml.idcerberus.com/api/service-api` |
-| URL produção | `https://backoffice.idcerberus.com/api/service-api` |
-| Header 1 | `Authorization: Bearer {jwt_token}` |
-| Header 2 | `Content-Type: application/json` |
-| Body | `raw` + `JSON` |
-
-### HML
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-    "cpf": "cpf"
-  }'
-```
-
-### Produção
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
-  --header 'Authorization: Bearer {jwt_token}' \
-  --header 'Content-Type: application/json' \
-  --data '{
-    "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-    "cpf": "cpf"
-  }'
-```
-
-### Windows CMD
-
-```bat
-curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
-  --header "Authorization: Bearer {jwt_token}" ^
-  --header "Content-Type: application/json" ^
-  --data "{\"service\":\"SERVICE_PERSON_DATA_ENRICHMENT\",\"cpf\":\"cpf\"}"
-```
-
-> Info:
-  Vai testar OCR? Use o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api)
-  para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
-  de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
-
-Substitua:
-
-| Valor | O que colocar |
-| --- | --- |
-| `{jwt_token}` | Token retornado no passo anterior |
-| `cpf` | CPF usado para teste |
-| `SERVICE_PERSON_DATA_ENRICHMENT` | Código do serviço que deseja executar |
+    Em macOS e Linux, o `curl` normalmente já vem instalado. Se o terminal informar
+    que o comando não existe, instale o pacote `curl` pelo gerenciador do sistema.
 
 
-    Use quando quiser validar o fluxo com um service simples de pessoa física.
+    O primeiro request gera um token JWT. Esse token será usado nas próximas chamadas
+    protegidas.
+
+    No Postman, configure assim:
+
+    | Campo | Valor |
+    | --- | --- |
+    | Método | `POST` |
+    | URL HML | `https://backoffice-hml.idcerberus.com/api/token-generate` |
+    | URL produção | `https://backoffice.idcerberus.com/api/token-generate` |
+    | Header | `Content-Type: application/json` |
+    | Body | `raw` + `JSON` |
+
+    Body:
+
+    ```json
+    {
+      "client": "{client}",
+      "secret": "{secret}"
+    }
+    ```
+
+    ### HML
+
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
+
+    ### Produção
+
+    ```bash
+    curl --location 'https://backoffice.idcerberus.com/api/token-generate' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "client": "{client}",
+        "secret": "{secret}"
+      }'
+    ```
+
+    ### Windows CMD
+
+    ```bat
+    curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" ^
+      --header "Content-Type: application/json" ^
+      --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+    ```
+
+    Resposta esperada:
+
+    ```json
+    {
+      "access_token": "{jwt_token}",
+      "expires_in": "300"
+    }
+    ```
+
+    Copie o valor de `access_token`. Ele será usado no próximo passo.
+
+    No Postman, copie somente o conteúdo entre aspas. Exemplo:
+
+    ```json
+    {
+      "access_token": "eyJhbGciOi...",
+      "expires_in": "300"
+    }
+    ```
+
+    Nesse caso, o token a ser usado no próximo passo é `eyJhbGciOi...`.
 
 
-    Use quando quiser validar o fluxo com um service simples de pessoa jurídica.
+    Use o token retornado no header `Authorization`.
+
+    No Postman, crie uma nova request:
+
+    | Campo | Valor |
+    | --- | --- |
+    | Método | `POST` |
+    | URL HML | `https://backoffice-hml.idcerberus.com/api/service-api` |
+    | URL produção | `https://backoffice.idcerberus.com/api/service-api` |
+    | Header 1 | `Authorization: Bearer {jwt_token}` |
+    | Header 2 | `Content-Type: application/json` |
+    | Body | `raw` + `JSON` |
+
+    ### HML
+
+    ```bash
+    curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+      --header 'Authorization: Bearer {jwt_token}' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+        "cpf": "cpf"
+      }'
+    ```
+
+    ### Produção
+
+    ```bash
+    curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+      --header 'Authorization: Bearer {jwt_token}' \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+        "cpf": "cpf"
+      }'
+    ```
+
+    ### Windows CMD
+
+    ```bat
+    curl.exe --location "https://backoffice-hml.idcerberus.com/api/service-api" ^
+      --header "Authorization: Bearer {jwt_token}" ^
+      --header "Content-Type: application/json" ^
+      --data "{\"service\":\"SERVICE_PERSON_DATA_ENRICHMENT\",\"cpf\":\"cpf\"}"
+    ```
+
+    > Info:
+      Vai testar OCR? Use o guia [OCR via Service API](/guides/service-api/sobre-ocr-service-api)
+      para montar o payload com `image1`, `image2`, `documentType`, base64 e exemplos
+      de retorno. OCR precisa de imagem real; payload curto só valida autenticação e acesso.
 
 
-    Use quando o body precisar de base64, imagem, URL ou `documentType`.
+    Substitua:
+
+    | Valor | O que colocar |
+    | --- | --- |
+    | `{jwt_token}` | Token retornado no passo anterior |
+    | `cpf` | CPF usado para teste |
+    | `SERVICE_PERSON_DATA_ENRICHMENT` | Código do serviço que deseja executar |
 
 
-    Use para navegar pelos grupos de produtos do `POST /api/service-api`.
+
+        Use quando quiser validar o fluxo com um service simples de pessoa física.
 
 
-## 4. Leia o resultado
+        Use quando quiser validar o fluxo com um service simples de pessoa jurídica.
 
-A maior parte dos serviços retorna os dados em `result` e o status técnico em
-`status`.
 
-```json
-{
-  "result": {
-    "cpf": "00000000000",
-    "status": "REGULAR",
-    "name": "NOME DA PESSOA"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  }
-}
-```
+        Use quando o body precisar de base64, imagem, URL ou `documentType`.
 
-| Campo | Como interpretar |
-| --- | --- |
-| `result` | Dados retornados pelo serviço |
-| `status.code` | Código técnico do processamento |
-| `status.message` | Mensagem técnica da consulta |
-| `externalId` | Identificador da consulta, quando retornado |
 
-## 5. Trate sucesso e falha
+        Use para navegar pelos grupos de produtos do `POST /api/service-api`.
 
-Use `status.code` para decidir o comportamento da sua aplicação.
 
-| Situação | Como tratar |
-| --- | --- |
-| `status.code` 200 | Processamento concluído. Leia o objeto `result`. |
-| `status.code` 400 | Payload, parâmetro, permissão ou fonte externa pode ter falhado. Leia `status.message`. |
-| Token expirado | Gere um novo token e repita a chamada. |
-| Sem body JSON | Trate conforme o endpoint. O relatório de onboarding retorna PDF. |
 
-## 6. Próximo passo
+
+    A maior parte dos serviços retorna os dados em `result` e o status técnico em
+    `status`.
+
+    ```json
+    {
+      "result": {
+        "cpf": "00000000000",
+        "status": "REGULAR",
+        "name": "NOME DA PESSOA"
+      },
+      "status": {
+        "code": 200,
+        "message": "Success"
+      }
+    }
+    ```
+
+    | Campo | Como interpretar |
+    | --- | --- |
+    | `result` | Dados retornados pelo serviço |
+    | `status.code` | Código técnico do processamento |
+    | `status.message` | Mensagem técnica da consulta |
+    | `externalId` | Identificador da consulta, quando retornado |
+
+
+    Use `status.code` para decidir o comportamento da sua aplicação.
+
+    | Situação | Como tratar |
+    | --- | --- |
+    | `status.code` 200 | Processamento concluído. Leia o objeto `result`. |
+    | `status.code` 400 | Payload, parâmetro, permissão ou fonte externa pode ter falhado. Leia `status.message`. |
+    | Token expirado | Gere um novo token e repita a chamada. |
+    | Sem body JSON | Trate conforme o endpoint. O relatório de onboarding retorna PDF. |
+
+
+## Próximo passo
 
 Se você já sabe qual produto consumir, vá para a [API Reference](/api-reference/autorização/gerar-token-de-api).
 
@@ -1064,6 +1063,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Comece sempre por homologação. Depois que o fluxo estiver validado, altere a URL
 base e as credenciais para produção.
+
+## Próximo passo
+
+
+    Faça a primeira chamada de API em homologação.
+
+
+    Entenda como gerar e renovar o token JWT em cada ambiente.
+
+
+    Resolva sintomas técnicos como token de outro ambiente ou 401/403.
 
 ---
 
@@ -1648,943 +1658,6 @@ Use credenciais de produção e gere um novo token. Não reutilize token de HML 
 | Campo esperado não veio | Campo não existe no documento ou não foi extraído | Validar imagem, tipo de documento e contrato do service |
 
 Para diagnóstico mais completo, veja [Erros comuns de integração](/guides/erros-comuns-integracao).
-
----
-
-# Dúvidas e Soluções
-
-URL: https://api-docs.idcerberus.com/guides/duvidas-e-solucoes
-Fonte: guides/duvidas-e-solucoes.mdx
-Descrição: Respostas diretas para as dúvidas mais comuns de integração, organizadas por tema, antes de abrir chamado
-
-# Dúvidas e Soluções
-
-Esta página reúne, num só lugar, as perguntas que mais aparecem durante uma
-integração com a idCerberus. A ideia é simples: antes de abrir um chamado de
-suporte, procure sua dúvida aqui. Boa parte dos "bugs" reportados são
-comportamentos esperados que só não estavam claros na documentação técnica.
-
-> Nota:
-  Use `Ctrl + F` (ou `Cmd + F` no Mac) para pesquisar uma palavra-chave nesta
-  página antes de percorrer as seções manualmente.
-
-## Autenticação e token
-
-
-    Não. Gere um `access_token` em `POST /api/token-generate` e reutilize até
-    ele expirar, conforme o campo `expires_in` do retorno. Gerar um novo a
-    cada chamada funciona, mas desperdiça uma chamada extra por request.
-
-
-    Você recebe HTTP 401. Gere um token novo com `client` e `secret` e repita
-    a chamada original. Isso é um HTTP de verdade, diferente das falhas de
-    permissão de service que também aparecem como "401 no corpo" (veja a
-    seção de status abaixo).
-
-
-    Não. São credenciais diferentes por ambiente. Um `client`/`secret` de HML
-    não gera token válido para chamar produção, e vice-versa. Os bancos de
-    dados e o realm de autenticação são separados fisicamente entre os dois
-    ambientes.
-
-
-    Esse par é liberado pela React IT junto com o produto contratado, não é
-    algo que você gera sozinho. Solicite pelo e-mail
-    [contact@react-it.com](mailto:contact@react-it.com).
-
-
-## Consulta avulsa (POST /api/service-api)
-
-
-    Sim, e é o motivo número um de confusão nesta API. `POST /api/service-api`
-    quase sempre retorna HTTP 200, mesmo quando a consulta falhou por
-    completo. O motivo real fica dentro do corpo, em `status.code` e
-    `status.message`. Nunca decida sucesso ou falha só pelo HTTP status.
-
-
-    HTTP 401/403 de verdade só acontece por problema de autenticação (token
-    ausente, expirado ou de outro ambiente), e a chamada nem chega a
-    processar o service. "Produto não liberado para o service" e "produto
-    inativo" não geram HTTP 401/403 nesse endpoint: a chamada retorna HTTP
-    200 com o problema descrito em `status.code` (400 para payload/permissão
-    de service, 401 para produto inativo ou não encontrado) dentro do corpo.
-
-
-    Existem pelo menos três causas distintas: a fonte de dados não encontrou
-    nada para aquele documento (comportamento válido, nem todo retorno vazio
-    é erro), a imagem não foi lida com sucesso em OCR, ou, se o seu produto
-    for pré-pago, o saldo da organização está insuficiente. Esse último caso
-    é traiçoeiro porque também vem com HTTP 200 e `status.code` 200, com
-    `status.message` dizendo algo como "Not enough balance". Sempre leia
-    `status.message` quando `result` vier vazio, mesmo com 200/200.
-
-
-    Não. O alias de cada service (o valor que você envia em `service`) é
-    único no sistema: não existe um alias customizado por produto. Se um
-    service não funciona, o problema é ele não estar habilitado para o seu
-    produto, não o nome do alias estar errado (a menos que você tenha
-    digitado errado).
-
-
-    Só num caso específico: `SEVICE_ONLINE_BETTING_PROPENSITY` está
-    documentado sem a letra R em `SERVICE` de propósito. Essa é a grafia
-    implementada no backend. Corrigir esse alias ao copiar quebra a chamada.
-    Fora esse caso, copie os aliases exatamente como aparecem no
-    [catálogo de services](/guides/indice-de-services).
-
-
-## Onboarding via SDK ou Cliente Web
-
-
-    Não, e confundir os dois é uma fonte comum de erro. `access_token`
-    autentica a sua aplicação e expira em minutos. `tokenOnboarding`
-    identifica um cadastro específico e continua válido durante todo o
-    processo, mesmo depois do `access_token` expirar. Se o `access_token`
-    expirar no meio do fluxo, gere um novo: o `tokenOnboarding` não muda.
-
-
-    Não há um tempo fixo garantido. O processamento automático é verificado a
-    cada poucos segundos internamente, mas o tempo total depende de quantos
-    services estão na esteira e se algum deles depende de fontes externas
-    lentas. Trate como comportamento observado, não como SLA contratual, e
-    sempre implemente um limite máximo de espera na sua aplicação.
-
-
-    Não. `REFUSED` é um resultado de negócio: a chamada em si teve sucesso
-    (HTTP 200), e o cadastro é que não foi aprovado pelas regras do produto.
-    Não trate `REFUSED` como algo para repetir a chamada; trate como decisão
-    que a sua aplicação precisa refletir para o usuário.
-
-
-## Webhooks
-
-
-    Primeiro, confirme que o evento que você espera realmente dispara
-    webhook: mudança de status de onboarding, decisão de revisão manual, e
-    consulta avulsa em `POST /api/service-api` (quando o produto tem webhook
-    configurado). Segundo, lembre que consulta avulsa dispara o webhook cerca
-    de 10 segundos depois da resposta HTTP, não instantaneamente. Terceiro,
-    valide se a sua URL está acessível publicamente (a idCerberus não
-    consegue entregar num endpoint atrás de firewall sem liberação).
-
-
-    Não. Não existe um processo automático que fica reenviando entregas que
-    falharam. Um novo envio só acontece se o mesmo onboarding mudar de
-    conteúdo de novo mais tarde (o que dispara como uma entrega nova, não
-    como retry), ou se alguém com acesso ao [Backoffice](/guides/backoffice)
-    forçar o reenvio manualmente na tela. Por isso, nunca dependa só do
-    webhook. Mantenha o polling (`GET /api/onboarding/report/{tokenOnboarding}`)
-    como rede de segurança de verdade.
-
-
-    Sim. Webhook originado de onboarding usa o formato de relatório completo
-    (`tokenOnboarding`, `status`, `fields`, `services`). Webhook originado de
-    consulta avulsa usa o mesmo JSON que já veio na resposta HTTP síncrona da
-    chamada (`result`, `status`, `onboardingStatus`, `externalId`). São
-    formatos diferentes, então não assuma uma estrutura única.
-
-
-## OCR e imagem
-
-
-    Não. O sistema aceita base64 com ou sem esse prefixo e remove
-    automaticamente quando presente. Se a sua ferramenta gera o base64 com
-    prefixo (comum em navegador, por exemplo), não perca tempo removendo.
-
-
-    Confirme três coisas na ordem: se o `documentType` bate com o documento
-    real enviado, se a imagem está completa e legível (sem corte nas bordas),
-    e se o base64 não foi truncado no meio do envio. Esse último é comum
-    quando o payload é montado manualmente e o corte acontece sem erro
-    visível até chegar na API.
-
-
-    Pode variar. `SERVICE_OCR` é processado por parceiros diferentes conforme
-    a configuração do seu produto, e isso pode mudar um campo pontual do
-    `result` (o mais comum é o nome do campo que indica o tipo do documento
-    reconhecido). Trate o contrato desta página como "os campos costumam vir
-    assim", não como uma garantia rígida campo a campo, e sempre valide pelo
-    `result` retornado no seu ambiente real.
-
-
-## Backoffice
-
-
-    Não. São dois mecanismos de autenticação diferentes para o mesmo sistema.
-    O login do backoffice é usuário e senha, pessoal. `client` e `secret`
-    autenticam a sua aplicação e geram `access_token` via
-    `POST /api/token-generate`. Veja [Autenticação](/guides/autenticacao)
-    para o lado API.
-
-
-    A configuração de webhook (URL e chave) hoje é feita pela React IT sob
-    pedido, não é uma tela de autoatendimento ainda. Veja
-    [Webhooks](/guides/webhooks) para como pedir a ativação.
-
-
-    `backoffice-hml.idcerberus.com` e `backoffice.idcerberus.com` são as
-    mesmas URLs usadas pelo painel administrativo. Quando você chama
-    `/api/...` nelas, está falando com a API, não com a interface visual. Não
-    existe uma URL separada só para API: é o mesmo domínio, endpoints
-    diferentes.
-
-
-## Ambientes
-
-
-    Não recomendado. Homologação e produção usam bancos de dados e
-    credenciais completamente separados. Teste sempre em HML primeiro; use
-    produção só depois de validar o fluxo, com dados reais e consciência de
-    que consultas em produção normalmente têm custo.
-
-
-    Confirme, nesta ordem: se o token usado é de produção (não HML), se o
-    produto de produção tem os mesmos services habilitados que o de HML, e
-    se a massa de dados testada em produção é real (HML costuma ter dados
-    fake que não existem nas fontes de produção). Divergência de
-    configuração entre ambientes é a causa mais comum aqui.
-
-
-## Antes de abrir chamado
-
-Se sua dúvida não está aqui, reúna estas informações antes de acionar o
-suporte. Isso evita idas e vindas e acelera a resposta.
-
-| Informação | Onde encontrar |
-| --- | --- |
-| Ambiente (HML ou produção) | A base URL usada na chamada |
-| `service` enviado | O campo `service` do seu payload |
-| `status.code` e `status.message` | O corpo da resposta, não o HTTP status |
-| `externalId` | Retornado no corpo, quando presente |
-| Horário aproximado da chamada | Para cruzar com os logs internos |
-
-Veja o formato completo de chamado em
-[Erros comuns de integração](/guides/erros-comuns-integracao#como-solicitar-suporte).
-
-
-    Diagnóstico por categoria: token, payload, imagem e erro técnico.
-
-
-    Sintomas técnicos específicos, como PowerShell quebrando o curl.
-
-
-    Como funciona, payload por origem e por que não há retry automático.
-
-
-    Termos técnicos usados nesta página e no resto da documentação.
-
----
-
-# Status e erros
-
-URL: https://api-docs.idcerberus.com/guides/status-e-erros
-Fonte: guides/status-e-erros.mdx
-Descrição: Entenda como interpretar respostas, falhas e casos sem body JSON
-
-# Status e erros
-
-A API idCerberus separa o status HTTP do status técnico retornado no body. Em
-integrações, leia os dois.
-
-## Estrutura padrão
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "8e1ac243-4510-4ebf-ac7d-4b6d133dd619"
-}
-```
-
-| Campo | Uso |
-| --- | --- |
-| `result` | Dados retornados pelo produto consultado |
-| `status.code` | Código técnico do processamento |
-| `status.message` | Mensagem técnica do processamento |
-| `externalId` | Identificador externo da consulta, quando retornado |
-
-## Como interpretar
-
-| Caso | Significado prático | Ação recomendada |
-| --- | --- | --- |
-| HTTP 200 e `status.code` 200 | A chamada foi processada | Ler `result` e seguir a regra de negócio |
-| HTTP 200 e `status.code` 400 | Payload inválido ou service sem permissão no produto | Ler `status.message`, validar parâmetros e permissão |
-| HTTP 200 e `status.code` 401 | Produto inativo ou não encontrado para o `client` usado | Confirmar se o produto está ativo, não é problema de token |
-| HTTP 401 ou 403 (de verdade) | Token ausente, expirado ou de outro ambiente, rejeitado antes de processar | Gerar novo token no ambiente correto |
-| Timeout | Fonte externa ou rede pode ter demorado | Aplicar retry controlado, sem loop agressivo |
-| Sem body JSON | O endpoint retorna outro tipo de conteúdo | Tratar conforme contrato, como PDF no relatório de onboarding |
-
-> Atencao:
-  Exceção real à primeira linha da tabela: se o seu produto for pré-pago e o
-  saldo estiver insuficiente, a chamada retorna HTTP 200 **e** `status.code`
-  200, mas `status.message` traz algo como "Not enough balance" e `result`
-  vem vazio. Sempre leia `status.message` quando `result` vier vazio, mesmo
-  com HTTP 200 e `status.code` 200.
-
-## Problemas comuns
-
-| Problema | Possível causa | Como resolver |
-| --- | --- | --- |
-| Token inválido | Token gerado com credenciais erradas ou ambiente incorreto | Gere um novo token no mesmo ambiente da chamada |
-| Token expirado | O tempo de validade do token acabou | Gere um novo token e repita a chamada |
-| `Authorization` ausente | Header não foi enviado | Envie `Authorization: Bearer {jwt_token}` |
-| `Content-Type` ausente | Body JSON enviado sem header correto | Envie `Content-Type: application/json` |
-| Campo `service` ausente | Payload não informou qual produto executar | Inclua o campo `service` no body |
-| CPF ou CNPJ inválido | Documento incompleto, mascarado ou fora do padrão esperado | Revise o valor enviado antes de chamar a API |
-| Serviço sem permissão | Produto não liberado para a conta | Confirme a liberação do serviço com o time responsável |
-| Fonte externa indisponível | Consulta depende de órgão, base ou processamento externo | Faça retry controlado ou tente novamente depois |
-| URL de ambiente errada | Token de HML usado em produção, ou o contrário | Confira se a URL base e o token são do mesmo ambiente |
-
-## Exemplos de erro
-
-### Token ausente ou inválido
-
-Quando o header `Authorization` não é enviado, está expirado ou pertence a outro
-ambiente, a API pode retornar erro de autenticação.
-
-```http
-HTTP/1.1 401 Unauthorized
-```
-
-Como corrigir:
-
-1. Gere um novo token em `POST /api/token-generate`.
-2. Confirme se o token foi gerado no mesmo ambiente da chamada.
-3. Envie o header no formato abaixo.
-
-```http
-Authorization: Bearer {jwt_token}
-```
-
-### Campo `service` ausente
-
-O endpoint `POST /api/service-api` precisa do campo `service` para saber qual
-produto executar.
-
-Payload incorreto:
-
-```json
-{
-  "cpf": "cpf"
-}
-```
-
-Payload correto:
-
-```json
-{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-  "cpf": "cpf"
-}
-```
-
-### Documento obrigatório ausente
-
-Se o serviço exige `cpf`, `cnpj`, imagem ou outro campo obrigatório, envie o
-campo correspondente no body.
-
-Exemplo de retorno:
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "CPF não encontrado."
-  }
-}
-```
-
-Como corrigir:
-
-```json
-{
-  "service": "SERVICE_RFB_PF",
-  "cpf": "cpf"
-}
-```
-
-### Produto sem permissão ou não habilitado
-
-Se a credencial não tiver acesso ao produto, a chamada pode falhar mesmo com
-token válido.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Serviço não disponível para este cliente."
-  }
-}
-```
-
-Como corrigir:
-
-1. confirme se o `service` está escrito exatamente como na documentação;
-2. valide se o produto está liberado para a conta;
-3. confirme se está chamando o ambiente correto.
-
-### Fonte externa indisponível
-
-Algumas consultas dependem de bases externas. Quando a fonte falha ou demora, a
-API pode retornar erro técnico.
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 500,
-    "message": "Failed to fetch information"
-  }
-}
-```
-
-Como tratar:
-
-1. registre o `externalId`, quando existir;
-2. tente novamente depois com retry limitado;
-3. não faça loop infinito de chamadas;
-4. se o erro persistir, encaminhe o payload e o horário da tentativa para suporte.
-
-## Negativo não é erro técnico
-
-Alguns serviços retornam uma consulta negativa como sucesso técnico. Exemplos:
-
-| Resultado | Exemplo |
-| --- | --- |
-| Nada consta | Certidões criminais ou ações judiciais |
-| Cliente não encontrado | Validação de CPF com endereço |
-| Sem débitos | Débitos ativos com totais zerados |
-| Não PEP | Pessoa politicamente não exposta |
-
-Nesses casos, a chamada pode ter `status.code` 200 e ainda assim representar uma
-resposta negativa de negócio.
-
-## Boas práticas de tratamento
-
-1. Registre o `externalId` quando ele vier no retorno.
-2. Não use apenas HTTP status para decidir sucesso de negócio.
-3. Trate token expirado gerando novo token.
-4. Valide campos obrigatórios antes de chamar a API.
-5. Evite retry automático em erro de payload.
-6. Use retry com limite para timeout ou falha temporária de fonte externa.
-
-## Exemplo de decisão
-
-```js
-if (response.status?.code !== 200) {
-    throw new Error(response.status?.message || "Falha no processamento");
-}
-
-return response.result;
-```
-
----
-
-# Erros comuns de integração
-
-URL: https://api-docs.idcerberus.com/guides/erros-comuns-integracao
-Fonte: guides/erros-comuns-integracao.mdx
-Descrição: Diagnóstico prático para token, acesso, payload, base64, OCR, retorno vazio e falhas externas
-
-# Erros comuns de integração
-
-Use esta página quando uma chamada falhar, retornar vazio ou parecer diferente do esperado.
-
-A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, não só o HTTP status. Uma chamada pode retornar HTTP 200 e mesmo assim o processamento vir como `REFUSED` ou `ERROR`.
-
-> Info:
-  Procurando um sintoma técnico específico (erro de ambiente, PowerShell
-  quebrando o `curl`, resposta que não é JSON)? Veja
-  [Troubleshooting](/guides/troubleshooting), mais direto ao ponto para esses
-  casos.
-
-
-    Token ausente/vencido (HTTP 401/403) ou produto sem permissão para o
-    service (HTTP 200, `status.code` no corpo).
-
-
-    Campo obrigatório ausente, alias errado, CPF/CNPJ inválido ou JSON malformado.
-
-
-    Base64, `image1`, `image2`, documento ilegível ou OCR sem campo esperado.
-
-
-    `ERROR`, `500`, falha externa, timeout ou investigação por `externalId`.
-
-
-## Diagnóstico rápido
-
-| Sintoma | Causa comum | Como corrigir |
-| --- | --- | --- |
-| `401` ou `403` | Token ausente, expirado, inválido ou de outro ambiente | Gere um novo token no mesmo ambiente da chamada |
-| `Don't have access to the service` | Produto sem o service ativo ou sem API habilitada | Confira configuração do produto antes de mexer no payload |
-| `Unable to convert http message` | JSON inválido, base64 quebrado ou body malformado | Valide o JSON e gere o base64 novamente |
-| API retorna HTTP 200 com `REFUSED` | Chamada autenticou, mas a regra de negócio recusou | Leia `status.message` e trate como recusa válida |
-| API retorna HTTP 200 com `ERROR` | Falha técnica aconteceu dentro do processamento | Guarde `externalId`, horário e service chamado |
-| Resultado vazio `{}` | Massa sem dados, imagem não lida ou service sem retorno para aquele caso | Teste massa válida e confira `status.message` |
-| Resultado vazio `{}` com HTTP 200 e `status.code` 200 | Em produto pré-pago, pode ser saldo insuficiente (`status.message`: "Not enough balance") | Confira saldo da organização antes de investigar o payload |
-| Campo esperado não veio | Campo não existe na fonte ou não foi extraído com segurança | Não invente dado; trate campo ausente como opcional quando o contrato permitir |
-| Base64 rejeitado | Encoding quebrado, base64 truncado ou arquivo inválido | Gere o base64 de novo a partir do arquivo original (com ou sem prefixo `data:image/...;base64,`, os dois são aceitos) |
-| CPF/CNPJ não encontrado | Documento mascarado, incompleto, massa ruim ou ambiente errado | Teste sem máscara e confira a base URL |
-| Timeout | Fonte externa demorou ou ficou indisponível | Aplique retry controlado e registre o `externalId`, quando houver |
-
-## Token ou acesso
-
-Antes de investigar código, confirme:
-
-1. A chamada está indo para o ambiente certo.
-2. O token foi gerado no mesmo ambiente.
-3. O header está como `Authorization: Bearer {jwt_token}`.
-4. O produto ligado ao token tem o service ativo.
-5. O service está habilitado para API.
-6. O alias enviado em `service` é o alias de chamada configurado no produto.
-
-Exemplo típico:
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Don't have access to the service"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Nesse caso, o primeiro ponto é configuração do produto. Não adianta trocar CPF, CNPJ ou imagem antes de confirmar acesso.
-
-## Payload
-
-Campos que mais geram erro:
-
-| Campo | Cuidado |
-| --- | --- |
-| `service` | Deve bater com o alias liberado no produto |
-| `cpf` | Envie sem máscara quando o service não documentar outro formato |
-| `cnpj` | Envie CNPJ completo, preferencialmente sem máscara |
-| `birthDate` | Use o formato documentado para o service |
-| `documentType` | Para OCR React, use `CNH` ou `RG` conforme o documento |
-| `image1`, `image2`, `selfie1` | Confirme se o service espera imagem, selfie, frente, verso ou comparação |
-| `key` | Use apenas quando o fluxo suportar chave de arquivo já armazenado |
-
-Exemplo de JSON mínimo válido:
-
-```json
-{
-  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
-  "cnpj": "00000000000000"
-}
-```
-
-## Imagem e OCR
-
-Para services de OCR:
-
-1. Use imagem real, nítida e completa.
-2. Envie o base64 completo, sem truncar (com ou sem prefixo `data:image/jpeg;base64,`, os dois formatos funcionam).
-3. Para RG, envie frente e verso quando o service exigir.
-4. Para face, use selfie real, não foto de documento.
-5. Confira se o documento enviado combina com o service.
-
-Exemplo de erro por imagem ausente:
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do verso do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: revisar o payload. Para RG, envie `image1` com a frente e `image2` com o verso.
-
-Se o retorno for:
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "..."
-}
-```
-
-Ação: testar uma imagem mais nítida e confirmar se o tipo de documento bate com o service.
-
-## Erro técnico
-
-Erro técnico normalmente aparece como `ERROR` ou mensagem de falha no body:
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 500,
-    "message": "Falha ao realizar OCR"
-  },
-  "onboardingStatus": "ERROR",
-  "externalId": "..."
-}
-```
-
-Nessa situação, guarde:
-
-1. ambiente;
-2. endpoint;
-3. service enviado;
-4. horário aproximado;
-5. `externalId`;
-6. `status.code`;
-7. `status.message`;
-8. payload sem dados sensíveis.
-
-Não envie token JWT, `client`, `secret`, CPF, CNPJ, imagem real ou base64 completo em canais abertos.
-
-## Checklist antes de chamar suporte
-
-1. Confirmei o ambiente da chamada.
-2. Gerei token novo no mesmo ambiente.
-3. Conferi o alias do service no produto.
-4. Validei que o service está ativo e com API habilitada.
-5. Validei o JSON antes de enviar.
-6. Removi máscara quando o contrato não exigia máscara.
-7. Para OCR, conferi se o base64 é puro.
-8. Para OCR, abri a imagem e confirmei que está legível.
-9. Guardei `externalId`, horário e `status.message`.
-
-## Como solicitar suporte
-
-Envie um resumo nesse formato:
-
-```txt
-Ambiente: HML ou PROD
-Endpoint: POST /api/service-api
-Service: SERVICE_EXEMPLO
-Horário aproximado: 2026-01-01 10:30
-ExternalId: ...
-Status code: ...
-Status message: ...
-O que era esperado: ...
-O que retornou: ...
-```
-
-Não inclua credenciais, token, documento real, imagem real ou base64 completo.
-
----
-
-# Troubleshooting
-
-URL: https://api-docs.idcerberus.com/guides/troubleshooting
-Fonte: guides/troubleshooting.mdx
-Descrição: Resolva problemas comuns ao integrar com a API idCerberus
-
-# Troubleshooting
-
-Use esta página quando uma chamada não funcionar como esperado.
-
-> Info:
-  Página focada em sintomas técnicos específicos (401/403, ambiente errado,
-  PowerShell). Para um diagnóstico mais amplo, com cards por categoria e
-  modelo de mensagem para pedir suporte, veja
-  [Erros comuns de integração](/guides/erros-comuns-integracao).
-
-## Recebi 401 ou 403 (HTTP)
-
-Em `POST /api/service-api`, um HTTP 401/403 de verdade só acontece por
-problema de autenticação: a chamada nem chega a processar o service.
-
-1. Token ausente.
-2. Token expirado.
-3. Token gerado em outro ambiente.
-
-Como resolver:
-
-1. Gere um novo token.
-2. Confirme se a URL é de HML ou produção.
-3. Envie o header:
-
-```txt
-Authorization: Bearer {jwt_token}
-```
-
-> Atencao:
-  "Produto não liberado para a conta" e "service sem permissão" **não** geram
-  HTTP 401/403 nesse endpoint. A chamada retorna HTTP 200 com o problema
-  descrito em `status.message` (`status.code` 400 ou 401 dentro do corpo).
-  Veja a seção seguinte.
-
-## HTTP 200, mas `status.code` diferente de 200
-
-Esse é o caso mais comum de erro em `POST /api/service-api`: a chamada
-"funcionou" no sentido HTTP, mas o corpo mostra o problema real.
-
-| `status.code` no corpo | Causa | Observação |
-| --- | --- | --- |
-| 400 | Body inválido, campo obrigatório ausente, `service` incorreto, CPF/CNPJ inválido, fonte externa indisponível | Leia `status.message` para o motivo exato |
-| 401 | Produto não encontrado ou inativo para o `client` usado | Diferente do HTTP 401: aqui o token é válido, o produto que está desativado |
-
-Como resolver:
-
-1. Leia `status.message`.
-2. Confira se o body está em JSON válido.
-3. Confira se enviou `Content-Type: application/json`.
-4. Confira se o campo `service` está correto.
-5. Compare o body com o exemplo da API Reference.
-
-## O token funciona em HML, mas não em produção
-
-Token e URL precisam ser do mesmo ambiente.
-
-| Ambiente | URL |
-| --- | --- |
-| HML | `https://backoffice-hml.idcerberus.com` |
-| Produção | `https://backoffice.idcerberus.com` |
-
-Gere um token novo em produção usando credenciais de produção.
-
-## O cURL funciona, mas meu código não
-
-Confira:
-
-1. URL base.
-2. Método HTTP.
-3. Headers.
-4. Body JSON.
-5. Timeout.
-6. Serialização do JSON.
-7. Header `Authorization`.
-8. Header `Content-Type`.
-
-Compare o request do código com o request da API Reference.
-
-## O PowerShell quebra o comando cURL
-
-No Windows, use `curl.exe` em vez de `curl`.
-
-```powershell
-curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" `
-  --header "Content-Type: application/json" `
-  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
-```
-
-O comando `curl` sozinho pode ser interpretado pelo PowerShell como outro alias.
-
-## A consulta retornou sucesso, mas não veio o dado esperado
-
-Nem todo retorno sem dado é erro técnico.
-
-Exemplos:
-
-1. certidão com “Nada consta”;
-2. CPF não encontrado em validação de endereço;
-3. pessoa não exposta politicamente;
-4. empresa sem débitos;
-5. lista vazia de relacionamentos.
-
-Leia `result` e aplique a regra de negócio do seu produto.
-
-## A resposta não veio em JSON
-
-Alguns endpoints retornam outro tipo de conteúdo. Exemplo:
-
-```txt
-GET /api/history-onboarding-report/{tokenOnboarding}
-```
-
-Esse endpoint retorna PDF, não JSON.
-
-## Checklist rápido
-
-Antes de pedir apoio, confira:
-
-1. A URL está correta?
-2. O método HTTP está correto?
-3. O token foi gerado no mesmo ambiente?
-4. O header `Authorization` foi enviado?
-5. O header `Content-Type` foi enviado?
-6. O body é JSON válido?
-7. O campo `service` está correto?
-8. O CPF/CNPJ está no campo esperado?
-9. O serviço está liberado para a conta?
-10. Você leu `status.message`?
-
----
-
-# Boas práticas de integração
-
-URL: https://api-docs.idcerberus.com/guides/boas-praticas-integracao
-Fonte: guides/boas-praticas-integracao.mdx
-Descrição: Recomendações para integrar a API idCerberus com segurança e estabilidade
-
-# Boas práticas de integração
-
-Use estas recomendações para reduzir falhas, evitar exposição de credenciais e
-deixar a integração pronta para produção.
-
-## Credenciais e token
-
-| Prática | Motivo |
-| --- | --- |
-| Gere token no back-end | Evita expor `client` e `secret` |
-| Não coloque `client` e `secret` no front-end | Usuários poderiam inspecionar as credenciais |
-| Não versione credenciais no Git | Evita vazamento acidental |
-| Renove o token quando expirar | O token tem validade limitada |
-| Não logue o JWT completo | Token pode permitir chamadas protegidas |
-
-## Ambientes
-
-1. Use HML para desenvolvimento e homologação.
-2. Use produção somente depois de validar o fluxo.
-3. Não misture token de HML com URL de produção.
-4. Não misture token de produção com URL de HML.
-
-| Ambiente | Base URL |
-| --- | --- |
-| Homologação | `https://backoffice-hml.idcerberus.com` |
-| Produção | `https://backoffice.idcerberus.com` |
-
-## Requests
-
-1. Sempre envie `Content-Type: application/json` em requests com body JSON.
-2. Sempre envie `Authorization: Bearer {jwt_token}` em chamadas protegidas.
-3. Valide campos obrigatórios antes de chamar a API.
-4. Envie CPF/CNPJ no formato esperado pelo seu fluxo.
-5. Use timeout nas chamadas HTTP.
-
-## Retry
-
-Use retry apenas quando fizer sentido.
-
-| Situação | Retry? |
-| --- | --- |
-| Timeout | Sim, com limite |
-| Falha temporária de rede | Sim, com limite |
-| Token expirado | Gere novo token e repita |
-| Payload inválido | Não |
-| Serviço sem permissão | Não |
-| CPF/CNPJ inválido | Não |
-
-## Respostas
-
-1. Não use apenas o status HTTP para decidir sucesso de negócio.
-2. Leia também `status.code` e `status.message`.
-3. Trate `status.code` diferente de 200.
-4. Salve `externalId` quando ele for retornado.
-5. Lembre que resultado negativo não é necessariamente erro técnico.
-
-Exemplo:
-
-```js
-if (body.status?.code !== 200) {
-  throw new Error(body.status?.message || "Falha no processamento");
-}
-
-return body.result;
-```
-
-## Logs
-
-Registre informações úteis para investigação, mas sem expor dados sensíveis.
-
-| Pode logar | Evite logar |
-| --- | --- |
-| Endpoint chamado | `client` e `secret` |
-| Código `service` | Token JWT completo |
-| `status.code` | Documento completo sem necessidade |
-| `status.message` | Imagens em base64 |
-| `externalId` | Selfies e documentos |
-
-Quando for necessário registrar CPF, CNPJ, telefone ou e-mail para investigação,
-prefira mascarar parte do valor. Tokens, imagens, selfies e documentos em base64
-não devem ser gravados em logs abertos.
-
-## Produção
-
-Antes de ir para produção, valide o fluxo em homologação, gere um token com as
-credenciais do ambiente correto e confirme se a sua aplicação trata respostas de
-sucesso, erro e timeout.
-
----
-
-# Glossário
-
-URL: https://api-docs.idcerberus.com/guides/glossario
-Fonte: guides/glossario.mdx
-Descrição: Termos comuns usados na documentação da API idCerberus
-
-# Glossário
-
-Esta página explica termos comuns usados nos guias e no API Reference.
-
-| Termo | Significado |
-| --- | --- |
-| API | Forma de um sistema conversar com outro sistema por meio de requisições |
-| Endpoint | URL específica que executa uma operação |
-| Request | Chamada enviada para a API |
-| Response | Resposta retornada pela API |
-| Método HTTP | Tipo da operação, como `GET` ou `POST` |
-| Header | Informação enviada junto da chamada, como autenticação ou tipo de conteúdo |
-| Body | Conteúdo enviado no request, geralmente em JSON |
-| JSON | Formato de dados usado nos exemplos da API |
-| Base URL | Endereço inicial do ambiente, como HML ou produção |
-| HML | Ambiente de homologação, usado para testes |
-| Produção | Ambiente usado para consultas reais |
-| Token | Código temporário usado para autenticar chamadas |
-| JWT | Formato do token de autenticação retornado pela API |
-| Bearer | Tipo de autenticação usado no header `Authorization` |
-| `client` | Identificador da aplicação usado para gerar token |
-| `secret` | Segredo da aplicação usado para gerar token |
-| `service` | Campo que define qual produto será executado em `POST /api/service-api` |
-| CPF | Documento de pessoa física |
-| CNPJ | Documento de pessoa jurídica |
-| `result` | Objeto com os dados retornados pelo serviço |
-| `status.code` | Código técnico do processamento |
-| `status.message` | Mensagem técnica do processamento |
-| `externalId` | Identificador externo da consulta, quando retornado |
-| OCR | Extração de dados de documentos por imagem |
-| Webhook | Aviso automático que a idCerberus envia para uma URL sua quando um onboarding muda de status |
-| `id-cerberus-token` | Header enviado em toda chamada de webhook, usado para confirmar que ela veio da idCerberus |
-| FaceMatch | Comparação facial entre duas imagens |
-| Liveness | Validação de prova de vida |
-| KYC | Processo de conhecimento e validação de cliente |
-| PEP | Pessoa politicamente exposta |
-
-## Exemplo prático
-
-Neste request:
-
-```json
-{
-  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
-  "cpf": "cpf"
-}
-```
-
-`service` informa qual produto será executado, e `cpf` informa qual pessoa será
-consultada.
-
-Neste header:
-
-```txt
-Authorization: Bearer {jwt_token}
-```
-
-`Authorization` é o header, `Bearer` é o tipo de autenticação e `{jwt_token}` é o
-token gerado pela API.
 
 ---
 
@@ -3817,6 +2890,28 @@ interpretar retornos antes de reportar bug.
 Se a pessoa que vai integrar não conhece a API, comece pelos exemplos de CPF,
 CNPJ, FaceMatch ou documentoscopia em [Exemplos por ambiente](/guides/exemplos-por-ambiente).
 
+
+    CPF, OCR de documento, comparação facial e biometria governamental.
+
+
+    Jornada completa via SDK, do token até o relatório final.
+
+
+    PEP, KYC, score de fraude, débitos, processos e certidões.
+
+
+    E-mail, telefone, endereço e pessoas relacionadas.
+
+
+    Candidaturas, doações eleitorais e envolvimento político.
+
+
+    Dados cadastrais de CNPJ, sócios, débitos e score de crédito PJ.
+
+
+    Conjuntos de services que costumam andar juntos por fluxo.
+
+
 ## Atalhos por necessidade
 
 | Se você quer... | Use este service |
@@ -4833,6 +3928,956 @@ Exemplo para FaceMatch:
 
 ---
 
+# Dúvidas e Soluções
+
+URL: https://api-docs.idcerberus.com/guides/duvidas-e-solucoes
+Fonte: guides/duvidas-e-solucoes.mdx
+Descrição: Respostas diretas para as dúvidas mais comuns de integração, organizadas por tema, antes de abrir chamado
+
+# Dúvidas e Soluções
+
+Esta página reúne, num só lugar, as perguntas que mais aparecem durante uma
+integração com a idCerberus. A ideia é simples: antes de abrir um chamado de
+suporte, procure sua dúvida aqui. Boa parte dos "bugs" reportados são
+comportamentos esperados que só não estavam claros na documentação técnica.
+
+> Nota:
+  Use `Ctrl + F` (ou `Cmd + F` no Mac) para pesquisar uma palavra-chave nesta
+  página antes de percorrer as seções manualmente.
+
+## Autenticação e token
+
+
+    Não. Gere um `access_token` em `POST /api/token-generate` e reutilize até
+    ele expirar, conforme o campo `expires_in` do retorno. Gerar um novo a
+    cada chamada funciona, mas desperdiça uma chamada extra por request.
+
+
+    Você recebe HTTP 401. Gere um token novo com `client` e `secret` e repita
+    a chamada original. Isso é um HTTP de verdade, diferente das falhas de
+    permissão de service que também aparecem como "401 no corpo" (veja a
+    seção de status abaixo).
+
+
+    Não. São credenciais diferentes por ambiente. Um `client`/`secret` de HML
+    não gera token válido para chamar produção, e vice-versa. Os bancos de
+    dados e o realm de autenticação são separados fisicamente entre os dois
+    ambientes.
+
+
+    Esse par é liberado pela React IT junto com o produto contratado, não é
+    algo que você gera sozinho. Solicite pelo e-mail
+    [contact@react-it.com](mailto:contact@react-it.com).
+
+
+## Consulta avulsa (POST /api/service-api)
+
+
+    Sim, e é o motivo número um de confusão nesta API. `POST /api/service-api`
+    quase sempre retorna HTTP 200, mesmo quando a consulta falhou por
+    completo. O motivo real fica dentro do corpo, em `status.code` e
+    `status.message`. Nunca decida sucesso ou falha só pelo HTTP status.
+
+
+    HTTP 401/403 de verdade só acontece por problema de autenticação (token
+    ausente, expirado ou de outro ambiente), e a chamada nem chega a
+    processar o service. "Produto não liberado para o service" e "produto
+    inativo" não geram HTTP 401/403 nesse endpoint: a chamada retorna HTTP
+    200 com o problema descrito em `status.code` (400 para payload/permissão
+    de service, 401 para produto inativo ou não encontrado) dentro do corpo.
+
+
+    Existem pelo menos três causas distintas: a fonte de dados não encontrou
+    nada para aquele documento (comportamento válido, nem todo retorno vazio
+    é erro), a imagem não foi lida com sucesso em OCR, ou, se o seu produto
+    for pré-pago, o saldo da organização está insuficiente. Esse último caso
+    é traiçoeiro porque também vem com HTTP 200 e `status.code` 200, com
+    `status.message` dizendo algo como "Not enough balance". Sempre leia
+    `status.message` quando `result` vier vazio, mesmo com 200/200.
+
+
+    Não. O alias de cada service (o valor que você envia em `service`) é
+    único no sistema: não existe um alias customizado por produto. Se um
+    service não funciona, o problema é ele não estar habilitado para o seu
+    produto, não o nome do alias estar errado (a menos que você tenha
+    digitado errado).
+
+
+    Só num caso específico: `SEVICE_ONLINE_BETTING_PROPENSITY` está
+    documentado sem a letra R em `SERVICE` de propósito. Essa é a grafia
+    implementada no backend. Corrigir esse alias ao copiar quebra a chamada.
+    Fora esse caso, copie os aliases exatamente como aparecem no
+    [catálogo de services](/guides/indice-de-services).
+
+
+## Onboarding via SDK ou Cliente Web
+
+
+    Não, e confundir os dois é uma fonte comum de erro. `access_token`
+    autentica a sua aplicação e expira em minutos. `tokenOnboarding`
+    identifica um cadastro específico e continua válido durante todo o
+    processo, mesmo depois do `access_token` expirar. Se o `access_token`
+    expirar no meio do fluxo, gere um novo: o `tokenOnboarding` não muda.
+
+
+    Não há um tempo fixo garantido. O processamento automático é verificado a
+    cada poucos segundos internamente, mas o tempo total depende de quantos
+    services estão na esteira e se algum deles depende de fontes externas
+    lentas. Trate como comportamento observado, não como SLA contratual, e
+    sempre implemente um limite máximo de espera na sua aplicação.
+
+
+    Não. `REFUSED` é um resultado de negócio: a chamada em si teve sucesso
+    (HTTP 200), e o cadastro é que não foi aprovado pelas regras do produto.
+    Não trate `REFUSED` como algo para repetir a chamada; trate como decisão
+    que a sua aplicação precisa refletir para o usuário.
+
+
+## Webhooks
+
+
+    Primeiro, confirme que o evento que você espera realmente dispara
+    webhook: mudança de status de onboarding, decisão de revisão manual, e
+    consulta avulsa em `POST /api/service-api` (quando o produto tem webhook
+    configurado). Segundo, lembre que consulta avulsa dispara o webhook cerca
+    de 10 segundos depois da resposta HTTP, não instantaneamente. Terceiro,
+    valide se a sua URL está acessível publicamente (a idCerberus não
+    consegue entregar num endpoint atrás de firewall sem liberação).
+
+
+    Não. Não existe um processo automático que fica reenviando entregas que
+    falharam. Um novo envio só acontece se o mesmo onboarding mudar de
+    conteúdo de novo mais tarde (o que dispara como uma entrega nova, não
+    como retry), ou se alguém com acesso ao [Backoffice](/guides/backoffice)
+    forçar o reenvio manualmente na tela. Por isso, nunca dependa só do
+    webhook. Mantenha o polling (`GET /api/onboarding/report/{tokenOnboarding}`)
+    como rede de segurança de verdade.
+
+
+    Sim. Webhook originado de onboarding usa o formato de relatório completo
+    (`tokenOnboarding`, `status`, `fields`, `services`). Webhook originado de
+    consulta avulsa usa o mesmo JSON que já veio na resposta HTTP síncrona da
+    chamada (`result`, `status`, `onboardingStatus`, `externalId`). São
+    formatos diferentes, então não assuma uma estrutura única.
+
+
+## OCR e imagem
+
+
+    Não. O sistema aceita base64 com ou sem esse prefixo e remove
+    automaticamente quando presente. Se a sua ferramenta gera o base64 com
+    prefixo (comum em navegador, por exemplo), não perca tempo removendo.
+
+
+    Confirme três coisas na ordem: se o `documentType` bate com o documento
+    real enviado, se a imagem está completa e legível (sem corte nas bordas),
+    e se o base64 não foi truncado no meio do envio. Esse último é comum
+    quando o payload é montado manualmente e o corte acontece sem erro
+    visível até chegar na API.
+
+
+    Pode variar. `SERVICE_OCR` é processado por parceiros diferentes conforme
+    a configuração do seu produto, e isso pode mudar um campo pontual do
+    `result` (o mais comum é o nome do campo que indica o tipo do documento
+    reconhecido). Trate o contrato desta página como "os campos costumam vir
+    assim", não como uma garantia rígida campo a campo, e sempre valide pelo
+    `result` retornado no seu ambiente real.
+
+
+## Backoffice
+
+
+    Não. São dois mecanismos de autenticação diferentes para o mesmo sistema.
+    O login do backoffice é usuário e senha, pessoal. `client` e `secret`
+    autenticam a sua aplicação e geram `access_token` via
+    `POST /api/token-generate`. Veja [Autenticação](/guides/autenticacao)
+    para o lado API.
+
+
+    A configuração de webhook (URL e chave) hoje é feita pela React IT sob
+    pedido, não é uma tela de autoatendimento ainda. Veja
+    [Webhooks](/guides/webhooks) para como pedir a ativação.
+
+
+    `backoffice-hml.idcerberus.com` e `backoffice.idcerberus.com` são as
+    mesmas URLs usadas pelo painel administrativo. Quando você chama
+    `/api/...` nelas, está falando com a API, não com a interface visual. Não
+    existe uma URL separada só para API: é o mesmo domínio, endpoints
+    diferentes.
+
+
+## Ambientes
+
+
+    Não recomendado. Homologação e produção usam bancos de dados e
+    credenciais completamente separados. Teste sempre em HML primeiro; use
+    produção só depois de validar o fluxo, com dados reais e consciência de
+    que consultas em produção normalmente têm custo.
+
+
+    Confirme, nesta ordem: se o token usado é de produção (não HML), se o
+    produto de produção tem os mesmos services habilitados que o de HML, e
+    se a massa de dados testada em produção é real (HML costuma ter dados
+    fake que não existem nas fontes de produção). Divergência de
+    configuração entre ambientes é a causa mais comum aqui.
+
+
+## Antes de abrir chamado
+
+Se sua dúvida não está aqui, reúna estas informações antes de acionar o
+suporte. Isso evita idas e vindas e acelera a resposta.
+
+| Informação | Onde encontrar |
+| --- | --- |
+| Ambiente (HML ou produção) | A base URL usada na chamada |
+| `service` enviado | O campo `service` do seu payload |
+| `status.code` e `status.message` | O corpo da resposta, não o HTTP status |
+| `externalId` | Retornado no corpo, quando presente |
+| Horário aproximado da chamada | Para cruzar com os logs internos |
+
+Veja o formato completo de chamado em
+[Erros comuns de integração](/guides/erros-comuns-integracao#como-solicitar-suporte).
+
+
+    Diagnóstico por categoria: token, payload, imagem e erro técnico.
+
+
+    Sintomas técnicos específicos, como PowerShell quebrando o curl.
+
+
+    Como funciona, payload por origem e por que não há retry automático.
+
+
+    Termos técnicos usados nesta página e no resto da documentação.
+
+---
+
+# Status e erros
+
+URL: https://api-docs.idcerberus.com/guides/status-e-erros
+Fonte: guides/status-e-erros.mdx
+Descrição: Entenda como interpretar respostas, falhas e casos sem body JSON
+
+# Status e erros
+
+A API idCerberus separa o status HTTP do status técnico retornado no body. Em
+integrações, leia os dois.
+
+## Estrutura padrão
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "8e1ac243-4510-4ebf-ac7d-4b6d133dd619"
+}
+```
+
+| Campo | Uso |
+| --- | --- |
+| `result` | Dados retornados pelo produto consultado |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica do processamento |
+| `externalId` | Identificador externo da consulta, quando retornado |
+
+## Como interpretar
+
+| Caso | Significado prático | Ação recomendada |
+| --- | --- | --- |
+| HTTP 200 e `status.code` 200 | A chamada foi processada | Ler `result` e seguir a regra de negócio |
+| HTTP 200 e `status.code` 400 | Payload inválido ou service sem permissão no produto | Ler `status.message`, validar parâmetros e permissão |
+| HTTP 200 e `status.code` 401 | Produto inativo ou não encontrado para o `client` usado | Confirmar se o produto está ativo, não é problema de token |
+| HTTP 401 ou 403 (de verdade) | Token ausente, expirado ou de outro ambiente, rejeitado antes de processar | Gerar novo token no ambiente correto |
+| Timeout | Fonte externa ou rede pode ter demorado | Aplicar retry controlado, sem loop agressivo |
+| Sem body JSON | O endpoint retorna outro tipo de conteúdo | Tratar conforme contrato, como PDF no relatório de onboarding |
+
+> Atencao:
+  Exceção real à primeira linha da tabela: se o seu produto for pré-pago e o
+  saldo estiver insuficiente, a chamada retorna HTTP 200 **e** `status.code`
+  200, mas `status.message` traz algo como "Not enough balance" e `result`
+  vem vazio. Sempre leia `status.message` quando `result` vier vazio, mesmo
+  com HTTP 200 e `status.code` 200.
+
+## Problemas comuns
+
+| Problema | Possível causa | Como resolver |
+| --- | --- | --- |
+| Token inválido | Token gerado com credenciais erradas ou ambiente incorreto | Gere um novo token no mesmo ambiente da chamada |
+| Token expirado | O tempo de validade do token acabou | Gere um novo token e repita a chamada |
+| `Authorization` ausente | Header não foi enviado | Envie `Authorization: Bearer {jwt_token}` |
+| `Content-Type` ausente | Body JSON enviado sem header correto | Envie `Content-Type: application/json` |
+| Campo `service` ausente | Payload não informou qual produto executar | Inclua o campo `service` no body |
+| CPF ou CNPJ inválido | Documento incompleto, mascarado ou fora do padrão esperado | Revise o valor enviado antes de chamar a API |
+| Serviço sem permissão | Produto não liberado para a conta | Confirme a liberação do serviço com o time responsável |
+| Fonte externa indisponível | Consulta depende de órgão, base ou processamento externo | Faça retry controlado ou tente novamente depois |
+| URL de ambiente errada | Token de HML usado em produção, ou o contrário | Confira se a URL base e o token são do mesmo ambiente |
+
+## Exemplos de erro
+
+### Token ausente ou inválido
+
+Quando o header `Authorization` não é enviado, está expirado ou pertence a outro
+ambiente, a API pode retornar erro de autenticação.
+
+```http
+HTTP/1.1 401 Unauthorized
+```
+
+Como corrigir:
+
+1. Gere um novo token em `POST /api/token-generate`.
+2. Confirme se o token foi gerado no mesmo ambiente da chamada.
+3. Envie o header no formato abaixo.
+
+```http
+Authorization: Bearer {jwt_token}
+```
+
+### Campo `service` ausente
+
+O endpoint `POST /api/service-api` precisa do campo `service` para saber qual
+produto executar.
+
+Payload incorreto:
+
+```json
+{
+  "cpf": "cpf"
+}
+```
+
+Payload correto:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+### Documento obrigatório ausente
+
+Se o serviço exige `cpf`, `cnpj`, imagem ou outro campo obrigatório, envie o
+campo correspondente no body.
+
+Exemplo de retorno:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CPF não encontrado."
+  }
+}
+```
+
+Como corrigir:
+
+```json
+{
+  "service": "SERVICE_RFB_PF",
+  "cpf": "cpf"
+}
+```
+
+### Produto sem permissão ou não habilitado
+
+Se a credencial não tiver acesso ao produto, a chamada pode falhar mesmo com
+token válido.
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Serviço não disponível para este cliente."
+  }
+}
+```
+
+Como corrigir:
+
+1. confirme se o `service` está escrito exatamente como na documentação;
+2. valide se o produto está liberado para a conta;
+3. confirme se está chamando o ambiente correto.
+
+### Fonte externa indisponível
+
+Algumas consultas dependem de bases externas. Quando a fonte falha ou demora, a
+API pode retornar erro técnico.
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Failed to fetch information"
+  }
+}
+```
+
+Como tratar:
+
+1. registre o `externalId`, quando existir;
+2. tente novamente depois com retry limitado;
+3. não faça loop infinito de chamadas;
+4. se o erro persistir, encaminhe o payload e o horário da tentativa para suporte.
+
+## Negativo não é erro técnico
+
+Alguns serviços retornam uma consulta negativa como sucesso técnico. Exemplos:
+
+| Resultado | Exemplo |
+| --- | --- |
+| Nada consta | Certidões criminais ou ações judiciais |
+| Cliente não encontrado | Validação de CPF com endereço |
+| Sem débitos | Débitos ativos com totais zerados |
+| Não PEP | Pessoa politicamente não exposta |
+
+Nesses casos, a chamada pode ter `status.code` 200 e ainda assim representar uma
+resposta negativa de negócio.
+
+## Boas práticas de tratamento
+
+1. Registre o `externalId` quando ele vier no retorno.
+2. Não use apenas HTTP status para decidir sucesso de negócio.
+3. Trate token expirado gerando novo token.
+4. Valide campos obrigatórios antes de chamar a API.
+5. Evite retry automático em erro de payload.
+6. Use retry com limite para timeout ou falha temporária de fonte externa.
+
+## Exemplo de decisão
+
+```js
+if (response.status?.code !== 200) {
+    throw new Error(response.status?.message || "Falha no processamento");
+}
+
+return response.result;
+```
+
+---
+
+# Erros comuns de integração
+
+URL: https://api-docs.idcerberus.com/guides/erros-comuns-integracao
+Fonte: guides/erros-comuns-integracao.mdx
+Descrição: Diagnóstico prático para token, acesso, payload, base64, OCR, retorno vazio e falhas externas
+
+# Erros comuns de integração
+
+Use esta página quando uma chamada falhar, retornar vazio ou parecer diferente do esperado.
+
+A regra mais importante: em `POST /api/service-api`, olhe o body da resposta, não só o HTTP status. Uma chamada pode retornar HTTP 200 e mesmo assim o processamento vir como `REFUSED` ou `ERROR`.
+
+> Info:
+  Procurando um sintoma técnico específico (erro de ambiente, PowerShell
+  quebrando o `curl`, resposta que não é JSON)? Veja
+  [Troubleshooting](/guides/troubleshooting), mais direto ao ponto para esses
+  casos.
+
+
+    Token ausente/vencido (HTTP 401/403) ou produto sem permissão para o
+    service (HTTP 200, `status.code` no corpo).
+
+
+    Campo obrigatório ausente, alias errado, CPF/CNPJ inválido ou JSON malformado.
+
+
+    Base64, `image1`, `image2`, documento ilegível ou OCR sem campo esperado.
+
+
+    `ERROR`, `500`, falha externa, timeout ou investigação por `externalId`.
+
+
+## Diagnóstico rápido
+
+| Sintoma | Causa comum | Como corrigir |
+| --- | --- | --- |
+| `401` ou `403` | Token ausente, expirado, inválido ou de outro ambiente | Gere um novo token no mesmo ambiente da chamada |
+| `Don't have access to the service` | Produto sem o service ativo ou sem API habilitada | Confira configuração do produto antes de mexer no payload |
+| `Unable to convert http message` | JSON inválido, base64 quebrado ou body malformado | Valide o JSON e gere o base64 novamente |
+| API retorna HTTP 200 com `REFUSED` | Chamada autenticou, mas a regra de negócio recusou | Leia `status.message` e trate como recusa válida |
+| API retorna HTTP 200 com `ERROR` | Falha técnica aconteceu dentro do processamento | Guarde `externalId`, horário e service chamado |
+| Resultado vazio `{}` | Massa sem dados, imagem não lida ou service sem retorno para aquele caso | Teste massa válida e confira `status.message` |
+| Resultado vazio `{}` com HTTP 200 e `status.code` 200 | Em produto pré-pago, pode ser saldo insuficiente (`status.message`: "Not enough balance") | Confira saldo da organização antes de investigar o payload |
+| Campo esperado não veio | Campo não existe na fonte ou não foi extraído com segurança | Não invente dado; trate campo ausente como opcional quando o contrato permitir |
+| Base64 rejeitado | Encoding quebrado, base64 truncado ou arquivo inválido | Gere o base64 de novo a partir do arquivo original (com ou sem prefixo `data:image/...;base64,`, os dois são aceitos) |
+| CPF/CNPJ não encontrado | Documento mascarado, incompleto, massa ruim ou ambiente errado | Teste sem máscara e confira a base URL |
+| Timeout | Fonte externa demorou ou ficou indisponível | Aplique retry controlado e registre o `externalId`, quando houver |
+
+## Token ou acesso
+
+Antes de investigar código, confirme:
+
+1. A chamada está indo para o ambiente certo.
+2. O token foi gerado no mesmo ambiente.
+3. O header está como `Authorization: Bearer {jwt_token}`.
+4. O produto ligado ao token tem o service ativo.
+5. O service está habilitado para API.
+6. O alias enviado em `service` é o alias de chamada configurado no produto.
+
+Exemplo típico:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Don't have access to the service"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Nesse caso, o primeiro ponto é configuração do produto. Não adianta trocar CPF, CNPJ ou imagem antes de confirmar acesso.
+
+## Payload
+
+Campos que mais geram erro:
+
+| Campo | Cuidado |
+| --- | --- |
+| `service` | Deve bater com o alias liberado no produto |
+| `cpf` | Envie sem máscara quando o service não documentar outro formato |
+| `cnpj` | Envie CNPJ completo, preferencialmente sem máscara |
+| `birthDate` | Use o formato documentado para o service |
+| `documentType` | Para OCR React, use `CNH` ou `RG` conforme o documento |
+| `image1`, `image2`, `selfie1` | Confirme se o service espera imagem, selfie, frente, verso ou comparação |
+| `key` | Use apenas quando o fluxo suportar chave de arquivo já armazenado |
+
+Exemplo de JSON mínimo válido:
+
+```json
+{
+  "service": "SERVICE_REGISTRATION_DATA_CNPJ",
+  "cnpj": "00000000000000"
+}
+```
+
+## Imagem e OCR
+
+Para services de OCR:
+
+1. Use imagem real, nítida e completa.
+2. Envie o base64 completo, sem truncar (com ou sem prefixo `data:image/jpeg;base64,`, os dois formatos funcionam).
+3. Para RG, envie frente e verso quando o service exigir.
+4. Para face, use selfie real, não foto de documento.
+5. Confira se o documento enviado combina com o service.
+
+Exemplo de erro por imagem ausente:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do verso do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: revisar o payload. Para RG, envie `image1` com a frente e `image2` com o verso.
+
+Se o retorno for:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "..."
+}
+```
+
+Ação: testar uma imagem mais nítida e confirmar se o tipo de documento bate com o service.
+
+## Erro técnico
+
+Erro técnico normalmente aparece como `ERROR` ou mensagem de falha no body:
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 500,
+    "message": "Falha ao realizar OCR"
+  },
+  "onboardingStatus": "ERROR",
+  "externalId": "..."
+}
+```
+
+Nessa situação, guarde:
+
+1. ambiente;
+2. endpoint;
+3. service enviado;
+4. horário aproximado;
+5. `externalId`;
+6. `status.code`;
+7. `status.message`;
+8. payload sem dados sensíveis.
+
+Não envie token JWT, `client`, `secret`, CPF, CNPJ, imagem real ou base64 completo em canais abertos.
+
+## Checklist antes de chamar suporte
+
+1. Confirmei o ambiente da chamada.
+2. Gerei token novo no mesmo ambiente.
+3. Conferi o alias do service no produto.
+4. Validei que o service está ativo e com API habilitada.
+5. Validei o JSON antes de enviar.
+6. Removi máscara quando o contrato não exigia máscara.
+7. Para OCR, conferi se o base64 é puro.
+8. Para OCR, abri a imagem e confirmei que está legível.
+9. Guardei `externalId`, horário e `status.message`.
+
+## Como solicitar suporte
+
+Envie um resumo nesse formato:
+
+```txt
+Ambiente: HML ou PROD
+Endpoint: POST /api/service-api
+Service: SERVICE_EXEMPLO
+Horário aproximado: 2026-01-01 10:30
+ExternalId: ...
+Status code: ...
+Status message: ...
+O que era esperado: ...
+O que retornou: ...
+```
+
+Não inclua credenciais, token, documento real, imagem real ou base64 completo.
+
+---
+
+# Troubleshooting
+
+URL: https://api-docs.idcerberus.com/guides/troubleshooting
+Fonte: guides/troubleshooting.mdx
+Descrição: Resolva problemas comuns ao integrar com a API idCerberus
+
+# Troubleshooting
+
+Use esta página quando uma chamada não funcionar como esperado.
+
+> Info:
+  Página focada em sintomas técnicos específicos (401/403, ambiente errado,
+  PowerShell). Para um diagnóstico mais amplo, com cards por categoria e
+  modelo de mensagem para pedir suporte, veja
+  [Erros comuns de integração](/guides/erros-comuns-integracao).
+
+
+    401/403, token de outro ambiente ou token que funciona em HML mas não em produção.
+
+
+    HTTP 200 que na verdade é erro: `status.code` 400 ou 401 dentro do body.
+
+
+    Funciona no cURL mas não no seu código, ou o PowerShell quebra o comando.
+
+
+    Sucesso sem dado, ou retorno que não é JSON (como o PDF do relatório).
+
+
+## Recebi 401 ou 403 (HTTP)
+
+Em `POST /api/service-api`, um HTTP 401/403 de verdade só acontece por
+problema de autenticação: a chamada nem chega a processar o service.
+
+1. Token ausente.
+2. Token expirado.
+3. Token gerado em outro ambiente.
+
+Como resolver:
+
+1. Gere um novo token.
+2. Confirme se a URL é de HML ou produção.
+3. Envie o header:
+
+```txt
+Authorization: Bearer {jwt_token}
+```
+
+> Atencao:
+  "Produto não liberado para a conta" e "service sem permissão" **não** geram
+  HTTP 401/403 nesse endpoint. A chamada retorna HTTP 200 com o problema
+  descrito em `status.message` (`status.code` 400 ou 401 dentro do corpo).
+  Veja a seção seguinte.
+
+## HTTP 200, mas `status.code` diferente de 200
+
+Esse é o caso mais comum de erro em `POST /api/service-api`: a chamada
+"funcionou" no sentido HTTP, mas o corpo mostra o problema real.
+
+| `status.code` no corpo | Causa | Observação |
+| --- | --- | --- |
+| 400 | Body inválido, campo obrigatório ausente, `service` incorreto, CPF/CNPJ inválido, fonte externa indisponível | Leia `status.message` para o motivo exato |
+| 401 | Produto não encontrado ou inativo para o `client` usado | Diferente do HTTP 401: aqui o token é válido, o produto que está desativado |
+
+Como resolver:
+
+1. Leia `status.message`.
+2. Confira se o body está em JSON válido.
+3. Confira se enviou `Content-Type: application/json`.
+4. Confira se o campo `service` está correto.
+5. Compare o body com o exemplo da API Reference.
+
+## O token funciona em HML, mas não em produção
+
+Token e URL precisam ser do mesmo ambiente.
+
+| Ambiente | URL |
+| --- | --- |
+| HML | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+Gere um token novo em produção usando credenciais de produção.
+
+## O cURL funciona, mas meu código não
+
+Confira:
+
+1. URL base.
+2. Método HTTP.
+3. Headers.
+4. Body JSON.
+5. Timeout.
+6. Serialização do JSON.
+7. Header `Authorization`.
+8. Header `Content-Type`.
+
+Compare o request do código com o request da API Reference.
+
+## O PowerShell quebra o comando cURL
+
+No Windows, use `curl.exe` em vez de `curl`.
+
+```powershell
+curl.exe --location "https://backoffice-hml.idcerberus.com/api/token-generate" `
+  --header "Content-Type: application/json" `
+  --data "{\"client\":\"{client}\",\"secret\":\"{secret}\"}"
+```
+
+O comando `curl` sozinho pode ser interpretado pelo PowerShell como outro alias.
+
+## A consulta retornou sucesso, mas não veio o dado esperado
+
+Nem todo retorno sem dado é erro técnico.
+
+Exemplos:
+
+1. certidão com “Nada consta”;
+2. CPF não encontrado em validação de endereço;
+3. pessoa não exposta politicamente;
+4. empresa sem débitos;
+5. lista vazia de relacionamentos.
+
+Leia `result` e aplique a regra de negócio do seu produto.
+
+## A resposta não veio em JSON
+
+Alguns endpoints retornam outro tipo de conteúdo. Exemplo:
+
+```txt
+GET /api/history-onboarding-report/{tokenOnboarding}
+```
+
+Esse endpoint retorna PDF, não JSON.
+
+## Checklist rápido
+
+Antes de pedir apoio, confira:
+
+1. A URL está correta?
+2. O método HTTP está correto?
+3. O token foi gerado no mesmo ambiente?
+4. O header `Authorization` foi enviado?
+5. O header `Content-Type` foi enviado?
+6. O body é JSON válido?
+7. O campo `service` está correto?
+8. O CPF/CNPJ está no campo esperado?
+9. O serviço está liberado para a conta?
+10. Você leu `status.message`?
+
+---
+
+# Boas práticas de integração
+
+URL: https://api-docs.idcerberus.com/guides/boas-praticas-integracao
+Fonte: guides/boas-praticas-integracao.mdx
+Descrição: Recomendações para integrar a API idCerberus com segurança e estabilidade
+
+# Boas práticas de integração
+
+Use estas recomendações para reduzir falhas, evitar exposição de credenciais e
+deixar a integração pronta para produção.
+
+## Credenciais e token
+
+| Prática | Motivo |
+| --- | --- |
+| Gere token no back-end | Evita expor `client` e `secret` |
+| Não coloque `client` e `secret` no front-end | Usuários poderiam inspecionar as credenciais |
+| Não versione credenciais no Git | Evita vazamento acidental |
+| Renove o token quando expirar | O token tem validade limitada |
+| Não logue o JWT completo | Token pode permitir chamadas protegidas |
+
+## Ambientes
+
+1. Use HML para desenvolvimento e homologação.
+2. Use produção somente depois de validar o fluxo.
+3. Não misture token de HML com URL de produção.
+4. Não misture token de produção com URL de HML.
+
+| Ambiente | Base URL |
+| --- | --- |
+| Homologação | `https://backoffice-hml.idcerberus.com` |
+| Produção | `https://backoffice.idcerberus.com` |
+
+## Requests
+
+1. Sempre envie `Content-Type: application/json` em requests com body JSON.
+2. Sempre envie `Authorization: Bearer {jwt_token}` em chamadas protegidas.
+3. Valide campos obrigatórios antes de chamar a API.
+4. Envie CPF/CNPJ no formato esperado pelo seu fluxo.
+5. Use timeout nas chamadas HTTP.
+
+## Retry
+
+Use retry apenas quando fizer sentido.
+
+| Situação | Retry? |
+| --- | --- |
+| Timeout | Sim, com limite |
+| Falha temporária de rede | Sim, com limite |
+| Token expirado | Gere novo token e repita |
+| Payload inválido | Não |
+| Serviço sem permissão | Não |
+| CPF/CNPJ inválido | Não |
+
+## Respostas
+
+1. Não use apenas o status HTTP para decidir sucesso de negócio.
+2. Leia também `status.code` e `status.message`.
+3. Trate `status.code` diferente de 200.
+4. Salve `externalId` quando ele for retornado.
+5. Lembre que resultado negativo não é necessariamente erro técnico.
+
+Exemplo:
+
+```js
+if (body.status?.code !== 200) {
+  throw new Error(body.status?.message || "Falha no processamento");
+}
+
+return body.result;
+```
+
+## Logs
+
+Registre informações úteis para investigação, mas sem expor dados sensíveis.
+
+| Pode logar | Evite logar |
+| --- | --- |
+| Endpoint chamado | `client` e `secret` |
+| Código `service` | Token JWT completo |
+| `status.code` | Documento completo sem necessidade |
+| `status.message` | Imagens em base64 |
+| `externalId` | Selfies e documentos |
+
+Quando for necessário registrar CPF, CNPJ, telefone ou e-mail para investigação,
+prefira mascarar parte do valor. Tokens, imagens, selfies e documentos em base64
+não devem ser gravados em logs abertos.
+
+## Produção
+
+Antes de ir para produção, valide o fluxo em homologação, gere um token com as
+credenciais do ambiente correto e confirme se a sua aplicação trata respostas de
+sucesso, erro e timeout.
+
+---
+
+# Glossário
+
+URL: https://api-docs.idcerberus.com/guides/glossario
+Fonte: guides/glossario.mdx
+Descrição: Termos comuns usados na documentação da API idCerberus
+
+# Glossário
+
+Esta página explica termos comuns usados nos guias e no API Reference.
+
+| Termo | Significado |
+| --- | --- |
+| API | Forma de um sistema conversar com outro sistema por meio de requisições |
+| Endpoint | URL específica que executa uma operação |
+| Request | Chamada enviada para a API |
+| Response | Resposta retornada pela API |
+| Método HTTP | Tipo da operação, como `GET` ou `POST` |
+| Header | Informação enviada junto da chamada, como autenticação ou tipo de conteúdo |
+| Body | Conteúdo enviado no request, geralmente em JSON |
+| JSON | Formato de dados usado nos exemplos da API |
+| Base URL | Endereço inicial do ambiente, como HML ou produção |
+| HML | Ambiente de homologação, usado para testes |
+| Produção | Ambiente usado para consultas reais |
+| Token | Código temporário usado para autenticar chamadas |
+| JWT | Formato do token de autenticação retornado pela API |
+| Bearer | Tipo de autenticação usado no header `Authorization` |
+| `client` | Identificador da aplicação usado para gerar token |
+| `secret` | Segredo da aplicação usado para gerar token |
+| `service` | Campo que define qual produto será executado em `POST /api/service-api` |
+| CPF | Documento de pessoa física |
+| CNPJ | Documento de pessoa jurídica |
+| `result` | Objeto com os dados retornados pelo serviço |
+| `status.code` | Código técnico do processamento |
+| `status.message` | Mensagem técnica do processamento |
+| `externalId` | Identificador externo da consulta, quando retornado |
+| OCR | Extração de dados de documentos por imagem |
+| Webhook | Aviso automático que a idCerberus envia para uma URL sua quando um onboarding muda de status |
+| `id-cerberus-token` | Header enviado em toda chamada de webhook, usado para confirmar que ela veio da idCerberus |
+| FaceMatch | Comparação facial entre duas imagens |
+| Liveness | Validação de prova de vida |
+| KYC | Processo de conhecimento e validação de cliente |
+| PEP | Pessoa politicamente exposta |
+
+## Exemplo prático
+
+Neste request:
+
+```json
+{
+  "service": "SERVICE_PERSON_DATA_ENRICHMENT",
+  "cpf": "cpf"
+}
+```
+
+`service` informa qual produto será executado, e `cpf` informa qual pessoa será
+consultada.
+
+Neste header:
+
+```txt
+Authorization: Bearer {jwt_token}
+```
+
+`Authorization` é o header, `Bearer` é o tipo de autenticação e `{jwt_token}` é o
+token gerado pela API.
+
+---
+
 # Matriz de serviços
 
 URL: https://api-docs.idcerberus.com/guides/matriz-de-servicos
@@ -4855,6 +4900,16 @@ payload completo no API Reference.
   Todos os itens abaixo são executados por `POST /api/service-api`, exceto os
   endpoints de autenticação, onboarding e customers. No endpoint central, o campo
   `service` escolhe o produto.
+
+
+    Cadastro, OCR, biometria, risco e histórico de CPF.
+
+
+    Cadastro, sócios, débitos, protestos e risco de CNPJ.
+
+
+    Autenticação, onboarding, customers e outros endpoints dedicados.
+
 
 ## Pessoa física
 
@@ -7223,6 +7278,17 @@ padrão público da Service API é retornar apenas dados úteis.
 > Nota:
 Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
 
+## Próximo passo
+
+
+    Volte pro panorama geral de OCR: payload, base64 e outros documentos.
+
+
+    Perguntas frequentes sobre retorno, campos e limites do OCR.
+
+
+    Diagnóstico rápido para imagem ilegível, base64 truncado ou campo ausente.
+
 ---
 
 # Cartão CNPJ
@@ -7277,6 +7343,17 @@ padrão público da Service API é retornar apenas dados úteis.
 
 > Nota:
 Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+
+## Próximo passo
+
+
+    Volte pro panorama geral de OCR: payload, base64 e outros documentos.
+
+
+    Perguntas frequentes sobre retorno, campos e limites do OCR.
+
+
+    Diagnóstico rápido para imagem ilegível, base64 truncado ou campo ausente.
 
 ---
 
@@ -7336,6 +7413,17 @@ padrão público da Service API é retornar apenas dados úteis.
 
 > Nota:
 Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+
+## Próximo passo
+
+
+    Volte pro panorama geral de OCR: payload, base64 e outros documentos.
+
+
+    Perguntas frequentes sobre retorno, campos e limites do OCR.
+
+
+    Diagnóstico rápido para imagem ilegível, base64 truncado ou campo ausente.
 
 ---
 
@@ -7403,6 +7491,17 @@ padrão público da Service API é retornar apenas dados úteis.
 
 > Nota:
 Em caso de dúvidas sobre retorno da API, consulte [Dúvidas e Suporte](/guides/service-api/duvidas-e-suporte).
+
+## Próximo passo
+
+
+    Volte pro panorama geral de OCR: payload, base64 e outros documentos.
+
+
+    Perguntas frequentes sobre retorno, campos e limites do OCR.
+
+
+    Diagnóstico rápido para imagem ilegível, base64 truncado ou campo ausente.
 
 ---
 
@@ -7943,9 +8042,16 @@ Uma validação cadastral simples costuma começar com `SERVICE_RFB_PF`. Para um
 visão mais completa, use `SERVICE_PERSON_DATA_ENRICHMENT`. Quando o objetivo for
 validar contato ou entrega, combine as consultas de e-mail, telefone e endereço.
 
-Para campos, exemplos completos e responses, consulte a
-[API Reference](/api-reference/autorização/gerar-token-de-api) ou o
-[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).
+## Próximo passo
+
+
+    Contrato completo: campos, exemplos e responses de cada serviço.
+
+
+    Todos os services de pessoa física em um único catálogo.
+
+
+    Ainda em dúvida sobre qual service usar? Comece por aqui.
 
 ---
 
@@ -8069,9 +8175,16 @@ Resposta esperada:
 4. Combine OCR e FaceMatch quando o fluxo exigir validação de identidade
   com maior robustez.
 
-Para campos, exemplos completos e responses, consulte a
-[API Reference](/api-reference/autorização/gerar-token-de-api) ou o
-[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).
+## Próximo passo
+
+
+    Contrato completo: campos, exemplos e responses de cada serviço.
+
+
+    Todos os services de pessoa física em um único catálogo.
+
+
+    Veja como montar o payload de OCR com base64, imagem e exemplos de retorno.
 
 ---
 
@@ -8178,9 +8291,16 @@ ficam no objeto `result`, como status da certidão, scores, fatores de risco,
 valores de dívida, protestos e indicadores encontrados. Em fluxos críticos,
 combine mais de uma consulta para reduzir decisão baseada em um único sinal.
 
-Para campos, exemplos completos e responses, consulte a
-[API Reference](/api-reference/autorização/gerar-token-de-api) ou o
-[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).
+## Próximo passo
+
+
+    Contrato completo: campos, exemplos e responses de cada serviço.
+
+
+    Todos os services de pessoa física em um único catálogo.
+
+
+    Ainda em dúvida sobre qual service usar? Comece por aqui.
 
 ---
 
@@ -8273,9 +8393,16 @@ trazer evidências estruturadas sobre exposição pública e relações eleitora
 os retornos como insumos para classificação de risco, diligência reforçada ou
 monitoramento.
 
-Para campos, exemplos completos e responses, consulte a
-[API Reference](/api-reference/autorização/gerar-token-de-api) ou o
-[Catálogo técnico de Pessoa Física](/guides/servicos-pessoa-fisica).
+## Próximo passo
+
+
+    Contrato completo: campos, exemplos e responses de cada serviço.
+
+
+    Todos os services de pessoa física em um único catálogo.
+
+
+    Ainda em dúvida sobre qual service usar? Comece por aqui.
 
 ---
 
@@ -8388,9 +8515,16 @@ Resposta esperada:
   ativa ou regular.
 4. Para empresas com operação estadual, combine Receita Federal e SINTEGRA.
 
-Para campos, exemplos completos e responses, consulte a
-[API Reference](/api-reference/autorização/gerar-token-de-api) ou o
-[Catálogo técnico de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
+## Próximo passo
+
+
+    Contrato completo: campos, exemplos e responses de cada serviço.
+
+
+    Todos os services de pessoa jurídica em um único catálogo.
+
+
+    Ainda em dúvida sobre qual service usar? Comece por aqui.
 
 ---
 
@@ -8495,9 +8629,16 @@ estrutura da empresa. Em seguida, `SERVICE_FIRST_LEVEL_PARTNER` ajuda a resumir 
 entorno societário. Quando houver necessidade de aprofundar risco, use
 `SERVICE_JURIDICAL_PROCESSES_PJ_OWNERS` e `SERVICE_COMPANY_KYC_OWNERS`.
 
-Para campos, exemplos completos e responses, consulte a
-[API Reference](/api-reference/autorização/gerar-token-de-api) ou o
-[Catálogo técnico de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
+## Próximo passo
+
+
+    Contrato completo: campos, exemplos e responses de cada serviço.
+
+
+    Todos os services de pessoa jurídica em um único catálogo.
+
+
+    Ainda em dúvida sobre qual service usar? Comece por aqui.
 
 ---
 
@@ -8611,9 +8752,16 @@ ficam no objeto `result`, como valores de dívida, protestos, vínculos, exposi�
 regulatória e indicadores de conformidade. Em análises críticas, combine esses
 serviços com dados cadastrais e relacionamentos societários.
 
-Para campos, exemplos completos e responses, consulte a
-[API Reference](/api-reference/autorização/gerar-token-de-api) ou o
-[Catálogo técnico de Pessoa Jurídica](/guides/servicos-pessoa-juridica).
+## Próximo passo
+
+
+    Contrato completo: campos, exemplos e responses de cada serviço.
+
+
+    Todos os services de pessoa jurídica em um único catálogo.
+
+
+    Ainda em dúvida sobre qual service usar? Comece por aqui.
 
 ---
 
