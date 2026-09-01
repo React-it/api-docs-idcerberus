@@ -1135,7 +1135,7 @@ function renderCurl({ baseUrl, path: endpointPath, body, method = 'POST', bearer
   if (bearer) headers.push("--header 'Authorization: Bearer {jwt_token}'");
   const lines = [`curl --location '${baseUrl}${endpointPath}' \\`, ...headers.map((header) => `${header} \\`)];
   if (body) {
-    lines.push(`--data '${JSON.stringify(body, null, 2)}'`);
+    lines.push(`--data '${JSON.stringify(body, null, 2).replaceAll("'", String.raw`'\''`)}'`);
   }
   if (method !== 'POST') {
     lines[0] = `curl --location --request ${method} '${baseUrl}${endpointPath}' \\`;
