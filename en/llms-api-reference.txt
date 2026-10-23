@@ -1436,6 +1436,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Facial validation by CPF
+
+1. Service: `SERVICE_UNICO_FACE_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `image1`
+4. Search terms: CPF Federal Revenue, CPF facial validation selfie biometric match, PF - Facial validation by CPF
+5. Main return: Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": "98.70",
+    "faceFound": false,
+    "faceIndexed": true,
+    "faceUpdated": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}'
+```
+
 ### Family social benefits
 
 1. Service: `SERVICE_FAMILY_SOCIAL_BENEFITS`

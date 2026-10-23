@@ -63,7 +63,7 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
 
 <CardGroup cols={2}>
  <Card icon="layer-group" title="Biometria e documentos">
- 7 services: `SERVICE_FACE_INDEX`, `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_FACE_MATCH` e mais 4.
+ 8 services: `SERVICE_FACE_INDEX`, `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_FACE_MATCH` e mais 5.
  </Card>
  <Card icon="layer-group" title="Contatos, sites e relacionamentos">
  15 services: `SERVICE_PF_FINANCIAL_AND_ADDRESS`, `SERVICE_CONFIRM_PHONE`, `SERVICE_DOMAINS_CPF` e mais 12.
@@ -97,7 +97,7 @@ Abra um service para ver quando usar, campos obrigatórios, body, curl e respons
 
 **Service:** `SERVICE_FACE_INDEX`
 
-**Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
+**Quando usar:** Use para buscar uma selfie na base de faces indexadas e retornar o CPF associado quando houver correspondência.
 
 **O que retorna:** Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
 
@@ -1150,7 +1150,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Descrição |
 | --- | --- |
 | `result.cpf` | CPF relacionado ao resultado da consulta. |
-| `result.biometricScore` | Campo retornado no objeto result para consumo do cliente. |
+| `result.biometricScore` | Score de similaridade facial na escala de 0 a 100. |
 | `result.validated` | Data retornada pela consulta, conforme o contexto do service. |
 | `result.validationStatus` | Campo retornado no objeto result para consumo do cliente. |
 
@@ -1190,6 +1190,147 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna validação validação documental da CNH, incluindo score biométrico, similaridade facial, status de validação e campos conferidos.
+
+</Accordion>
+
+<Accordion title="Validação facial por CPF" id="SERVICE_UNICO_FACE_CPF">
+
+**Service:** `SERVICE_UNICO_FACE_CPF`
+
+**Quando usar:** Use para validar se a selfie enviada pertence ao CPF informado.
+
+**O que retorna:** Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.
+
+<CardGroup cols={2}>
+ <Card icon="arrow-right-to-bracket" title="Entrada">
+ Campos obrigatórios: `service`, `cpf`, `image1`.
+ </Card>
+ <Card icon="list-check" title="Resultado">
+ Principais campos em `result`: `cpf`, `biometricScore`, `faceFound`, `faceIndexed`, `faceUpdated`.
+ </Card>
+ <Card icon="circle-info" title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card icon="sliders" title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `cpf`, `image1`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `cpf` | Sim | CPF da pessoa física consultada. |
+| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.biometricScore` | Score de similaridade facial na escala de 0 a 100. |
+| `result.faceFound` | Indica se a busca facial encontrou uma face correspondente na base. |
+| `result.faceIndexed` | Indica se a face aprovada foi cadastrada na base biométrica durante esta consulta. |
+| `result.faceUpdated` | Indica se um registro biométrico existente foi atualizado durante esta consulta. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card icon="database" title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card icon="circle-check" title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card icon="flag" title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card icon="fingerprint" title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": "98.70",
+    "faceFound": false,
+    "faceIndexed": true,
+    "faceUpdated": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.
 
 </Accordion>
 

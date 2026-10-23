@@ -3111,6 +3111,9 @@ Content-Type: application/json
     Search for a selfie in the facial base.
 
 
+    Confirm whether a selfie matches the informed CPF.
+
+
     Score, rating, and business risk signals.
 
 
@@ -3437,6 +3440,50 @@ Expected response when the face is found:
 ```
 
 Common error: using a photo of an RG, CNH, or a document screenshot instead of a real selfie.
+
+## Validate face by CPF
+
+Use this when you already know the person's CPF and want to confirm whether the selfie belongs to them.
+
+| Item | Value |
+| --- | --- |
+| Service | `SERVICE_UNICO_FACE_CPF` |
+| Required fields | `cpf`, `image1` |
+| Curl example | [`service-api-face-cpf-validation.hml.curl`](/examples/service-api-face-cpf-validation.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "00000000000",
+  "image1": "SELFIE_BASE64"
+}
+```
+
+Expected response when the validation is approved:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "biometricScore": "98.70",
+    "faceFound": false,
+    "faceIndexed": true,
+    "faceUpdated": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Face matches the informed CPF"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+An approved face may be registered in the biometric database for future queries. Use `faceIndexed` to determine whether registration occurred in this call; a failure at this stage does not change an already approved validation.
+
+Common error: submitting an image without a readable face or using a document photo instead of a real selfie.
 
 ## Test PJ credit risk
 
@@ -4973,6 +5020,7 @@ full payload in the API Reference.
 | Read an emancipation document | `SERVICE_OCR_EMANCIPATION` | `image1` | Extract text and possible data from a variable document |
 | Read a proof of address | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Extract name, address, dates, and values when available |
 | Search for a face in the base | `SERVICE_FACE_INDEX` | `image1` | Search for a face in the indexed base and return CPF/similarity when found |
+| Validate face by CPF | `SERVICE_UNICO_FACE_CPF` | `cpf`, `image1` | Confirm whether the selfie matches the CPF and register the approved face when needed |
 | Compare faces | `SERVICE_FACE_MATCH` | `image1`, `image2` | Compare a selfie with a document or another image |
 | Validate a CNH with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Validate CNH data with document-validation support |
 | Check for politically exposed person (PEP) status | `SERVICE_PEP` | `cpf` | Assess political exposure |
@@ -5171,7 +5219,7 @@ In practice: copy the `Service` value from the card or accordion of the product 
 ## Services by person type
 
 
- 67 services for CPF, biometrics, OCR, contacts, risk, credit, compliance and electoral data.
+ 68 services for CPF, biometrics, OCR, contacts, risk, credit, compliance and electoral data.
 
 
  58 services for CNPJ, Federal Revenue, partners, contacts, risk, compliance, OCR and corporate data.
@@ -5571,7 +5619,7 @@ Open the service to see the public alias, input fields, search terms and expecte
 
 **Search terms:** PF - Face search in the base, face index facial search selfie CPF face database, facial comparison biometrics selfie face
 
-**When to use:** Use to compare two facial images and return the similarity between them.
+**When to use:** Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.
 
 **Main return:** Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
 
@@ -5588,6 +5636,18 @@ Open the service to see the public alias, input fields, search terms and expecte
 **Main return:** Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
 
 [View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH)
+
+**Service:** `SERVICE_UNICO_FACE_CPF`
+
+**Main fields:** `cpf`, `image1`
+
+**Search terms:** CPF Federal Revenue, CPF facial validation selfie biometric match, PF - Facial validation by CPF
+
+**When to use:** Use to validate whether the submitted selfie belongs to the informed CPF.
+
+**Main return:** Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
+
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_UNICO_FACE_CPF)
 
 **Service:** `SERVICE_FAMILY_SOCIAL_BENEFITS`
 
@@ -7866,6 +7926,7 @@ produce the expected return. For OCR, also use the [OCR via Service API](/en/gui
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
 | Face search in the base | `SERVICE_FACE_INDEX` | `image1` |
+| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | `cpf`, `image1` |
 | FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
 | Biometric score / CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
 | Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
@@ -8144,6 +8205,12 @@ POST /api/service-api
     Compare two facial images and read the similarity percentage.
 
 
+    Submit a selfie to search for the associated CPF in the face database.
+
+
+    Confirm whether a selfie matches the informed CPF.
+
+
     Process a document, an image, and a selfie in document-analysis flows.
 
 
@@ -8153,8 +8220,10 @@ Use these services when you need to:
 
 1. extract data from documents via OCR;
 2. compare face images with FaceMatch;
-3. query a biometric score;
-4. run digital document analysis and query the result later.
+3. search for the CPF associated with a selfie through Face Index;
+4. validate a selfie against an informed CPF;
+5. query a biometric score;
+6. run digital document analysis and query the result later.
 
 ## Available services
 
@@ -8165,6 +8234,8 @@ Use these services when you need to:
 | Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | Extracts name, address, dates, and amounts when found |
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | Reads variable emancipation documents and returns text, objective fields, and analysis |
 | FaceMatch | `SERVICE_FACE_MATCH` | Compares two images and returns a status and facial similarity percentage |
+| Face Index | `SERVICE_FACE_INDEX` | Searches for a selfie in the face database and returns the associated CPF when a match is found |
+| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | Validates whether the selfie matches the informed CPF and may register the approved face in the biometric database |
 | Biometric score | `SERVICE_DATAVALID_CNH` | Compares a CPF and a selfie against official databases and returns similarity |
 | CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | Validates CNH data with document-validation support |
 | Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Processes a document, extracts data, and runs FaceMatch when a selfie is present |
@@ -8966,6 +9037,7 @@ For handling details, see [Status and errors](/en/guides/status-e-erros).
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
 | Face search in the base | `SERVICE_FACE_INDEX` | `image1` |
+| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | `cpf`, `image1` |
 | FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
 | Biometric score / CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
 | Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
@@ -12868,6 +12940,7 @@ After choosing the service, open the individual or business catalog to copy the 
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | CPF |
 | Face search in the base | `SERVICE_FACE_INDEX` | CPF |
 | FaceMatch | `SERVICE_FACE_MATCH` | CPF |
+| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | CPF |
 | React OCR | `SERVICE_OCR` | CPF |
 
 ## Contacts, sites and relationships
@@ -13083,7 +13156,7 @@ Use exactly the value shown in `Service`. Do not send an internal alias or integ
 ## Service families
 
 
- 5 services: `SERVICE_DATAVALID_CNH`, `SERVICE_OCR_EMANCIPATION`, `SERVICE_FACE_INDEX` and 2 more.
+ 6 services: `SERVICE_DATAVALID_CNH`, `SERVICE_OCR_EMANCIPATION`, `SERVICE_FACE_INDEX` and 3 more.
 
 
  14 services: `SERVICE_ADDRESS`, `SERVICE_CPF_ADDRESS_VALIDATION`, `SERVICE_CPF_PHONE_VALIDATION` and 11 more.
@@ -13191,7 +13264,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Description |
 | --- | --- |
 | `result.cpf` | CPF related to the query result. |
-| `result.biometricScore` | Field returned in the result object for the client's consumption. |
+| `result.biometricScore` | Facial similarity score in the 0-100 range. |
 | `result.validated` | Date returned by the query, depending on the service context. |
 | `result.validationStatus` | Field returned in the result object for the client's consumption. |
 
@@ -13408,7 +13481,7 @@ In this service, the `result` object represents: Returns the OCR text of the ema
 
 **Service:** `SERVICE_FACE_INDEX`
 
-**When to use:** Use to compare two facial images and return the similarity between them.
+**When to use:** Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.
 
 **What it returns:** Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
 
@@ -13635,6 +13708,127 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 In this service, the `result` object represents: Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
+
+**Service:** `SERVICE_UNICO_FACE_CPF`
+
+**When to use:** Use to validate whether the submitted selfie belongs to the informed CPF.
+
+**What it returns:** Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
+
+
+ Required fields: `service`, `cpf`, `image1`.
+
+
+ Main fields in `result`: `cpf`, `biometricScore`, `faceFound`, `faceIndexed`, `faceUpdated`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ No optional field mapped in this example.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `cpf`, `image1`
+
+**Optional fields:** No optional field mapped in this example.
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `cpf` | Yes | The queried individual's CPF. |
+| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF related to the query result. |
+| `result.biometricScore` | Facial similarity score in the 0-100 range. |
+| `result.faceFound` | Indicates whether the facial search found a matching face in the database. |
+| `result.faceIndexed` | Indicates whether the approved face was registered in the biometric database during this query. |
+| `result.faceUpdated` | Indicates whether an existing biometric record was updated during this query. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": "98.70",
+    "faceFound": false,
+    "faceIndexed": true,
+    "faceUpdated": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
 
 **Service:** `SERVICE_OCR`
 
@@ -28943,6 +29137,14 @@ Most queries use `POST /api/service-api` and select the product through the `ser
  image2: base64
  ```
 
+**PF - Facial validation by CPF**: `SERVICE_UNICO_FACE_CPF`
+
+ ```yaml
+ service: SERVICE_UNICO_FACE_CPF
+ cpf: cpf
+ image1: base64
+ ```
+
 **PF - Family social benefits**: `SERVICE_FAMILY_SOCIAL_BENEFITS`
 
  ```yaml
@@ -31019,6 +31221,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
   "service": "SERVICE_FACE_MATCH",
   "image1": "base64",
   "image2": "base64"
+}'
+```
+
+### Facial validation by CPF
+
+1. Service: `SERVICE_UNICO_FACE_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Request fields: `cpf`, `image1`
+4. Search terms: CPF Federal Revenue, CPF facial validation selfie biometric match, PF - Facial validation by CPF
+5. Main return: Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
+
+Summarized response:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": "98.70",
+    "faceFound": false,
+    "faceIndexed": true,
+    "faceUpdated": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Staging curl:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
 }'
 ```
 
@@ -35673,6 +35915,12 @@ paths:
                 summary: PF - Face search in the base
                 value:
                   service: SERVICE_FACE_INDEX
+                  image1: base64
+              facialValidationByCpf:
+                summary: PF - Facial validation by CPF
+                value:
+                  service: SERVICE_UNICO_FACE_CPF
+                  cpf: cpf
                   image1: base64
               beneficiosSociaisFamiliares:
                 summary: PF - Family social benefits

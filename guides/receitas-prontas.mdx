@@ -28,6 +28,9 @@ Content-Type: application/json
   <Card icon="face-smile" title="Face Index" href="#testar-face-index">
     Busca de uma selfie na base facial.
   </Card>
+  <Card icon="user-check" title="Validar CPF + face" href="#validar-face-por-cpf">
+    Confirma se uma selfie corresponde ao CPF informado.
+  </Card>
   <Card icon="chart-line" title="Risco PJ" href="#testar-risco-de-credito-pj">
     Score, rating e sinais de risco de empresa.
   </Card>
@@ -356,6 +359,50 @@ Retorno esperado quando a face é encontrada:
 ```
 
 Erro comum: usar foto de RG, CNH ou print de documento em vez de selfie real.
+
+## Validar face por CPF
+
+Use quando já souber o CPF da pessoa e quiser confirmar se a selfie pertence a ela.
+
+| Item | Valor |
+| --- | --- |
+| Service | `SERVICE_UNICO_FACE_CPF` |
+| Campos obrigatórios | `cpf`, `image1` |
+| Exemplo curl | [`service-api-face-cpf-validation.hml.curl`](/examples/service-api-face-cpf-validation.hml.curl) |
+
+Payload:
+
+```json
+{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "00000000000",
+  "image1": "BASE64_DA_SELFIE"
+}
+```
+
+Retorno esperado quando a validação é aprovada:
+
+```json
+{
+  "result": {
+    "cpf": "00000000000",
+    "biometricScore": "98.70",
+    "faceFound": false,
+    "faceIndexed": true,
+    "faceUpdated": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Face corresponde ao CPF informado"
+  },
+  "onboardingStatus": "APPROVED",
+  "externalId": "..."
+}
+```
+
+Uma face aprovada pode ser cadastrada na base biométrica para consultas futuras. Use `faceIndexed` para saber se o cadastro ocorreu nesta chamada; uma falha nessa etapa não altera uma validação já aprovada.
+
+Erro comum: enviar uma imagem sem rosto legível ou usar foto de documento no lugar de uma selfie real.
 
 ## Testar risco de crédito PJ
 

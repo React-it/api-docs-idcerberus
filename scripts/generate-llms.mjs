@@ -427,7 +427,8 @@ const additionalPublicApiServices = [
   ['SERVICE_EMAILS_EXTENDED', 'Histórico de e-mails', 'Pessoa Física', { service: 'SERVICE_EMAILS_EXTENDED', cpf: 'cpf' }],
   ['SERVICE_EMAIL_VALIDATION', 'Validação de e-mail', 'Pessoa Física', { service: 'SERVICE_EMAIL_VALIDATION', email: 'email@email.com' }],
   ['SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', 'Qualificação cadastral no eSocial', 'Pessoa Física', { service: 'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', cpf: 'cpf', nit: 'nit (opcional)' }],
-  ['SERVICE_FACE_INDEX', 'Busca de face na base', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', cpf: 'cpf (opcional para busca)', image1: 'base64' }],
+  ['SERVICE_FACE_INDEX', 'Busca de face na base', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', image1: 'base64' }],
+  ['SERVICE_UNICO_FACE_CPF', 'Validação facial por CPF', 'Pessoa Física', { service: 'SERVICE_UNICO_FACE_CPF', cpf: 'cpf', image1: 'base64' }],
   ['SERVICE_FACE_MATCH', 'FaceMatch', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
   ['SERVICE_FAMILY_SOCIAL_BENEFITS', 'Benefícios sociais familiares', 'Pessoa Física', { service: 'SERVICE_FAMILY_SOCIAL_BENEFITS', cpf: 'cpf' }],
   ['SERVICE_FAMILY_POLITICAL_HISTORY_CPF', 'Histórico político familiar PF', 'Pessoa Física', { service: 'SERVICE_FAMILY_POLITICAL_HISTORY_CPF', cpf: 'cpf' }],
@@ -501,7 +502,8 @@ const additionalPublicApiServicesEn = [
   ['SERVICE_EMAILS_EXTENDED', 'Email history', 'Pessoa Física', { service: 'SERVICE_EMAILS_EXTENDED', cpf: 'cpf' }],
   ['SERVICE_EMAIL_VALIDATION', 'Email validation', 'Pessoa Física', { service: 'SERVICE_EMAIL_VALIDATION', email: 'email@email.com' }],
   ['SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', 'eSocial registration qualification', 'Pessoa Física', { service: 'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', cpf: 'cpf', nit: 'nit (opcional)' }],
-  ['SERVICE_FACE_INDEX', 'Face search in database', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', cpf: 'cpf (opcional para busca)', image1: 'base64' }],
+  ['SERVICE_FACE_INDEX', 'Face search in database', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', image1: 'base64' }],
+  ['SERVICE_UNICO_FACE_CPF', 'Facial validation by CPF', 'Pessoa Física', { service: 'SERVICE_UNICO_FACE_CPF', cpf: 'cpf', image1: 'base64' }],
   ['SERVICE_FACE_MATCH', 'FaceMatch', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
   ['SERVICE_FAMILY_SOCIAL_BENEFITS', 'Family social benefits', 'Pessoa Física', { service: 'SERVICE_FAMILY_SOCIAL_BENEFITS', cpf: 'cpf' }],
   ['SERVICE_FAMILY_POLITICAL_HISTORY_CPF', 'Family political history (individual)', 'Pessoa Física', { service: 'SERVICE_FAMILY_POLITICAL_HISTORY_CPF', cpf: 'cpf' }],
@@ -788,6 +790,7 @@ function curlExamplesForService(service, exampleFiles) {
     ['SERVICE_OCR_CNPJ_CARD', ['service-api-ocr-cnpj-card.hml.curl']],
     ['SERVICE_OCR_PROOF_OF_ADDRESS', ['service-api-ocr-proof-of-address.hml.curl']],
     ['SERVICE_FACE_INDEX', ['service-api-face-index.hml.curl']],
+    ['SERVICE_UNICO_FACE_CPF', ['service-api-face-cpf-validation.hml.curl']],
     ['SERVICE_CREDIT_RISK_COMPANY', ['service-api-credit-risk-company.hml.curl']],
     ['SERVICE_CREDIT_SCORE', ['service-api-credit-score.hml.curl']],
   ].find(([alias]) => alias === service.service)?.[1];
@@ -813,7 +816,12 @@ function mcpHintsForService(service, curlExampleUrls) {
 
   if (tags.has('face')) {
     notes.push('Use selfie real, frontal e nítida. Não use foto de RG, CNH ou print de documento.');
-    notes.push('Face Index busca correspondência na base de faces; isso não é validação definitiva de identidade.');
+    if (service.service === 'SERVICE_FACE_INDEX') {
+      notes.push('Face Index busca correspondência na base de faces; isso não é validação definitiva de identidade.');
+    }
+    if (service.service === 'SERVICE_UNICO_FACE_CPF') {
+      notes.push('A validação facial confirma se a selfie corresponde ao CPF informado e pode cadastrar a face aprovada na base biométrica.');
+    }
   }
 
   if (tags.has('risco-credito')) {
@@ -929,6 +937,7 @@ const activeServiceApiAliases = new Set([
   'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION',
   'SERVICE_FACE_INDEX',
   'SERVICE_FACE_MATCH',
+  'SERVICE_UNICO_FACE_CPF',
   'SERVICE_FAMILY_POLITICAL_HISTORY_CPF',
   'SERVICE_FAMILY_SOCIAL_BENEFITS',
   'SERVICE_FINANCIAL_INFORMATION',
@@ -1039,6 +1048,7 @@ function buildSearchTerms(item, lang = 'pt') {
     if (text.includes('proof_of_address') || text.includes('comprovante') || text.includes('endereco')) terms.add('proof of address utility bill address');
     if (text.includes('emancipation') || text.includes('emancipacao')) terms.add('emancipation document notary certificate declaration');
     if (text.includes('face_index')) terms.add('face index facial search selfie CPF face database');
+    if (text.includes('unico_face_cpf')) terms.add('CPF facial validation selfie biometric match');
     if (text.includes('face_index') || text.includes('face_match') || text.includes('facematch') || text.includes('busca de face') || text.includes('comparacao facial') || text.includes('comparação facial')) terms.add('facial comparison biometrics selfie face');
     if (text.includes('liveness')) terms.add('liveness selfie proof of life');
     if (text.includes('documentoscopia')) terms.add('document forensics document selfie validation');
@@ -1065,6 +1075,7 @@ function buildSearchTerms(item, lang = 'pt') {
   if (text.includes('proof_of_address') || text.includes('comprovante') || text.includes('endereco')) terms.add('comprovante de endereço conta fatura endereço');
   if (text.includes('emancipation') || text.includes('emancipacao')) terms.add('documento emancipação cartório certidão declaração');
   if (text.includes('face_index')) terms.add('face index busca facial selfie CPF base de faces');
+  if (text.includes('unico_face_cpf')) terms.add('validação facial CPF selfie biometria correspondência');
   if (text.includes('face_index') || text.includes('face_match') || text.includes('facematch') || text.includes('busca de face') || text.includes('comparacao facial') || text.includes('comparação facial')) terms.add('comparação facial biometria selfie rosto');
   if (text.includes('liveness')) terms.add('prova de vida selfie liveness');
   if (text.includes('documentoscopia')) terms.add('documentoscopia documento selfie validação');
@@ -1258,6 +1269,16 @@ function writeExampleFiles(catalog) {
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
         body: { service: 'SERVICE_FACE_INDEX', image1: 'BASE64_DA_SELFIE' },
+      }),
+    },
+    {
+      file: 'service-api-face-cpf-validation.hml.curl',
+      title: 'Validação facial por CPF em HML',
+      description: 'Envie o CPF e uma selfie real em image1. Não use foto de documento.',
+      content: renderCurl({
+        baseUrl: 'https://backoffice-hml.idcerberus.com',
+        path: '/api/service-api',
+        body: { service: 'SERVICE_UNICO_FACE_CPF', cpf: '00000000000', image1: 'BASE64_DA_SELFIE' },
       }),
     },
     {
@@ -1895,6 +1916,9 @@ function serviceUseCase(service, lang = 'pt') {
   if (lang === 'en') {
     const targetEn = service.category === 'Pessoa Jurídica' ? 'the company' : 'the individual';
 
+    if (service.service === 'SERVICE_FACE_INDEX') return 'Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.';
+    if (service.service === 'SERVICE_UNICO_FACE_CPF') return 'Use to validate whether the submitted selfie belongs to the informed CPF.';
+    if (service.service === 'SERVICE_FACE_MATCH') return 'Use to compare two facial images and return the similarity between them.';
     if (text.includes('rfb') || text.includes('receita')) return `Use to look up or validate registration data for ${targetEn} in Federal Revenue databases.`;
     if (text.includes('enriquecimento')) return `Use to complement registration data for ${targetEn} from the informed document.`;
     if (text.includes('demographic')) return `Use to look up demographic data associated with ${targetEn}.`;
@@ -1922,6 +1946,9 @@ function serviceUseCase(service, lang = 'pt') {
 
   const target = service.category === 'Pessoa Jurídica' ? 'empresa' : 'pessoa';
 
+  if (service.service === 'SERVICE_FACE_INDEX') return 'Use para buscar uma selfie na base de faces indexadas e retornar o CPF associado quando houver correspondência.';
+  if (service.service === 'SERVICE_UNICO_FACE_CPF') return 'Use para validar se a selfie enviada pertence ao CPF informado.';
+  if (service.service === 'SERVICE_FACE_MATCH') return 'Use para comparar duas imagens faciais e retornar a similaridade entre elas.';
   if (text.includes('rfb') || text.includes('receita')) return `Use para consultar ou validar dados cadastrais da ${target} em bases da Receita Federal.`;
   if (text.includes('enriquecimento')) return `Use para complementar dados cadastrais da ${target} a partir do documento informado.`;
   if (text.includes('demographic')) return `Use para consultar dados demograficos associados à ${target}.`;
@@ -2168,6 +2195,10 @@ const serviceReturnDetails = {
   SERVICE_FACE_INDEX: {
     summary: 'Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponiveis.',
     result: { cpf: 'cpf', faceFound: true, similarity: 98.42 },
+  },
+  SERVICE_UNICO_FACE_CPF: {
+    summary: 'Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.',
+    result: { cpf: 'cpf', biometricScore: '98.70', faceFound: false, faceIndexed: true, faceUpdated: false },
   },
   SERVICE_FAMILY_POLITICAL_HISTORY_CPF: {
     summary: 'Retorna historico politico familiar do CPF, incluindo familiares com candidaturas, doacoes, cargos, partidos e vinculos eleitorais quando encontrados.',
@@ -2729,6 +2760,10 @@ const serviceReturnDetailsEn = {
   },
   SERVICE_FACE_INDEX: {
     summary: 'Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.',
+  },
+  SERVICE_UNICO_FACE_CPF: {
+    summary: 'Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.',
+    result: { cpf: 'cpf', biometricScore: '98.70', faceFound: false, faceIndexed: true, faceUpdated: false },
   },
   SERVICE_FAMILY_POLITICAL_HISTORY_CPF: {
     summary: 'Returns the CPF\'s family political history, including relatives with candidacies, donations, positions, parties and electoral ties when found.',
@@ -3875,6 +3910,9 @@ function resultFieldDescription(service, fieldName, lang = 'pt') {
     if (fieldEn === 'factor') return 'Factor, band or classification used to interpret the score.';
     if (fieldEn === 'similarity') return 'Similarity percentage returned in biometric or facial validations.';
     if (fieldEn === 'facefound') return 'Indicates whether the facial search found a matching face in the database.';
+    if (fieldEn === 'biometricscore') return 'Facial similarity score in the 0-100 range.';
+    if (fieldEn === 'faceindexed') return 'Indicates whether the approved face was registered in the biometric database during this query.';
+    if (fieldEn === 'faceupdated') return 'Indicates whether an existing biometric record was updated during this query.';
     if (fieldEn === 'doctype' || fieldEn === 'documenttype') return 'Document type identified in the processing.';
     if (fieldEn === 'genericocr') return 'Raw text extracted from the document by OCR.';
     if (fieldEn.includes('address')) return 'Address, list of addresses or address validation returned by the query.';
@@ -3910,6 +3948,9 @@ function resultFieldDescription(service, fieldName, lang = 'pt') {
   if (field === 'factor') return 'Fator, faixa ou classificação usada para interpretar o score.';
   if (field === 'similarity') return 'Percentual de similaridade retornado em validações biométricas ou faciais.';
   if (field === 'facefound') return 'Indica se a busca facial encontrou uma face correspondente na base.';
+  if (field === 'biometricscore') return 'Score de similaridade facial na escala de 0 a 100.';
+  if (field === 'faceindexed') return 'Indica se a face aprovada foi cadastrada na base biométrica durante esta consulta.';
+  if (field === 'faceupdated') return 'Indica se um registro biométrico existente foi atualizado durante esta consulta.';
   if (field === 'doctype' || field === 'documenttype') return 'Tipo de documento identificado no processamento.';
   if (field === 'genericocr') return 'Texto bruto extraído do documento por OCR.';
   if (field.includes('address')) return 'Endereço, lista de endereços ou validação de endereço retornada pela consulta.';

@@ -2839,6 +2839,46 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 }'
 ```
 
+### Validação facial por CPF
+
+1. Service: `SERVICE_UNICO_FACE_CPF`
+2. Endpoint: `POST /api/service-api`
+3. Campos do request: `cpf`, `image1`
+4. Termos de busca: CPF Receita Federal, PF - Validação facial por CPF, validação facial CPF selfie biometria correspondência
+5. Retorno principal: Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.
+
+Response resumido:
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": "98.70",
+    "faceFound": false,
+    "faceIndexed": true,
+    "faceUpdated": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Curl de homologação:
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_UNICO_FACE_CPF",
+  "cpf": "cpf",
+  "image1": "base64"
+}'
+```
+
 ## Pessoa Jurídica
 
 ### Ações Trabalhistas
