@@ -4875,12 +4875,6 @@ function renderApiReferenceServicesPage(catalog, category, title, description, l
   }
 
   const orderedFamilies = [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-  const orderedServices = orderedFamilies.flatMap(([family, services]) =>
-    services
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((service) => ({ ...service, familyLabel: family })),
-  );
   const lines = [];
 
   if (lang === 'en') {
@@ -4956,13 +4950,20 @@ function renderApiReferenceServicesPage(catalog, category, title, description, l
     lines.push('');
     lines.push('Open a service to see when to use it, required fields, body, curl and a summarized response.');
     lines.push('');
-    lines.push('<AccordionGroup>');
-    for (const service of orderedServices) {
-      lines.push(renderServiceRequestBlock(service, lang));
+    for (const [family, services] of orderedFamilies) {
+      const sorted = services.slice().sort((a, b) => a.name.localeCompare(b.name));
+      lines.push(`### ${family}`);
+      lines.push('');
+      lines.push(`${sorted.length} service${sorted.length === 1 ? '' : 's'}, listed alphabetically.`);
+      lines.push('');
+      lines.push('<AccordionGroup>');
+      for (const service of sorted) {
+        lines.push(renderServiceRequestBlock({ ...service, familyLabel: family }, lang));
+        lines.push('');
+      }
+      lines.push('</AccordionGroup>');
       lines.push('');
     }
-    lines.push('</AccordionGroup>');
-    lines.push('');
     pushApiReferenceChecklist(lines, lang);
     lines.push('## Error patterns');
     lines.push('');
@@ -5055,13 +5056,20 @@ function renderApiReferenceServicesPage(catalog, category, title, description, l
   lines.push('');
   lines.push('Abra um service para ver quando usar, campos obrigatórios, body, curl e response resumido.');
   lines.push('');
-  lines.push('<AccordionGroup>');
-  for (const service of orderedServices) {
-    lines.push(renderServiceRequestBlock(service));
+  for (const [family, services] of orderedFamilies) {
+    const sorted = services.slice().sort((a, b) => a.name.localeCompare(b.name));
+    lines.push(`### ${family}`);
+    lines.push('');
+    lines.push(`${sorted.length} service${sorted.length === 1 ? '' : 's'}, em ordem alfabética.`);
+    lines.push('');
+    lines.push('<AccordionGroup>');
+    for (const service of sorted) {
+      lines.push(renderServiceRequestBlock({ ...service, familyLabel: family }));
+      lines.push('');
+    }
+    lines.push('</AccordionGroup>');
     lines.push('');
   }
-  lines.push('</AccordionGroup>');
-  lines.push('');
   pushApiReferenceChecklist(lines);
   lines.push('## Padrões de erro');
   lines.push('');
