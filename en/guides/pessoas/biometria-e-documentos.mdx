@@ -49,6 +49,27 @@ POST /api/service-api
 | Confirm whether a selfie belongs to a CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` | `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found` |
 | Compare two facial images | `SERVICE_FACE_MATCH` | `image1`, `image2` | Match similarity and status |
 
+### How to read facial validation by CPF
+
+<CardGroup cols={2}>
+  <Card icon="gauge" title="Biometric score">
+    `biometric_score` is the score returned by the validation. Do not assume an approval threshold that is not defined in your product's business rule.
+  </Card>
+  <Card icon="address-card" title="Validated CPF">
+    `cpf` identifies the document used in the validation and links the response to the submitted request.
+  </Card>
+  <Card icon="magnifying-glass" title="Face found">
+    `face_found: true` indicates that the face was already located in the database during the query.
+  </Card>
+  <Card icon="user-plus" title="Face indexed or updated">
+    `face_indexed` reports a new record. `face_updated` reports an update to an existing record.
+  </Card>
+</CardGroup>
+
+<Info>
+The `face_found`, `face_indexed` and `face_updated` indicators describe what happened to the face during processing. To assess the complete call result, also read `status`, `onboardingStatus` and `externalId`.
+</Info>
+
 ## When to use it
 
 Use these services when you need to:

@@ -48,6 +48,27 @@ POST /api/service-api
 | Confirmar se uma selfie pertence a um CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` | `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found` |
 | Comparar duas imagens faciais | `SERVICE_FACE_MATCH` | `image1`, `image2` | Similaridade e status do match |
 
+### Como ler a validação facial por CPF
+
+<CardGroup cols={2}>
+  <Card icon="gauge" title="Score biométrico">
+    `biometric_score` é o score devolvido pela validação. Não presuma um limite de aprovação que não esteja definido na regra de negócio do seu produto.
+  </Card>
+  <Card icon="address-card" title="CPF validado">
+    `cpf` identifica o documento usado na validação e permite relacionar o retorno à requisição enviada.
+  </Card>
+  <Card icon="magnifying-glass" title="Face encontrada">
+    `face_found: true` indica que a face já foi localizada na base durante a consulta.
+  </Card>
+  <Card icon="user-plus" title="Face cadastrada ou atualizada">
+    `face_indexed` informa um novo cadastro. `face_updated` informa a atualização de um cadastro existente.
+  </Card>
+</CardGroup>
+
+<Info>
+Os indicadores `face_found`, `face_indexed` e `face_updated` descrevem o que ocorreu com a face durante o processamento. Para avaliar o resultado completo da chamada, leia também `status`, `onboardingStatus` e `externalId`.
+</Info>
+
 ## Quando usar
 
 Use estes serviços quando precisar:
@@ -71,7 +92,7 @@ Use estes serviços quando precisar:
 | Face Index | `SERVICE_FACE_INDEX` | Busca uma selfie na base de faces e retorna o CPF associado quando houver correspondência |
 | Validação facial por CPF | `SERVICE_FACE_MATCH_CPF` | Valida se a selfie corresponde ao CPF informado e retorna os indicadores biométricos |
 | Score biométrico | `SERVICE_DATAVALID_CNH` | Compara CPF e selfie com bases oficiais e retorna similaridade |
-| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | Valida dados de CNH com apoio do validação documental |
+| Validação de CNH no DataValid | `SERVICE_DATAVALID_CNH` | Valida dados da CNH com apoio da validação documental |
 | Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Processa documento, extrai dados e executa FaceMatch quando houver selfie |
 | Resultado da documentoscopia | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | Consulta o resultado de uma documentoscopia usando a chave enviada na criação |
 
