@@ -111,8 +111,8 @@ Use o service público liberado no produto no campo `service`.
 
 1. OCR usa imagem do documento, não selfie.
 2. Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
-3. `SERVICE_FACE_INDEX` é uma busca 1:N: envie `selfie` para encontrar o CPF associado.
-4. `SERVICE_FACE_MATCH_CPF` é uma validação 1:1: envie `cpf` e `selfie` para validar a relação.
+3. `SERVICE_FACE_INDEX` é uma busca 1:N: envie a selfie em `image1` para encontrar o CPF associado.
+4. `SERVICE_FACE_MATCH_CPF` é uma validação 1:1: envie `cpf` e a selfie em `image1` para validar a relação.
 5. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.
 6. RG normalmente usa frente e verso: `image1` e `image2`.
 7. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
@@ -3444,7 +3444,7 @@ Use quando quiser buscar uma selfie na base facial.
 | Item | Valor |
 | --- | --- |
 | Service | `SERVICE_FACE_INDEX` |
-| Campo obrigatório | `selfie` |
+| Campo obrigatório | `image1` |
 | Exemplo curl | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
 
 Payload:
@@ -3452,7 +3452,7 @@ Payload:
 ```json
 {
   "service": "SERVICE_FACE_INDEX",
-  "selfie": "BASE64_DA_SELFIE"
+  "image1": "BASE64_DA_SELFIE"
 }
 ```
 
@@ -3481,7 +3481,7 @@ Use quando já souber o CPF da pessoa e quiser confirmar se a selfie pertence a 
 | Item | Valor |
 | --- | --- |
 | Service | `SERVICE_FACE_MATCH_CPF` |
-| Campos obrigatórios | `selfie`, `cpf` |
+| Campos obrigatórios | `image1`, `cpf` |
 | Exemplo curl | [`service-api-face-match-cpf.hml.curl`](/examples/service-api-face-match-cpf.hml.curl) |
 
 Payload:
@@ -3490,7 +3490,7 @@ Payload:
 {
   "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "00000000000",
-  "selfie": "BASE64_DA_SELFIE"
+  "image1": "BASE64_DA_SELFIE"
 }
 ```
 
@@ -8228,8 +8228,8 @@ POST /api/service-api
 
 | Necessidade | Serviço | Entrada | Retorno principal |
 | --- | --- | --- | --- |
-| Descobrir o CPF a partir de uma selfie | `SERVICE_FACE_INDEX` | `selfie` | `cpf` |
-| Confirmar se uma selfie pertence a um CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` | `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found` |
+| Descobrir o CPF a partir de uma selfie | `SERVICE_FACE_INDEX` | `image1` | `cpf` |
+| Confirmar se uma selfie pertence a um CPF | `SERVICE_FACE_MATCH_CPF` | `image1`, `cpf` | `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found` |
 | Comparar duas imagens faciais | `SERVICE_FACE_MATCH` | `image1`, `image2` | Similaridade e status do match |
 
 ### Como ler a validação facial por CPF

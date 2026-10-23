@@ -427,8 +427,8 @@ const additionalPublicApiServices = [
   ['SERVICE_EMAILS_EXTENDED', 'Histórico de e-mails', 'Pessoa Física', { service: 'SERVICE_EMAILS_EXTENDED', cpf: 'cpf' }],
   ['SERVICE_EMAIL_VALIDATION', 'Validação de e-mail', 'Pessoa Física', { service: 'SERVICE_EMAIL_VALIDATION', email: 'email@email.com' }],
   ['SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', 'Qualificação cadastral no eSocial', 'Pessoa Física', { service: 'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', cpf: 'cpf', nit: 'nit (opcional)' }],
-  ['SERVICE_FACE_INDEX', 'Busca de face na base', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', selfie: 'base64' }],
-  ['SERVICE_FACE_MATCH_CPF', 'Validação facial por CPF', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH_CPF', cpf: 'cpf', selfie: 'base64' }],
+  ['SERVICE_FACE_INDEX', 'Busca de face na base', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', image1: 'base64' }],
+  ['SERVICE_FACE_MATCH_CPF', 'Validação facial por CPF', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH_CPF', cpf: 'cpf', image1: 'base64' }],
   ['SERVICE_FACE_MATCH', 'FaceMatch', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
   ['SERVICE_FAMILY_SOCIAL_BENEFITS', 'Benefícios sociais familiares', 'Pessoa Física', { service: 'SERVICE_FAMILY_SOCIAL_BENEFITS', cpf: 'cpf' }],
   ['SERVICE_FAMILY_POLITICAL_HISTORY_CPF', 'Histórico político familiar PF', 'Pessoa Física', { service: 'SERVICE_FAMILY_POLITICAL_HISTORY_CPF', cpf: 'cpf' }],
@@ -502,8 +502,8 @@ const additionalPublicApiServicesEn = [
   ['SERVICE_EMAILS_EXTENDED', 'Email history', 'Pessoa Física', { service: 'SERVICE_EMAILS_EXTENDED', cpf: 'cpf' }],
   ['SERVICE_EMAIL_VALIDATION', 'Email validation', 'Pessoa Física', { service: 'SERVICE_EMAIL_VALIDATION', email: 'email@email.com' }],
   ['SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', 'eSocial registration qualification', 'Pessoa Física', { service: 'SERVICE_ESOCIAL_REGISTRATION_QUALIFICATION', cpf: 'cpf', nit: 'nit (opcional)' }],
-  ['SERVICE_FACE_INDEX', 'Face search in database', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', selfie: 'base64' }],
-  ['SERVICE_FACE_MATCH_CPF', 'Facial validation by CPF', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH_CPF', cpf: 'cpf', selfie: 'base64' }],
+  ['SERVICE_FACE_INDEX', 'Face search in database', 'Pessoa Física', { service: 'SERVICE_FACE_INDEX', image1: 'base64' }],
+  ['SERVICE_FACE_MATCH_CPF', 'Facial validation by CPF', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH_CPF', cpf: 'cpf', image1: 'base64' }],
   ['SERVICE_FACE_MATCH', 'FaceMatch', 'Pessoa Física', { service: 'SERVICE_FACE_MATCH', image1: 'base64', image2: 'base64' }],
   ['SERVICE_FAMILY_SOCIAL_BENEFITS', 'Family social benefits', 'Pessoa Física', { service: 'SERVICE_FAMILY_SOCIAL_BENEFITS', cpf: 'cpf' }],
   ['SERVICE_FAMILY_POLITICAL_HISTORY_CPF', 'Family political history (individual)', 'Pessoa Física', { service: 'SERVICE_FAMILY_POLITICAL_HISTORY_CPF', cpf: 'cpf' }],
@@ -1268,7 +1268,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'SERVICE_FACE_INDEX', selfie: 'BASE64_DA_SELFIE' },
+        body: { service: 'SERVICE_FACE_INDEX', image1: 'BASE64_DA_SELFIE' },
       }),
     },
     {
@@ -1278,7 +1278,7 @@ function writeExampleFiles(catalog) {
       content: renderCurl({
         baseUrl: 'https://backoffice-hml.idcerberus.com',
         path: '/api/service-api',
-        body: { service: 'SERVICE_FACE_MATCH_CPF', cpf: '00000000000', selfie: 'BASE64_DA_SELFIE' },
+        body: { service: 'SERVICE_FACE_MATCH_CPF', cpf: '00000000000', image1: 'BASE64_DA_SELFIE' },
       }),
     },
     {
@@ -5247,8 +5247,8 @@ function pushOcrLlmNotes(lines, lang = 'pt') {
     lines.push('');
     lines.push('1. OCR uses a document image, not a selfie.');
     lines.push('2. Face, FaceMatch and Face Index use a selfie/face, not a photo of an RG or CNH.');
-    lines.push('3. `SERVICE_FACE_INDEX` is a 1:N search: send `selfie` to find the associated CPF.');
-    lines.push('4. `SERVICE_FACE_MATCH_CPF` is a 1:1 validation: send `cpf` and `selfie` to validate the relationship.');
+    lines.push('3. `SERVICE_FACE_INDEX` is a 1:N search: send the selfie in `image1` to find the associated CPF.');
+    lines.push('4. `SERVICE_FACE_MATCH_CPF` is a 1:1 validation: send `cpf` and the selfie in `image1` to validate the relationship.');
     lines.push('5. `image1` takes the image\'s base64, with or without the `data:image/...;base64,` prefix: both formats work.');
     lines.push('6. RG usually needs front and back: `image1` and `image2`.');
     lines.push('7. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.');
@@ -5263,8 +5263,8 @@ function pushOcrLlmNotes(lines, lang = 'pt') {
   lines.push('');
   lines.push('1. OCR usa imagem do documento, não selfie.');
   lines.push('2. Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.');
-  lines.push('3. `SERVICE_FACE_INDEX` é uma busca 1:N: envie `selfie` para encontrar o CPF associado.');
-  lines.push('4. `SERVICE_FACE_MATCH_CPF` é uma validação 1:1: envie `cpf` e `selfie` para validar a relação.');
+  lines.push('3. `SERVICE_FACE_INDEX` é uma busca 1:N: envie a selfie em `image1` para encontrar o CPF associado.');
+  lines.push('4. `SERVICE_FACE_MATCH_CPF` é uma validação 1:1: envie `cpf` e a selfie em `image1` para validar a relação.');
   lines.push('5. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.');
   lines.push('6. RG normalmente usa frente e verso: `image1` e `image2`.');
   lines.push('7. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.');
