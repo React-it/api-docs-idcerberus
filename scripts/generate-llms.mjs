@@ -5796,7 +5796,6 @@ function buildMcpManifest(servicesCatalog, exampleFiles, lang = 'pt') {
 const llmRules = [
   '## Regras para assistentes de IA',
   '',
-  'Regra específica: para biometria facial, use `SERVICE_FACE_INDEX` quando o CPF for desconhecido e `SERVICE_FACE_MATCH_CPF` quando o CPF já for conhecido.',
   '1. Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.',
   '2. Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.',
   '3. Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.',
@@ -5805,13 +5804,13 @@ const llmRules = [
   '6. Para OCR, envie o base64 completo em `image1`/`image2` (com ou sem prefixo `data:image/...;base64,`, os dois formatos funcionam).',
   '7. Não use `fieldsOutput`, campos nulos ou metadados internos como contrato público; use `result`.',
   '8. Se um service não aparecer no catálogo, informe que ele precisa ser confirmado antes de documentar ou integrar.',
+  '9. Para biometria facial, use `SERVICE_FACE_INDEX` quando o CPF for desconhecido e `SERVICE_FACE_MATCH_CPF` quando o CPF já for conhecido.',
   '',
 ].join('\n');
 
 const llmRulesEn = [
   '## Rules for AI assistants',
   '',
-  'Specific rule: for facial biometrics, use `SERVICE_FACE_INDEX` when the CPF is unknown and `SERVICE_FACE_MATCH_CPF` when the CPF is already known.',
   '1. Use the documentation as the primary source and do not invent endpoints, parameters or services.',
   '2. For external queries, use `POST /api/service-api` and select the product through the `service` field.',
   '3. Use `Authorization: Bearer {jwt_token}` in protected calls.',
@@ -5820,6 +5819,7 @@ const llmRulesEn = [
   '6. For OCR, send the complete base64 in `image1`/`image2` (with or without the `data:image/...;base64,` prefix, both formats work).',
   '7. Do not use `fieldsOutput`, null fields or internal metadata as the public contract; use `result`.',
   '8. If a service does not appear in the catalog, say it needs to be confirmed before documenting or integrating it.',
+  '9. For facial biometrics, use `SERVICE_FACE_INDEX` when the CPF is unknown and `SERVICE_FACE_MATCH_CPF` when the CPF is already known.',
   '',
 ].join('\n');
 

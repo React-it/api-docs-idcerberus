@@ -29,6 +29,20 @@ function requireFile(file) {
   if (!fs.existsSync(path.join(root, file))) findings.push(`${file}: arquivo obrigatório não encontrado`);
 }
 
+function requireText(file, expected, label) {
+  const filePath = path.join(root, file);
+  if (!fs.existsSync(filePath)) return;
+  const content = fs.readFileSync(filePath, 'utf8');
+  if (!content.includes(expected)) findings.push(`${file}: conteúdo obrigatório ausente (${label})`);
+}
+
+function rejectText(file, forbidden, label) {
+  const filePath = path.join(root, file);
+  if (!fs.existsSync(filePath)) return;
+  const content = fs.readFileSync(filePath, 'utf8');
+  if (content.includes(forbidden)) findings.push(`${file}: conteúdo obsoleto encontrado (${label})`);
+}
+
 function requireField(file, item, field, label) {
   if (item[field] === undefined || item[field] === null || item[field] === '') {
     findings.push(`${file}: ${label} sem campo obrigatório ${field}`);
@@ -56,6 +70,18 @@ function validatePublicUrl(file, url) {
 }
 
 for (const file of requiredFiles) requireFile(file);
+
+for (const file of ['llms.txt', 'llms-small.txt', 'llms-full.txt', 'llms-api-reference.txt']) {
+  requireText(file, 'SERVICE_FACE_INDEX', 'busca facial por selfie');
+  requireText(file, 'SERVICE_FACE_MATCH_CPF', 'validação facial por CPF');
+  rejectText(file, 'SERVICE_UNICO_FACE_CPF', 'alias facial removido');
+}
+
+requireText('llms.txt', '1:N', 'distinção da busca facial');
+requireText('llms.txt', '1:1', 'distinção da validação facial');
+requireText('llms-api-reference.txt', 'face_found', 'indicador de face encontrada');
+requireText('llms-api-reference.txt', 'face_indexed', 'indicador de face cadastrada');
+requireText('llms-api-reference.txt', 'face_updated', 'indicador de face atualizada');
 
 const catalogArtifact = readJson('services-catalog.json') || {};
 const minCatalogArtifact = readJson('services-catalog.min.json') || {};
