@@ -13093,6 +13093,22 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
  Não dependa de metadados internos. A integração deve mapear somente os campos públicos documentados.
 
 
+## Escolha o serviço facial correto
+
+Comece pela necessidade do negócio. Os dois serviços usam uma selfie, mas respondem a perguntas diferentes e exigem entradas diferentes.
+
+
+ Use `SERVICE_FACE_INDEX` quando o CPF for desconhecido. Envie somente `selfie`; o retorno traz o `cpf` associado quando uma face é encontrada.
+
+
+ Use `SERVICE_FACE_MATCH_CPF` quando o CPF já for conhecido. Envie `cpf` e `selfie`; o retorno traz o score biométrico e os indicadores da face.
+
+
+| Necessidade | Service | Envio | Retorno principal |
+| --- | --- | --- | --- |
+| Descobrir a qual CPF uma selfie está associada | `SERVICE_FACE_INDEX` | `selfie` | `result.cpf` |
+| Verificar se uma selfie pertence a um CPF conhecido | `SERVICE_FACE_MATCH_CPF` | `cpf`, `selfie` | `result.biometric_score`, `result.face_found`, `result.face_updated`, `result.face_indexed` |
+
 ## Famílias de services
 
 

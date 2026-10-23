@@ -4250,6 +4250,48 @@ function pushApiReferenceChecklist(lines, lang = 'pt') {
   lines.push('');
 }
 
+function pushFacialServiceOverview(lines, lang = 'pt') {
+  if (lang === 'en') {
+    lines.push('## Choose the right facial service');
+    lines.push('');
+    lines.push('Start with the business question. The two services use a selfie, but they answer different questions and require different inputs.');
+    lines.push('');
+    lines.push('<CardGroup cols={2}>');
+    lines.push(' <Card icon="magnifying-glass" title="Find the CPF from a selfie">');
+    lines.push(' Use `SERVICE_FACE_INDEX` when the CPF is unknown. Send only `selfie`; the response contains the associated `cpf` when a face is found.');
+    lines.push(' </Card>');
+    lines.push(' <Card icon="user-check" title="Validate a selfie against a CPF">');
+    lines.push(' Use `SERVICE_FACE_MATCH_CPF` when the CPF is known. Send `cpf` and `selfie`; the response contains the biometric score and face status indicators.');
+    lines.push(' </Card>');
+    lines.push('</CardGroup>');
+    lines.push('');
+    lines.push('| Need | Service | Request | Main response |');
+    lines.push('| --- | --- | --- | --- |');
+    lines.push('| Find which CPF is associated with a selfie | `SERVICE_FACE_INDEX` | `selfie` | `result.cpf` |');
+    lines.push('| Check whether a selfie belongs to a known CPF | `SERVICE_FACE_MATCH_CPF` | `cpf`, `selfie` | `result.biometric_score`, `result.face_found`, `result.face_updated`, `result.face_indexed` |');
+    lines.push('');
+    return;
+  }
+  lines.push('## Escolha o serviço facial correto');
+  lines.push('');
+  lines.push('Comece pela necessidade do negócio. Os dois serviços usam uma selfie, mas respondem a perguntas diferentes e exigem entradas diferentes.');
+  lines.push('');
+  lines.push('<CardGroup cols={2}>');
+  lines.push(' <Card icon="magnifying-glass" title="Descobrir o CPF pela selfie">');
+  lines.push(' Use `SERVICE_FACE_INDEX` quando o CPF for desconhecido. Envie somente `selfie`; o retorno traz o `cpf` associado quando uma face é encontrada.');
+  lines.push(' </Card>');
+  lines.push(' <Card icon="user-check" title="Validar selfie contra um CPF">');
+  lines.push(' Use `SERVICE_FACE_MATCH_CPF` quando o CPF já for conhecido. Envie `cpf` e `selfie`; o retorno traz o score biométrico e os indicadores da face.');
+  lines.push(' </Card>');
+  lines.push('</CardGroup>');
+  lines.push('');
+  lines.push('| Necessidade | Service | Envio | Retorno principal |');
+  lines.push('| --- | --- | --- | --- |');
+  lines.push('| Descobrir a qual CPF uma selfie está associada | `SERVICE_FACE_INDEX` | `selfie` | `result.cpf` |');
+  lines.push('| Verificar se uma selfie pertence a um CPF conhecido | `SERVICE_FACE_MATCH_CPF` | `cpf`, `selfie` | `result.biometric_score`, `result.face_found`, `result.face_updated`, `result.face_indexed` |');
+  lines.push('');
+}
+
 function pushResultFieldsTable(lines, service, lang = 'pt') {
   const rows = resultRowsFromService(service, lang);
   if (!rows.length) return;
@@ -4890,6 +4932,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description, l
     lines.push('</Steps>');
     lines.push('');
     pushApiReferenceReturnCards(lines, lang);
+    if (category === 'Pessoa Física') pushFacialServiceOverview(lines, lang);
     lines.push('## Service families');
     lines.push('');
     lines.push('<CardGroup cols={2}>');
@@ -4988,6 +5031,7 @@ function renderApiReferenceServicesPage(catalog, category, title, description, l
   lines.push('</Steps>');
   lines.push('');
   pushApiReferenceReturnCards(lines);
+  if (category === 'Pessoa Física') pushFacialServiceOverview(lines);
   lines.push('## Famílias de services');
   lines.push('');
   lines.push('<CardGroup cols={2}>');

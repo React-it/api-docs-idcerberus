@@ -13160,6 +13160,22 @@ Use exactly the value shown in `Service`. Do not send an internal alias or integ
  Do not rely on internal metadata. The integration should only map the documented public fields.
 
 
+## Choose the right facial service
+
+Start with the business question. The two services use a selfie, but they answer different questions and require different inputs.
+
+
+ Use `SERVICE_FACE_INDEX` when the CPF is unknown. Send only `selfie`; the response contains the associated `cpf` when a face is found.
+
+
+ Use `SERVICE_FACE_MATCH_CPF` when the CPF is known. Send `cpf` and `selfie`; the response contains the biometric score and face status indicators.
+
+
+| Need | Service | Request | Main response |
+| --- | --- | --- | --- |
+| Find which CPF is associated with a selfie | `SERVICE_FACE_INDEX` | `selfie` | `result.cpf` |
+| Check whether a selfie belongs to a known CPF | `SERVICE_FACE_MATCH_CPF` | `cpf`, `selfie` | `result.biometric_score`, `result.face_found`, `result.face_updated`, `result.face_indexed` |
+
 ## Service families
 
 
