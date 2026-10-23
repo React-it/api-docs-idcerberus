@@ -3099,11 +3099,19 @@ Authorization: Bearer {jwt_token}
 Content-Type: application/json
 ```
 
+## Choose a flow
+
+### Registration queries
+
 
     Registration data and enrichment for individuals.
 
 
     Registration data and business status.
+
+
+
+### Biometrics and documents
 
 
     CNH, RG, CNPJ card, and proof of address.
@@ -3113,6 +3121,10 @@ Content-Type: application/json
 
 
     Confirm whether a selfie matches the informed CPF.
+
+
+
+### Risk and score
 
 
     Score, rating, and business risk signals.
@@ -12938,18 +12950,6 @@ After choosing the service, open the individual or business catalog to copy the 
 4. If it is OCR, check the image guide before testing.
 5. If you want a ready-made flow, use [Ready-made recipes](/en/guides/receitas-prontas).
 
-## Biometrics and documents
-
-| Goal | Service | Document |
-| --- | --- | --- |
-| Biometric score | `SERVICE_DATAVALID_CNH` | CPF |
-| CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | CNPJ |
-| Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | CPF |
-| Face search in the base | `SERVICE_FACE_INDEX` | CPF |
-| FaceMatch | `SERVICE_FACE_MATCH` | CPF |
-| Facial validation by CPF | `SERVICE_FACE_MATCH_CPF` | CPF |
-| React OCR | `SERVICE_OCR` | CPF |
-
 ## Contacts, sites and relationships
 
 | Goal | Service | Document |
@@ -12975,6 +12975,14 @@ After choosing the service, open the individual or business catalog to copy the 
 | Related people's emails | `SERVICE_RELATED_PEOPLE_EMAILS` | CPF |
 | Related people's phones | `SERVICE_RELATED_PEOPLE_PHONES` | CPF |
 
+## Documents and OCR
+
+| Goal | Service | Document |
+| --- | --- | --- |
+| CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | CNPJ |
+| Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | CPF |
+| React OCR | `SERVICE_OCR` | CPF |
+
 ## Electoral data and PEP
 
 | Goal | Service | Document |
@@ -12993,6 +13001,15 @@ After choosing the service, open the individual or business catalog to copy the 
 | Political involvement | `SERVICE_POLITICAL_INVOLVEMENT` | CPF |
 | Political involvement (individual) | `SERVICE_POLITICAL_INVOLVEMENT_CPF` | CPF |
 | Politically exposed person | `SERVICE_PEP` | CPF |
+
+## Facial biometrics
+
+| Goal | Service | Document |
+| --- | --- | --- |
+| Biometric score | `SERVICE_DATAVALID_CNH` | CPF |
+| Face search in the base | `SERVICE_FACE_INDEX` | CPF |
+| FaceMatch | `SERVICE_FACE_MATCH` | CPF |
+| Facial validation by CPF | `SERVICE_FACE_MATCH_CPF` | CPF |
 
 ## KYC, compliance and exposure
 
@@ -13179,13 +13196,16 @@ Start with the business question. The two services use a selfie, but they answer
 ## Service families
 
 
- 6 services: `SERVICE_DATAVALID_CNH`, `SERVICE_OCR_EMANCIPATION`, `SERVICE_FACE_INDEX` and 3 more.
-
-
  14 services: `SERVICE_ADDRESS`, `SERVICE_CPF_ADDRESS_VALIDATION`, `SERVICE_CPF_PHONE_VALIDATION` and 11 more.
 
 
+ 2 services: `SERVICE_OCR_EMANCIPATION`, `SERVICE_OCR`.
+
+
  8 services: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`, `SERVICE_ELECTORAL_DONORS_CPF`, `SERVICE_ELECTORAL_PROVIDERS_CPF` and 5 more.
+
+
+ 4 services: `SERVICE_DATAVALID_CNH`, `SERVICE_FACE_INDEX`, `SERVICE_FACE_MATCH` and 1 more.
 
 
  2 services: `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`, `SEVICE_ONLINE_BETTING_PROPENSITY`.
@@ -13206,829 +13226,6 @@ Start with the business question. The two services use a selfie, but they answer
 ## Full catalog
 
 Open a service to see when to use it, required fields, body, curl and a summarized response.
-
-**Service:** `SERVICE_DATAVALID_CNH`
-
-**When to use:** Use to compare the submitted image against available biometric databases and return the similarity.
-
-**What it returns:** Returns CNH document validation, including biometric score, facial similarity, validation status and checked fields.
-
-
- Required fields: `service`, `cpf`, `image1`.
-
-
- Main fields in `result`: `cpf`, `biometricScore`, `validated`, `validationStatus`.
-
-
- Use `status.code` and `status.message` to understand whether the query processed correctly.
-
-
- No optional field mapped in this example.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `cpf`, `image1`
-
-**Optional fields:** No optional field mapped in this example.
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_DATAVALID_CNH",
-  "cpf": "cpf",
-  "image1": "{base64Image}"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DATAVALID_CNH",
-  "cpf": "cpf",
-  "image1": "{base64Image}"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DATAVALID_CNH",
-  "cpf": "cpf",
-  "image1": "{base64Image}"
-}'
-```
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `cpf` | Yes | The queried individual's CPF. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.cpf` | CPF related to the query result. |
-| `result.biometricScore` | Facial similarity score in the 0-100 range. |
-| `result.validated` | Date returned by the query, depending on the service context. |
-| `result.validationStatus` | Field returned in the result object for the client's consumption. |
-
-### How to consume the response
-
-
- Public data from the service. It is the main object to map into the client's system.
-
-
- Technical status of the call, with `code` and `message`.
-
-
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
-
-
- Identifier to trace the query in support, logs or audits.
-
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "biometricScore": 0.98,
-    "validated": true,
-    "validationStatus": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Returns CNH document validation, including biometric score, facial similarity, validation status and checked fields.
-
-**Service:** `SERVICE_OCR_EMANCIPATION`
-
-**When to use:** Use to extract data from documents sent as base64 or by URL.
-
-**What it returns:** Returns the OCR text of the emancipation document and objective data extracted when it exists, without failing due to the absence of variable fields.
-
-
- Required fields: `service`, `image1`.
-
-
- Main fields in `result`: `docType`, `genericOcr`, `extractedFields`, `analysis`.
-
-
- Use `status.code` and `status.message` to understand whether the query processed correctly.
-
-
- No optional field mapped in this example.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `image1`
-
-**Optional fields:** No optional field mapped in this example.
-
-### OCR guide
-
-For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
-
-### Minimum payload
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "BASE64_DO_DOCUMENTO"
-}
-```
-
-### Expected clean return
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "extracted text",
-    "extractedFields": {
-      "cpf": "cpf",
-      "dates": [
-        "yyyy-MM-dd"
-      ]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "confidence": "MEDIUM"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Common error
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento de emancipação"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}'
-```
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.docType` | Document type identified in the processing. |
-| `result.genericOcr` | Raw text extracted from the document by OCR. |
-| `result.extractedFields` | Field extracted from the document submitted for OCR. |
-| `result.analysis` | Field extracted from the document submitted for OCR. |
-
-### How to consume the response
-
-
- Public data from the service. It is the main object to map into the client's system.
-
-
- Technical status of the call, with `code` and `message`.
-
-
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
-
-
- Identifier to trace the query in support, logs or audits.
-
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "extracted text",
-    "extractedFields": {
-      "cpf": "cpf",
-      "dates": [
-        "yyyy-MM-dd"
-      ]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "confidence": "MEDIUM"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Returns the OCR text of the emancipation document and objective data extracted when it exists, without failing due to the absence of variable fields.
-
-**Service:** `SERVICE_FACE_INDEX`
-
-**When to use:** Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.
-
-**What it returns:** Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
-
-
- Required fields: `service`, `selfie`.
-
-
- Main fields in `result`: `cpf`.
-
-
- Use `status.code` and `status.message` to understand whether the query processed correctly.
-
-
- No optional field mapped in this example.
-
-
-> Info:
-This is a 1:N facial search: send only a selfie and receive the CPF associated with the matching face. It does not validate a selfie against a CPF provided in the request.
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `selfie`
-
-**Optional fields:** No optional field mapped in this example.
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_FACE_INDEX",
-  "selfie": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_INDEX",
-  "selfie": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_INDEX",
-  "selfie": "base64"
-}'
-```
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.cpf` | CPF related to the query result. |
-
-### How to consume the response
-
-
- Public data from the service. It is the main object to map into the client's system.
-
-
- Technical status of the call, with `code` and `message`.
-
-
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
-
-
- Identifier to trace the query in support, logs or audits.
-
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "cpf": "cpf"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
-
-**Service:** `SERVICE_FACE_MATCH`
-
-**When to use:** Use to compare two facial images and return the similarity between them.
-
-**What it returns:** Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
-
-
- Required fields: `service`, `selfie`, `image2`.
-
-
- Main fields in `result`: `match`, `similarity`, `status`.
-
-
- Use `status.code` and `status.message` to understand whether the query processed correctly.
-
-
- No optional field mapped in this example.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `selfie`, `image2`
-
-**Optional fields:** No optional field mapped in this example.
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_FACE_MATCH",
-  "selfie": "base64",
-  "image2": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH",
-  "selfie": "base64",
-  "image2": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH",
-  "selfie": "base64",
-  "image2": "base64"
-}'
-```
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
-| `image2` | Yes | Second image sent as base64 or an equivalent reference, when the product compares two images. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.match` | Field returned in the result object for the client's consumption. |
-| `result.similarity` | Similarity percentage returned in biometric or facial validations. |
-| `result.status` | Main status returned by the queried product. |
-
-### How to consume the response
-
-
- Public data from the service. It is the main object to map into the client's system.
-
-
- Technical status of the call, with `code` and `message`.
-
-
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
-
-
- Identifier to trace the query in support, logs or audits.
-
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "match": true,
-    "similarity": 98.2,
-    "status": "APPROVED"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
-
-**Service:** `SERVICE_FACE_MATCH_CPF`
-
-**When to use:** Use to validate whether the submitted selfie belongs to the informed CPF.
-
-**What it returns:** Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
-
-
- Required fields: `service`, `cpf`, `selfie`.
-
-
- Main fields in `result`: `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found`.
-
-
- Use `status.code` and `status.message` to understand whether the query processed correctly.
-
-
- No optional field mapped in this example.
-
-
-> Info:
-This is a 1:1 facial validation: send a CPF and a selfie to verify whether they belong together. The response also reports whether the face was found, updated or indexed.
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `cpf`, `selfie`
-
-**Optional fields:** No optional field mapped in this example.
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_FACE_MATCH_CPF",
-  "cpf": "cpf",
-  "selfie": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH_CPF",
-  "cpf": "cpf",
-  "selfie": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_FACE_MATCH_CPF",
-  "cpf": "cpf",
-  "selfie": "base64"
-}'
-```
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `cpf` | Yes | The queried individual's CPF. |
-| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.biometric_score` | Biometric score returned for the CPF and selfie validation. |
-| `result.cpf` | CPF submitted for the facial validation. |
-| `result.face_updated` | Indicates whether the face linked to the CPF was updated in this query. |
-| `result.face_indexed` | Indicates whether the face was registered in the face database in this query. |
-| `result.face_found` | Indicates whether the face was already found in the face database. |
-
-### How to consume the response
-
-
- Public data from the service. It is the main object to map into the client's system.
-
-
- Technical status of the call, with `code` and `message`.
-
-
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
-
-
- Identifier to trace the query in support, logs or audits.
-
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "biometric_score": "98.70",
-    "cpf": "cpf",
-    "face_updated": false,
-    "face_indexed": true,
-    "face_found": false
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
-
-**Service:** `SERVICE_OCR`
-
-**When to use:** Use to extract data from documents sent as base64 or by URL.
-
-**What it returns:** Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
-
-
- Required fields: `service`, `documentType`, `selfie`.
-
-
- Main fields in `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
-
-
- Use `status.code` and `status.message` to understand whether the query processed correctly.
-
-
- `image2`
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `documentType`, `selfie`
-
-**Optional fields:** `image2`
-
-### OCR guide
-
-For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
-
-### Minimum payload
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "CNH",
-  "image1": "BASE64_DA_CNH"
-}
-```
-
-### Expected clean return
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "docType": "CNH",
-    "name": "Extracted name",
-    "birthDate": "yyyy-MM-dd",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Common error
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (optional)"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (optional)"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (optional)"
-}'
-```
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `documentType` | Yes | Parameter used by the service SERVICE_OCR. |
-| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
-| `image2` | No | Second image sent as base64 or an equivalent reference, when the product compares two images. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.cpf` | CPF related to the query result. |
-| `result.docType` | Document type identified in the processing. |
-| `result.name` | Full name returned by the query when available. |
-| `result.birthDate` | Date returned by the query, depending on the service context. |
-| `result.cnhCategory` | Field extracted from the document submitted for OCR. |
-| `result.cnhNumber` | Field extracted from the document submitted for OCR. |
-
-### How to consume the response
-
-
- Public data from the service. It is the main object to map into the client's system.
-
-
- Technical status of the call, with `code` and `message`.
-
-
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
-
-
- Identifier to trace the query in support, logs or audits.
-
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "docType": "CNH",
-    "name": "Extracted name",
-    "birthDate": "yyyy-MM-dd",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
 
 **Service:** `SERVICE_ADDRESS`
 
@@ -15792,6 +14989,357 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 In this service, the `result` object represents: Returns phone numbers associated with people related to the informed CPF, with the identified relationship and usage signals for each phone number.
 
+**Service:** `SERVICE_OCR_EMANCIPATION`
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**What it returns:** Returns the OCR text of the emancipation document and objective data extracted when it exists, without failing due to the absence of variable fields.
+
+
+ Required fields: `service`, `image1`.
+
+
+ Main fields in `result`: `docType`, `genericOcr`, `extractedFields`, `analysis`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ No optional field mapped in this example.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `image1`
+
+**Optional fields:** No optional field mapped in this example.
+
+### OCR guide
+
+For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
+
+### Minimum payload
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+### Expected clean return
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "extracted text",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Common error
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento de emancipação"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.docType` | Document type identified in the processing. |
+| `result.genericOcr` | Raw text extracted from the document by OCR. |
+| `result.extractedFields` | Field extracted from the document submitted for OCR. |
+| `result.analysis` | Field extracted from the document submitted for OCR. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "extracted text",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Returns the OCR text of the emancipation document and objective data extracted when it exists, without failing due to the absence of variable fields.
+
+**Service:** `SERVICE_OCR`
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**What it returns:** Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
+
+
+ Required fields: `service`, `documentType`, `selfie`.
+
+
+ Main fields in `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ `image2`
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `documentType`, `selfie`
+
+**Optional fields:** `image2`
+
+### OCR guide
+
+For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
+
+### Minimum payload
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+### Expected clean return
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Extracted name",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Common error
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (optional)"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (optional)"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (optional)"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `documentType` | Yes | Parameter used by the service SERVICE_OCR. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
+| `image2` | No | Second image sent as base64 or an equivalent reference, when the product compares two images. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF related to the query result. |
+| `result.docType` | Document type identified in the processing. |
+| `result.name` | Full name returned by the query when available. |
+| `result.birthDate` | Date returned by the query, depending on the service context. |
+| `result.cnhCategory` | Field extracted from the document submitted for OCR. |
+| `result.cnhNumber` | Field extracted from the document submitted for OCR. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Extracted name",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
+
 **Service:** `SERVICE_ELECTION_CANDIDATE_DATA_CPF`
 
 **When to use:** Use to look up electoral information related to the individual.
@@ -16729,6 +16277,478 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 In this service, the `result` object represents: Returns whether the CPF is a PEP or related to a PEP, with position, agency, exposure level, period and ties found when available.
+
+**Service:** `SERVICE_DATAVALID_CNH`
+
+**When to use:** Use to compare the submitted image against available biometric databases and return the similarity.
+
+**What it returns:** Returns CNH document validation, including biometric score, facial similarity, validation status and checked fields.
+
+
+ Required fields: `service`, `cpf`, `image1`.
+
+
+ Main fields in `result`: `cpf`, `biometricScore`, `validated`, `validationStatus`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ No optional field mapped in this example.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `cpf`, `image1`
+
+**Optional fields:** No optional field mapped in this example.
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_DATAVALID_CNH",
+  "cpf": "cpf",
+  "image1": "{base64Image}"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DATAVALID_CNH",
+  "cpf": "cpf",
+  "image1": "{base64Image}"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DATAVALID_CNH",
+  "cpf": "cpf",
+  "image1": "{base64Image}"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `cpf` | Yes | The queried individual's CPF. |
+| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF related to the query result. |
+| `result.biometricScore` | Facial similarity score in the 0-100 range. |
+| `result.validated` | Date returned by the query, depending on the service context. |
+| `result.validationStatus` | Field returned in the result object for the client's consumption. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "biometricScore": 0.98,
+    "validated": true,
+    "validationStatus": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Returns CNH document validation, including biometric score, facial similarity, validation status and checked fields.
+
+**Service:** `SERVICE_FACE_INDEX`
+
+**When to use:** Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.
+
+**What it returns:** Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
+
+
+ Required fields: `service`, `selfie`.
+
+
+ Main fields in `result`: `cpf`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ No optional field mapped in this example.
+
+
+> Info:
+This is a 1:N facial search: send only a selfie and receive the CPF associated with the matching face. It does not validate a selfie against a CPF provided in the request.
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `selfie`
+
+**Optional fields:** No optional field mapped in this example.
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_FACE_INDEX",
+  "selfie": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_INDEX",
+  "selfie": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_INDEX",
+  "selfie": "base64"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.cpf` | CPF related to the query result. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "cpf": "cpf"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
+
+**Service:** `SERVICE_FACE_MATCH`
+
+**When to use:** Use to compare two facial images and return the similarity between them.
+
+**What it returns:** Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
+
+
+ Required fields: `service`, `selfie`, `image2`.
+
+
+ Main fields in `result`: `match`, `similarity`, `status`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ No optional field mapped in this example.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `selfie`, `image2`
+
+**Optional fields:** No optional field mapped in this example.
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_FACE_MATCH",
+  "selfie": "base64",
+  "image2": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_MATCH",
+  "selfie": "base64",
+  "image2": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_MATCH",
+  "selfie": "base64",
+  "image2": "base64"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
+| `image2` | Yes | Second image sent as base64 or an equivalent reference, when the product compares two images. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.match` | Field returned in the result object for the client's consumption. |
+| `result.similarity` | Similarity percentage returned in biometric or facial validations. |
+| `result.status` | Main status returned by the queried product. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "match": true,
+    "similarity": 98.2,
+    "status": "APPROVED"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
+
+**Service:** `SERVICE_FACE_MATCH_CPF`
+
+**When to use:** Use to validate whether the submitted selfie belongs to the informed CPF.
+
+**What it returns:** Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
+
+
+ Required fields: `service`, `cpf`, `selfie`.
+
+
+ Main fields in `result`: `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ No optional field mapped in this example.
+
+
+> Info:
+This is a 1:1 facial validation: send a CPF and a selfie to verify whether they belong together. The response also reports whether the face was found, updated or indexed.
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `cpf`, `selfie`
+
+**Optional fields:** No optional field mapped in this example.
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_FACE_MATCH_CPF",
+  "cpf": "cpf",
+  "selfie": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_MATCH_CPF",
+  "cpf": "cpf",
+  "selfie": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_FACE_MATCH_CPF",
+  "cpf": "cpf",
+  "selfie": "base64"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `cpf` | Yes | The queried individual's CPF. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.biometric_score` | Biometric score returned for the CPF and selfie validation. |
+| `result.cpf` | CPF submitted for the facial validation. |
+| `result.face_updated` | Indicates whether the face linked to the CPF was updated in this query. |
+| `result.face_indexed` | Indicates whether the face was registered in the face database in this query. |
+| `result.face_found` | Indicates whether the face was already found in the face database. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "biometric_score": "98.70",
+    "cpf": "cpf",
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
 
 **Service:** `SERVICE_MEDIA_PROFILE_EXPOSURE_PF`
 
@@ -21661,10 +21681,10 @@ Use exactly the value shown in `Service`. Do not send an internal alias or integ
 ## Service families
 
 
- 1 service: `SERVICE_OCR_CNPJ_CARD`.
-
-
  6 services: `SERVICE_DOMAINS_CNPJ`, `SERVICE_COMPANY_RELATIONSHIP`, `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` and 3 more.
+
+
+ 1 service: `SERVICE_OCR_CNPJ_CARD`.
 
 
  6 services: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`, `SERVICE_COMPANY_KYC_OWNERS`, `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` and 3 more.
@@ -21688,163 +21708,6 @@ Use exactly the value shown in `Service`. Do not send an internal alias or integ
 ## Full catalog
 
 Open a service to see when to use it, required fields, body, curl and a summarized response.
-
-**Service:** `SERVICE_OCR_CNPJ_CARD`
-
-**When to use:** Use to extract data from documents sent as base64 or by URL.
-
-**What it returns:** Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
-
-
- Required fields: `service`, `image1`.
-
-
- Main fields in `result`: `cnpj`, `docType`, `genericOcr`.
-
-
- Use `status.code` and `status.message` to understand whether the query processed correctly.
-
-
- No optional field mapped in this example.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `image1`
-
-**Optional fields:** No optional field mapped in this example.
-
-### OCR guide
-
-For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
-
-### Minimum payload
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "BASE64_DO_CARTAO_CNPJ"
-}
-```
-
-### Expected clean return
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "text extracted from the CNPJ card"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Common error
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "CNPJ não encontrado no cartão CNPJ"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}'
-```
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.cnpj` | CNPJ related to the query result. |
-| `result.docType` | Document type identified in the processing. |
-| `result.genericOcr` | Raw text extracted from the document by OCR. |
-
-### How to consume the response
-
-
- Public data from the service. It is the main object to map into the client's system.
-
-
- Technical status of the call, with `code` and `message`.
-
-
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
-
-
- Identifier to trace the query in support, logs or audits.
-
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "text extracted from the CNPJ card"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
 
 **Service:** `SERVICE_DOMAINS_CNPJ`
 
@@ -22602,6 +22465,163 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 In this service, the `result` object represents: Returns the phone numbers associated with the company, with validity, priority and source indicators.
+
+**Service:** `SERVICE_OCR_CNPJ_CARD`
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**What it returns:** Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
+
+
+ Required fields: `service`, `image1`.
+
+
+ Main fields in `result`: `cnpj`, `docType`, `genericOcr`.
+
+
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+
+
+ No optional field mapped in this example.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `image1`
+
+**Optional fields:** No optional field mapped in this example.
+
+### OCR guide
+
+For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
+
+### Minimum payload
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+### Expected clean return
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "text extracted from the CNPJ card"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Common error
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CNPJ não encontrado no cartão CNPJ"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | CNPJ related to the query result. |
+| `result.docType` | Document type identified in the processing. |
+| `result.genericOcr` | Raw text extracted from the document by OCR. |
+
+### How to consume the response
+
+
+ Public data from the service. It is the main object to map into the client's system.
+
+
+ Technical status of the call, with `code` and `message`.
+
+
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+
+
+ Identifier to trace the query in support, logs or audits.
+
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "text extracted from the CNPJ card"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
 
 **Service:** `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`
 

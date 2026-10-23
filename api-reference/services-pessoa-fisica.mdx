@@ -80,8 +80,8 @@ Comece pela necessidade do negócio. Os dois serviços usam uma selfie, mas resp
 ## Famílias de services
 
 <CardGroup cols={2}>
- <Card icon="layer-group" title="Biometria e documentos">
- 8 services: `SERVICE_FACE_INDEX`, `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_FACE_MATCH` e mais 5.
+ <Card icon="layer-group" title="Biometria facial">
+ 4 services: `SERVICE_FACE_INDEX`, `SERVICE_FACE_MATCH`, `SERVICE_DATAVALID_CNH` e mais 1.
  </Card>
  <Card icon="layer-group" title="Contatos, sites e relacionamentos">
  15 services: `SERVICE_PF_FINANCIAL_AND_ADDRESS`, `SERVICE_CONFIRM_PHONE`, `SERVICE_DOMAINS_CPF` e mais 12.
@@ -91,6 +91,9 @@ Comece pela necessidade do negócio. Os dois serviços usam uma selfie, mas resp
  </Card>
  <Card icon="layer-group" title="Dados eleitorais e PEP">
  8 services: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`, `SERVICE_ELECTORAL_DONORS_CPF`, `SERVICE_POLITICAL_INVOLVEMENT` e mais 5.
+ </Card>
+ <Card icon="layer-group" title="Documentos e OCR">
+ 4 services: `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_OCR_EMANCIPATION`, `SERVICE_OCR` e mais 1.
  </Card>
  <Card icon="layer-group" title="Jurídico, certidões e protestos">
  7 services: `SERVICE_CRIMINAL_RECORD_CIVIL`, `SERVICE_CRIMINAL_RECORD_FEDERAL`, `SERVICE_NOTHING_RECORD_LAWSUITS` e mais 4.
@@ -244,161 +247,6 @@ Neste service, o objeto `result` representa: Busca uma selfie na base de faces i
 
 </Accordion>
 
-<Accordion title="Documentoscopia digital" id="SERVICE_DIGITAL_DOCUMENTOSCOPY">
-
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
-
-**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
-
-**O que retorna:** Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
-
-<CardGroup cols={2}>
- <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `key`, `image1`, `image2`, `selfie1`.
- </Card>
- <Card icon="list-check" title="Resultado">
- Principais campos em `result`: `key`, `status`, `documentData`, `validations`.
- </Card>
- <Card icon="circle-info" title="Status da chamada">
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
- </Card>
- <Card icon="sliders" title="Campos opcionais">
- Nenhum campo opcional mapeado neste exemplo.
- </Card>
-</CardGroup>
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `key`, `image1`, `image2`, `selfie1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-<Tabs>
-<Tab title="Body JSON">
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}
-```
-
-</Tab>
-<Tab title="Curl HML">
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}'
-```
-
-</Tab>
-<Tab title="Curl produção">
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}'
-```
-
-</Tab>
-</Tabs>
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-| `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-| `selfie1` | Sim | Selfie enviada para validações de documentoscopia e biometria. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.key` | Campo retornado no objeto result para consumo do cliente. |
-| `result.status` | Situação principal retornada pelo produto consultado. |
-| `result.documentData` | Campo retornado no objeto result para consumo do cliente. |
-| `result.validations` | Campo retornado no objeto result para consumo do cliente. |
-
-### Como consumir o retorno
-
-<CardGroup cols={2}>
- <Card icon="database" title="result">
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
- </Card>
- <Card icon="circle-check" title="status">
- Status técnico da chamada, com `code` e `message`.
- </Card>
- <Card icon="flag" title="onboardingStatus">
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
- </Card>
- <Card icon="fingerprint" title="externalId">
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
- </Card>
-</CardGroup>
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "key": "{key}",
-    "status": "APPROVED",
-    "documentData": {
-      "name": "Nome extraído",
-      "cpf": "cpf"
-    },
-    "validations": [
-      {
-        "name": "faceMatch",
-        "status": "APPROVED"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
-
-</Accordion>
-
 <Accordion title="FaceMatch" id="SERVICE_FACE_MATCH">
 
 **Service:** `SERVICE_FACE_MATCH`
@@ -533,542 +381,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
-
-</Accordion>
-
-<Accordion title="OCR de emancipação" id="SERVICE_OCR_EMANCIPATION">
-
-**Service:** `SERVICE_OCR_EMANCIPATION`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
-
-<CardGroup cols={2}>
- <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `image1`.
- </Card>
- <Card icon="list-check" title="Resultado">
- Principais campos em `result`: `docType`, `genericOcr`, `extractedFields`, `analysis`.
- </Card>
- <Card icon="circle-info" title="Status da chamada">
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
- </Card>
- <Card icon="sliders" title="Campos opcionais">
- Nenhum campo opcional mapeado neste exemplo.
- </Card>
-</CardGroup>
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Guia de OCR
-
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
-
-### Payload mínimo
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "BASE64_DO_DOCUMENTO"
-}
-```
-
-### Retorno limpo esperado
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "texto extraído",
-    "extractedFields": {
-      "cpf": "cpf",
-      "dates": [
-        "yyyy-MM-dd"
-      ]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "confidence": "MEDIUM"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Erro comum
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento de emancipação"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-<Tabs>
-<Tab title="Body JSON">
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}
-```
-
-</Tab>
-<Tab title="Curl HML">
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}'
-```
-
-</Tab>
-<Tab title="Curl produção">
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}'
-```
-
-</Tab>
-</Tabs>
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.docType` | Tipo de documento identificado no processamento. |
-| `result.genericOcr` | Texto bruto extraído do documento por OCR. |
-| `result.extractedFields` | Campo extraído do documento enviado para OCR. |
-| `result.analysis` | Campo extraído do documento enviado para OCR. |
-
-### Como consumir o retorno
-
-<CardGroup cols={2}>
- <Card icon="database" title="result">
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
- </Card>
- <Card icon="circle-check" title="status">
- Status técnico da chamada, com `code` e `message`.
- </Card>
- <Card icon="flag" title="onboardingStatus">
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
- </Card>
- <Card icon="fingerprint" title="externalId">
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
- </Card>
-</CardGroup>
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "texto extraído",
-    "extractedFields": {
-      "cpf": "cpf",
-      "dates": [
-        "yyyy-MM-dd"
-      ]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "confidence": "MEDIUM"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
-
-</Accordion>
-
-<Accordion title="OCR React" id="SERVICE_OCR">
-
-**Service:** `SERVICE_OCR`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
-
-<CardGroup cols={2}>
- <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `documentType`, `selfie`.
- </Card>
- <Card icon="list-check" title="Resultado">
- Principais campos em `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
- </Card>
- <Card icon="circle-info" title="Status da chamada">
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
- </Card>
- <Card icon="sliders" title="Campos opcionais">
- `image2`
- </Card>
-</CardGroup>
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `documentType`, `selfie`
-
-**Campos opcionais:** `image2`
-
-### Guia de OCR
-
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
-
-### Payload mínimo
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "CNH",
-  "image1": "BASE64_DA_CNH"
-}
-```
-
-### Retorno limpo esperado
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "docType": "CNH",
-    "name": "Nome extraído",
-    "birthDate": "yyyy-MM-dd",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Erro comum
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-<Tabs>
-<Tab title="Body JSON">
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (opcional)"
-}
-```
-
-</Tab>
-<Tab title="Curl HML">
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (opcional)"
-}'
-```
-
-</Tab>
-<Tab title="Curl produção">
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (opcional)"
-}'
-```
-
-</Tab>
-</Tabs>
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
-| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
-| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF relacionado ao resultado da consulta. |
-| `result.docType` | Tipo de documento identificado no processamento. |
-| `result.name` | Nome completo retornado pela consulta quando disponível. |
-| `result.birthDate` | Data retornada pela consulta, conforme o contexto do service. |
-| `result.cnhCategory` | Campo extraído do documento enviado para OCR. |
-| `result.cnhNumber` | Campo extraído do documento enviado para OCR. |
-
-### Como consumir o retorno
-
-<CardGroup cols={2}>
- <Card icon="database" title="result">
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
- </Card>
- <Card icon="circle-check" title="status">
- Status técnico da chamada, com `code` e `message`.
- </Card>
- <Card icon="flag" title="onboardingStatus">
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
- </Card>
- <Card icon="fingerprint" title="externalId">
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
- </Card>
-</CardGroup>
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "docType": "CNH",
-    "name": "Nome extraído",
-    "birthDate": "yyyy-MM-dd",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
-
-</Accordion>
-
-<Accordion title="Resultado da documentoscopia digital" id="SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT">
-
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
-
-**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
-
-**O que retorna:** Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
-
-<CardGroup cols={2}>
- <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `key`.
- </Card>
- <Card icon="list-check" title="Resultado">
- Principais campos em `result`: `key`, `status`, `fields`, `rules`.
- </Card>
- <Card icon="circle-info" title="Status da chamada">
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
- </Card>
- <Card icon="sliders" title="Campos opcionais">
- Nenhum campo opcional mapeado neste exemplo.
- </Card>
-</CardGroup>
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `key`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-<Tabs>
-<Tab title="Body JSON">
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
-  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
-}
-```
-
-</Tab>
-<Tab title="Curl HML">
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
-  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
-}'
-```
-
-</Tab>
-<Tab title="Curl produção">
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
-  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
-}'
-```
-
-</Tab>
-</Tabs>
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.key` | Campo retornado no objeto result para consumo do cliente. |
-| `result.status` | Situação principal retornada pelo produto consultado. |
-| `result.fields` | Campo retornado no objeto result para consumo do cliente. |
-| `result.rules` | Campo retornado no objeto result para consumo do cliente. |
-
-### Como consumir o retorno
-
-<CardGroup cols={2}>
- <Card icon="database" title="result">
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
- </Card>
- <Card icon="circle-check" title="status">
- Status técnico da chamada, com `code` e `message`.
- </Card>
- <Card icon="flag" title="onboardingStatus">
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
- </Card>
- <Card icon="fingerprint" title="externalId">
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
- </Card>
-</CardGroup>
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "key": "{key}",
-    "status": "APPROVED",
-    "fields": [
-      {
-        "name": "cpf",
-        "value": "cpf"
-      }
-    ],
-    "rules": [
-      {
-        "name": "document",
-        "status": "APPROVED"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
 
 </Accordion>
 
@@ -6048,6 +5360,697 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço.
+
+</Accordion>
+
+<Accordion title="Documentoscopia digital" id="SERVICE_DIGITAL_DOCUMENTOSCOPY">
+
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
+
+**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
+
+**O que retorna:** Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
+
+<CardGroup cols={2}>
+ <Card icon="arrow-right-to-bracket" title="Entrada">
+ Campos obrigatórios: `service`, `key`, `image1`, `image2`, `selfie1`.
+ </Card>
+ <Card icon="list-check" title="Resultado">
+ Principais campos em `result`: `key`, `status`, `documentData`, `validations`.
+ </Card>
+ <Card icon="circle-info" title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card icon="sliders" title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `key`, `image1`, `image2`, `selfie1`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
+| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+| `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
+| `selfie1` | Sim | Selfie enviada para validações de documentoscopia e biometria. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.key` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.documentData` | Campo retornado no objeto result para consumo do cliente. |
+| `result.validations` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card icon="database" title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card icon="circle-check" title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card icon="flag" title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card icon="fingerprint" title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "documentData": {
+      "name": "Nome extraído",
+      "cpf": "cpf"
+    },
+    "validations": [
+      {
+        "name": "faceMatch",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
+
+</Accordion>
+
+<Accordion title="OCR de emancipação" id="SERVICE_OCR_EMANCIPATION">
+
+**Service:** `SERVICE_OCR_EMANCIPATION`
+
+**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
+
+**O que retorna:** Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
+
+<CardGroup cols={2}>
+ <Card icon="arrow-right-to-bracket" title="Entrada">
+ Campos obrigatórios: `service`, `image1`.
+ </Card>
+ <Card icon="list-check" title="Resultado">
+ Principais campos em `result`: `docType`, `genericOcr`, `extractedFields`, `analysis`.
+ </Card>
+ <Card icon="circle-info" title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card icon="sliders" title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `image1`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraído",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento de emancipação"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.docType` | Tipo de documento identificado no processamento. |
+| `result.genericOcr` | Texto bruto extraído do documento por OCR. |
+| `result.extractedFields` | Campo extraído do documento enviado para OCR. |
+| `result.analysis` | Campo extraído do documento enviado para OCR. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card icon="database" title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card icon="circle-check" title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card icon="flag" title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card icon="fingerprint" title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraído",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
+
+</Accordion>
+
+<Accordion title="OCR React" id="SERVICE_OCR">
+
+**Service:** `SERVICE_OCR`
+
+**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
+
+**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
+
+<CardGroup cols={2}>
+ <Card icon="arrow-right-to-bracket" title="Entrada">
+ Campos obrigatórios: `service`, `documentType`, `selfie`.
+ </Card>
+ <Card icon="list-check" title="Resultado">
+ Principais campos em `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
+ </Card>
+ <Card icon="circle-info" title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card icon="sliders" title="Campos opcionais">
+ `image2`
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `documentType`, `selfie`
+
+**Campos opcionais:** `image2`
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraído",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (opcional)"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (opcional)"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (opcional)"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
+| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
+| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.docType` | Tipo de documento identificado no processamento. |
+| `result.name` | Nome completo retornado pela consulta quando disponível. |
+| `result.birthDate` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.cnhCategory` | Campo extraído do documento enviado para OCR. |
+| `result.cnhNumber` | Campo extraído do documento enviado para OCR. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card icon="database" title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card icon="circle-check" title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card icon="flag" title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card icon="fingerprint" title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraído",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
+
+</Accordion>
+
+<Accordion title="Resultado da documentoscopia digital" id="SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT">
+
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
+
+**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
+
+**O que retorna:** Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
+
+<CardGroup cols={2}>
+ <Card icon="arrow-right-to-bracket" title="Entrada">
+ Campos obrigatórios: `service`, `key`.
+ </Card>
+ <Card icon="list-check" title="Resultado">
+ Principais campos em `result`: `key`, `status`, `fields`, `rules`.
+ </Card>
+ <Card icon="circle-info" title="Status da chamada">
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+ </Card>
+ <Card icon="sliders" title="Campos opcionais">
+ Nenhum campo opcional mapeado neste exemplo.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `key`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+<Tabs>
+<Tab title="Body JSON">
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}'
+```
+
+</Tab>
+<Tab title="Curl produção">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.key` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.fields` | Campo retornado no objeto result para consumo do cliente. |
+| `result.rules` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+<CardGroup cols={2}>
+ <Card icon="database" title="result">
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+ </Card>
+ <Card icon="circle-check" title="status">
+ Status técnico da chamada, com `code` e `message`.
+ </Card>
+ <Card icon="flag" title="onboardingStatus">
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+ </Card>
+ <Card icon="fingerprint" title="externalId">
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+ </Card>
+</CardGroup>
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "fields": [
+      {
+        "name": "cpf",
+        "value": "cpf"
+      }
+    ],
+    "rules": [
+      {
+        "name": "document",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
 
 </Accordion>
 

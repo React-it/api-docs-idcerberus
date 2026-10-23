@@ -3064,11 +3064,19 @@ Authorization: Bearer {jwt_token}
 Content-Type: application/json
 ```
 
+## Escolha um fluxo
+
+### Consultas cadastrais
+
 
     Dados cadastrais e enriquecimento de pessoa física.
 
 
     Dados cadastrais e status de empresa.
+
+
+
+### Biometria e documentos
 
 
     CNH, RG, cartão CNPJ e comprovante.
@@ -3078,6 +3086,10 @@ Content-Type: application/json
 
 
     Confirma se uma selfie corresponde ao CPF informado.
+
+
+
+### Risco e score
 
 
     Score, rating e sinais de risco de empresa.
@@ -12871,17 +12883,12 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 4. Se for OCR, confira o guia de imagem antes de testar.
 5. Se quiser um fluxo pronto, use [Receitas prontas](/guides/receitas-prontas).
 
-## Biometria e documentos
+## Biometria facial
 
 | Objetivo | Service | Documento |
 | --- | --- | --- |
 | Busca de face na base | `SERVICE_FACE_INDEX` | CPF |
-| Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | CPF |
 | FaceMatch | `SERVICE_FACE_MATCH` | CPF |
-| OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | CNPJ |
-| OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | CPF |
-| OCR React | `SERVICE_OCR` | CPF |
-| Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | CPF |
 | Score biométrico | `SERVICE_DATAVALID_CNH` | CPF |
 | Validação facial por CPF | `SERVICE_FACE_MATCH_CPF` | CPF |
 
@@ -12956,6 +12963,16 @@ Depois de escolher o service, abra o catálogo de pessoa física ou pessoa jurí
 | KYC e Compliance dos Funcionários | `SERVICE_EMPLOYEES_KYC` | CNPJ |
 | Pessoa politicamente exposta | `SERVICE_PEP` | CPF |
 | Prestadores de serviço eleitorais | `SERVICE_ELECTORAL_PROVIDERS_CPF` | CPF |
+
+## Documentos e OCR
+
+| Objetivo | Service | Documento |
+| --- | --- | --- |
+| Documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | CPF |
+| OCR de cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | CNPJ |
+| OCR de emancipação | `SERVICE_OCR_EMANCIPATION` | CPF |
+| OCR React | `SERVICE_OCR` | CPF |
+| Resultado da documentoscopia digital | `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT` | CPF |
 
 ## Jurídico, certidões e protestos
 
@@ -13112,7 +13129,7 @@ Comece pela necessidade do negócio. Os dois serviços usam uma selfie, mas resp
 ## Famílias de services
 
 
- 8 services: `SERVICE_FACE_INDEX`, `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_FACE_MATCH` e mais 5.
+ 4 services: `SERVICE_FACE_INDEX`, `SERVICE_FACE_MATCH`, `SERVICE_DATAVALID_CNH` e mais 1.
 
 
  15 services: `SERVICE_PF_FINANCIAL_AND_ADDRESS`, `SERVICE_CONFIRM_PHONE`, `SERVICE_DOMAINS_CPF` e mais 12.
@@ -13122,6 +13139,9 @@ Comece pela necessidade do negócio. Os dois serviços usam uma selfie, mas resp
 
 
  8 services: `SERVICE_ELECTION_CANDIDATE_DATA_CPF`, `SERVICE_ELECTORAL_DONORS_CPF`, `SERVICE_POLITICAL_INVOLVEMENT` e mais 5.
+
+
+ 4 services: `SERVICE_DIGITAL_DOCUMENTOSCOPY`, `SERVICE_OCR_EMANCIPATION`, `SERVICE_OCR` e mais 1.
 
 
  7 services: `SERVICE_CRIMINAL_RECORD_CIVIL`, `SERVICE_CRIMINAL_RECORD_FEDERAL`, `SERVICE_NOTHING_RECORD_LAWSUITS` e mais 4.
@@ -13252,141 +13272,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Busca uma selfie na base de faces indexadas e retorna o CPF associado quando encontra uma correspondência.
 
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
-
-**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
-
-**O que retorna:** Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
-
-
- Campos obrigatórios: `service`, `key`, `image1`, `image2`, `selfie1`.
-
-
- Principais campos em `result`: `key`, `status`, `documentData`, `validations`.
-
-
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
-
-
- Nenhum campo opcional mapeado neste exemplo.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `key`, `image1`, `image2`, `selfie1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
-  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
-  "image1": "base64",
-  "image2": "base64",
-  "selfie1": "base64"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-| `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-| `selfie1` | Sim | Selfie enviada para validações de documentoscopia e biometria. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.key` | Campo retornado no objeto result para consumo do cliente. |
-| `result.status` | Situação principal retornada pelo produto consultado. |
-| `result.documentData` | Campo retornado no objeto result para consumo do cliente. |
-| `result.validations` | Campo retornado no objeto result para consumo do cliente. |
-
-### Como consumir o retorno
-
-
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
-
-
- Status técnico da chamada, com `code` e `message`.
-
-
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
-
-
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
-
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "key": "{key}",
-    "status": "APPROVED",
-    "documentData": {
-      "name": "Nome extraído",
-      "cpf": "cpf"
-    },
-    "validations": [
-      {
-        "name": "faceMatch",
-        "status": "APPROVED"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
-
 **Service:** `SERVICE_FACE_MATCH`
 
 **Quando usar:** Use para comparar duas imagens faciais e retornar a similaridade entre elas.
@@ -13503,482 +13388,6 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
-
-**Service:** `SERVICE_OCR_EMANCIPATION`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
-
-
- Campos obrigatórios: `service`, `image1`.
-
-
- Principais campos em `result`: `docType`, `genericOcr`, `extractedFields`, `analysis`.
-
-
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
-
-
- Nenhum campo opcional mapeado neste exemplo.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Guia de OCR
-
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
-
-### Payload mínimo
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "BASE64_DO_DOCUMENTO"
-}
-```
-
-### Retorno limpo esperado
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "texto extraído",
-    "extractedFields": {
-      "cpf": "cpf",
-      "dates": [
-        "yyyy-MM-dd"
-      ]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "confidence": "MEDIUM"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Erro comum
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Não foi possível ler o documento de emancipação"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_EMANCIPATION",
-  "image1": "base64"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.docType` | Tipo de documento identificado no processamento. |
-| `result.genericOcr` | Texto bruto extraído do documento por OCR. |
-| `result.extractedFields` | Campo extraído do documento enviado para OCR. |
-| `result.analysis` | Campo extraído do documento enviado para OCR. |
-
-### Como consumir o retorno
-
-
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
-
-
- Status técnico da chamada, com `code` e `message`.
-
-
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
-
-
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
-
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "docType": "EMANCIPATION_DOCUMENT",
-    "genericOcr": "texto extraído",
-    "extractedFields": {
-      "cpf": "cpf",
-      "dates": [
-        "yyyy-MM-dd"
-      ]
-    },
-    "analysis": {
-      "isEmancipationRelated": true,
-      "confidence": "MEDIUM"
-    }
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
-
-**Service:** `SERVICE_OCR`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
-
-
- Campos obrigatórios: `service`, `documentType`, `selfie`.
-
-
- Principais campos em `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
-
-
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
-
-
- `image2`
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `documentType`, `selfie`
-
-**Campos opcionais:** `image2`
-
-### Guia de OCR
-
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
-
-### Payload mínimo
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "CNH",
-  "image1": "BASE64_DA_CNH"
-}
-```
-
-### Retorno limpo esperado
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "docType": "CNH",
-    "name": "Nome extraído",
-    "birthDate": "yyyy-MM-dd",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Erro comum
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "Imagem do documento não encontrada"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (opcional)"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (opcional)"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR",
-  "documentType": "IDENTIFICATION_DOCUMENT",
-  "selfie": "base64",
-  "image2": "base64 (opcional)"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
-| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
-| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cpf` | CPF relacionado ao resultado da consulta. |
-| `result.docType` | Tipo de documento identificado no processamento. |
-| `result.name` | Nome completo retornado pela consulta quando disponível. |
-| `result.birthDate` | Data retornada pela consulta, conforme o contexto do service. |
-| `result.cnhCategory` | Campo extraído do documento enviado para OCR. |
-| `result.cnhNumber` | Campo extraído do documento enviado para OCR. |
-
-### Como consumir o retorno
-
-
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
-
-
- Status técnico da chamada, com `code` e `message`.
-
-
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
-
-
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
-
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cpf": "cpf",
-    "docType": "CNH",
-    "name": "Nome extraído",
-    "birthDate": "yyyy-MM-dd",
-    "cnhCategory": "B",
-    "cnhNumber": "00000000000"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
-
-**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
-
-**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
-
-**O que retorna:** Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
-
-
- Campos obrigatórios: `service`, `key`.
-
-
- Principais campos em `result`: `key`, `status`, `fields`, `rules`.
-
-
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
-
-
- Nenhum campo opcional mapeado neste exemplo.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `key`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
-  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
-  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
-  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.key` | Campo retornado no objeto result para consumo do cliente. |
-| `result.status` | Situação principal retornada pelo produto consultado. |
-| `result.fields` | Campo retornado no objeto result para consumo do cliente. |
-| `result.rules` | Campo retornado no objeto result para consumo do cliente. |
-
-### Como consumir o retorno
-
-
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
-
-
- Status técnico da chamada, com `code` e `message`.
-
-
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
-
-
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
-
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "key": "{key}",
-    "status": "APPROVED",
-    "fields": [
-      {
-        "name": "cpf",
-        "value": "cpf"
-      }
-    ],
-    "rules": [
-      {
-        "name": "document",
-        "status": "APPROVED"
-      }
-    ]
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
 
 **Service:** `SERVICE_DATAVALID_CNH`
 
@@ -18258,6 +17667,617 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 Neste service, o objeto `result` representa: Retorna prestações de serviço eleitorais vinculadas ao CPF, com campanha, candidato/partido, valor, ano e natureza do serviço.
 
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY`
+
+**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
+
+**O que retorna:** Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
+
+
+ Campos obrigatórios: `service`, `key`, `image1`, `image2`, `selfie1`.
+
+
+ Principais campos em `result`: `key`, `status`, `documentData`, `validations`.
+
+
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+
+
+ Nenhum campo opcional mapeado neste exemplo.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `key`, `image1`, `image2`, `selfie1`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY",
+  "key": "84bfcd2e-2336-4e30-bcab-15348b7890b5",
+  "image1": "base64",
+  "image2": "base64",
+  "selfie1": "base64"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
+| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+| `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
+| `selfie1` | Sim | Selfie enviada para validações de documentoscopia e biometria. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.key` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.documentData` | Campo retornado no objeto result para consumo do cliente. |
+| `result.validations` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+
+
+ Status técnico da chamada, com `code` e `message`.
+
+
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+
+
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "documentData": {
+      "name": "Nome extraído",
+      "cpf": "cpf"
+    },
+    "validations": [
+      {
+        "name": "faceMatch",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna status da documentoscopia, chave da consulta, dados extraídos do documento, validações de documento/selfie e resultado de aprovacao.
+
+**Service:** `SERVICE_OCR_EMANCIPATION`
+
+**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
+
+**O que retorna:** Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
+
+
+ Campos obrigatórios: `service`, `image1`.
+
+
+ Principais campos em `result`: `docType`, `genericOcr`, `extractedFields`, `analysis`.
+
+
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+
+
+ Nenhum campo opcional mapeado neste exemplo.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `image1`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "BASE64_DO_DOCUMENTO"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraído",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Não foi possível ler o documento de emancipação"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_EMANCIPATION",
+  "image1": "base64"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.docType` | Tipo de documento identificado no processamento. |
+| `result.genericOcr` | Texto bruto extraído do documento por OCR. |
+| `result.extractedFields` | Campo extraído do documento enviado para OCR. |
+| `result.analysis` | Campo extraído do documento enviado para OCR. |
+
+### Como consumir o retorno
+
+
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+
+
+ Status técnico da chamada, com `code` e `message`.
+
+
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+
+
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "docType": "EMANCIPATION_DOCUMENT",
+    "genericOcr": "texto extraído",
+    "extractedFields": {
+      "cpf": "cpf",
+      "dates": [
+        "yyyy-MM-dd"
+      ]
+    },
+    "analysis": {
+      "isEmancipationRelated": true,
+      "confidence": "MEDIUM"
+    }
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna texto OCR do documento de emancipacao e dados objetivos extraídos quando existirem, sem reprovar pela ausencia de campos variaveis.
+
+**Service:** `SERVICE_OCR`
+
+**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
+
+**O que retorna:** Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
+
+
+ Campos obrigatórios: `service`, `documentType`, `selfie`.
+
+
+ Principais campos em `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
+
+
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+
+
+ `image2`
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `documentType`, `selfie`
+
+**Campos opcionais:** `image2`
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "CNH",
+  "image1": "BASE64_DA_CNH"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraído",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "Imagem do documento não encontrada"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (opcional)"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (opcional)"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR",
+  "documentType": "IDENTIFICATION_DOCUMENT",
+  "selfie": "base64",
+  "image2": "base64 (opcional)"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
+| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
+| `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.docType` | Tipo de documento identificado no processamento. |
+| `result.name` | Nome completo retornado pela consulta quando disponível. |
+| `result.birthDate` | Data retornada pela consulta, conforme o contexto do service. |
+| `result.cnhCategory` | Campo extraído do documento enviado para OCR. |
+| `result.cnhNumber` | Campo extraído do documento enviado para OCR. |
+
+### Como consumir o retorno
+
+
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+
+
+ Status técnico da chamada, com `code` e `message`.
+
+
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+
+
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cpf": "cpf",
+    "docType": "CNH",
+    "name": "Nome extraído",
+    "birthDate": "yyyy-MM-dd",
+    "cnhCategory": "B",
+    "cnhNumber": "00000000000"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
+
+**Service:** `SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT`
+
+**Quando usar:** Use para avaliar documento, selfie e biometria dentro do fluxo de documentoscopia.
+
+**O que retorna:** Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
+
+
+ Campos obrigatórios: `service`, `key`.
+
+
+ Principais campos em `result`: `key`, `status`, `fields`, `rules`.
+
+
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+
+
+ Nenhum campo opcional mapeado neste exemplo.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `key`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_DIGITAL_DOCUMENTOSCOPY_CONSULT",
+  "key": "de0cd562-5962-40bd-8f94-5a7184ecde0e"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `key` | Sim | Chave da documentoscopia usada para iniciar ou consultar o processamento. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.key` | Campo retornado no objeto result para consumo do cliente. |
+| `result.status` | Situação principal retornada pelo produto consultado. |
+| `result.fields` | Campo retornado no objeto result para consumo do cliente. |
+| `result.rules` | Campo retornado no objeto result para consumo do cliente. |
+
+### Como consumir o retorno
+
+
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+
+
+ Status técnico da chamada, com `code` e `message`.
+
+
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+
+
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "key": "{key}",
+    "status": "APPROVED",
+    "fields": [
+      {
+        "name": "cpf",
+        "value": "cpf"
+      }
+    ],
+    "rules": [
+      {
+        "name": "document",
+        "status": "APPROVED"
+      }
+    ]
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna o resultado ja processado da documentoscopia pela chave informada, com status, campos extraídos, regras avaliadas e evidencias.
+
 **Service:** `SERVICE_CRIMINAL_RECORD_CIVIL`
 
 **Quando usar:** Use para consultar certidões, processos ou informações jurídicas da pessoa.
@@ -21594,9 +21614,6 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
 ## Famílias de services
 
 
- 1 service: `SERVICE_OCR_CNPJ_CARD`.
-
-
  13 services: `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION`, `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`, `SERVICE_DOMAINS_CNPJ` e mais 10.
 
 
@@ -21604,6 +21621,9 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
 
 
  4 services: `SERVICE_ELECTORAL_DONORS_CNPJ`, `SERVICE_ELECTORAL_PROVIDERS_CNPJ`, `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` e mais 1.
+
+
+ 1 service: `SERVICE_OCR_CNPJ_CARD`.
 
 
  4 services: `SERVICE_LABOR_LAWSUITS`, `SERVICE_PROTEST_PJ`, `SERVICE_LAWSUITS_DISTRIBUTION_DATA_COMPANY` e mais 1.
@@ -21621,163 +21641,6 @@ Use exatamente o valor exibido em `Service`. Não envie alias interno nem nome d
 ## Catálogo completo
 
 Abra um service para ver quando usar, campos obrigatórios, body, curl e response resumido.
-
-**Service:** `SERVICE_OCR_CNPJ_CARD`
-
-**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
-
-**O que retorna:** Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
-
-
- Campos obrigatórios: `service`, `image1`.
-
-
- Principais campos em `result`: `cnpj`, `docType`, `genericOcr`.
-
-
- Use `status.code` e `status.message` para entender se a consulta processou corretamente.
-
-
- Nenhum campo opcional mapeado neste exemplo.
-
-
-**Endpoint:** `POST /api/service-api`
-
-**Campos obrigatórios:** `service`, `image1`
-
-**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
-
-### Guia de OCR
-
-Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
-
-### Payload mínimo
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "BASE64_DO_CARTAO_CNPJ"
-}
-```
-
-### Retorno limpo esperado
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "texto extraído do cartão CNPJ"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Erro comum
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "CNPJ não encontrado no cartão CNPJ"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Passo a passo
-
-1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
-2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
-3. Execute `POST /api/service-api` no ambiente escolhido.
-4. Confira `status.code` e `status.message` para validar o processamento técnico.
-5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
-
-### Copiar e testar
-
-Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}
-```
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}'
-```
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}'
-```
-
-### Campos do body
-
-| Campo | Obrigatório | Descrição |
-| --- | --- | --- |
-| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
-
-### Campos principais do result
-
-| Campo | Descrição |
-| --- | --- |
-| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
-| `result.docType` | Tipo de documento identificado no processamento. |
-| `result.genericOcr` | Texto bruto extraído do documento por OCR. |
-
-### Como consumir o retorno
-
-
- Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
-
-
- Status técnico da chamada, com `code` e `message`.
-
-
- Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
-
-
- Identificador para rastrear a consulta em suporte, logs ou auditoria.
-
-
-### Response resumido
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "texto extraído do cartão CNPJ"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-Neste service, o objeto `result` representa: Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
 
 **Service:** `SERVICE_OWNERS_LAWSUITS_DISTRIBUTION`
 
@@ -24773,6 +24636,163 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 Neste service, o objeto `result` representa: Retorna indicadores de KYC e compliance regulatório dos funcionários vinculados à empresa, incluindo classificações de PEP e sanções nacionais e internacionais.
+
+**Service:** `SERVICE_OCR_CNPJ_CARD`
+
+**Quando usar:** Use para extrair dados de documentos enviados em base64 ou por URL.
+
+**O que retorna:** Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
+
+
+ Campos obrigatórios: `service`, `image1`.
+
+
+ Principais campos em `result`: `cnpj`, `docType`, `genericOcr`.
+
+
+ Use `status.code` e `status.message` para entender se a consulta processou corretamente.
+
+
+ Nenhum campo opcional mapeado neste exemplo.
+
+
+**Endpoint:** `POST /api/service-api`
+
+**Campos obrigatórios:** `service`, `image1`
+
+**Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
+
+### Guia de OCR
+
+Para payloads prontos, qualidade de imagem e diagnóstico de erro, consulte [OCR via Service API](/guides/service-api/sobre-ocr-service-api).
+
+### Payload mínimo
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+### Retorno limpo esperado
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraído do cartão CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Erro comum
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CNPJ não encontrado no cartão CNPJ"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Passo a passo
+
+1. Gere o token em `POST /api/token-generate` e envie no header `Authorization: Bearer {jwt_token}`.
+2. Monte o body com o `service` exato e os campos obrigatórios listados abaixo.
+3. Execute `POST /api/service-api` no ambiente escolhido.
+4. Confira `status.code` e `status.message` para validar o processamento técnico.
+5. Mapeie os campos de `result` conforme o resumo e o exemplo de response deste service.
+
+### Copiar e testar
+
+Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de teste.
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}
+```
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+### Campos do body
+
+| Campo | Obrigatório | Descrição |
+| --- | --- | --- |
+| `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
+| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+
+### Campos principais do result
+
+| Campo | Descrição |
+| --- | --- |
+| `result.cnpj` | CNPJ relacionado ao resultado da consulta. |
+| `result.docType` | Tipo de documento identificado no processamento. |
+| `result.genericOcr` | Texto bruto extraído do documento por OCR. |
+
+### Como consumir o retorno
+
+
+ Dados públicos do service. É o objeto principal para mapear no sistema do cliente.
+
+
+ Status técnico da chamada, com `code` e `message`.
+
+
+ Quando retornado, resume o desfecho operacional: `APPROVED`, `REFUSED` ou `ERROR`.
+
+
+ Identificador para rastrear a consulta em suporte, logs ou auditoria.
+
+
+### Response resumido
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "texto extraído do cartão CNPJ"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+Neste service, o objeto `result` representa: Retorna dados extraídos do cartão CNPJ enviado por imagem, incluindo CNPJ, tipo do documento e texto OCR quando disponível.
 
 **Service:** `SERVICE_LABOR_LAWSUITS`
 

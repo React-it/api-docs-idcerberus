@@ -62,11 +62,11 @@ Use exactly the value shown in `Service`. Do not send an internal alias or integ
 ## Service families
 
 <CardGroup cols={2}>
- <Card icon="layer-group" title="Biometrics and documents">
- 1 service: `SERVICE_OCR_CNPJ_CARD`.
- </Card>
  <Card icon="layer-group" title="Contacts, sites and relationships">
  6 services: `SERVICE_DOMAINS_CNPJ`, `SERVICE_COMPANY_RELATIONSHIP`, `SERVICE_ECONOMIC_GROUP_RELATIONSHIPS` and 3 more.
+ </Card>
+ <Card icon="layer-group" title="Documents and OCR">
+ 1 service: `SERVICE_OCR_CNPJ_CARD`.
  </Card>
  <Card icon="layer-group" title="Electoral data and PEP">
  6 services: `SERVICE_OWNERS_ELECTORAL_DONORS_CNPJ`, `SERVICE_COMPANY_KYC_OWNERS`, `SERVICE_ECONOMIC_GROUP_KYC_COMPANY` and 3 more.
@@ -93,183 +93,6 @@ Use exactly the value shown in `Service`. Do not send an internal alias or integ
 Open a service to see when to use it, required fields, body, curl and a summarized response.
 
 <AccordionGroup>
-<Accordion title="CNPJ card OCR" id="SERVICE_OCR_CNPJ_CARD">
-
-**Service:** `SERVICE_OCR_CNPJ_CARD`
-
-**When to use:** Use to extract data from documents sent as base64 or by URL.
-
-**What it returns:** Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
-
-<CardGroup cols={2}>
- <Card icon="arrow-right-to-bracket" title="Input">
- Required fields: `service`, `image1`.
- </Card>
- <Card icon="list-check" title="Result">
- Main fields in `result`: `cnpj`, `docType`, `genericOcr`.
- </Card>
- <Card icon="circle-info" title="Call status">
- Use `status.code` and `status.message` to understand whether the query processed correctly.
- </Card>
- <Card icon="sliders" title="Optional fields">
- No optional field mapped in this example.
- </Card>
-</CardGroup>
-
-**Endpoint:** `POST /api/service-api`
-
-**Required fields:** `service`, `image1`
-
-**Optional fields:** No optional field mapped in this example.
-
-### OCR guide
-
-For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
-
-### Minimum payload
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "BASE64_DO_CARTAO_CNPJ"
-}
-```
-
-### Expected clean return
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "text extracted from the CNPJ card"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-### Common error
-
-```json
-{
-  "result": {},
-  "status": {
-    "code": 400,
-    "message": "CNPJ não encontrado no cartão CNPJ"
-  },
-  "onboardingStatus": "REFUSED",
-  "externalId": "{externalId}"
-}
-```
-
-### Step by step
-
-1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
-2. Build the body with the exact `service` and the required fields listed below.
-3. Run `POST /api/service-api` in the chosen environment.
-4. Check `status.code` and `status.message` to validate the technical processing.
-5. Map the `result` fields per the summary and the response example for this service.
-
-### Copy and test
-
-<Tabs>
-<Tab title="JSON body">
-
-Use this body in Postman under `Body > raw > JSON`. Only change the test values.
-
-```json
-{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}
-```
-
-</Tab>
-<Tab title="Curl HML">
-
-```bash
-curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}'
-```
-
-</Tab>
-<Tab title="Curl production">
-
-```bash
-curl --location 'https://backoffice.idcerberus.com/api/service-api' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer {jwt_token}' \
---data '{
-  "service": "SERVICE_OCR_CNPJ_CARD",
-  "image1": "base64"
-}'
-```
-
-</Tab>
-</Tabs>
-
-### Body fields
-
-| Field | Required | Description |
-| --- | --- | --- |
-| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
-
-### Main result fields
-
-| Field | Description |
-| --- | --- |
-| `result.cnpj` | CNPJ related to the query result. |
-| `result.docType` | Document type identified in the processing. |
-| `result.genericOcr` | Raw text extracted from the document by OCR. |
-
-### How to consume the response
-
-<CardGroup cols={2}>
- <Card icon="database" title="result">
- Public data from the service. It is the main object to map into the client's system.
- </Card>
- <Card icon="circle-check" title="status">
- Technical status of the call, with `code` and `message`.
- </Card>
- <Card icon="flag" title="onboardingStatus">
- When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
- </Card>
- <Card icon="fingerprint" title="externalId">
- Identifier to trace the query in support, logs or audits.
- </Card>
-</CardGroup>
-
-### Summarized response
-
-```json
-{
-  "result": {
-    "cnpj": "cnpj",
-    "docType": "CNPJ_CARD",
-    "genericOcr": "text extracted from the CNPJ card"
-  },
-  "status": {
-    "code": 200,
-    "message": "Success"
-  },
-  "externalId": "{externalId}"
-}
-```
-
-In this service, the `result` object represents: Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
-
-</Accordion>
-
 <Accordion title="CNPJ domains" id="SERVICE_DOMAINS_CNPJ">
 
 **Service:** `SERVICE_DOMAINS_CNPJ`
@@ -1144,6 +967,183 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```
 
 In this service, the `result` object represents: Returns the phone numbers associated with the company, with validity, priority and source indicators.
+
+</Accordion>
+
+<Accordion title="CNPJ card OCR" id="SERVICE_OCR_CNPJ_CARD">
+
+**Service:** `SERVICE_OCR_CNPJ_CARD`
+
+**When to use:** Use to extract data from documents sent as base64 or by URL.
+
+**What it returns:** Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
+
+<CardGroup cols={2}>
+ <Card icon="arrow-right-to-bracket" title="Input">
+ Required fields: `service`, `image1`.
+ </Card>
+ <Card icon="list-check" title="Result">
+ Main fields in `result`: `cnpj`, `docType`, `genericOcr`.
+ </Card>
+ <Card icon="circle-info" title="Call status">
+ Use `status.code` and `status.message` to understand whether the query processed correctly.
+ </Card>
+ <Card icon="sliders" title="Optional fields">
+ No optional field mapped in this example.
+ </Card>
+</CardGroup>
+
+**Endpoint:** `POST /api/service-api`
+
+**Required fields:** `service`, `image1`
+
+**Optional fields:** No optional field mapped in this example.
+
+### OCR guide
+
+For ready-made payloads, image quality and error diagnostics, see [OCR via Service API](/en/guides/service-api/sobre-ocr-service-api).
+
+### Minimum payload
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "BASE64_DO_CARTAO_CNPJ"
+}
+```
+
+### Expected clean return
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "text extracted from the CNPJ card"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+### Common error
+
+```json
+{
+  "result": {},
+  "status": {
+    "code": 400,
+    "message": "CNPJ não encontrado no cartão CNPJ"
+  },
+  "onboardingStatus": "REFUSED",
+  "externalId": "{externalId}"
+}
+```
+
+### Step by step
+
+1. Generate the token at `POST /api/token-generate` and send it in the `Authorization: Bearer {jwt_token}` header.
+2. Build the body with the exact `service` and the required fields listed below.
+3. Run `POST /api/service-api` in the chosen environment.
+4. Check `status.code` and `status.message` to validate the technical processing.
+5. Map the `result` fields per the summary and the response example for this service.
+
+### Copy and test
+
+<Tabs>
+<Tab title="JSON body">
+
+Use this body in Postman under `Body > raw > JSON`. Only change the test values.
+
+```json
+{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}
+```
+
+</Tab>
+<Tab title="Curl HML">
+
+```bash
+curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+</Tab>
+<Tab title="Curl production">
+
+```bash
+curl --location 'https://backoffice.idcerberus.com/api/service-api' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "service": "SERVICE_OCR_CNPJ_CARD",
+  "image1": "base64"
+}'
+```
+
+</Tab>
+</Tabs>
+
+### Body fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
+| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+
+### Main result fields
+
+| Field | Description |
+| --- | --- |
+| `result.cnpj` | CNPJ related to the query result. |
+| `result.docType` | Document type identified in the processing. |
+| `result.genericOcr` | Raw text extracted from the document by OCR. |
+
+### How to consume the response
+
+<CardGroup cols={2}>
+ <Card icon="database" title="result">
+ Public data from the service. It is the main object to map into the client's system.
+ </Card>
+ <Card icon="circle-check" title="status">
+ Technical status of the call, with `code` and `message`.
+ </Card>
+ <Card icon="flag" title="onboardingStatus">
+ When returned, summarizes the operational outcome: `APPROVED`, `REFUSED` or `ERROR`.
+ </Card>
+ <Card icon="fingerprint" title="externalId">
+ Identifier to trace the query in support, logs or audits.
+ </Card>
+</CardGroup>
+
+### Summarized response
+
+```json
+{
+  "result": {
+    "cnpj": "cnpj",
+    "docType": "CNPJ_CARD",
+    "genericOcr": "text extracted from the CNPJ card"
+  },
+  "status": {
+    "code": 200,
+    "message": "Success"
+  },
+  "externalId": "{externalId}"
+}
+```
+
+In this service, the `result` object represents: Returns data extracted from the CNPJ card sent as an image, including the CNPJ, document type and OCR text when available.
 
 </Accordion>
 

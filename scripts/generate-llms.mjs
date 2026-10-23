@@ -1862,11 +1862,14 @@ function serviceFamily(service, lang = 'pt') {
   const text = normalizeText(`${service.name} ${service.service} ${service.searchTerms?.join(' ') ?? ''}`);
 
   if (lang === 'en') {
+    if (text.includes('face') || text.includes('liveness') || text.includes('biometric')) {
+      return 'Facial biometrics';
+    }
     if (text.includes('telefone') || text.includes('phone') || text.includes('email') || text.includes('address') || text.includes('endereco') || text.includes('relacion') || text.includes('relationship') || text.includes('socio') || text.includes('qsa') || text.includes('sites') || text.includes('domains')) {
       return 'Contacts, sites and relationships';
     }
-    if (text.includes('ocr') || text.includes('face') || text.includes('liveness') || text.includes('biometric') || text.includes('documentoscopia') || text.includes('datavalid')) {
-      return 'Biometrics and documents';
+    if (text.includes('ocr') || text.includes('documentoscopia') || text.includes('datavalid')) {
+      return 'Documents and OCR';
     }
     if (text.includes('eleitoral') || text.includes('election') || text.includes('electoral') || text.includes('politic') || text.includes('pep')) {
       return 'Electoral data and PEP';
@@ -1886,11 +1889,14 @@ function serviceFamily(service, lang = 'pt') {
     return 'Other services';
   }
 
+  if (text.includes('face') || text.includes('liveness') || text.includes('biometric')) {
+    return 'Biometria facial';
+  }
   if (text.includes('telefone') || text.includes('phone') || text.includes('email') || text.includes('address') || text.includes('endereco') || text.includes('relacion') || text.includes('relationship') || text.includes('socio') || text.includes('qsa') || text.includes('sites') || text.includes('domains')) {
     return 'Contatos, sites e relacionamentos';
   }
-  if (text.includes('ocr') || text.includes('face') || text.includes('liveness') || text.includes('biometric') || text.includes('documentoscopia') || text.includes('datavalid')) {
-    return 'Biometria e documentos';
+  if (text.includes('ocr') || text.includes('documentoscopia') || text.includes('datavalid')) {
+    return 'Documentos e OCR';
   }
   if (text.includes('eleitoral') || text.includes('election') || text.includes('electoral') || text.includes('politic') || text.includes('pep')) {
     return 'Dados eleitorais e PEP';
