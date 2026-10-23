@@ -328,7 +328,7 @@ Use quando quiser buscar uma selfie na base facial.
 | Item | Valor |
 | --- | --- |
 | Service | `SERVICE_FACE_INDEX` |
-| Campos obrigatórios | `image1` |
+| Campo obrigatório | `selfie` |
 | Exemplo curl | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
 
 Payload:
@@ -336,7 +336,7 @@ Payload:
 ```json
 {
   "service": "SERVICE_FACE_INDEX",
-  "image1": "BASE64_DA_SELFIE"
+  "selfie": "BASE64_DA_SELFIE"
 }
 ```
 
@@ -366,17 +366,17 @@ Use quando já souber o CPF da pessoa e quiser confirmar se a selfie pertence a 
 
 | Item | Valor |
 | --- | --- |
-| Service | `SERVICE_UNICO_FACE_CPF` |
-| Campos obrigatórios | `cpf`, `image1` |
-| Exemplo curl | [`service-api-face-cpf-validation.hml.curl`](/examples/service-api-face-cpf-validation.hml.curl) |
+| Service | `SERVICE_FACE_MATCH_CPF` |
+| Campos obrigatórios | `selfie`, `cpf` |
+| Exemplo curl | [`service-api-face-match-cpf.hml.curl`](/examples/service-api-face-match-cpf.hml.curl) |
 
 Payload:
 
 ```json
 {
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "00000000000",
-  "image1": "BASE64_DA_SELFIE"
+  "selfie": "BASE64_DA_SELFIE"
 }
 ```
 
@@ -386,10 +386,11 @@ Retorno esperado quando a validação é aprovada:
 {
   "result": {
     "cpf": "00000000000",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "biometric_score": "98.70",
+    "cpf": "00000000000",
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -400,7 +401,7 @@ Retorno esperado quando a validação é aprovada:
 }
 ```
 
-Uma face aprovada pode ser cadastrada na base biométrica para consultas futuras. Use `faceIndexed` para saber se o cadastro ocorreu nesta chamada; uma falha nessa etapa não altera uma validação já aprovada.
+O retorno informa se a face foi encontrada, atualizada ou indexada durante a consulta.
 
 Erro comum: enviar uma imagem sem rosto legível ou usar foto de documento no lugar de uma selfie real.
 

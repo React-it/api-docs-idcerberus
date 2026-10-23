@@ -424,9 +424,9 @@
         "production": "https://backoffice.idcerberus.com"
       },
       "requestFields": [
-        "image1"
+        "selfie"
       ],
-      "requestExample": "service: SERVICE_FACE_INDEX\nimage1: base64",
+      "requestExample": "service: SERVICE_FACE_INDEX\nselfie: base64",
       "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX",
       "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-fisica",
       "apiReferenceSection": "PF - Busca de face na base",
@@ -437,21 +437,19 @@
         "comparação facial biometria selfie rosto",
         "face index busca facial selfie CPF base de faces"
       ],
-      "responseSummary": "Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.",
+      "responseSummary": "Busca uma selfie na base de faces indexadas e retorna o CPF associado quando encontra uma correspondência.",
       "callingAlias": "SERVICE_FACE_INDEX",
       "services": [],
       "requiredFields": [
-        "image1"
+        "selfie"
       ],
       "optionalFields": [],
       "payloadExample": {
         "service": "SERVICE_FACE_INDEX",
-        "image1": "base64"
+        "selfie": "base64"
       },
       "successResponseExample": {
         "result": {
-          "faceFound": true,
-          "similarity": 99.9,
           "cpf": "00000000000"
         },
         "status": {
@@ -525,8 +523,7 @@
       },
       "tags": [
         "cpf",
-        "face",
-        "imagem"
+        "face"
       ],
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-face-index.hml.curl"
     },
@@ -2915,10 +2912,10 @@
         "production": "https://backoffice.idcerberus.com"
       },
       "requestFields": [
-        "image1",
+        "selfie",
         "image2"
       ],
-      "requestExample": "service: SERVICE_FACE_MATCH\nimage1: base64\nimage2: base64",
+      "requestExample": "service: SERVICE_FACE_MATCH\nselfie: base64\nimage2: base64",
       "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH",
       "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-fisica",
       "apiReferenceSection": "PF - FaceMatch",
@@ -2932,13 +2929,13 @@
       "callingAlias": "SERVICE_FACE_MATCH",
       "services": [],
       "requiredFields": [
-        "image1",
+        "selfie",
         "image2"
       ],
       "optionalFields": [],
       "payloadExample": {
         "service": "SERVICE_FACE_MATCH",
-        "image1": "base64",
+        "selfie": "base64",
         "image2": "base64"
       },
       "successResponseExample": {
@@ -4407,10 +4404,10 @@
       },
       "requestFields": [
         "documentType",
-        "image1",
+        "selfie",
         "image2"
       ],
-      "requestExample": "service: SERVICE_OCR\ndocumentType: IDENTIFICATION_DOCUMENT\nimage1: base64\nimage2: base64 (opcional)",
+      "requestExample": "service: SERVICE_OCR\ndocumentType: IDENTIFICATION_DOCUMENT\nselfie: base64\nimage2: base64 (opcional)",
       "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_OCR",
       "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-fisica",
       "apiReferenceSection": "PF - OCR React",
@@ -4425,7 +4422,7 @@
       "services": [],
       "requiredFields": [
         "documentType",
-        "image1"
+        "selfie"
       ],
       "optionalFields": [
         "image2"
@@ -4433,7 +4430,7 @@
       "payloadExample": {
         "service": "SERVICE_OCR",
         "documentType": "IDENTIFICATION_DOCUMENT",
-        "image1": "base64",
+        "selfie": "base64",
         "image2": "base64 (opcional)"
       },
       "successResponseExample": {
@@ -4469,6 +4466,12 @@
           "action": "Testar imagem nítida, documento correto e payload mínimo indicado na documentação."
         },
         {
+          "statusCode": 400,
+          "message": "Face nao encontrada na base",
+          "cause": "Selfie nao teve correspondencia na base de faces ou nao foi possivel detectar rosto.",
+          "action": "Usar selfie real, frontal e nítida. Não usar foto de documento."
+        },
+        {
           "statusCode": 500,
           "message": "Falha ao realizar consulta",
           "cause": "Falha técnica no processamento ou storage.",
@@ -4489,7 +4492,7 @@
         "useCurlExample": true,
         "needsImage": true,
         "needsRealDocument": true,
-        "needsSelfie": false,
+        "needsSelfie": true,
         "needsCpf": false,
         "needsCnpj": false,
         "publicResponseField": "result",
@@ -4509,11 +4512,13 @@
         ],
         "notes": [
           "Use imagem real e legível do documento. Base64 com ou sem prefixo data:image funciona.",
-          "Se o OCR não extrair um campo, explique que o retorno depende da leitura da imagem e não invente valor."
+          "Se o OCR não extrair um campo, explique que o retorno depende da leitura da imagem e não invente valor.",
+          "Use selfie real, frontal e nítida. Não use foto de RG, CNH ou print de documento."
         ]
       },
       "tags": [
         "cnh",
+        "face",
         "imagem",
         "ocr",
         "react",
@@ -7045,8 +7050,8 @@
       "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-cpf.hml.curl"
     },
     {
-      "service": "SERVICE_UNICO_FACE_CPF",
-      "documentedAlias": "SERVICE_UNICO_FACE_CPF",
+      "service": "SERVICE_FACE_MATCH_CPF",
+      "documentedAlias": "SERVICE_FACE_MATCH_CPF",
       "name": "Validação facial por CPF",
       "category": "Pessoa Física",
       "documented": true,
@@ -7059,31 +7064,32 @@
       },
       "requestFields": [
         "cpf",
-        "image1"
+        "selfie"
       ],
-      "requestExample": "service: SERVICE_UNICO_FACE_CPF\ncpf: cpf\nimage1: base64",
-      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_UNICO_FACE_CPF",
+      "requestExample": "service: SERVICE_FACE_MATCH_CPF\ncpf: cpf\nselfie: base64",
+      "documentationUrl": "https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH_CPF",
       "guideUrl": "https://api-docs.idcerberus.com/guides/servicos-pessoa-fisica",
       "apiReferenceSection": "PF - Validação facial por CPF",
       "searchTerms": [
         "CPF Receita Federal",
         "PF - Validação facial por CPF",
-        "SERVICE_UNICO_FACE_CPF",
+        "SERVICE_FACE_MATCH_CPF",
         "Validação facial por CPF",
+        "comparação facial biometria selfie rosto",
         "validação facial CPF selfie biometria correspondência"
       ],
-      "responseSummary": "Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.",
-      "callingAlias": "SERVICE_UNICO_FACE_CPF",
+      "responseSummary": "Valida se a selfie corresponde ao CPF informado e retorna o score biométrico, o CPF e os indicadores de atualização e indexação da face.",
+      "callingAlias": "SERVICE_FACE_MATCH_CPF",
       "services": [],
       "requiredFields": [
         "cpf",
-        "image1"
+        "selfie"
       ],
       "optionalFields": [],
       "payloadExample": {
-        "service": "SERVICE_UNICO_FACE_CPF",
+        "service": "SERVICE_FACE_MATCH_CPF",
         "cpf": "cpf",
-        "image1": "base64"
+        "selfie": "base64"
       },
       "successResponseExample": {
         "result": {
@@ -7123,7 +7129,7 @@
         }
       ],
       "curlExampleUrls": [
-        "https://api-docs.idcerberus.com/examples/service-api-face-cpf-validation.hml.curl"
+        "https://api-docs.idcerberus.com/examples/service-api-face-match-cpf.hml.curl"
       ],
       "mcpHints": {
         "bestContext": "llms-api-reference.txt",
@@ -7155,16 +7161,17 @@
         ],
         "notes": [
           "Use selfie real, frontal e nítida. Não use foto de RG, CNH ou print de documento.",
-          "A validação facial confirma se a selfie corresponde ao CPF informado e pode cadastrar a face aprovada na base biométrica."
+          "A validação facial confirma se a selfie corresponde ao CPF informado e pode cadastrar a face aprovada na base biométrica.",
+          "Explique score, rating e risco apenas quando esses campos aparecerem no result."
         ]
       },
       "tags": [
         "cadastral",
         "cpf",
         "face",
-        "imagem"
+        "risco-credito"
       ],
-      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-face-cpf-validation.hml.curl"
+      "curlExampleUrl": "https://api-docs.idcerberus.com/examples/service-api-face-match-cpf.hml.curl"
     },
     {
       "service": "SERVICE_LABOR_LAWSUITS",

@@ -99,14 +99,14 @@ Abra um service para ver quando usar, campos obrigatórios, body, curl e respons
 
 **Quando usar:** Use para buscar uma selfie na base de faces indexadas e retornar o CPF associado quando houver correspondência.
 
-**O que retorna:** Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
+**O que retorna:** Busca uma selfie na base de faces indexadas e retorna o CPF associado quando encontra uma correspondência.
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `image1`.
+ Campos obrigatórios: `service`, `selfie`.
  </Card>
  <Card icon="list-check" title="Resultado">
- Principais campos em `result`: `cpf`, `faceFound`, `similarity`.
+ Principais campos em `result`: `cpf`.
  </Card>
  <Card icon="circle-info" title="Status da chamada">
  Use `status.code` e `status.message` para entender se a consulta processou corretamente.
@@ -118,7 +118,7 @@ Abra um service para ver quando usar, campos obrigatórios, body, curl e respons
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos obrigatórios:** `service`, `image1`
+**Campos obrigatórios:** `service`, `selfie`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
@@ -140,7 +140,7 @@ Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de tes
 ```json
 {
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }
 ```
 
@@ -153,7 +153,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -166,7 +166,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -178,15 +178,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+| `selfie` | Sim | Parametro usado pelo service SERVICE_FACE_INDEX. |
 
 ### Campos principais do result
 
 | Campo | Descrição |
 | --- | --- |
 | `result.cpf` | CPF relacionado ao resultado da consulta. |
-| `result.faceFound` | Indica se a busca facial encontrou uma face correspondente na base. |
-| `result.similarity` | Percentual de similaridade retornado em validações biométricas ou faciais. |
 
 ### Como consumir o retorno
 
@@ -210,9 +208,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
-    "cpf": "cpf",
-    "faceFound": true,
-    "similarity": 98.42
+    "cpf": "cpf"
   },
   "status": {
     "code": 200,
@@ -222,7 +218,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
+Neste service, o objeto `result` representa: Busca uma selfie na base de faces indexadas e retorna o CPF associado quando encontra uma correspondência.
 
 </Accordion>
 
@@ -391,7 +387,7 @@ Neste service, o objeto `result` representa: Retorna status da documentoscopia, 
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `image1`, `image2`.
+ Campos obrigatórios: `service`, `selfie`, `image2`.
  </Card>
  <Card icon="list-check" title="Resultado">
  Principais campos em `result`: `match`, `similarity`, `status`.
@@ -406,7 +402,7 @@ Neste service, o objeto `result` representa: Retorna status da documentoscopia, 
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos obrigatórios:** `service`, `image1`, `image2`
+**Campos obrigatórios:** `service`, `selfie`, `image2`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
@@ -428,7 +424,7 @@ Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de tes
 ```json
 {
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }
 ```
@@ -442,7 +438,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
@@ -456,7 +452,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
@@ -469,7 +465,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+| `selfie` | Sim | Parametro usado pelo service SERVICE_FACE_MATCH. |
 | `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
 
 ### Campos principais do result
@@ -724,7 +720,7 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `documentType`, `image1`.
+ Campos obrigatórios: `service`, `documentType`, `selfie`.
  </Card>
  <Card icon="list-check" title="Resultado">
  Principais campos em `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
@@ -739,7 +735,7 @@ Neste service, o objeto `result` representa: Retorna texto OCR do documento de e
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos obrigatórios:** `service`, `documentType`, `image1`
+**Campos obrigatórios:** `service`, `documentType`, `selfie`
 
 **Campos opcionais:** `image2`
 
@@ -810,7 +806,7 @@ Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de tes
 {
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (opcional)"
 }
 ```
@@ -825,7 +821,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (opcional)"
 }'
 ```
@@ -840,7 +836,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (opcional)"
 }'
 ```
@@ -854,7 +850,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+| `selfie` | Sim | Parametro usado pelo service SERVICE_OCR. |
 | `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
 
 ### Campos principais do result
@@ -1193,20 +1189,20 @@ Neste service, o objeto `result` representa: Retorna validação validação doc
 
 </Accordion>
 
-<Accordion title="Validação facial por CPF" id="SERVICE_UNICO_FACE_CPF">
+<Accordion title="Validação facial por CPF" id="SERVICE_FACE_MATCH_CPF">
 
-**Service:** `SERVICE_UNICO_FACE_CPF`
+**Service:** `SERVICE_FACE_MATCH_CPF`
 
 **Quando usar:** Use para validar se a selfie enviada pertence ao CPF informado.
 
-**O que retorna:** Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.
+**O que retorna:** Valida se a selfie corresponde ao CPF informado e retorna o score biométrico, o CPF e os indicadores de atualização e indexação da face.
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Entrada">
- Campos obrigatórios: `service`, `cpf`, `image1`.
+ Campos obrigatórios: `service`, `cpf`, `selfie`.
  </Card>
  <Card icon="list-check" title="Resultado">
- Principais campos em `result`: `cpf`, `biometricScore`, `faceFound`, `faceIndexed`, `faceUpdated`.
+ Principais campos em `result`: `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found`.
  </Card>
  <Card icon="circle-info" title="Status da chamada">
  Use `status.code` e `status.message` para entender se a consulta processou corretamente.
@@ -1218,7 +1214,7 @@ Neste service, o objeto `result` representa: Retorna validação validação doc
 
 **Endpoint:** `POST /api/service-api`
 
-**Campos obrigatórios:** `service`, `cpf`, `image1`
+**Campos obrigatórios:** `service`, `cpf`, `selfie`
 
 **Campos opcionais:** Nenhum campo opcional mapeado neste exemplo.
 
@@ -1239,9 +1235,9 @@ Use este body no Postman em `Body > raw > JSON`. Troque apenas os valores de tes
 
 ```json
 {
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }
 ```
 
@@ -1253,9 +1249,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -1267,9 +1263,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -1282,17 +1278,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
-| `image1` | Sim | Primeira imagem enviada em base64 ou referência equivalente, conforme o produto. |
+| `selfie` | Sim | Parametro usado pelo service SERVICE_FACE_MATCH_CPF. |
 
 ### Campos principais do result
 
 | Campo | Descrição |
 | --- | --- |
+| `result.biometric_score` | Score biométrico retornado pela validação facial. |
 | `result.cpf` | CPF relacionado ao resultado da consulta. |
-| `result.biometricScore` | Score de similaridade facial na escala de 0 a 100. |
-| `result.faceFound` | Indica se a busca facial encontrou uma face correspondente na base. |
-| `result.faceIndexed` | Indica se a face aprovada foi cadastrada na base biométrica durante esta consulta. |
-| `result.faceUpdated` | Indica se um registro biométrico existente foi atualizado durante esta consulta. |
+| `result.face_updated` | Indica se a face vinculada ao CPF foi atualizada nesta consulta. |
+| `result.face_indexed` | Indica se a face foi cadastrada na base nesta consulta. |
+| `result.face_found` | Indica se a face foi encontrada na base durante a consulta. |
 
 ### Como consumir o retorno
 
@@ -1316,11 +1312,11 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
+    "biometric_score": "98.70",
     "cpf": "cpf",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -1330,7 +1326,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-Neste service, o objeto `result` representa: Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.
+Neste service, o objeto `result` representa: Valida se a selfie corresponde ao CPF informado e retorna o score biométrico, o CPF e os indicadores de atualização e indexação da face.
 
 </Accordion>
 

@@ -434,14 +434,14 @@ In this service, the `result` object represents: Returns the OCR text of the ema
 
 **When to use:** Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.
 
-**What it returns:** Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+**What it returns:** Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Input">
- Required fields: `service`, `image1`.
+ Required fields: `service`, `selfie`.
  </Card>
  <Card icon="list-check" title="Result">
- Main fields in `result`: `cpf`, `faceFound`, `similarity`.
+ Main fields in `result`: `cpf`.
  </Card>
  <Card icon="circle-info" title="Call status">
  Use `status.code` and `status.message` to understand whether the query processed correctly.
@@ -453,7 +453,7 @@ In this service, the `result` object represents: Returns the OCR text of the ema
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `image1`
+**Required fields:** `service`, `selfie`
 
 **Optional fields:** No optional field mapped in this example.
 
@@ -475,7 +475,7 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 ```json
 {
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }
 ```
 
@@ -488,7 +488,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -501,7 +501,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -513,15 +513,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Required | Description |
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_FACE_INDEX. |
 
 ### Main result fields
 
 | Field | Description |
 | --- | --- |
 | `result.cpf` | CPF related to the query result. |
-| `result.faceFound` | Indicates whether the facial search found a matching face in the database. |
-| `result.similarity` | Similarity percentage returned in biometric or facial validations. |
 
 ### How to consume the response
 
@@ -545,9 +543,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
-    "cpf": "cpf",
-    "faceFound": true,
-    "similarity": 98.42
+    "cpf": "cpf"
   },
   "status": {
     "code": 200,
@@ -557,7 +553,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-In this service, the `result` object represents: Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+In this service, the `result` object represents: Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
 
 </Accordion>
 
@@ -571,7 +567,7 @@ In this service, the `result` object represents: Searches for a selfie in the in
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Input">
- Required fields: `service`, `image1`, `image2`.
+ Required fields: `service`, `selfie`, `image2`.
  </Card>
  <Card icon="list-check" title="Result">
  Main fields in `result`: `match`, `similarity`, `status`.
@@ -586,7 +582,7 @@ In this service, the `result` object represents: Searches for a selfie in the in
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `image1`, `image2`
+**Required fields:** `service`, `selfie`, `image2`
 
 **Optional fields:** No optional field mapped in this example.
 
@@ -608,7 +604,7 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 ```json
 {
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }
 ```
@@ -622,7 +618,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
@@ -636,7 +632,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
@@ -649,7 +645,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Required | Description |
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_FACE_MATCH. |
 | `image2` | Yes | Second image sent as base64 or an equivalent reference, when the product compares two images. |
 
 ### Main result fields
@@ -698,9 +694,9 @@ In this service, the `result` object represents: Returns the facial comparison b
 
 </Accordion>
 
-<Accordion title="Facial validation by CPF" id="SERVICE_UNICO_FACE_CPF">
+<Accordion title="Facial validation by CPF" id="SERVICE_FACE_MATCH_CPF">
 
-**Service:** `SERVICE_UNICO_FACE_CPF`
+**Service:** `SERVICE_FACE_MATCH_CPF`
 
 **When to use:** Use to validate whether the submitted selfie belongs to the informed CPF.
 
@@ -708,10 +704,10 @@ In this service, the `result` object represents: Returns the facial comparison b
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Input">
- Required fields: `service`, `cpf`, `image1`.
+ Required fields: `service`, `cpf`, `selfie`.
  </Card>
  <Card icon="list-check" title="Result">
- Main fields in `result`: `cpf`, `biometricScore`, `faceFound`, `faceIndexed`, `faceUpdated`.
+ Main fields in `result`: `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found`.
  </Card>
  <Card icon="circle-info" title="Call status">
  Use `status.code` and `status.message` to understand whether the query processed correctly.
@@ -723,7 +719,7 @@ In this service, the `result` object represents: Returns the facial comparison b
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `cpf`, `image1`
+**Required fields:** `service`, `cpf`, `selfie`
 
 **Optional fields:** No optional field mapped in this example.
 
@@ -744,9 +740,9 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 
 ```json
 {
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }
 ```
 
@@ -758,9 +754,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -772,9 +768,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -787,17 +783,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
 | `cpf` | Yes | The queried individual's CPF. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_FACE_MATCH_CPF. |
 
 ### Main result fields
 
 | Field | Description |
 | --- | --- |
+| `result.biometric_score` | Field returned in the result object for the client's consumption. |
 | `result.cpf` | CPF related to the query result. |
-| `result.biometricScore` | Facial similarity score in the 0-100 range. |
-| `result.faceFound` | Indicates whether the facial search found a matching face in the database. |
-| `result.faceIndexed` | Indicates whether the approved face was registered in the biometric database during this query. |
-| `result.faceUpdated` | Indicates whether an existing biometric record was updated during this query. |
+| `result.face_updated` | Date returned by the query, depending on the service context. |
+| `result.face_indexed` | Field returned in the result object for the client's consumption. |
+| `result.face_found` | Field returned in the result object for the client's consumption. |
 
 ### How to consume the response
 
@@ -821,11 +817,11 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
+    "biometric_score": "98.70",
     "cpf": "cpf",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -849,7 +845,7 @@ In this service, the `result` object represents: Validates whether the selfie ma
 
 <CardGroup cols={2}>
  <Card icon="arrow-right-to-bracket" title="Input">
- Required fields: `service`, `documentType`, `image1`.
+ Required fields: `service`, `documentType`, `selfie`.
  </Card>
  <Card icon="list-check" title="Result">
  Main fields in `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
@@ -864,7 +860,7 @@ In this service, the `result` object represents: Validates whether the selfie ma
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `documentType`, `image1`
+**Required fields:** `service`, `documentType`, `selfie`
 
 **Optional fields:** `image2`
 
@@ -935,7 +931,7 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 {
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (optional)"
 }
 ```
@@ -950,7 +946,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (optional)"
 }'
 ```
@@ -965,7 +961,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (optional)"
 }'
 ```
@@ -979,7 +975,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
 | `documentType` | Yes | Parameter used by the service SERVICE_OCR. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_OCR. |
 | `image2` | No | Second image sent as base64 or an equivalent reference, when the product compares two images. |
 
 ### Main result fields

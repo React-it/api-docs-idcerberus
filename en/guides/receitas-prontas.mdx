@@ -328,7 +328,7 @@ Use this when you want to search for a selfie in the facial base.
 | Item | Value |
 | --- | --- |
 | Service | `SERVICE_FACE_INDEX` |
-| Required fields | `image1` |
+| Required field | `selfie` |
 | Curl example | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
 
 Payload:
@@ -336,7 +336,7 @@ Payload:
 ```json
 {
   "service": "SERVICE_FACE_INDEX",
-  "image1": "SELFIE_BASE64"
+  "selfie": "SELFIE_BASE64"
 }
 ```
 
@@ -366,17 +366,17 @@ Use this when you already know the person's CPF and want to confirm whether the 
 
 | Item | Value |
 | --- | --- |
-| Service | `SERVICE_UNICO_FACE_CPF` |
-| Required fields | `cpf`, `image1` |
-| Curl example | [`service-api-face-cpf-validation.hml.curl`](/examples/service-api-face-cpf-validation.hml.curl) |
+| Service | `SERVICE_FACE_MATCH_CPF` |
+| Required fields | `selfie`, `cpf` |
+| Curl example | [`service-api-face-match-cpf.hml.curl`](/examples/service-api-face-match-cpf.hml.curl) |
 
 Payload:
 
 ```json
 {
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "00000000000",
-  "image1": "SELFIE_BASE64"
+  "selfie": "SELFIE_BASE64"
 }
 ```
 
@@ -386,10 +386,11 @@ Expected response when the validation is approved:
 {
   "result": {
     "cpf": "00000000000",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "biometric_score": "98.70",
+    "cpf": "00000000000",
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -400,7 +401,7 @@ Expected response when the validation is approved:
 }
 ```
 
-An approved face may be registered in the biometric database for future queries. Use `faceIndexed` to determine whether registration occurred in this call; a failure at this stage does not change an already approved validation.
+The response indicates whether the face was found, updated, or indexed during the query.
 
 Common error: submitting an image without a readable face or using a document photo instead of a real selfie.
 

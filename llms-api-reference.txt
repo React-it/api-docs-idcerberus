@@ -192,18 +192,16 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 1. Service: `SERVICE_FACE_INDEX`
 2. Endpoint: `POST /api/service-api`
-3. Campos do request: `image1`
+3. Campos do request: `selfie`
 4. Termos de busca: PF - Busca de face na base, comparação facial biometria selfie rosto, face index busca facial selfie CPF base de faces
-5. Retorno principal: Busca uma selfie na base de faces indexadas e retorna se encontrou face, CPF associado e similaridade quando disponíveis.
+5. Retorno principal: Busca uma selfie na base de faces indexadas e retorna o CPF associado quando encontra uma correspondência.
 
 Response resumido:
 
 ```json
 {
   "result": {
-    "cpf": "cpf",
-    "faceFound": true,
-    "similarity": 98.42
+    "cpf": "cpf"
   },
   "status": {
     "code": 200,
@@ -221,7 +219,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -1218,7 +1216,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 1. Service: `SERVICE_FACE_MATCH`
 2. Endpoint: `POST /api/service-api`
-3. Campos do request: `image1`, `image2`
+3. Campos do request: `selfie`, `image2`
 4. Termos de busca: PF - FaceMatch, comparação facial biometria selfie rosto
 5. Retorno principal: Retorna comparacao facial entre duas imagens, com score de similaridade, status do match e mensagem de aprovacao ou reprovacao.
 
@@ -1247,7 +1245,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
@@ -1801,7 +1799,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 1. Service: `SERVICE_OCR`
 2. Endpoint: `POST /api/service-api`
-3. Campos do request: `documentType`, `image1`, `image2`
+3. Campos do request: `documentType`, `selfie`, `image2`
 4. Termos de busca: OCR documento imagem base64 leitura extração, PF - OCR React
 5. Retorno principal: Retorna dados extraídos de documentos de identificação enviados por imagem, como RG/CIN, CNH, OAB, RNE/CRNM, passaporte ou identificação automatica.
 
@@ -1834,7 +1832,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (opcional)"
 }'
 ```
@@ -2841,22 +2839,22 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 ### Validação facial por CPF
 
-1. Service: `SERVICE_UNICO_FACE_CPF`
+1. Service: `SERVICE_FACE_MATCH_CPF`
 2. Endpoint: `POST /api/service-api`
-3. Campos do request: `cpf`, `image1`
-4. Termos de busca: CPF Receita Federal, PF - Validação facial por CPF, validação facial CPF selfie biometria correspondência
-5. Retorno principal: Valida se a selfie corresponde ao CPF informado e indica se a face foi encontrada, cadastrada ou atualizada na base biométrica.
+3. Campos do request: `cpf`, `selfie`
+4. Termos de busca: CPF Receita Federal, PF - Validação facial por CPF, comparação facial biometria selfie rosto, validação facial CPF selfie biometria correspondência
+5. Retorno principal: Valida se a selfie corresponde ao CPF informado e retorna o score biométrico, o CPF e os indicadores de atualização e indexação da face.
 
 Response resumido:
 
 ```json
 {
   "result": {
+    "biometric_score": "98.70",
     "cpf": "cpf",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -2873,9 +2871,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 

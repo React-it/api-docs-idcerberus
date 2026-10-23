@@ -96,10 +96,10 @@ Use the public service enabled on the product in the `service` field.
 | --- | --- | --- | --- |
 | CPF at the Federal Revenue | `SERVICE_RFB_PF` | `cpf`, `birthDate` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_RFB_PF |
 | CNPJ at the Federal Revenue | `SERVICE_RFB_PJ` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_RFB_PJ |
-| React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR |
+| React OCR | `SERVICE_OCR` | `documentType`, `selfie`, `image2` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR |
 | CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
 | Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_PROOF_OF_ADDRESS |
-| Face Index | `SERVICE_FACE_INDEX` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX |
+| Face Index | `SERVICE_FACE_INDEX` | `selfie` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX |
 | Business (PJ) credit risk | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY |
 | Individual (PF) credit score | `SERVICE_CREDIT_SCORE` | `cpf` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE |
 | Business (PJ) legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ |
@@ -262,6 +262,7 @@ correct service, or a ready-made example.
 | Scenario | Good search terms | Main service |
 | --- | --- | --- |
 | Face search in the base | `Face Index`, `selfie`, `face`, `facial search`, `SERVICE_FACE_INDEX` | `SERVICE_FACE_INDEX` |
+| Facial validation by CPF | `selfie`, `cpf`, `facial match`, `SERVICE_FACE_MATCH_CPF` | `SERVICE_FACE_MATCH_CPF` |
 | Compare two faces | `FaceMatch`, `facial comparison`, `image1 image2` | `SERVICE_FACE_MATCH` |
 | Facial validation | `FaceMatch`, `selfie`, `face`, `SERVICE_FACE_MATCH` | `SERVICE_FACE_MATCH` |
 
@@ -3409,7 +3410,7 @@ Use this when you want to search for a selfie in the facial base.
 | Item | Value |
 | --- | --- |
 | Service | `SERVICE_FACE_INDEX` |
-| Required fields | `image1` |
+| Required field | `selfie` |
 | Curl example | [`service-api-face-index.hml.curl`](/examples/service-api-face-index.hml.curl) |
 
 Payload:
@@ -3417,7 +3418,7 @@ Payload:
 ```json
 {
   "service": "SERVICE_FACE_INDEX",
-  "image1": "SELFIE_BASE64"
+  "selfie": "SELFIE_BASE64"
 }
 ```
 
@@ -3447,17 +3448,17 @@ Use this when you already know the person's CPF and want to confirm whether the 
 
 | Item | Value |
 | --- | --- |
-| Service | `SERVICE_UNICO_FACE_CPF` |
-| Required fields | `cpf`, `image1` |
-| Curl example | [`service-api-face-cpf-validation.hml.curl`](/examples/service-api-face-cpf-validation.hml.curl) |
+| Service | `SERVICE_FACE_MATCH_CPF` |
+| Required fields | `selfie`, `cpf` |
+| Curl example | [`service-api-face-match-cpf.hml.curl`](/examples/service-api-face-match-cpf.hml.curl) |
 
 Payload:
 
 ```json
 {
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "00000000000",
-  "image1": "SELFIE_BASE64"
+  "selfie": "SELFIE_BASE64"
 }
 ```
 
@@ -3467,10 +3468,11 @@ Expected response when the validation is approved:
 {
   "result": {
     "cpf": "00000000000",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "biometric_score": "98.70",
+    "cpf": "00000000000",
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -3481,7 +3483,7 @@ Expected response when the validation is approved:
 }
 ```
 
-An approved face may be registered in the biometric database for future queries. Use `faceIndexed` to determine whether registration occurred in this call; a failure at this stage does not change an already approved validation.
+The response indicates whether the face was found, updated, or indexed during the query.
 
 Common error: submitting an image without a readable face or using a document photo instead of a real selfie.
 
@@ -5019,8 +5021,8 @@ full payload in the API Reference.
 | Extract document data via React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` | Read RG/CIN, CNH, OAB, RNE/CRNM, passport, or auto-identify |
 | Read an emancipation document | `SERVICE_OCR_EMANCIPATION` | `image1` | Extract text and possible data from a variable document |
 | Read a proof of address | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | Extract name, address, dates, and values when available |
-| Search for a face in the base | `SERVICE_FACE_INDEX` | `image1` | Search for a face in the indexed base and return CPF/similarity when found |
-| Validate face by CPF | `SERVICE_UNICO_FACE_CPF` | `cpf`, `image1` | Confirm whether the selfie matches the CPF and register the approved face when needed |
+| Search for a face in the base | `SERVICE_FACE_INDEX` | `selfie` | Search for a selfie in the indexed base and return the CPF when a match is found |
+| Validate face by CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` | Confirm whether the selfie matches the CPF and return the biometric indicators |
 | Compare faces | `SERVICE_FACE_MATCH` | `image1`, `image2` | Compare a selfie with a document or another image |
 | Validate a CNH with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` | Validate CNH data with document-validation support |
 | Check for politically exposed person (PEP) status | `SERVICE_PEP` | `cpf` | Assess political exposure |
@@ -5615,19 +5617,19 @@ Open the service to see the public alias, input fields, search terms and expecte
 
 **Service:** `SERVICE_FACE_INDEX`
 
-**Main fields:** `image1`
+**Main fields:** `selfie`
 
 **Search terms:** PF - Face search in the base, face index facial search selfie CPF face database, facial comparison biometrics selfie face
 
 **When to use:** Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.
 
-**Main return:** Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+**Main return:** Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
 
 [View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX)
 
 **Service:** `SERVICE_FACE_MATCH`
 
-**Main fields:** `image1`, `image2`
+**Main fields:** `selfie`, `image2`
 
 **Search terms:** PF - FaceMatch, facial comparison biometrics selfie face
 
@@ -5637,17 +5639,17 @@ Open the service to see the public alias, input fields, search terms and expecte
 
 [View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH)
 
-**Service:** `SERVICE_UNICO_FACE_CPF`
+**Service:** `SERVICE_FACE_MATCH_CPF`
 
-**Main fields:** `cpf`, `image1`
+**Main fields:** `cpf`, `selfie`
 
-**Search terms:** CPF Federal Revenue, CPF facial validation selfie biometric match, PF - Facial validation by CPF
+**Search terms:** CPF Federal Revenue, CPF facial validation selfie biometric match, PF - Facial validation by CPF, facial comparison biometrics selfie face
 
 **When to use:** Use to validate whether the submitted selfie belongs to the informed CPF.
 
 **Main return:** Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
 
-[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_UNICO_FACE_CPF)
+[View in the API Reference](https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH_CPF)
 
 **Service:** `SERVICE_FAMILY_SOCIAL_BENEFITS`
 
@@ -5951,7 +5953,7 @@ Open the service to see the public alias, input fields, search terms and expecte
 
 **Service:** `SERVICE_OCR`
 
-**Main fields:** `documentType`, `image1`, `image2`
+**Main fields:** `documentType`, `selfie`, `image2`
 
 **Search terms:** OCR document image base64 reading extraction, PF - React OCR
 
@@ -7925,8 +7927,8 @@ produce the expected return. For OCR, also use the [OCR via Service API](/en/gui
 | React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
-| Face search in the base | `SERVICE_FACE_INDEX` | `image1` |
-| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | `cpf`, `image1` |
+| Face search in the base | `SERVICE_FACE_INDEX` | `selfie` |
+| Facial validation by CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` |
 | FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
 | Biometric score / CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
 | Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
@@ -8235,7 +8237,7 @@ Use these services when you need to:
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | Reads variable emancipation documents and returns text, objective fields, and analysis |
 | FaceMatch | `SERVICE_FACE_MATCH` | Compares two images and returns a status and facial similarity percentage |
 | Face Index | `SERVICE_FACE_INDEX` | Searches for a selfie in the face database and returns the associated CPF when a match is found |
-| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | Validates whether the selfie matches the informed CPF and may register the approved face in the biometric database |
+| Facial validation by CPF | `SERVICE_FACE_MATCH_CPF` | Validates whether the selfie matches the informed CPF and returns the biometric indicators |
 | Biometric score | `SERVICE_DATAVALID_CNH` | Compares a CPF and a selfie against official databases and returns similarity |
 | CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | Validates CNH data with document-validation support |
 | Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | Processes a document, extracts data, and runs FaceMatch when a selfie is present |
@@ -9036,8 +9038,8 @@ For handling details, see [Status and errors](/en/guides/status-e-erros).
 | React OCR | `SERVICE_OCR` | `documentType`, `image1`, `image2` |
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | `image1` |
 | Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` |
-| Face search in the base | `SERVICE_FACE_INDEX` | `image1` |
-| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | `cpf`, `image1` |
+| Face search in the base | `SERVICE_FACE_INDEX` | `selfie` |
+| Facial validation by CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` |
 | FaceMatch | `SERVICE_FACE_MATCH` | `image1`, `image2` |
 | Biometric score / CNH validation with DataValid | `SERVICE_DATAVALID_CNH` | `cpf`, `image1` |
 | Digital document analysis | `SERVICE_DIGITAL_DOCUMENTOSCOPY` | `key`, `image1`, `image2`, `selfie1` |
@@ -12940,7 +12942,7 @@ After choosing the service, open the individual or business catalog to copy the 
 | Emancipation OCR | `SERVICE_OCR_EMANCIPATION` | CPF |
 | Face search in the base | `SERVICE_FACE_INDEX` | CPF |
 | FaceMatch | `SERVICE_FACE_MATCH` | CPF |
-| Facial validation by CPF | `SERVICE_UNICO_FACE_CPF` | CPF |
+| Facial validation by CPF | `SERVICE_FACE_MATCH_CPF` | CPF |
 | React OCR | `SERVICE_OCR` | CPF |
 
 ## Contacts, sites and relationships
@@ -13483,13 +13485,13 @@ In this service, the `result` object represents: Returns the OCR text of the ema
 
 **When to use:** Use to search for a selfie in the indexed face database and return the associated CPF when a match is found.
 
-**What it returns:** Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+**What it returns:** Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
 
 
- Required fields: `service`, `image1`.
+ Required fields: `service`, `selfie`.
 
 
- Main fields in `result`: `cpf`, `faceFound`, `similarity`.
+ Main fields in `result`: `cpf`.
 
 
  Use `status.code` and `status.message` to understand whether the query processed correctly.
@@ -13500,7 +13502,7 @@ In this service, the `result` object represents: Returns the OCR text of the ema
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `image1`
+**Required fields:** `service`, `selfie`
 
 **Optional fields:** No optional field mapped in this example.
 
@@ -13519,7 +13521,7 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 ```json
 {
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }
 ```
 
@@ -13529,7 +13531,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -13539,7 +13541,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -13548,15 +13550,13 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Required | Description |
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_FACE_INDEX. |
 
 ### Main result fields
 
 | Field | Description |
 | --- | --- |
 | `result.cpf` | CPF related to the query result. |
-| `result.faceFound` | Indicates whether the facial search found a matching face in the database. |
-| `result.similarity` | Similarity percentage returned in biometric or facial validations. |
 
 ### How to consume the response
 
@@ -13578,9 +13578,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
-    "cpf": "cpf",
-    "faceFound": true,
-    "similarity": 98.42
+    "cpf": "cpf"
   },
   "status": {
     "code": 200,
@@ -13590,7 +13588,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 }
 ```
 
-In this service, the `result` object represents: Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+In this service, the `result` object represents: Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
 
 **Service:** `SERVICE_FACE_MATCH`
 
@@ -13599,7 +13597,7 @@ In this service, the `result` object represents: Searches for a selfie in the in
 **What it returns:** Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
 
 
- Required fields: `service`, `image1`, `image2`.
+ Required fields: `service`, `selfie`, `image2`.
 
 
  Main fields in `result`: `match`, `similarity`, `status`.
@@ -13613,7 +13611,7 @@ In this service, the `result` object represents: Searches for a selfie in the in
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `image1`, `image2`
+**Required fields:** `service`, `selfie`, `image2`
 
 **Optional fields:** No optional field mapped in this example.
 
@@ -13632,7 +13630,7 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 ```json
 {
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }
 ```
@@ -13643,7 +13641,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
@@ -13654,7 +13652,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
@@ -13664,7 +13662,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Required | Description |
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_FACE_MATCH. |
 | `image2` | Yes | Second image sent as base64 or an equivalent reference, when the product compares two images. |
 
 ### Main result fields
@@ -13709,17 +13707,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 
 In this service, the `result` object represents: Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
 
-**Service:** `SERVICE_UNICO_FACE_CPF`
+**Service:** `SERVICE_FACE_MATCH_CPF`
 
 **When to use:** Use to validate whether the submitted selfie belongs to the informed CPF.
 
 **What it returns:** Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
 
 
- Required fields: `service`, `cpf`, `image1`.
+ Required fields: `service`, `cpf`, `selfie`.
 
 
- Main fields in `result`: `cpf`, `biometricScore`, `faceFound`, `faceIndexed`, `faceUpdated`.
+ Main fields in `result`: `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found`.
 
 
  Use `status.code` and `status.message` to understand whether the query processed correctly.
@@ -13730,7 +13728,7 @@ In this service, the `result` object represents: Returns the facial comparison b
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `cpf`, `image1`
+**Required fields:** `service`, `cpf`, `selfie`
 
 **Optional fields:** No optional field mapped in this example.
 
@@ -13748,9 +13746,9 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 
 ```json
 {
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }
 ```
 
@@ -13759,9 +13757,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -13770,9 +13768,9 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -13782,17 +13780,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
 | `cpf` | Yes | The queried individual's CPF. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_FACE_MATCH_CPF. |
 
 ### Main result fields
 
 | Field | Description |
 | --- | --- |
+| `result.biometric_score` | Field returned in the result object for the client's consumption. |
 | `result.cpf` | CPF related to the query result. |
-| `result.biometricScore` | Facial similarity score in the 0-100 range. |
-| `result.faceFound` | Indicates whether the facial search found a matching face in the database. |
-| `result.faceIndexed` | Indicates whether the approved face was registered in the biometric database during this query. |
-| `result.faceUpdated` | Indicates whether an existing biometric record was updated during this query. |
+| `result.face_updated` | Date returned by the query, depending on the service context. |
+| `result.face_indexed` | Field returned in the result object for the client's consumption. |
+| `result.face_found` | Field returned in the result object for the client's consumption. |
 
 ### How to consume the response
 
@@ -13814,11 +13812,11 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 ```json
 {
   "result": {
+    "biometric_score": "98.70",
     "cpf": "cpf",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -13837,7 +13835,7 @@ In this service, the `result` object represents: Validates whether the selfie ma
 **What it returns:** Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
 
 
- Required fields: `service`, `documentType`, `image1`.
+ Required fields: `service`, `documentType`, `selfie`.
 
 
  Main fields in `result`: `cpf`, `docType`, `name`, `birthDate`, `cnhCategory`, `cnhNumber`.
@@ -13851,7 +13849,7 @@ In this service, the `result` object represents: Validates whether the selfie ma
 
 **Endpoint:** `POST /api/service-api`
 
-**Required fields:** `service`, `documentType`, `image1`
+**Required fields:** `service`, `documentType`, `selfie`
 
 **Optional fields:** `image2`
 
@@ -13919,7 +13917,7 @@ Use this body in Postman under `Body > raw > JSON`. Only change the test values.
 {
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (optional)"
 }
 ```
@@ -13931,7 +13929,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (optional)"
 }'
 ```
@@ -13943,7 +13941,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (optional)"
 }'
 ```
@@ -13954,7 +13952,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
 | `documentType` | Yes | Parameter used by the service SERVICE_OCR. |
-| `image1` | Yes | First image sent as base64 or an equivalent reference, depending on the product. |
+| `selfie` | Yes | Parameter used by the service SERVICE_OCR. |
 | `image2` | No | Second image sent as base64 or an equivalent reference, when the product compares two images. |
 
 ### Main result fields
@@ -29126,23 +29124,23 @@ Most queries use `POST /api/service-api` and select the product through the `ser
 
  ```yaml
  service: SERVICE_FACE_INDEX
- image1: base64
+ selfie: base64
  ```
 
 **PF - FaceMatch**: `SERVICE_FACE_MATCH`
 
  ```yaml
  service: SERVICE_FACE_MATCH
- image1: base64
+ selfie: base64
  image2: base64
  ```
 
-**PF - Facial validation by CPF**: `SERVICE_UNICO_FACE_CPF`
+**PF - Facial validation by CPF**: `SERVICE_FACE_MATCH_CPF`
 
  ```yaml
- service: SERVICE_UNICO_FACE_CPF
+ service: SERVICE_FACE_MATCH_CPF
  cpf: cpf
- image1: base64
+ selfie: base64
  ```
 
 **PF - Family social benefits**: `SERVICE_FAMILY_SOCIAL_BENEFITS`
@@ -29320,7 +29318,7 @@ Most queries use `POST /api/service-api` and select the product through the `ser
  ```yaml
  service: SERVICE_OCR
  documentType: IDENTIFICATION_DOCUMENT
- image1: base64
+ selfie: base64
  image2: base64 (optional)
  ```
 
@@ -31153,18 +31151,16 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 1. Service: `SERVICE_FACE_INDEX`
 2. Endpoint: `POST /api/service-api`
-3. Request fields: `image1`
+3. Request fields: `selfie`
 4. Search terms: PF - Face search in the base, face index facial search selfie CPF face database, facial comparison biometrics selfie face
-5. Main return: Searches for a selfie in the indexed face database and returns whether a face was found, the associated CPF and the similarity when available.
+5. Main return: Searches for a selfie in the indexed face database and returns the associated CPF when a match is found.
 
 Summarized response:
 
 ```json
 {
   "result": {
-    "cpf": "cpf",
-    "faceFound": true,
-    "similarity": 98.42
+    "cpf": "cpf"
   },
   "status": {
     "code": 200,
@@ -31182,7 +31178,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_INDEX",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -31190,7 +31186,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 1. Service: `SERVICE_FACE_MATCH`
 2. Endpoint: `POST /api/service-api`
-3. Request fields: `image1`, `image2`
+3. Request fields: `selfie`, `image2`
 4. Search terms: PF - FaceMatch, facial comparison biometrics selfie face
 5. Main return: Returns the facial comparison between two images, with a similarity score, match status and approval/rejection message.
 
@@ -31219,17 +31215,17 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
   "service": "SERVICE_FACE_MATCH",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64"
 }'
 ```
 
 ### Facial validation by CPF
 
-1. Service: `SERVICE_UNICO_FACE_CPF`
+1. Service: `SERVICE_FACE_MATCH_CPF`
 2. Endpoint: `POST /api/service-api`
-3. Request fields: `cpf`, `image1`
-4. Search terms: CPF Federal Revenue, CPF facial validation selfie biometric match, PF - Facial validation by CPF
+3. Request fields: `cpf`, `selfie`
+4. Search terms: CPF Federal Revenue, CPF facial validation selfie biometric match, PF - Facial validation by CPF, facial comparison biometrics selfie face
 5. Main return: Validates whether the selfie matches the informed CPF and indicates whether the face was found, indexed or updated in the biometric database.
 
 Summarized response:
@@ -31237,11 +31233,11 @@ Summarized response:
 ```json
 {
   "result": {
+    "biometric_score": "98.70",
     "cpf": "cpf",
-    "biometricScore": "98.70",
-    "faceFound": false,
-    "faceIndexed": true,
-    "faceUpdated": false
+    "face_updated": false,
+    "face_indexed": true,
+    "face_found": false
   },
   "status": {
     "code": 200,
@@ -31258,9 +31254,9 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer {jwt_token}' \
 --data '{
-  "service": "SERVICE_UNICO_FACE_CPF",
+  "service": "SERVICE_FACE_MATCH_CPF",
   "cpf": "cpf",
-  "image1": "base64"
+  "selfie": "base64"
 }'
 ```
 
@@ -32290,7 +32286,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 
 1. Service: `SERVICE_OCR`
 2. Endpoint: `POST /api/service-api`
-3. Request fields: `documentType`, `image1`, `image2`
+3. Request fields: `documentType`, `selfie`, `image2`
 4. Search terms: OCR document image base64 reading extraction, PF - React OCR
 5. Main return: Returns data extracted from identification documents sent as an image, such as RG/CIN, CNH, OAB, RNE/CRNM, passport or automatic identification.
 
@@ -32323,7 +32319,7 @@ curl --location 'https://backoffice-hml.idcerberus.com/api/service-api' \
 --data '{
   "service": "SERVICE_OCR",
   "documentType": "IDENTIFICATION_DOCUMENT",
-  "image1": "base64",
+  "selfie": "base64",
   "image2": "base64 (optional)"
 }'
 ```
@@ -35614,13 +35610,13 @@ paths:
                 value:
                   service: SERVICE_OCR
                   documentType: IDENTIFICATION_DOCUMENT
-                  image1: base64
+                  selfie: base64
                   image2: base64 (optional)
               faceMatch:
                 summary: PF - FaceMatch
                 value:
                   service: SERVICE_FACE_MATCH
-                  image1: base64
+                  selfie: base64
                   image2: base64
               emailsPessoasRelacionadas:
                 summary: PF - Related people's emails
@@ -35915,13 +35911,13 @@ paths:
                 summary: PF - Face search in the base
                 value:
                   service: SERVICE_FACE_INDEX
-                  image1: base64
+                  selfie: base64
               facialValidationByCpf:
                 summary: PF - Facial validation by CPF
                 value:
-                  service: SERVICE_UNICO_FACE_CPF
+                  service: SERVICE_FACE_MATCH_CPF
                   cpf: cpf
-                  image1: base64
+                  selfie: base64
               beneficiosSociaisFamiliares:
                 summary: PF - Family social benefits
                 value:
