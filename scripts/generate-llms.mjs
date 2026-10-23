@@ -3334,6 +3334,7 @@ function serviceFieldDescription(service, fieldName, lang = 'pt') {
     if (field === 'key') return serviceText.includes('documentoscopia') ? 'Documentoscopy key used to start or query the processing.' : 'Identification key used by the product.';
     if (field === 'image1') return 'First image sent as base64 or an equivalent reference, depending on the product.';
     if (field === 'image2') return 'Second image sent as base64 or an equivalent reference, when the product compares two images.';
+    if (field === 'selfie') return 'Selfie submitted for facial search or CPF validation.';
     if (field === 'selfie1') return 'Selfie sent for documentoscopy and biometric validations.';
     if (field === 'image1url') return 'URL of the first image, an alternative to sending base64 when supported.';
     if (field === 'image2url') return 'URL of the second image, an alternative to sending base64 when supported.';
@@ -3362,6 +3363,7 @@ function serviceFieldDescription(service, fieldName, lang = 'pt') {
   if (field === 'key') return serviceText.includes('documentoscopia') ? 'Chave da documentoscopia usada para iniciar ou consultar o processamento.' : 'Chave de identificacao usada pelo produto.';
   if (field === 'image1') return 'Primeira imagem enviada em base64 ou referencia equivalente, conforme o produto.';
   if (field === 'image2') return 'Segunda imagem enviada em base64 ou referencia equivalente, quando o produto compara duas imagens.';
+  if (field === 'selfie') return 'Selfie enviada para busca facial ou validacao de CPF.';
   if (field === 'selfie1') return 'Selfie enviada para validacoes de documentoscopia e biometria.';
   if (field === 'image1url') return 'URL da primeira imagem, alternativa ao envio em base64 quando suportado.';
   if (field === 'image2url') return 'URL da segunda imagem, alternativa ao envio em base64 quando suportado.';
@@ -3890,6 +3892,25 @@ const newCompanyServiceAliases = new Set([
 ]);
 
 function resultFieldDescription(service, fieldName, lang = 'pt') {
+  if (service.service === 'SERVICE_FACE_MATCH_CPF') {
+    const fields = lang === 'en'
+      ? {
+          biometric_score: 'Biometric score returned for the CPF and selfie validation.',
+          cpf: 'CPF submitted for the facial validation.',
+          face_updated: 'Indicates whether the face linked to the CPF was updated in this query.',
+          face_indexed: 'Indicates whether the face was registered in the face database in this query.',
+          face_found: 'Indicates whether the face was already found in the face database.',
+        }
+      : {
+          biometric_score: 'Score biométrico retornado pela validação do CPF com a selfie.',
+          cpf: 'CPF informado na validação facial.',
+          face_updated: 'Indica se a face vinculada ao CPF foi atualizada nesta consulta.',
+          face_indexed: 'Indica se a face foi cadastrada na base nesta consulta.',
+          face_found: 'Indica se a face já foi encontrada na base nesta consulta.',
+        };
+    if (fields[fieldName]) return fields[fieldName];
+  }
+
   if (lang === 'en') {
     if (newCompanyServiceAliases.has(service.service) && newCompanyServiceFieldDescriptionsEn[fieldName]) {
       return newCompanyServiceFieldDescriptionsEn[fieldName];
@@ -3970,6 +3991,25 @@ function resultFieldDescription(service, fieldName, lang = 'pt') {
   if (serviceText.includes('ocr')) return 'Campo extraído do documento enviado para OCR.';
 
   return 'Campo retornado no objeto result para consumo do cliente.';
+}
+
+function pushFacialServiceDifference(lines, service, lang = 'pt') {
+  if (!['SERVICE_FACE_INDEX', 'SERVICE_FACE_MATCH_CPF'].includes(service.service)) return;
+
+  lines.push('<Info>');
+  if (lang === 'en') {
+    if (service.service === 'SERVICE_FACE_INDEX') {
+      lines.push('This is a 1:N facial search: send only a selfie and receive the CPF associated with the matching face. It does not validate a selfie against a CPF provided in the request.');
+    } else {
+      lines.push('This is a 1:1 facial validation: send a CPF and a selfie to verify whether they belong together. The response also reports whether the face was found, updated or indexed.');
+    }
+  } else if (service.service === 'SERVICE_FACE_INDEX') {
+    lines.push('Esta é uma busca facial 1:N: envie somente uma selfie e receba o CPF associado à face encontrada. O serviço não valida a selfie contra um CPF informado no request.');
+  } else {
+    lines.push('Esta é uma validação facial 1:1: envie um CPF e uma selfie para verificar se os dois pertencem à mesma pessoa. O retorno também informa se a face foi encontrada, atualizada ou cadastrada.');
+  }
+  lines.push('</Info>');
+  lines.push('');
 }
 
 function resultRowsFromService(service, lang = 'pt') {
@@ -4364,6 +4404,7 @@ function renderServiceRequestBlock(service, lang = 'pt') {
     lines.push(`**What it returns:** ${service.responseSummary}`);
     lines.push('');
     pushServiceSummaryCards(lines, service, requiredEn || 'no additional field besides `service`', optionalEn, lang);
+    pushFacialServiceDifference(lines, service, lang);
     lines.push('**Endpoint:** `POST /api/service-api`');
     lines.push('');
     lines.push(`**Required fields:** ${requiredEn}`);
@@ -4417,6 +4458,7 @@ function renderServiceRequestBlock(service, lang = 'pt') {
   lines.push(`**O que retorna:** ${service.responseSummary}`);
   lines.push('');
   pushServiceSummaryCards(lines, service, required || 'nenhum campo adicional além de `service`', optional);
+  pushFacialServiceDifference(lines, service);
   lines.push('**Endpoint:** `POST /api/service-api`');
   lines.push('');
   lines.push(`**Campos obrigatórios:** ${required}`);

@@ -3392,9 +3392,7 @@ Retorno esperado quando a face é encontrada:
 ```json
 {
   "result": {
-    "cpf": "00000000000",
-    "similarity": 99.9,
-    "faceFound": true
+    "cpf": "00000000000"
   },
   "status": {
     "code": 200,
@@ -3432,7 +3430,6 @@ Retorno esperado quando a validação é aprovada:
 ```json
 {
   "result": {
-    "cpf": "00000000000",
     "biometric_score": "98.70",
     "cpf": "00000000000",
     "face_updated": false,
@@ -8157,6 +8154,14 @@ POST /api/service-api
 
     Processe documento, imagem e selfie em fluxos de análise documental.
 
+
+## Escolha o serviço facial
+
+| Necessidade | Serviço | Entrada | Retorno principal |
+| --- | --- | --- | --- |
+| Descobrir o CPF a partir de uma selfie | `SERVICE_FACE_INDEX` | `selfie` | `cpf` |
+| Confirmar se uma selfie pertence a um CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` | `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found` |
+| Comparar duas imagens faciais | `SERVICE_FACE_MATCH` | `image1`, `image2` | Similaridade e status do match |
 
 ## Quando usar
 
@@ -13138,6 +13143,9 @@ Abra um service para ver quando usar, campos obrigatórios, body, curl e respons
  Nenhum campo opcional mapeado neste exemplo.
 
 
+> Info:
+Esta é uma busca facial 1:N: envie somente uma selfie e receba o CPF associado à face encontrada. O serviço não valida a selfie contra um CPF informado no request.
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `selfie`
@@ -13188,7 +13196,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `selfie` | Sim | Parametro usado pelo service SERVICE_FACE_INDEX. |
+| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
 
 ### Campos principais do result
 
@@ -13435,7 +13443,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Campo | Obrigatório | Descrição |
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
-| `selfie` | Sim | Parametro usado pelo service SERVICE_FACE_MATCH. |
+| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
 | `image2` | Sim | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
 
 ### Campos principais do result
@@ -13780,7 +13788,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `documentType` | Sim | Parametro usado pelo service SERVICE_OCR. |
-| `selfie` | Sim | Parametro usado pelo service SERVICE_OCR. |
+| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
 | `image2` | Não | Segunda imagem enviada em base64 ou referência equivalente, quando o produto compara duas imagens. |
 
 ### Campos principais do result
@@ -14094,6 +14102,9 @@ Neste service, o objeto `result` representa: Retorna validação validação doc
  Nenhum campo opcional mapeado neste exemplo.
 
 
+> Info:
+Esta é uma validação facial 1:1: envie um CPF e uma selfie para verificar se os dois pertencem à mesma pessoa. O retorno também informa se a face foi encontrada, atualizada ou cadastrada.
+
 **Endpoint:** `POST /api/service-api`
 
 **Campos obrigatórios:** `service`, `cpf`, `selfie`
@@ -14148,17 +14159,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Sim | Código exato do produto que será executado pelo endpoint central. |
 | `cpf` | Sim | CPF da pessoa física consultada. |
-| `selfie` | Sim | Parametro usado pelo service SERVICE_FACE_MATCH_CPF. |
+| `selfie` | Sim | Selfie enviada para busca facial ou validação de CPF. |
 
 ### Campos principais do result
 
 | Campo | Descrição |
 | --- | --- |
-| `result.biometric_score` | Score biométrico retornado pela validação facial. |
-| `result.cpf` | CPF relacionado ao resultado da consulta. |
+| `result.biometric_score` | Score biométrico retornado pela validação do CPF com a selfie. |
+| `result.cpf` | CPF informado na validação facial. |
 | `result.face_updated` | Indica se a face vinculada ao CPF foi atualizada nesta consulta. |
 | `result.face_indexed` | Indica se a face foi cadastrada na base nesta consulta. |
-| `result.face_found` | Indica se a face foi encontrada na base durante a consulta. |
+| `result.face_found` | Indica se a face já foi encontrada na base nesta consulta. |
 
 ### Como consumir o retorno
 

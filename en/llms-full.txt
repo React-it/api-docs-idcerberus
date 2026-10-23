@@ -3427,9 +3427,7 @@ Expected response when the face is found:
 ```json
 {
   "result": {
-    "cpf": "00000000000",
-    "similarity": 99.9,
-    "faceFound": true
+    "cpf": "00000000000"
   },
   "status": {
     "code": 200,
@@ -3467,7 +3465,6 @@ Expected response when the validation is approved:
 ```json
 {
   "result": {
-    "cpf": "00000000000",
     "biometric_score": "98.70",
     "cpf": "00000000000",
     "face_updated": false,
@@ -8215,6 +8212,14 @@ POST /api/service-api
 
     Process a document, an image, and a selfie in document-analysis flows.
 
+
+## Choose the facial service
+
+| Need | Service | Input | Main result |
+| --- | --- | --- | --- |
+| Find the CPF from a selfie | `SERVICE_FACE_INDEX` | `selfie` | `cpf` |
+| Confirm whether a selfie belongs to a CPF | `SERVICE_FACE_MATCH_CPF` | `selfie`, `cpf` | `biometric_score`, `cpf`, `face_updated`, `face_indexed`, `face_found` |
+| Compare two facial images | `SERVICE_FACE_MATCH` | `image1`, `image2` | Match similarity and status |
 
 ## When to use it
 
@@ -13500,6 +13505,9 @@ In this service, the `result` object represents: Returns the OCR text of the ema
  No optional field mapped in this example.
 
 
+> Info:
+This is a 1:N facial search: send only a selfie and receive the CPF associated with the matching face. It does not validate a selfie against a CPF provided in the request.
+
 **Endpoint:** `POST /api/service-api`
 
 **Required fields:** `service`, `selfie`
@@ -13550,7 +13558,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Required | Description |
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `selfie` | Yes | Parameter used by the service SERVICE_FACE_INDEX. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
 
 ### Main result fields
 
@@ -13662,7 +13670,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | Field | Required | Description |
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
-| `selfie` | Yes | Parameter used by the service SERVICE_FACE_MATCH. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
 | `image2` | Yes | Second image sent as base64 or an equivalent reference, when the product compares two images. |
 
 ### Main result fields
@@ -13726,6 +13734,9 @@ In this service, the `result` object represents: Returns the facial comparison b
  No optional field mapped in this example.
 
 
+> Info:
+This is a 1:1 facial validation: send a CPF and a selfie to verify whether they belong together. The response also reports whether the face was found, updated or indexed.
+
 **Endpoint:** `POST /api/service-api`
 
 **Required fields:** `service`, `cpf`, `selfie`
@@ -13780,17 +13791,17 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
 | `cpf` | Yes | The queried individual's CPF. |
-| `selfie` | Yes | Parameter used by the service SERVICE_FACE_MATCH_CPF. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
 
 ### Main result fields
 
 | Field | Description |
 | --- | --- |
-| `result.biometric_score` | Field returned in the result object for the client's consumption. |
-| `result.cpf` | CPF related to the query result. |
-| `result.face_updated` | Date returned by the query, depending on the service context. |
-| `result.face_indexed` | Field returned in the result object for the client's consumption. |
-| `result.face_found` | Field returned in the result object for the client's consumption. |
+| `result.biometric_score` | Biometric score returned for the CPF and selfie validation. |
+| `result.cpf` | CPF submitted for the facial validation. |
+| `result.face_updated` | Indicates whether the face linked to the CPF was updated in this query. |
+| `result.face_indexed` | Indicates whether the face was registered in the face database in this query. |
+| `result.face_found` | Indicates whether the face was already found in the face database. |
 
 ### How to consume the response
 
@@ -13952,7 +13963,7 @@ curl --location 'https://backoffice.idcerberus.com/api/service-api' \
 | --- | --- | --- |
 | `service` | Yes | Exact code of the product that will be executed by the central endpoint. |
 | `documentType` | Yes | Parameter used by the service SERVICE_OCR. |
-| `selfie` | Yes | Parameter used by the service SERVICE_OCR. |
+| `selfie` | Yes | Selfie submitted for facial search or CPF validation. |
 | `image2` | No | Second image sent as base64 or an equivalent reference, when the product compares two images. |
 
 ### Main result fields
