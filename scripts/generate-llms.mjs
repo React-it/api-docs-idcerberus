@@ -5239,13 +5239,15 @@ function pushOcrLlmNotes(lines, lang = 'pt') {
     lines.push('');
     lines.push('1. OCR uses a document image, not a selfie.');
     lines.push('2. Face, FaceMatch and Face Index use a selfie/face, not a photo of an RG or CNH.');
-    lines.push('3. `image1` takes the image\'s base64, with or without the `data:image/...;base64,` prefix: both formats work.');
-    lines.push('4. RG usually needs front and back: `image1` and `image2`.');
-    lines.push('5. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.');
-    lines.push('6. CNPJ card uses `SERVICE_OCR_CNPJ_CARD` and `image1`.');
-    lines.push('7. Proof of address uses `SERVICE_OCR_PROOF_OF_ADDRESS` and `image1`.');
-    lines.push('8. Emancipation uses `SERVICE_OCR_EMANCIPATION`; the document varies and success depends on OCR finding usable text.');
-    lines.push('9. If the image is missing, illegible or the wrong type, expect `REFUSED` with a clear message, do not invent success.');
+    lines.push('3. `SERVICE_FACE_INDEX` is a 1:N search: send `selfie` to find the associated CPF.');
+    lines.push('4. `SERVICE_FACE_MATCH_CPF` is a 1:1 validation: send `cpf` and `selfie` to validate the relationship.');
+    lines.push('5. `image1` takes the image\'s base64, with or without the `data:image/...;base64,` prefix: both formats work.');
+    lines.push('6. RG usually needs front and back: `image1` and `image2`.');
+    lines.push('7. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.');
+    lines.push('8. CNPJ card uses `SERVICE_OCR_CNPJ_CARD` and `image1`.');
+    lines.push('9. Proof of address uses `SERVICE_OCR_PROOF_OF_ADDRESS` and `image1`.');
+    lines.push('10. Emancipation uses `SERVICE_OCR_EMANCIPATION`; the document varies and success depends on OCR finding usable text.');
+    lines.push('11. If the image is missing, illegible or the wrong type, expect `REFUSED` with a clear message, do not invent success.');
     lines.push('');
     return;
   }
@@ -5253,13 +5255,15 @@ function pushOcrLlmNotes(lines, lang = 'pt') {
   lines.push('');
   lines.push('1. OCR usa imagem do documento, não selfie.');
   lines.push('2. Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.');
-  lines.push('3. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.');
-  lines.push('4. RG normalmente usa frente e verso: `image1` e `image2`.');
-  lines.push('5. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.');
-  lines.push('6. Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.');
-  lines.push('7. Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.');
-  lines.push('8. Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.');
-  lines.push('9. Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.');
+  lines.push('3. `SERVICE_FACE_INDEX` é uma busca 1:N: envie `selfie` para encontrar o CPF associado.');
+  lines.push('4. `SERVICE_FACE_MATCH_CPF` é uma validação 1:1: envie `cpf` e `selfie` para validar a relação.');
+  lines.push('5. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.');
+  lines.push('6. RG normalmente usa frente e verso: `image1` e `image2`.');
+  lines.push('7. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.');
+  lines.push('8. Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.');
+  lines.push('9. Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.');
+  lines.push('10. Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.');
+  lines.push('11. Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.');
   lines.push('');
 }
 
@@ -5302,6 +5306,7 @@ function pushFeaturedServiceShortcuts(lines, catalog, lang = 'pt') {
       ['CNPJ card OCR', 'SERVICE_OCR_CNPJ_CARD'],
       ['Proof of address OCR', 'SERVICE_OCR_PROOF_OF_ADDRESS'],
       ['Face Index', 'SERVICE_FACE_INDEX'],
+      ['Validate selfie against CPF', 'SERVICE_FACE_MATCH_CPF'],
       ['Business (PJ) credit risk', 'SERVICE_CREDIT_RISK_COMPANY'],
       ['Individual (PF) credit score', 'SERVICE_CREDIT_SCORE'],
       ['Business (PJ) legal cases', 'SERVICE_JURIDICAL_PROCESSES_PJ'],
@@ -5327,6 +5332,7 @@ function pushFeaturedServiceShortcuts(lines, catalog, lang = 'pt') {
     ['OCR cartão CNPJ', 'SERVICE_OCR_CNPJ_CARD'],
     ['OCR comprovante de endereço', 'SERVICE_OCR_PROOF_OF_ADDRESS'],
     ['Face Index', 'SERVICE_FACE_INDEX'],
+    ['Validar selfie por CPF', 'SERVICE_FACE_MATCH_CPF'],
     ['Risco de crédito PJ', 'SERVICE_CREDIT_RISK_COMPANY'],
     ['Score de crédito PF', 'SERVICE_CREDIT_SCORE'],
     ['Processos jurídicos PJ', 'SERVICE_JURIDICAL_PROCESSES_PJ'],
@@ -5782,6 +5788,7 @@ function buildMcpManifest(servicesCatalog, exampleFiles, lang = 'pt') {
 const llmRules = [
   '## Regras para assistentes de IA',
   '',
+  'Regra específica: para biometria facial, use `SERVICE_FACE_INDEX` quando o CPF for desconhecido e `SERVICE_FACE_MATCH_CPF` quando o CPF já for conhecido.',
   '1. Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.',
   '2. Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.',
   '3. Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.',
@@ -5796,6 +5803,7 @@ const llmRules = [
 const llmRulesEn = [
   '## Rules for AI assistants',
   '',
+  'Specific rule: for facial biometrics, use `SERVICE_FACE_INDEX` when the CPF is unknown and `SERVICE_FACE_MATCH_CPF` when the CPF is already known.',
   '1. Use the documentation as the primary source and do not invent endpoints, parameters or services.',
   '2. For external queries, use `POST /api/service-api` and select the product through the `service` field.',
   '3. Use `Authorization: Bearer {jwt_token}` in protected calls.',

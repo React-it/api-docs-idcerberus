@@ -9,6 +9,7 @@ Base URLs:
 
 ## Regras para assistentes de IA
 
+Regra específica: para biometria facial, use `SERVICE_FACE_INDEX` quando o CPF for desconhecido e `SERVICE_FACE_MATCH_CPF` quando o CPF já for conhecido.
 1. Use a documentação como fonte principal e não invente endpoints, parâmetros ou services.
 2. Para consultas externas, use `POST /api/service-api` e selecione o produto pelo campo `service`.
 3. Use `Authorization: Bearer {jwt_token}` em chamadas protegidas.
@@ -100,6 +101,7 @@ Use o service público liberado no produto no campo `service`.
 | OCR cartão CNPJ | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
 | OCR comprovante de endereço | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_OCR_PROOF_OF_ADDRESS |
 | Face Index | `SERVICE_FACE_INDEX` | `selfie` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX |
+| Validar selfie por CPF | `SERVICE_FACE_MATCH_CPF` | `cpf`, `selfie` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH_CPF |
 | Risco de crédito PJ | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY |
 | Score de crédito PF | `SERVICE_CREDIT_SCORE` | `cpf` | https://api-docs.idcerberus.com/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE |
 | Processos jurídicos PJ | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | https://api-docs.idcerberus.com/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ |
@@ -109,13 +111,15 @@ Use o service público liberado no produto no campo `service`.
 
 1. OCR usa imagem do documento, não selfie.
 2. Face, FaceMatch e Face Index usam selfie/rosto, não foto de RG ou CNH.
-3. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.
-4. RG normalmente usa frente e verso: `image1` e `image2`.
-5. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
-6. Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
-7. Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.
-8. Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.
-9. Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.
+3. `SERVICE_FACE_INDEX` é uma busca 1:N: envie `selfie` para encontrar o CPF associado.
+4. `SERVICE_FACE_MATCH_CPF` é uma validação 1:1: envie `cpf` e `selfie` para validar a relação.
+5. `image1` recebe o base64 da imagem, com ou sem prefixo `data:image/...;base64,`: os dois formatos funcionam.
+6. RG normalmente usa frente e verso: `image1` e `image2`.
+7. CNH usa `SERVICE_OCR`, `documentType: CNH` e `image1`.
+8. Cartão CNPJ usa `SERVICE_OCR_CNPJ_CARD` e `image1`.
+9. Comprovante de endereço usa `SERVICE_OCR_PROOF_OF_ADDRESS` e `image1`.
+10. Emancipação usa `SERVICE_OCR_EMANCIPATION`; o documento varia e o sucesso depende de OCR com texto útil.
+11. Se a imagem estiver ausente, ilegível ou for do tipo errado, espere `REFUSED` com mensagem clara, não invente sucesso.
 
 ## Diagnóstico rápido de erro
 

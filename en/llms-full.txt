@@ -9,6 +9,7 @@ Base URLs:
 
 ## Rules for AI assistants
 
+Specific rule: for facial biometrics, use `SERVICE_FACE_INDEX` when the CPF is unknown and `SERVICE_FACE_MATCH_CPF` when the CPF is already known.
 1. Use the documentation as the primary source and do not invent endpoints, parameters or services.
 2. For external queries, use `POST /api/service-api` and select the product through the `service` field.
 3. Use `Authorization: Bearer {jwt_token}` in protected calls.
@@ -100,6 +101,7 @@ Use the public service enabled on the product in the `service` field.
 | CNPJ card OCR | `SERVICE_OCR_CNPJ_CARD` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_OCR_CNPJ_CARD |
 | Proof of address OCR | `SERVICE_OCR_PROOF_OF_ADDRESS` | `image1` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_OCR_PROOF_OF_ADDRESS |
 | Face Index | `SERVICE_FACE_INDEX` | `selfie` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_INDEX |
+| Validate selfie against CPF | `SERVICE_FACE_MATCH_CPF` | `cpf`, `selfie` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_FACE_MATCH_CPF |
 | Business (PJ) credit risk | `SERVICE_CREDIT_RISK_COMPANY` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_CREDIT_RISK_COMPANY |
 | Individual (PF) credit score | `SERVICE_CREDIT_SCORE` | `cpf` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-fisica#SERVICE_CREDIT_SCORE |
 | Business (PJ) legal cases | `SERVICE_JURIDICAL_PROCESSES_PJ` | `cnpj` | https://api-docs.idcerberus.com/en/api-reference/services-pessoa-juridica#SERVICE_JURIDICAL_PROCESSES_PJ |
@@ -109,13 +111,15 @@ Use the public service enabled on the product in the `service` field.
 
 1. OCR uses a document image, not a selfie.
 2. Face, FaceMatch and Face Index use a selfie/face, not a photo of an RG or CNH.
-3. `image1` takes the image's base64, with or without the `data:image/...;base64,` prefix: both formats work.
-4. RG usually needs front and back: `image1` and `image2`.
-5. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.
-6. CNPJ card uses `SERVICE_OCR_CNPJ_CARD` and `image1`.
-7. Proof of address uses `SERVICE_OCR_PROOF_OF_ADDRESS` and `image1`.
-8. Emancipation uses `SERVICE_OCR_EMANCIPATION`; the document varies and success depends on OCR finding usable text.
-9. If the image is missing, illegible or the wrong type, expect `REFUSED` with a clear message, do not invent success.
+3. `SERVICE_FACE_INDEX` is a 1:N search: send `selfie` to find the associated CPF.
+4. `SERVICE_FACE_MATCH_CPF` is a 1:1 validation: send `cpf` and `selfie` to validate the relationship.
+5. `image1` takes the image's base64, with or without the `data:image/...;base64,` prefix: both formats work.
+6. RG usually needs front and back: `image1` and `image2`.
+7. CNH uses `SERVICE_OCR`, `documentType: CNH` and `image1`.
+8. CNPJ card uses `SERVICE_OCR_CNPJ_CARD` and `image1`.
+9. Proof of address uses `SERVICE_OCR_PROOF_OF_ADDRESS` and `image1`.
+10. Emancipation uses `SERVICE_OCR_EMANCIPATION`; the document varies and success depends on OCR finding usable text.
+11. If the image is missing, illegible or the wrong type, expect `REFUSED` with a clear message, do not invent success.
 
 ## Quick error diagnosis
 
